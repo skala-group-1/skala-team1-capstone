@@ -28,7 +28,10 @@ docker compose up -d --build    # postgres(pgvector) + rabbitmq + backend
 docker compose exec postgres psql -U capstone -d capstone -c "select count(*) from app.hospitals;"   # 50
 ```
 
-- **DB 스키마·mock 데이터는 backend 기동 시 Flyway가 적재**합니다 (V1 schema → V2.. → V100 seed). backend 없이 DB만 띄우면 비어 있으니, 다른 파트도 `docker compose up -d postgres rabbitmq backend`로 띄우세요.
+- **DB 스키마·mock 데이터는 Flyway가 적재**합니다 (V1 schema → V2.. → V100 seed). `postgres`만 띄우면 DB가 비어 있습니다.
+  - backend를 같이 띄우면 자동 적재: `docker compose up -d postgres rabbitmq backend`
+  - **backend 없이 DB만 채우기** (agent·MCP·RAG 담당): `docker compose up -d postgres rabbitmq && docker compose run --rm db-seed`
+    - 데모 계정 비밀번호는 backend 기동 시에만 채워지므로, 로그인이 필요하면 backend를 띄우세요 (`/internal` 호출은 로그인 불필요)
 - Swagger: http://localhost:8080/swagger-ui (로그인 응답의 `accessToken`을 Authorize에 입력)
 - RabbitMQ 관리 콘솔: http://localhost:15672 (guest/guest)
 - DB 재적재 / mock 재생성 후: `docker compose down -v && docker compose up -d --build` (seed 파일이 바뀌면 Flyway 체크섬이 달라져 기존 볼륨으로는 기동 실패)

@@ -33,6 +33,29 @@ services:
       timeout: 5s
       retries: 10
 
+  # backend 없이 DB만 채우기 (agent·MCP·RAG 담당용): docker compose run --rm db-seed
+  # backend 와 같은 Flyway 버전·같은 파일이라 나중에 backend 를 띄워도 이력이 그대로 이어진다.
+  # 데모 계정 비밀번호(PasswordSeeder)는 backend 기동 시에만 채워진다 → 로그인이 필요하면 backend 를 띄울 것.
+  db-seed:
+    image: flyway/flyway:11.7.2-alpine
+    profiles: ["tools"]
+    command: migrate
+    environment:
+      FLYWAY_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-capstone}
+      FLYWAY_USER: ${POSTGRES_USER:-capstone}
+      FLYWAY_PASSWORD: ${POSTGRES_PASSWORD:-capstone}
+      FLYWAY_SCHEMAS: app
+      FLYWAY_DEFAULT_SCHEMA: app
+      FLYWAY_CREATE_SCHEMAS: "true"
+      FLYWAY_LOCATIONS: filesystem:/flyway/sql
+    volumes:
+      - ./data/mock/out/schema.sql:/flyway/sql/V1__schema.sql:ro
+      - ./backend/src/main/resources/db/migration:/flyway/sql/backend:ro
+      - ./data/mock/out/V100__seed.sql:/flyway/sql/V100__seed.sql:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   backend:
     build:
       context: .

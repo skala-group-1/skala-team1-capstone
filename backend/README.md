@@ -36,6 +36,7 @@ cd backend && ./gradlew bootRun
 
 - mock 데이터는 `data/mock/generate.py`가 단일 원천입니다. backend 전용 스키마 변경은 **V3~V99**로 이 폴더에 추가하세요.
 - seed를 재생성하면 체크섬이 바뀌므로 `docker compose down -v` 후 다시 기동합니다.
+- backend 없이 DB만 채우려면 저장소 루트에서 `docker compose run --rm db-seed` (같은 Flyway 11.7.2 + 같은 파일이라 이후 backend 기동 시 이력이 이어짐). V3 이상을 추가하면 db-seed 에도 자동 반영됩니다.
 
 ## 패키지
 

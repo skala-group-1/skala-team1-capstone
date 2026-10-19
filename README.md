@@ -20,21 +20,23 @@ AI 요약을 넘겨받은 실제 상담사와 통역 채팅하고 예약을 요�
 | `scripts/` | 장애 시연·stub 스크립트 | |
 | `docs/` | 평가 증빙(평가 결과, 스크린샷, harness.md) | |
 
-## 빠른 시작 (현재: 인프라 + 데이터)
+## 빠른 시작 (현재: 인프라 + backend)
 
 ```bash
 cp .env.example .env            # OPENAI_API_KEY 등 입력
-docker compose up -d            # postgres(pgvector) + rabbitmq, 최초 기동 시 mock 데이터 자동 적재
+docker compose up -d --build    # postgres(pgvector) + rabbitmq + backend
 docker compose exec postgres psql -U capstone -d capstone -c "select count(*) from app.hospitals;"   # 50
 ```
 
+- **DB 스키마·mock 데이터는 backend 기동 시 Flyway가 적재**합니다 (V1 schema → V2.. → V100 seed). backend 없이 DB만 띄우면 비어 있으니, 다른 파트도 `docker compose up -d postgres rabbitmq backend`로 띄우세요.
+- Swagger: http://localhost:8080/swagger-ui (로그인 응답의 `accessToken`을 Authorize에 입력)
 - RabbitMQ 관리 콘솔: http://localhost:15672 (guest/guest)
-- DB 재적재: `docker compose down -v && docker compose up -d`
-- mock 데이터 설명: [`data/mock/README.md`](data/mock/README.md)
+- DB 재적재 / mock 재생성 후: `docker compose down -v && docker compose up -d --build` (seed 파일이 바뀌면 Flyway 체크섬이 달라져 기존 볼륨으로는 기동 실패)
+- mock 데이터 설명: [`data/mock/README.md`](data/mock/README.md), backend 개발: [`backend/README.md`](backend/README.md)
 
 ## 데모 계정
 
-비밀번호 공통 `Passw0rd!` (로컬 데모 전용). backend의 PasswordSeeder가 BCrypt 해시를 넣어야 로그인 가능.
+비밀번호 공통 `Passw0rd!` (로컬 데모 전용). backend 기동 시 PasswordSeeder가 BCrypt 해시를 채웁니다.
 
 | 역할 | 계정 |
 | --- | --- |

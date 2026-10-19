@@ -42,6 +42,8 @@ public class SecurityConfig {
 						.requestMatchers("/api/auth/**").permitAll()
 						.requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
 						.requestMatchers("/error").permitAll()
+						// WebSocket 핸드셰이크는 열어 두고, 인증은 STOMP CONNECT 프레임에서 한다 (StompAuthInterceptor)
+						.requestMatchers("/ws", "/ws/**").permitAll()
 						.requestMatchers("/api/counselor/**").hasRole("COUNSELOR")
 						.requestMatchers("/api/hospital-admin/**").hasRole("HOSPITAL_ADMIN")
 						.requestMatchers("/api/ops/**").hasRole("OPERATOR")

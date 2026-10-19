@@ -12,6 +12,7 @@ from typing import Annotated
 
 from fastmcp import FastMCP
 from fastmcp.exceptions import ResourceError
+from mcp.types import ToolAnnotations
 from pydantic import Field
 
 from mcp_common.run import run_server
@@ -19,7 +20,7 @@ from rag_mcp.config import settings
 from rag_mcp.models import Chunk, DocType, SearchResult
 from rag_mcp.store import MAX_CHUNK_CHARS, DocStore, Hit, build_store
 
-READ_ONLY = {"readOnlyHint": True, "openWorldHint": False}
+READ_ONLY = ToolAnnotations(read_only_hint=True, open_world_hint=False)
 NO_RESULT = "No grounded document found. Answer that this could not be confirmed."
 
 mcp = FastMCP(

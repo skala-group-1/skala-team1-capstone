@@ -16,6 +16,7 @@ import uuid
 from typing import Annotated
 
 from fastmcp import FastMCP
+from mcp.types import ToolAnnotations
 from pydantic import Field
 
 from business_mcp.backend_client import BackendClient, build_client
@@ -27,8 +28,9 @@ from business_mcp.models import (
 )
 from mcp_common.run import run_server
 
-READ_ONLY = {"readOnlyHint": True, "openWorldHint": False}
-DESTRUCTIVE_IDEMPOTENT = {"readOnlyHint": False, "destructiveHint": True, "idempotentHint": True, "openWorldHint": False}
+READ_ONLY = ToolAnnotations(read_only_hint=True, open_world_hint=False)
+DESTRUCTIVE_IDEMPOTENT = ToolAnnotations(
+    read_only_hint=False, destructive_hint=True, idempotent_hint=True, open_world_hint=False)
 
 mcp = FastMCP(
     name="business-mcp",

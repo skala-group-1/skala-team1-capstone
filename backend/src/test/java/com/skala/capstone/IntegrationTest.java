@@ -67,6 +67,40 @@ public abstract class IntegrationTest {
 	@Autowired
 	protected JdbcClient jdbc;
 
+	@Autowired
+	protected org.springframework.amqp.rabbit.core.RabbitTemplate rabbit;
+
+	@org.springframework.boot.test.web.server.LocalServerPort
+	protected int port;
+
+	/**
+	 * 가짜 agent: 큐에서 조건에 맞는 메시지 1건을 꺼낸다 (최대 10초). 다른 테스트가 남긴 메시지는 버린다.
+	 */
+	protected JsonNode receiveFrom(String queue, java.util.function.Predicate<JsonNode> match) throws Exception {
+		long deadline = System.currentTimeMillis() + 10_000;
+		while (System.currentTimeMillis() < deadline) {
+			org.springframework.amqp.core.Message m = rabbit.receive(queue, 500);
+			if (m != null) {
+				JsonNode body = objectMapper.readTree(m.getBody());
+				if (match.test(body)) {
+					return body;
+				}
+			}
+		}
+		throw new AssertionError("no matching message on " + queue);
+	}
+
+	/** 조건이 참이 될 때까지 최대 10초 기다린다 (큐 처리 같은 비동기 결과 확인용) */
+	protected void await(java.util.function.BooleanSupplier condition, String what) throws InterruptedException {
+		for (int i = 0; i < 100; i++) {
+			if (condition.getAsBoolean()) {
+				return;
+			}
+			Thread.sleep(100);
+		}
+		throw new AssertionError("timed out waiting: " + what);
+	}
+
 	protected MvcResult login(String email) throws Exception {
 		return mvc.perform(post("/api/auth/login").contentType(MediaType.APPLICATION_JSON)
 				.content(json(Map.of("email", email, "password", DEMO_PASSWORD))))

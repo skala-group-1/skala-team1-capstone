@@ -3,7 +3,7 @@
 - 입력 → 출력: user.user_id → profile
 - LLM/도구: 없음. LangGraph store (PostgresStore, namespace ("user", user_id), key "profile")
 - 프롬프트: 없음
-- 근거: 03 문서 9-4 장기 기억, D-25
+- 근거: 「AI Agent 설계」 9-4 장기 기억, D-25
 """
 
 from langgraph.config import get_store

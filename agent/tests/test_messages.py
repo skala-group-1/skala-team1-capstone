@@ -1,4 +1,4 @@
-"""큐 메시지가 12 문서 7장대로 camelCase JSON 으로 오가는지."""
+"""큐 메시지가 「공통 계약서」 7장대로 camelCase JSON 으로 오가는지."""
 
 import json
 

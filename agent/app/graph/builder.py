@@ -1,4 +1,4 @@
-"""그래프 조립. 노드 연결은 03 문서 9-1(메인 v2)·4장(병원 서브그래프) 그림 그대로.
+"""그래프 조립. 노드 연결은 「AI Agent 설계」 9-1(메인 v2)·4장(병원 서브그래프) 그림 그대로.
 
 노드 로직은 nodes/ 에, 분기 조건은 graph/routing.py 에 둔다.
 """
@@ -39,7 +39,7 @@ def build_hospital_subgraph() -> StateGraph:
     g.add_edge("hospital_tools", "hospital_agent")
     g.add_conditional_edges("approval", routing.route_after_approval,
                             {"execute_action": "execute_action", "hospital_agent": "hospital_agent"})
-    # TODO(agent): request_consultation 성공 시 mode=HUMAN 이면 바로 END (03 문서 4장 X → H → 나감)
+    # TODO(agent): request_consultation 성공 시 mode=HUMAN 이면 바로 END (「AI Agent 설계」 4장 X → H → 나감)
     g.add_edge("execute_action", "hospital_agent")
     return g
 

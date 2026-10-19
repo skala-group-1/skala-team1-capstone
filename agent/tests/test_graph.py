@@ -1,4 +1,4 @@
-"""그래프 골격 테스트 — 노드 연결과 분기가 03 문서 그림대로인지. 노드 로직이 채워지면 케이스를 늘린다."""
+"""그래프 골격 테스트 — 노드 연결과 분기가 「AI Agent 설계」 그림대로인지. 노드 로직이 채워지면 케이스를 늘린다."""
 
 from langchain_core.messages import HumanMessage
 from langgraph.types import Command

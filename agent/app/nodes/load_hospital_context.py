@@ -2,7 +2,7 @@
 
 - 입력 → 출력: selected_hospital_id, conditions, summary → (system 컨텍스트)
 - LLM/도구: business_get_hospital_detail (lite)
-- 근거: 03 문서 4장, D-20 (새 대화창 초기 state 에 conditions·summary 복사)
+- 근거: 「AI Agent 설계」 4장, D-20 (새 대화창 초기 state 에 conditions·summary 복사)
 """
 
 from app.graph.state import AgentState

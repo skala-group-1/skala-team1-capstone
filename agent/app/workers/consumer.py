@@ -12,7 +12,7 @@ from app.workers.messages import AiTaskRequested, AiTaskResume, ChatTranslate, Q
 async def handle_task_requested(msg: AiTaskRequested, trace_id: str) -> None:
     # TODO(agent): thread_id = conversation_id 로 그래프 astream_events 실행 → ai.task.event 발행 (events.py)
     # TODO(agent): user·action 을 초기 state 에 넣기 (user: id·role·locale 만, 개인정보 X)
-    # TODO(agent): 120초 타임아웃·실패 시 FAILED {code: AI_UNAVAILABLE, traceId} (05 문서 Recovery)
+    # TODO(agent): 120초 타임아웃·실패 시 FAILED {code: AI_UNAVAILABLE, traceId} (「Harness 명세」 Recovery)
     raise NotImplementedError
 
 
@@ -43,7 +43,7 @@ HANDLERS = {
 async def start_consumers() -> aio_pika.abc.AbstractRobustConnection:
     """큐마다 consumer 를 붙이고 연결을 돌려준다 (종료 시 close).
 
-    TODO(agent): 실패 시 x-attempt 를 올려 재시도 큐로, 2회 넘으면 DLQ (05 문서 Recovery, INFRA-02 정의 확정 후)
+    TODO(agent): 실패 시 x-attempt 를 올려 재시도 큐로, 2회 넘으면 DLQ (「Harness 명세」 Recovery, INFRA-02 정의 확정 후)
     TODO(agent): prefetch_count 조정 (LLM 호출이 길어 1~2 권장)
     """
     connection = await aio_pika.connect_robust(get_settings().rabbitmq_url)

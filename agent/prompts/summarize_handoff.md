@@ -4,7 +4,7 @@ node: hospital_agent (상담 요청 전 니즈 요약)
 model: LLM_PRIMARY_MODEL
 ---
 
-<!-- 03 문서 4장, 12 문서 SummaryCard: 상담사에게 넘길 니즈 요약 카드 -->
+<!-- 「AI Agent 설계」 4장, 「공통 계약서」 SummaryCard: 상담사에게 넘길 니즈 요약 카드 -->
 
 # Task
 <!-- TODO(agent): procedure, preferredDates, stayDays, budget, questions[], customerLocale 채우기 (고객 언어) -->

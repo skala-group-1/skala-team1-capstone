@@ -1,7 +1,7 @@
-"""RabbitMQ 메시지 모델 (12 공통 계약서 7장). body 는 JSON camelCase, 파이썬 쪽은 snake_case.
+"""RabbitMQ 메시지 모델 (「공통 계약서」 7장). body 는 JSON camelCase, 파이썬 쪽은 snake_case.
 
 exchange capstone.direct(direct), routing key = 큐 이름. 헤더 x-trace-id, x-attempt.
-필드를 바꾸면 12 문서를 먼저 고치고 backend 와 맞춘다.
+필드를 바꾸면 「공통 계약서」를 먼저 고치고 backend 와 맞춘다.
 """
 
 from datetime import datetime
@@ -16,7 +16,7 @@ HEADER_ATTEMPT = "x-attempt"
 
 
 class Queue:
-    """큐 이름 = routing key. 소비(consume)/발행(publish) 주체는 12 문서 7장."""
+    """큐 이름 = routing key. 소비(consume)/발행(publish) 주체는 「공통 계약서」 7장."""
     AI_TASK_REQUESTED = "ai.task.requested"      # backend → agent
     AI_TASK_RESUME = "ai.task.resume"            # backend → agent
     AI_TASK_EVENT = "ai.task.event"              # agent → backend (SSE 중계)
@@ -45,7 +45,7 @@ class AiTaskRequested(CamelModel):
     conversation_id: str
     user: TaskUser
     message: str
-    action: dict[str, Any] | None = None    # {"type":"SELECT_HOSPITAL","hospitalId":1} 등 (12 문서 CreateTaskRequest)
+    action: dict[str, Any] | None = None    # {"type":"SELECT_HOSPITAL","hospitalId":1} 등 (「공통 계약서」 CreateTaskRequest)
     requested_at: datetime
 
 
@@ -84,7 +84,7 @@ class ChatTranslated(CamelModel):
 
 class SummaryTranslate(CamelModel):
     consultation_id: int
-    summary_card: dict[str, Any]             # 12 문서 SummaryCard
+    summary_card: dict[str, Any]             # 「공통 계약서」 SummaryCard
     from_: str = Field(alias="from")
     to: str
 
@@ -97,5 +97,5 @@ class SummaryTranslated(CamelModel):
 
 class Notify(CamelModel):
     user_ids: list[int]
-    type: str                                # 12 문서 NotificationType
+    type: str                                # 「공통 계약서」 NotificationType
     payload: dict[str, Any]

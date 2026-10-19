@@ -1,7 +1,7 @@
 """에이전트 State 정의.
 
-03 AI Agent 설계 2장(State) + 9-5(Agentic v2 추가 필드) 그대로 옮긴 것.
-필드명·의미를 바꾸면 03 문서를 먼저 고치고 팀에 공지한다.
+「AI Agent 설계」 2장(State) + 9-5(Agentic v2 추가 필드) 그대로 옮긴 것.
+필드명·의미를 바꾸면 「AI Agent 설계」를 먼저 고치고 팀에 공지한다.
 DTO(camelCase) ↔ state(snake_case) 변환은 workers/ 와 mcp_client/ 경계에서 한다.
 """
 
@@ -12,13 +12,13 @@ from langgraph.graph.message import add_messages
 
 Mode = Literal["MAIN", "HOSPITAL", "HUMAN"]
 
-# 12 문서 2장 Intent (agent 내부). PLAN 은 03 문서 9-1 v2 분기에 등장
+# 「공통 계약서」 2장 Intent (agent 내부). PLAN 은 「AI Agent 설계」 9-1 v2 분기에 등장
 INTENTS = ("SEARCH", "INFO", "PLAN", "SELECT", "HOSPITAL_QA", "BOOK", "HANDOFF", "OTHER")
 
-# 12 문서 2장 GuardFlag (agent 내부). 이 중 하나라도 있으면 guard_reply 로 분기
+# 「공통 계약서」 2장 GuardFlag (agent 내부). 이 중 하나라도 있으면 guard_reply 로 분기
 GUARD_FLAGS = ("RECOMMEND_REQUEST", "MEDICAL_JUDGMENT", "GUARANTEE", "OFF_TOPIC", "INJECTION")
 
-# 03 문서 3장: 필수 조건. 예산·상담언어는 한 번만 묻고 "상관없음" 허용
+# 「AI Agent 설계」 3장: 필수 조건. 예산·상담언어는 한 번만 묻고 "상관없음" 허용
 # TODO(agent): 9-2 일정 플래너는 date_to(출국일)도 필요 → PLAN intent 일 때 필수 조건에 추가할지 결정
 REQUIRED_CONDITIONS = ("procedure_code", "date_from")
 
@@ -26,7 +26,7 @@ REQUIRED_CONDITIONS = ("procedure_code", "date_from")
 class Conditions(TypedDict, total=False):
     procedure_code: str | None        # 표준 코드 (DOUBLE_EYELID_NONINCISION ...)
     areas: list[str]                  # GANGNAM, SINSA, MYEONGDONG ...
-    date_from: str | None             # YYYY-MM-DD, 입국일 (12 문서 Agentic v2)
+    date_from: str | None             # YYYY-MM-DD, 입국일 (「공통 계약서」 Agentic v2)
     date_to: str | None               # YYYY-MM-DD, 출국일
     budget_max_krw: int | None
     consult_language: str | None      # en / zh / ja
@@ -34,7 +34,7 @@ class Conditions(TypedDict, total=False):
 
 
 class AgentState(TypedDict, total=False):
-    # --- 03 문서 2장 ---
+    # --- 「AI Agent 설계」 2장 ---
     messages: Annotated[list[AnyMessage], add_messages]
     user: dict                        # user_id, role, locale (개인정보 X)
     mode: Mode
@@ -49,7 +49,7 @@ class AgentState(TypedDict, total=False):
     summary: str | None               # 토큰 예산 초과 시 오래된 대화 요약
     loop: dict                        # turn, tool_counts, started_at (Harness)
 
-    # --- 03 문서 9-5 (Agentic v2) ---
+    # --- 「AI Agent 설계」 9-5 (Agentic v2) ---
     profile: dict | None              # 장기 기억에서 로드
     trip_plans: list[dict]            # business_plan_trip 결과
     tool_ledger: dict                 # verify 대조용 사실 저장소
@@ -57,6 +57,6 @@ class AgentState(TypedDict, total=False):
     verify_attempts: int
     memory_proposal: dict | None
 
-    # --- 골격에서 추가 (03 문서에 없음, 확정 시 문서 반영) ---
+    # --- 골격에서 추가 (「AI Agent 설계」에 없음, 확정 시 문서 반영) ---
     verify_passed: bool | None        # verify 노드 결과. 라우팅용
     parent_conversation_id: str | None  # D-20 병원 대화창의 부모 대화

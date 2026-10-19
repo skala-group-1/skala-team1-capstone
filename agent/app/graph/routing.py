@@ -1,4 +1,4 @@
-"""조건부 엣지 함수 모음. 실제 state 값으로 분기한다 (03 문서 9-1, 4장)."""
+"""조건부 엣지 함수 모음. 실제 state 값으로 분기한다 (「AI Agent 설계」 9-1, 4장)."""
 
 from langchain_core.messages import AIMessage
 
@@ -34,7 +34,7 @@ def route_after_extract(state: AgentState) -> str:
 
 
 def route_after_planner(state: AgentState) -> str:
-    # TODO(agent): Harness 한도(8턴·120초·같은 인자 3회) 초과 시 verify 로 보내고 부분 답변 처리 (05 문서 Agent Loop)
+    # TODO(agent): Harness 한도(8턴·120초·같은 인자 3회) 초과 시 verify 로 보내고 부분 답변 처리 (「Harness 명세」 Agent Loop)
     return "tools" if _last_tool_calls(state) else "verify"
 
 

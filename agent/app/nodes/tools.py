@@ -2,7 +2,7 @@
 
 - 입력 → 출력: 마지막 AIMessage.tool_calls → ToolMessage 들
 - LLM/도구: business-mcp / rag-mcp (mcp_client.client.get_tools)
-- 근거: 05 문서 Tools (절단·ToolError→ToolMessage·hospital_id 주입·tool_ledger)
+- 근거: 「Harness 명세」 Tools (절단·ToolError→ToolMessage·hospital_id 주입·tool_ledger)
 """
 
 from langgraph.prebuilt import ToolNode
@@ -25,5 +25,5 @@ async def planner_tools(state: AgentState) -> dict:
 
 
 async def hospital_tools(state: AgentState) -> dict:
-    # TODO(agent): 실행 전에 tool_calls args 의 hospital_id 를 state.selected_hospital_id 로 덮어쓰기 (03 문서 4장)
+    # TODO(agent): 실행 전에 tool_calls args 의 hospital_id 를 state.selected_hospital_id 로 덮어쓰기 (「AI Agent 설계」 4장)
     return await _run(state, HOSPITAL_READ_TOOLS)

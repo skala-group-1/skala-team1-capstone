@@ -1,4 +1,4 @@
-"""SSE 이벤트 타입 (12 공통 계약서 6장). agent 는 ai.task.event 로 발행하고 backend 가 SSE 로 중계한다.
+"""SSE 이벤트 타입 (「공통 계약서」 6장). agent 는 ai.task.event 로 발행하고 backend 가 SSE 로 중계한다.
 
 규칙: 한 작업의 마지막 이벤트는 반드시 DONE / FAILED / APPROVAL_REQUIRED 중 하나.
 """

@@ -2,7 +2,7 @@
 
 - 입력 → 출력: pending_action(approved) → ToolMessage, (상담 요청 성공 시) mode=HUMAN
 - LLM/도구: business_create_reservation_request / business_cancel_reservation / business_request_consultation
-- 근거: 03 문서 4장, 04 문서 2장 변경 도구, D-09·D-10
+- 근거: 「AI Agent 설계」 4장, 「MCP 설계」 2장 변경 도구, D-09·D-10
 """
 
 from langchain_core.messages import ToolMessage

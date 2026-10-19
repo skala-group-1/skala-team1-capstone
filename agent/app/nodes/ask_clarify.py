@@ -3,7 +3,7 @@
 - 입력 → 출력: missing → draft (역질문 1개)
 - LLM/도구: LLM
 - 프롬프트: prompts/ask_clarify.md
-- 근거: 03 문서 3장 (반복: 다음 사용자 메시지가 같은 thread 로 들어와 extract_conditions 로 재진입)
+- 근거: 「AI Agent 설계」 3장 (반복: 다음 사용자 메시지가 같은 thread 로 들어와 extract_conditions 로 재진입)
 """
 
 from app.graph.state import AgentState

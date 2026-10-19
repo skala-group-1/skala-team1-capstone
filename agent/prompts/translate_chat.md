@@ -4,7 +4,7 @@ node: workers/consumer.handle_chat_translate
 model: LLM_FAST_MODEL
 ---
 
-<!-- 03 문서 8장, D-12: 상담 채팅 번역 (고객 언어 ↔ ko) -->
+<!-- 「AI Agent 설계」 8장, D-12: 상담 채팅 번역 (고객 언어 ↔ ko) -->
 
 # Glossary
 <!-- TODO(agent): data/mock/out/glossary.json 시술 용어집 주입 자리 -->

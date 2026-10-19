@@ -26,5 +26,5 @@ async def health() -> dict:
     return {"status": "ok", "useFakeTools": s.use_fake_tools}
 
 
-# TODO(agent): GET /internal/docs/{doc_id} → rag-mcp read_resource("doc://...") (04 문서 3장, BE-17 근거 패널)
-# TODO(agent): GET/DELETE /internal/ai-profile/{user_id} → PostgresStore 프로필 조회·삭제 (03 문서 9-4, P1)
+# TODO(agent): GET /internal/docs/{doc_id} → rag-mcp read_resource("doc://...") (「MCP 설계」 3장, BE-17 근거 패널)
+# TODO(agent): GET/DELETE /internal/ai-profile/{user_id} → PostgresStore 프로필 조회·삭제 (「AI Agent 설계」 9-4, P1)

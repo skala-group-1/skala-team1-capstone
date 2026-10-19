@@ -3,7 +3,7 @@
 - 입력 → 출력: messages, selected_hospital_id → tool_calls 있는 AIMessage 또는 draft
 - LLM/도구: LLM_PRIMARY_MODEL tool-calling, HOSPITAL_READ_TOOLS + DESTRUCTIVE_TOOLS bind
 - 프롬프트: prompts/hospital_agent.md
-- 근거: 03 문서 4장 (다른 병원 질문 → 메인 대화창으로 돌아가기 안내)
+- 근거: 「AI Agent 설계」 4장 (다른 병원 질문 → 메인 대화창으로 돌아가기 안내)
 """
 
 import uuid

@@ -1,6 +1,6 @@
-"""MCP 클라이언트 — business-mcp·rag-mcp 를 하나의 MultiServerMCPClient 로 묶는다 (04 문서 1장).
+"""MCP 클라이언트 — business-mcp·rag-mcp 를 하나의 MultiServerMCPClient 로 묶는다 (「MCP 설계」 1장).
 
-D-29: 가짜 도구를 agent 안에 따로 만들지 않는다.
+D-31: 가짜 도구를 agent 안에 따로 만들지 않는다.
 - USE_FAKE_TOOLS=true  → 두 MCP 서버를 stdio 로 직접 띄우고 USE_STUB=true (mock JSON 응답).
                           agent 는 처음부터 진짜 MCP 경로(도구 이름·스키마)로 개발된다.
 - USE_FAKE_TOOLS=false → compose 의 streamable HTTP 서버 (BUSINESS_MCP_URL, RAG_MCP_URL).
@@ -35,7 +35,7 @@ def _connections() -> dict:
 
 
 def get_client() -> MultiServerMCPClient:
-    # TODO(agent): tool_interceptors 로 x-acting-user-id·x-trace-id 헤더 주입 (04 문서 1장: LLM 인자에 노출 금지)
+    # TODO(agent): tool_interceptors 로 x-acting-user-id·x-trace-id 헤더 주입 (「MCP 설계」 1장: LLM 인자에 노출 금지)
     global _client
     if _client is None:
         _client = MultiServerMCPClient(_connections(), tool_name_prefix=True)

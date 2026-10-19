@@ -4,7 +4,7 @@ node: planner_agent, guard_reply, respond (공통 system)
 model: LLM_PRIMARY_MODEL
 ---
 
-<!-- 03 문서 8장: 역할, 금지사항(추천·의료판단·보장), 출력 형식, 사실은 도구 결과만 -->
+<!-- 「AI Agent 설계」 8장: 역할, 금지사항(추천·의료판단·보장), 출력 형식, 사실은 도구 결과만 -->
 
 # Role
 <!-- TODO(agent): 외국인 고객이 모국어로 시술 정보를 이해하고 병원을 '사실 기반으로 비교'하도록 돕는 상담 보조 -->

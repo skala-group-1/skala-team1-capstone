@@ -4,7 +4,7 @@ node: hospital_agent
 model: LLM_PRIMARY_MODEL
 ---
 
-<!-- 03 문서 4장: 병원 범위 질문 + 병원 도구 ReAct -->
+<!-- 「AI Agent 설계」 4장: 병원 범위 질문 + 병원 도구 ReAct -->
 
 # Context
 <!-- TODO(agent): 병원 요약·conditions·이전 대화 summary 주입 자리 -->

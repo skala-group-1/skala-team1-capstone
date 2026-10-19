@@ -2,8 +2,8 @@
 
 - 입력 → 출력: draft, tool_ledger → verify_passed, verify_attempts(+1), (불일치 시) 피드백 메시지
 - LLM/도구: LLM_FAST_MODEL structured output 으로 사실 주장 추출 → 코드로 ledger 대조
-- 프롬프트: (추가 필요) prompts/verify.md — 03 문서 8장 목록에는 없음
-- 근거: 03 문서 9-3, D-24, 05 문서 Guardrails
+- 프롬프트: (추가 필요) prompts/verify.md — 「AI Agent 설계」 8장 목록에는 없음
+- 근거: 「AI Agent 설계」 9-3, D-24, 「Harness 명세」 Guardrails
 """
 
 from app.graph.state import AgentState

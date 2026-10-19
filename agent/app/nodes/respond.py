@@ -3,7 +3,7 @@
 - 입력 → 출력: draft, citations, candidates, trip_plans → AIMessage, draft=None
 - LLM/도구: 규칙 + (필요 시) LLM
 - 프롬프트: prompts/system_base.md
-- 근거: 03 문서 5장, 6장(언어 처리), 12 문서 6장 SSE (DONE {answer, sources})
+- 근거: 「AI Agent 설계」 5장, 6장(언어 처리), 「공통 계약서」 6장 SSE (DONE {answer, sources})
 """
 
 from langchain_core.messages import AIMessage

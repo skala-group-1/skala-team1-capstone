@@ -1,4 +1,4 @@
-"""Harness — State·Memory (05 문서). 단기 = checkpointer(thread), 장기 = store(사용자 프로필).
+"""Harness — State·Memory (「Harness 명세」). 단기 = checkpointer(thread), 장기 = store(사용자 프로필).
 
 - thread_id = conversation_id
 - PostgresSaver / PostgresStore 는 schema agent 를 쓴다
@@ -12,7 +12,7 @@ from langgraph.store.memory import InMemoryStore
 
 from app.config import get_settings
 
-PROFILE_NAMESPACE = "user"  # namespace ("user", user_id), key "profile" (03 문서 9-4)
+PROFILE_NAMESPACE = "user"  # namespace ("user", user_id), key "profile" (「AI Agent 설계」 9-4)
 PROFILE_KEY = "profile"
 
 
@@ -20,8 +20,8 @@ PROFILE_KEY = "profile"
 async def open_checkpointer_and_store():
     """(checkpointer, store) 를 연다. 그래프 compile 시 넘긴다.
 
-    TODO(agent): 테스트 — interrupt → 프로세스 재시작 → 같은 thread 로 resume 성공 (05 문서, 데모 B)
-    TODO(agent): PostgresStore 에 저장하는 skinConcerns 등 민감 필드는 로그에서 마스킹 (03 문서 9-4)
+    TODO(agent): 테스트 — interrupt → 프로세스 재시작 → 같은 thread 로 resume 성공 (「Harness 명세」, 데모 B)
+    TODO(agent): PostgresStore 에 저장하는 skinConcerns 등 민감 필드는 로그에서 마스킹 (「AI Agent 설계」 9-4)
     """
     url = get_settings().database_url
     if not url:

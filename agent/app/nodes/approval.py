@@ -2,7 +2,7 @@
 
 - 입력 → 출력: 변경 도구 tool_call → interrupt(PendingAction) → resume {approved, editedArgs, reason}
 - LLM/도구: 없음
-- 근거: 03 문서 4장(승인 카드·재개), 12 문서 PendingAction·ApprovalRequest, SSE APPROVAL_REQUIRED, D-10
+- 근거: 「AI Agent 설계」 4장(승인 카드·재개), 「공통 계약서」 PendingAction·ApprovalRequest, SSE APPROVAL_REQUIRED, D-10
 """
 
 from langchain_core.messages import AIMessage, ToolMessage

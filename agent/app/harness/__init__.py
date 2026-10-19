@@ -1,4 +1,4 @@
-"""Harness 8요소 (05 Harness 명세). Agent = Model + Harness.
+"""Harness 8요소 (「Harness 명세」). Agent = Model + Harness.
 
 | 구성 요소       | 모듈                      |
 | --------------- | ------------------------- |
@@ -11,5 +11,5 @@
 | Recovery        | harness/recovery.py       |
 | Observability   | harness/observability.py  |
 
-각 요소마다 tests/ 에 최소 1개 테스트 (05 문서 "테스트" 열).
+각 요소마다 tests/ 에 최소 1개 테스트 (「Harness 명세」 "테스트" 열).
 """

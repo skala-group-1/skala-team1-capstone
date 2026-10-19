@@ -1,4 +1,4 @@
-"""CLI 러너 — 큐·backend·FE 없이 그래프와 대화 (13 문서 Agent 착수 순서 4).
+"""CLI 러너 — 큐·backend·FE 없이 그래프와 대화 (「파트별 착수 가이드」 Agent 착수 순서 4).
 
     uv run python -m app.cli --thread t1
     uv run python -m app.cli --thread h1 --mode HOSPITAL --hospital-id 1     # 병원 대화창 ("예약" 입력 → 승인 y/n)

@@ -1,6 +1,6 @@
-"""도구 이름 상수 (04 MCP 설계). agent 는 두 서버를 한 Client 로 묶고 접두어 business_ / rag_ 를 붙인다."""
+"""도구 이름 상수 (「MCP 설계」). agent 는 두 서버를 한 Client 로 묶고 접두어 business_ / rag_ 를 붙인다."""
 
-# 03 문서 9-1: planner_agent 도구 화이트리스트 (변경 도구 없음 → 메인에서는 승인 불필요)
+# 「AI Agent 설계」 9-1: planner_agent 도구 화이트리스트 (변경 도구 없음 → 메인에서는 승인 불필요)
 PLANNER_TOOLS = (
     "business_search_hospitals",
     "business_get_available_slots",
@@ -11,7 +11,7 @@ PLANNER_TOOLS = (
     "rag_search_procedure_docs",
 )
 
-# 03 문서 4장: 병원 서브그래프 조회 도구 (hospital_id 는 state 에서 강제 주입)
+# 「AI Agent 설계」 4장: 병원 서브그래프 조회 도구 (hospital_id 는 state 에서 강제 주입)
 HOSPITAL_READ_TOOLS = (
     "business_get_hospital_detail",
     "business_list_doctors",
@@ -22,14 +22,14 @@ HOSPITAL_READ_TOOLS = (
     "rag_search_procedure_docs",
 )
 
-# 04 문서 2장: 변경 도구 (destructiveHint) → 반드시 approval interrupt
+# 「MCP 설계」 2장: 변경 도구 (destructiveHint) → 반드시 approval interrupt
 DESTRUCTIVE_TOOLS = (
     "business_create_reservation_request",
     "business_cancel_reservation",
     "business_request_consultation",
 )
 
-# 12 문서 5장 PendingAction.action 값과의 매핑
+# 「공통 계약서」 5장 PendingAction.action 값과의 매핑
 PENDING_ACTION_BY_TOOL = {
     "business_create_reservation_request": "CREATE_RESERVATION",
     "business_cancel_reservation": "CANCEL_RESERVATION",

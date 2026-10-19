@@ -1,0 +1,30 @@
+[project]
+name = "capstone-agent"
+version = "0.1.0"
+description = "SKALA team1 capstone - LangGraph agent, harness, translation worker"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "langgraph>=0.4",
+    "langgraph-checkpoint-postgres>=2.0",
+    "langchain-openai>=0.3",
+    "langchain-mcp-adapters>=0.1",
+    "aio-pika>=9.4",
+    "pydantic-settings>=2.4",
+    "psycopg[binary]>=3.2",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "pytest-asyncio>=0.24",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+asyncio_mode = "auto"

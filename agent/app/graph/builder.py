@@ -1,0 +1,87 @@
+"""그래프 조립. 노드 연결은 「AI Agent 설계」 9-1(메인 v2)·4장(병원 서브그래프) 그림 그대로.
+
+노드 로직은 nodes/ 에, 분기 조건은 graph/routing.py 에 둔다.
+"""
+
+from langgraph.graph import END, START, StateGraph
+
+from app.graph import routing
+from app.graph.state import AgentState
+from app.nodes.approval import approval
+from app.nodes.ask_clarify import ask_clarify
+from app.nodes.execute_action import execute_action
+from app.nodes.extract_conditions import extract_conditions
+from app.nodes.guard_input import guard_input
+from app.nodes.guard_reply import guard_reply
+from app.nodes.hospital_agent import hospital_agent
+from app.nodes.load_hospital_context import load_hospital_context
+from app.nodes.load_memory import load_memory
+from app.nodes.memory_propose import memory_propose
+from app.nodes.open_hospital_conversation import open_hospital_conversation
+from app.nodes.planner_agent import planner_agent
+from app.nodes.respond import respond
+from app.nodes.tools import hospital_tools, planner_tools
+from app.nodes.verify import verify
+
+
+def build_hospital_subgraph() -> StateGraph:
+    g = StateGraph(AgentState)
+    g.add_node("load_hospital_context", load_hospital_context)
+    g.add_node("hospital_agent", hospital_agent)
+    g.add_node("hospital_tools", hospital_tools)
+    g.add_node("approval", approval)
+    g.add_node("execute_action", execute_action)
+
+    g.add_edge(START, "load_hospital_context")
+    g.add_edge("load_hospital_context", "hospital_agent")
+    g.add_conditional_edges("hospital_agent", routing.route_after_hospital_agent,
+                            {"hospital_tools": "hospital_tools", "approval": "approval", "end": END})
+    g.add_edge("hospital_tools", "hospital_agent")
+    g.add_conditional_edges("approval", routing.route_after_approval,
+                            {"execute_action": "execute_action", "hospital_agent": "hospital_agent"})
+    # TODO(agent): request_consultation 성공 시 mode=HUMAN 이면 바로 END (「AI Agent 설계」 4장 X → H → 나감)
+    g.add_edge("execute_action", "hospital_agent")
+    return g
+
+
+def build_main_graph() -> StateGraph:
+    g = StateGraph(AgentState)
+    g.add_node("load_memory", load_memory)
+    g.add_node("guard_input", guard_input)
+    g.add_node("guard_reply", guard_reply)
+    g.add_node("open_hospital_conversation", open_hospital_conversation)
+    g.add_node("extract_conditions", extract_conditions)
+    g.add_node("ask_clarify", ask_clarify)
+    g.add_node("planner_agent", planner_agent)
+    g.add_node("tools", planner_tools)
+    g.add_node("verify", verify)
+    g.add_node("memory_propose", memory_propose)
+    g.add_node("respond", respond)
+    g.add_node("hospital_subgraph", build_hospital_subgraph().compile())
+
+    g.add_edge(START, "load_memory")
+    g.add_edge("load_memory", "guard_input")
+    g.add_conditional_edges("guard_input", routing.route_after_guard, {
+        "guard_reply": "guard_reply",
+        "open_hospital_conversation": "open_hospital_conversation",
+        "extract_conditions": "extract_conditions",
+        "hospital_subgraph": "hospital_subgraph",
+        "end": END,
+    })
+    g.add_conditional_edges("extract_conditions", routing.route_after_extract,
+                            {"ask_clarify": "ask_clarify", "planner_agent": "planner_agent"})
+    g.add_conditional_edges("planner_agent", routing.route_after_planner,
+                            {"tools": "tools", "verify": "verify"})
+    g.add_edge("tools", "planner_agent")
+    g.add_conditional_edges("verify", routing.route_after_verify,
+                            {"planner_agent": "planner_agent", "memory_propose": "memory_propose"})
+    g.add_edge("memory_propose", "respond")
+    for node in ("guard_reply", "ask_clarify", "open_hospital_conversation", "hospital_subgraph"):
+        g.add_edge(node, "respond")
+    g.add_edge("respond", END)
+    return g
+
+
+def compile_graph(checkpointer=None, store=None):
+    """checkpointer·store 는 harness.memory.open_checkpointer_and_store() 로 연다."""
+    return build_main_graph().compile(checkpointer=checkpointer, store=store)

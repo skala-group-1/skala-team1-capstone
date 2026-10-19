@@ -1,0 +1,11 @@
+# agent/Dockerfile 전용 (BuildKit: <Dockerfile>.dockerignore). context 가 저장소 루트라 다른 파트 폴더는 제외
+**/.git
+**/.venv
+**/__pycache__
+**/.pytest_cache
+**/node_modules
+.env
+.env.*
+*.pdf
+frontend/
+backend/

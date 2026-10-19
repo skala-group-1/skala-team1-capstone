@@ -1,0 +1,94 @@
+[
+ {
+  "id": 1,
+  "user_id": 3,
+  "hospital_id": 1,
+  "counselor_id": 7,
+  "conversation_id": "14b46725-af1f-421e-9e26-b61de7a4e064",
+  "status": "ACTIVE",
+  "customer_locale": "zh",
+  "summary_card": {
+   "procedure_code": "DOUBLE_EYELID_NONINCISION",
+   "procedure_name": "埋线双眼皮",
+   "preferred_areas": [
+    "GANGNAM",
+    "MYEONGDONG"
+   ],
+   "preferred_dates": [
+    "2026-10-21",
+    "2026-10-27"
+   ],
+   "concerns": [
+    "恢复期",
+    "回国航班时间",
+    "价格是否含税"
+   ],
+   "language": "zh"
+  },
+  "summary_card_ko": {
+   "procedure_code": "DOUBLE_EYELID_NONINCISION",
+   "procedure_name": "매몰법 쌍꺼풀",
+   "preferred_areas": [
+    "강남",
+    "명동"
+   ],
+   "preferred_dates": [
+    "2026-10-21",
+    "2026-10-27"
+   ],
+   "concerns": [
+    "회복 기간",
+    "귀국 비행 일정",
+    "부가세 포함 여부"
+   ],
+   "language": "zh"
+  },
+  "consent_at": "2026-10-20T09:04:00+09:00",
+  "created_at": "2026-10-20T09:05:00+09:00",
+  "closed_at": null
+ },
+ {
+  "id": 2,
+  "user_id": 5,
+  "hospital_id": 1,
+  "counselor_id": null,
+  "conversation_id": "c531e074-dbd1-492c-9ca3-2e67670d0f86",
+  "status": "WAITING",
+  "customer_locale": "ja",
+  "summary_card": {
+   "procedure_code": "JAW_BOTOX",
+   "procedure_name": "エラボトックス",
+   "preferred_areas": [
+    "GANGNAM"
+   ],
+   "preferred_dates": [
+    "2026-10-21",
+    "2026-10-21"
+   ],
+   "concerns": [
+    "効果の持続期間",
+    "日本語の通訳"
+   ],
+   "language": "ja"
+  },
+  "summary_card_ko": {
+   "procedure_code": "JAW_BOTOX",
+   "procedure_name": "사각턱 보톡스",
+   "preferred_areas": [
+    "강남"
+   ],
+   "preferred_dates": [
+    "2026-10-21",
+    "2026-10-21"
+   ],
+   "concerns": [
+    "효과 지속 기간",
+    "일본어 통역"
+   ],
+   "language": "ja"
+  },
+  "consent_at": "2026-10-20T09:39:00+09:00",
+  "created_at": "2026-10-20T09:40:00+09:00",
+  "closed_at": null
+ }
+]

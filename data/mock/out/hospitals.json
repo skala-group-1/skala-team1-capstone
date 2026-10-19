@@ -1,0 +1,2646 @@
+[
+ {
+  "id": 1,
+  "name_ko": "도담솔 성형외과·피부과의원",
+  "name_en": "Dodamsol Plastic Surgery & Dermatology",
+  "name_zh": "道淡松整形皮肤科诊所",
+  "name_ja": "ドダムソル美容外科・皮膚科クリニック",
+  "category": "BOTH",
+  "area_code": "GANGNAM",
+  "address_ko": "서울특별시 강남구 역삼로 520, 11층",
+  "address_en": "11F, 520 Yeoksam-ro, Gangnam-gu, Seoul",
+  "lat": 37.496891,
+  "lng": 127.024892,
+  "phone": "02-0000-1001",
+  "open_hours": {
+   "mon": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "tue": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "wed": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "thu": {
+    "open": "10:00",
+    "close": "21:00"
+   },
+   "fri": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "sat": {
+    "open": "10:00",
+    "close": "16:00"
+   },
+   "sun": {
+    "open": "11:00",
+    "close": "16:00"
+   }
+  },
+  "supported_languages": [
+   "ko",
+   "en",
+   "zh",
+   "ja"
+  ],
+  "has_interpreter": true,
+  "verified_at": "2026-08-28",
+  "description_ko": "강남에 위치한 성형외과·피부과 의원입니다. 성형 수술과 피부 시술을 한 곳에서 상담할 수 있습니다.",
+  "description_en": "A plastic surgery & dermatology clinic in Gangnam. Consult on both surgery and skin treatments in one place.",
+  "description_zh": "位于江南的整形外科及皮肤科诊所。可在一处同时咨询整形手术和皮肤项目。",
+  "description_ja": "江南にある美容外科・皮膚科クリニックです。整形手術と肌施術を一か所で相談できます。"
+ },
+ {
+  "id": 2,
+  "name_ko": "새봄결 피부과의원",
+  "name_en": "Saebomgyeol Dermatology Clinic",
+  "name_zh": "新春洁皮肤科诊所",
+  "name_ja": "セボムギョル皮膚科クリニック",
+  "category": "DERMA",
+  "area_code": "MYEONGDONG",
+  "address_ko": "서울특별시 중구 명동길 332, 9층",
+  "address_en": "9F, 332 Myeongdong-gil, Jung-gu, Seoul",
+  "lat": 37.567033,
+  "lng": 126.98573,
+  "phone": "02-0000-1002",
+  "open_hours": {
+   "mon": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "tue": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "wed": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "thu": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "fri": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "sat": {
+    "open": "11:00",
+    "close": "18:00"
+   },
+   "sun": {
+    "open": "11:00",
+    "close": "17:00"
+   }
+  },
+  "supported_languages": [
+   "ko",
+   "en",
+   "zh",
+   "ja"
+  ],
+  "has_interpreter": true,
+  "verified_at": "2026-10-13",
+  "description_ko": "명동에 위치한 피부과 의원입니다. 리프팅과 스킨부스터 시술을 중심으로 진료합니다.",
+  "description_en": "A dermatology clinic in Myeongdong. Focuses on lifting and skin-booster treatments.",
+  "description_zh": "位于明洞的皮肤科诊所。以提升和皮肤管理项目为主。",
+  "description_ja": "明洞にある皮膚科クリニックです。リフティングとスキンブースター施術を中心に診療しています。"
+ },
+ {
+  "id": 3,
+  "name_ko": "비아솔 성형외과의원",
+  "name_en": "Biasol Plastic Surgery Clinic",
+  "name_zh": "碧雅松整形外科诊所",
+  "name_ja": "ビアソル美容外科クリニック",
+  "category": "PLASTIC",
+  "area_code": "SINSA",
+  "address_ko": "서울특별시 강남구 논현로 246, 2층",
+  "address_en": "2F, 246 Nonhyeon-ro, Gangnam-gu, Seoul",
+  "lat": 37.519876,
+  "lng": 127.017085,
+  "phone": "02-0000-1003",
+  "open_hours": {
+   "mon": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "tue": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "wed": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "thu": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "fri": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "sat": {
+    "open": "10:00",
+    "close": "16:00"
+   },
+   "sun": null
+  },
+  "supported_languages": [
+   "ko",
+   "en",
+   "zh",
+   "ja"
+  ],
+  "has_interpreter": true,
+  "verified_at": "2026-08-17",
+  "description_ko": "신사에 위치한 성형외과 의원입니다. 수술 후 회복 관리 프로그램을 운영합니다.",
+  "description_en": "A plastic surgery clinic in Sinsa. Runs a post-operative recovery care program.",
+  "description_zh": "位于新沙的整形外科诊所。提供术后恢复管理项目。",
+  "description_ja": "新沙にある美容外科クリニックです。術後のリカバリーケアプログラムを運営しています。"
+ },
+ {
+  "id": 4,
+  "name_ko": "서린 피부과의원",
+  "name_en": "Seorin Dermatology Clinic",
+  "name_zh": "瑞琳皮肤科诊所",
+  "name_ja": "ソリン皮膚科クリニック",
+  "category": "DERMA",
+  "area_code": "CHEONGDAM",
+  "address_ko": "서울특별시 강남구 도산대로 71, 14층",
+  "address_en": "14F, 71 Dosan-daero, Gangnam-gu, Seoul",
+  "lat": 37.528415,
+  "lng": 127.051331,
+  "phone": "02-0000-1004",
+  "open_hours": {
+   "mon": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "tue": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "wed": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "thu": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "fri": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "sat": {
+    "open": "10:00",
+    "close": "17:00"
+   },
+   "sun": null
+  },
+  "supported_languages": [
+   "ko",
+   "en",
+   "zh"
+  ],
+  "has_interpreter": false,
+  "verified_at": "2026-05-15",
+  "description_ko": "청담에 위치한 피부과 의원입니다. 레이저 토닝과 색소 치료에 강점이 있습니다.",
+  "description_en": "A dermatology clinic in Cheongdam. Known for laser toning and pigmentation care.",
+  "description_zh": "位于清潭的皮肤科诊所。擅长激光嫩肤和色素治疗。",
+  "description_ja": "清潭にある皮膚科クリニックです。レーザートーニングとシミ治療に力を入れています。"
+ },
+ {
+  "id": 5,
+  "name_ko": "루미엘 피부과의원",
+  "name_en": "Lumiel Dermatology Clinic",
+  "name_zh": "露米艾皮肤科诊所",
+  "name_ja": "ルミエル皮膚科クリニック",
+  "category": "DERMA",
+  "area_code": "APGUJEONG",
+  "address_ko": "서울특별시 강남구 언주로 206, 13층",
+  "address_en": "13F, 206 Eonju-ro, Gangnam-gu, Seoul",
+  "lat": 37.523612,
+  "lng": 127.024568,
+  "phone": "02-0000-1005",
+  "open_hours": {
+   "mon": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "tue": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "wed": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "thu": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "fri": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "sat": {
+    "open": "11:00",
+    "close": "18:00"
+   },
+   "sun": {
+    "open": "11:00",
+    "close": "17:00"
+   }
+  },
+  "supported_languages": [
+   "ko",
+   "en"
+  ],
+  "has_interpreter": false,
+  "verified_at": "2026-08-15",
+  "description_ko": "압구정에 위치한 피부과 의원입니다. 리프팅과 스킨부스터 시술을 중심으로 진료합니다.",
+  "description_en": "A dermatology clinic in Apgujeong. Focuses on lifting and skin-booster treatments.",
+  "description_zh": "位于狎鸥亭的皮肤科诊所。以提升和皮肤管理项目为主。",
+  "description_ja": "狎鴎亭にある皮膚科クリニックです。リフティングとスキンブースター施術を中心に診療しています。"
+ },
+ {
+  "id": 6,
+  "name_ko": "미르엘 성형외과·피부과의원",
+  "name_en": "Mirel Plastic Surgery & Dermatology",
+  "name_zh": "美尔艾整形皮肤科诊所",
+  "name_ja": "ミレル美容外科・皮膚科クリニック",
+  "category": "BOTH",
+  "area_code": "APGUJEONG",
+  "address_ko": "서울특별시 강남구 언주로 236, 11층",
+  "address_en": "11F, 236 Eonju-ro, Gangnam-gu, Seoul",
+  "lat": 37.525328,
+  "lng": 127.028283,
+  "phone": "02-0000-1006",
+  "open_hours": {
+   "mon": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "tue": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "wed": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "thu": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "fri": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "sat": {
+    "open": "10:00",
+    "close": "16:00"
+   },
+   "sun": null
+  },
+  "supported_languages": [
+   "ko",
+   "en",
+   "zh"
+  ],
+  "has_interpreter": true,
+  "verified_at": "2026-09-29",
+  "description_ko": "압구정에 위치한 성형외과·피부과 의원입니다. 성형 수술과 피부 시술을 한 곳에서 상담할 수 있습니다.",
+  "description_en": "A plastic surgery & dermatology clinic in Apgujeong. Consult on both surgery and skin treatments in one place.",
+  "description_zh": "位于狎鸥亭的整形外科及皮肤科诊所。可在一处同时咨询整形手术和皮肤项目。",
+  "description_ja": "狎鴎亭にある美容外科・皮膚科クリニックです。整形手術と肌施術を一か所で相談できます。"
+ },
+ {
+  "id": 7,
+  "name_ko": "해솔린 성형외과의원",
+  "name_en": "Haesolin Plastic Surgery Clinic",
+  "name_zh": "海松琳整形外科诊所",
+  "name_ja": "ヘソリン美容外科クリニック",
+  "category": "PLASTIC",
+  "area_code": "GANGNAM",
+  "address_ko": "서울특별시 강남구 테헤란로 485, 5층",
+  "address_en": "5F, 485 Teheran-ro, Gangnam-gu, Seoul",
+  "lat": 37.500811,
+  "lng": 127.024033,
+  "phone": "02-0000-1007",
+  "open_hours": {
+   "mon": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "tue": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "wed": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "thu": {
+    "open": "10:00",
+    "close": "21:00"
+   },
+   "fri": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "sat": {
+    "open": "10:00",
+    "close": "16:00"
+   },
+   "sun": {
+    "open": "11:00",
+    "close": "16:00"
+   }
+  },
+  "supported_languages": [
+   "ko",
+   "zh",
+   "ja"
+  ],
+  "has_interpreter": true,
+  "verified_at": "2026-07-04",
+  "description_ko": "강남에 위치한 성형외과 의원입니다. 안면윤곽과 지방 성형 수술을 진료합니다.",
+  "description_en": "A plastic surgery clinic in Gangnam. Performs facial contouring and fat-related procedures.",
+  "description_zh": "位于江南的整形外科诊所。提供面部轮廓及脂肪相关手术。",
+  "description_ja": "江南にある美容外科クリニックです。輪郭形成と脂肪関連の手術を行っています。"
+ },
+ {
+  "id": 8,
+  "name_ko": "예담린 성형외과의원",
+  "name_en": "Yedamrin Plastic Surgery Clinic",
+  "name_zh": "艺潭琳整形外科诊所",
+  "name_ja": "イェダムリン美容外科クリニック",
+  "category": "PLASTIC",
+  "area_code": "SINSA",
+  "address_ko": "서울특별시 강남구 강남대로 101, 2층",
+  "address_en": "2F, 101 Gangnam-daero, Gangnam-gu, Seoul",
+  "lat": 37.513768,
+  "lng": 127.020101,
+  "phone": "02-0000-1008",
+  "open_hours": {
+   "mon": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "tue": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "wed": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "thu": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "fri": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "sat": {
+    "open": "10:00",
+    "close": "17:00"
+   },
+   "sun": null
+  },
+  "supported_languages": [
+   "ko",
+   "en",
+   "zh"
+  ],
+  "has_interpreter": true,
+  "verified_at": "2026-09-12",
+  "description_ko": "신사에 위치한 성형외과 의원입니다. 안면윤곽과 지방 성형 수술을 진료합니다.",
+  "description_en": "A plastic surgery clinic in Sinsa. Performs facial contouring and fat-related procedures.",
+  "description_zh": "位于新沙的整形外科诊所。提供面部轮廓及脂肪相关手术。",
+  "description_ja": "新沙にある美容外科クリニックです。輪郭形成と脂肪関連の手術を行っています。"
+ },
+ {
+  "id": 9,
+  "name_ko": "수아결 피부과의원",
+  "name_en": "Suagyeol Dermatology Clinic",
+  "name_zh": "秀雅洁皮肤科诊所",
+  "name_ja": "スアギョル皮膚科クリニック",
+  "category": "DERMA",
+  "area_code": "GANGNAM",
+  "address_ko": "서울특별시 강남구 강남대로 454, 14층",
+  "address_en": "14F, 454 Gangnam-daero, Gangnam-gu, Seoul",
+  "lat": 37.497151,
+  "lng": 127.027451,
+  "phone": "02-0000-1009",
+  "open_hours": {
+   "mon": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "tue": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "wed": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "thu": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "fri": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "sat": {
+    "open": "10:00",
+    "close": "16:00"
+   },
+   "sun": null
+  },
+  "supported_languages": [
+   "ko",
+   "ja"
+  ],
+  "has_interpreter": false,
+  "verified_at": "2026-08-18",
+  "description_ko": "강남에 위치한 피부과 의원입니다. 리프팅과 스킨부스터 시술을 중심으로 진료합니다.",
+  "description_en": "A dermatology clinic in Gangnam. Focuses on lifting and skin-booster treatments.",
+  "description_zh": "位于江南的皮肤科诊所。以提升和皮肤管理项目为主。",
+  "description_ja": "江南にある皮膚科クリニックです。リフティングとスキンブースター施術を中心に診療しています。"
+ },
+ {
+  "id": 10,
+  "name_ko": "하늘결 피부과의원",
+  "name_en": "Haneulgyeol Dermatology Clinic",
+  "name_zh": "天纹皮肤科诊所",
+  "name_ja": "ハヌルギョル皮膚科クリニック",
+  "category": "DERMA",
+  "area_code": "CHEONGDAM",
+  "address_ko": "서울특별시 강남구 도산대로 61, 4층",
+  "address_en": "4F, 61 Dosan-daero, Gangnam-gu, Seoul",
+  "lat": 37.526447,
+  "lng": 127.045138,
+  "phone": "02-0000-1010",
+  "open_hours": {
+   "mon": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "tue": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "wed": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "thu": {
+    "open": "10:00",
+    "close": "21:00"
+   },
+   "fri": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "sat": {
+    "open": "10:00",
+    "close": "16:00"
+   },
+   "sun": {
+    "open": "11:00",
+    "close": "16:00"
+   }
+  },
+  "supported_languages": [
+   "ko",
+   "en",
+   "ja"
+  ],
+  "has_interpreter": false,
+  "verified_at": "2026-05-28",
+  "description_ko": "청담에 위치한 피부과 의원입니다. 보톡스·필러 등 쁘띠 시술을 빠르게 받을 수 있습니다.",
+  "description_en": "A dermatology clinic in Cheongdam. Offers quick injectables such as toxin and filler.",
+  "description_zh": "位于清潭的皮肤科诊所。可快速进行肉毒素、玻尿酸等微整形项目。",
+  "description_ja": "清潭にある皮膚科クリニックです。ボトックス・フィラーなどのプチ施術を手軽に受けられます。"
+ },
+ {
+  "id": 11,
+  "name_ko": "제니엘 성형외과·피부과의원",
+  "name_en": "Jeniel Plastic Surgery & Dermatology",
+  "name_zh": "洁妮尔整形皮肤科诊所",
+  "name_ja": "ジェニエル美容外科・皮膚科クリニック",
+  "category": "BOTH",
+  "area_code": "MYEONGDONG",
+  "address_ko": "서울특별시 중구 을지로 223, 2층",
+  "address_en": "2F, 223 Eulji-ro, Jung-gu, Seoul",
+  "lat": 37.560055,
+  "lng": 126.982763,
+  "phone": "02-0000-1011",
+  "open_hours": {
+   "mon": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "tue": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "wed": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "thu": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "fri": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "sat": {
+    "open": "11:00",
+    "close": "18:00"
+   },
+   "sun": {
+    "open": "11:00",
+    "close": "17:00"
+   }
+  },
+  "supported_languages": [
+   "ko",
+   "en",
+   "zh"
+  ],
+  "has_interpreter": true,
+  "verified_at": "2026-06-04",
+  "description_ko": "명동에 위치한 성형외과·피부과 의원입니다. 성형 수술과 피부 시술을 한 곳에서 상담할 수 있습니다.",
+  "description_en": "A plastic surgery & dermatology clinic in Myeongdong. Consult on both surgery and skin treatments in one place.",
+  "description_zh": "位于明洞的整形外科及皮肤科诊所。可在一处同时咨询整形手术和皮肤项目。",
+  "description_ja": "明洞にある美容外科・皮膚科クリニックです。整形手術と肌施術を一か所で相談できます。"
+ },
+ {
+  "id": 12,
+  "name_ko": "나린채 성형외과의원",
+  "name_en": "Narinchae Plastic Surgery Clinic",
+  "name_zh": "娜琳彩整形外科诊所",
+  "name_ja": "ナリンチェ美容外科クリニック",
+  "category": "PLASTIC",
+  "area_code": "GANGNAM",
+  "address_ko": "서울특별시 강남구 테헤란로 71, 11층",
+  "address_en": "11F, 71 Teheran-ro, Gangnam-gu, Seoul",
+  "lat": 37.498855,
+  "lng": 127.026954,
+  "phone": "02-0000-1012",
+  "open_hours": {
+   "mon": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "tue": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "wed": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "thu": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "fri": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "sat": {
+    "open": "11:00",
+    "close": "18:00"
+   },
+   "sun": {
+    "open": "11:00",
+    "close": "17:00"
+   }
+  },
+  "supported_languages": [
+   "ko",
+   "en",
+   "zh"
+  ],
+  "has_interpreter": true,
+  "verified_at": "2026-05-18",
+  "description_ko": "강남에 위치한 성형외과 의원입니다. 눈·코 성형을 중심으로 1:1 맞춤 상담을 제공합니다.",
+  "description_en": "A plastic surgery clinic in Gangnam. Offers one-to-one consultations focused on eye and nose surgery.",
+  "description_zh": "位于江南的整形外科诊所。以眼鼻整形为主，提供一对一定制咨询。",
+  "description_ja": "江南にある美容外科クリニックです。目・鼻の整形を中心に1対1のカウンセリングを行っています。"
+ },
+ {
+  "id": 13,
+  "name_ko": "담율 피부과의원",
+  "name_en": "Damyul Dermatology Clinic",
+  "name_zh": "潭律皮肤科诊所",
+  "name_ja": "ダミュル皮膚科クリニック",
+  "category": "DERMA",
+  "area_code": "GANGNAM",
+  "address_ko": "서울특별시 강남구 역삼로 268, 5층",
+  "address_en": "5F, 268 Yeoksam-ro, Gangnam-gu, Seoul",
+  "lat": 37.497566,
+  "lng": 127.031588,
+  "phone": "02-0000-1013",
+  "open_hours": {
+   "mon": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "tue": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "wed": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "thu": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "fri": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "sat": {
+    "open": "09:30",
+    "close": "15:00"
+   },
+   "sun": null
+  },
+  "supported_languages": [
+   "ko",
+   "en",
+   "zh",
+   "ja"
+  ],
+  "has_interpreter": true,
+  "verified_at": "2026-09-29",
+  "description_ko": "강남에 위치한 피부과 의원입니다. 리프팅과 스킨부스터 시술을 중심으로 진료합니다.",
+  "description_en": "A dermatology clinic in Gangnam. Focuses on lifting and skin-booster treatments.",
+  "description_zh": "位于江南的皮肤科诊所。以提升和皮肤管理项目为主。",
+  "description_ja": "江南にある皮膚科クリニックです。リフティングとスキンブースター施術を中心に診療しています。"
+ },
+ {
+  "id": 14,
+  "name_ko": "시엘로아 피부과의원",
+  "name_en": "Cieloa Dermatology Clinic",
+  "name_zh": "希艾洛雅皮肤科诊所",
+  "name_ja": "シエロア皮膚科クリニック",
+  "category": "DERMA",
+  "area_code": "MYEONGDONG",
+  "address_ko": "서울특별시 중구 명동길 76, 10층",
+  "address_en": "10F, 76 Myeongdong-gil, Jung-gu, Seoul",
+  "lat": 37.56627,
+  "lng": 126.984328,
+  "phone": "02-0000-1014",
+  "open_hours": {
+   "mon": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "tue": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "wed": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "thu": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "fri": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "sat": {
+    "open": "10:00",
+    "close": "17:00"
+   },
+   "sun": null
+  },
+  "supported_languages": [
+   "ko",
+   "en",
+   "zh"
+  ],
+  "has_interpreter": false,
+  "verified_at": "2026-09-07",
+  "description_ko": "명동에 위치한 피부과 의원입니다. 레이저 토닝과 색소 치료에 강점이 있습니다.",
+  "description_en": "A dermatology clinic in Myeongdong. Known for laser toning and pigmentation care.",
+  "description_zh": "位于明洞的皮肤科诊所。擅长激光嫩肤和色素治疗。",
+  "description_ja": "明洞にある皮膚科クリニックです。レーザートーニングとシミ治療に力を入れています。"
+ },
+ {
+  "id": 15,
+  "name_ko": "여울담 성형외과·피부과의원",
+  "name_en": "Yeouldam Plastic Surgery & Dermatology",
+  "name_zh": "汝蔚潭整形皮肤科诊所",
+  "name_ja": "ヨウルダム美容外科・皮膚科クリニック",
+  "category": "BOTH",
+  "area_code": "GANGNAM",
+  "address_ko": "서울특별시 강남구 강남대로 307, 12층",
+  "address_en": "12F, 307 Gangnam-daero, Gangnam-gu, Seoul",
+  "lat": 37.499641,
+  "lng": 127.025229,
+  "phone": "02-0000-1015",
+  "open_hours": {
+   "mon": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "tue": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "wed": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "thu": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "fri": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "sat": {
+    "open": "11:00",
+    "close": "18:00"
+   },
+   "sun": {
+    "open": "11:00",
+    "close": "17:00"
+   }
+  },
+  "supported_languages": [
+   "ko",
+   "en",
+   "zh",
+   "ja"
+  ],
+  "has_interpreter": true,
+  "verified_at": "2026-08-06",
+  "description_ko": "강남에 위치한 성형외과·피부과 의원입니다. 성형 수술과 피부 시술을 한 곳에서 상담할 수 있습니다.",
+  "description_en": "A plastic surgery & dermatology clinic in Gangnam. Consult on both surgery and skin treatments in one place.",
+  "description_zh": "位于江南的整形外科及皮肤科诊所。可在一处同时咨询整形手术和皮肤项目。",
+  "description_ja": "江南にある美容外科・皮膚科クリニックです。整形手術と肌施術を一か所で相談できます。"
+ },
+ {
+  "id": 16,
+  "name_ko": "리안솔 피부과의원",
+  "name_en": "Liansol Dermatology Clinic",
+  "name_zh": "丽安松皮肤科诊所",
+  "name_ja": "リアンソル皮膚科クリニック",
+  "category": "DERMA",
+  "area_code": "HONGDAE",
+  "address_ko": "서울특별시 마포구 홍익로 271, 10층",
+  "address_en": "10F, 271 Hongik-ro, Mapo-gu, Seoul",
+  "lat": 37.554968,
+  "lng": 126.919047,
+  "phone": "02-0000-1016",
+  "open_hours": {
+   "mon": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "tue": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "wed": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "thu": {
+    "open": "10:00",
+    "close": "21:00"
+   },
+   "fri": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "sat": {
+    "open": "10:00",
+    "close": "16:00"
+   },
+   "sun": {
+    "open": "11:00",
+    "close": "16:00"
+   }
+  },
+  "supported_languages": [
+   "ko",
+   "en"
+  ],
+  "has_interpreter": true,
+  "verified_at": "2026-10-06",
+  "description_ko": "홍대에 위치한 피부과 의원입니다. 리프팅과 스킨부스터 시술을 중심으로 진료합니다.",
+  "description_en": "A dermatology clinic in Hongdae. Focuses on lifting and skin-booster treatments.",
+  "description_zh": "位于弘大的皮肤科诊所。以提升和皮肤管理项目为主。",
+  "description_ja": "弘大にある皮膚科クリニックです。リフティングとスキンブースター施術を中心に診療しています。"
+ },
+ {
+  "id": 17,
+  "name_ko": "에스린 성형외과의원",
+  "name_en": "Esrin Plastic Surgery Clinic",
+  "name_zh": "艾斯琳整形外科诊所",
+  "name_ja": "エスリン美容外科クリニック",
+  "category": "PLASTIC",
+  "area_code": "APGUJEONG",
+  "address_ko": "서울특별시 강남구 논현로 166, 13층",
+  "address_en": "13F, 166 Nonhyeon-ro, Gangnam-gu, Seoul",
+  "lat": 37.52752,
+  "lng": 127.027838,
+  "phone": "02-0000-1017",
+  "open_hours": {
+   "mon": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "tue": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "wed": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "thu": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "fri": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "sat": {
+    "open": "10:00",
+    "close": "17:00"
+   },
+   "sun": null
+  },
+  "supported_languages": [
+   "ko",
+   "en"
+  ],
+  "has_interpreter": true,
+  "verified_at": "2026-07-15",
+  "description_ko": "압구정에 위치한 성형외과 의원입니다. 수술 후 회복 관리 프로그램을 운영합니다.",
+  "description_en": "A plastic surgery clinic in Apgujeong. Runs a post-operative recovery care program.",
+  "description_zh": "位于狎鸥亭的整形外科诊所。提供术后恢复管理项目。",
+  "description_ja": "狎鴎亭にある美容外科クリニックです。術後のリカバリーケアプログラムを運営しています。"
+ },
+ {
+  "id": 18,
+  "name_ko": "은솔채 성형외과의원",
+  "name_en": "Eunsolchae Plastic Surgery Clinic",
+  "name_zh": "银松彩整形外科诊所",
+  "name_ja": "ウンソルチェ美容外科クリニック",
+  "category": "PLASTIC",
+  "area_code": "GANGNAM",
+  "address_ko": "서울특별시 강남구 강남대로 316, 7층",
+  "address_en": "7F, 316 Gangnam-daero, Gangnam-gu, Seoul",
+  "lat": 37.496729,
+  "lng": 127.028079,
+  "phone": "02-0000-1018",
+  "open_hours": {
+   "mon": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "tue": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "wed": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "thu": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "fri": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "sat": {
+    "open": "10:00",
+    "close": "17:00"
+   },
+   "sun": null
+  },
+  "supported_languages": [
+   "ko"
+  ],
+  "has_interpreter": false,
+  "verified_at": "2026-04-30",
+  "description_ko": "강남에 위치한 성형외과 의원입니다. 눈·코 성형을 중심으로 1:1 맞춤 상담을 제공합니다.",
+  "description_en": "A plastic surgery clinic in Gangnam. Offers one-to-one consultations focused on eye and nose surgery.",
+  "description_zh": "位于江南的整形外科诊所。以眼鼻整形为主，提供一对一定制咨询。",
+  "description_ja": "江南にある美容外科クリニックです。目・鼻の整形を中心に1対1のカウンセリングを行っています。"
+ },
+ {
+  "id": 19,
+  "name_ko": "라온제나 성형외과의원",
+  "name_en": "Raonjena Plastic Surgery Clinic",
+  "name_zh": "乐温洁娜整形外科诊所",
+  "name_ja": "ラオンジェナ美容外科クリニック",
+  "category": "PLASTIC",
+  "area_code": "CHEONGDAM",
+  "address_ko": "서울특별시 강남구 도산대로 159, 5층",
+  "address_en": "5F, 159 Dosan-daero, Gangnam-gu, Seoul",
+  "lat": 37.527118,
+  "lng": 127.050813,
+  "phone": "02-0000-1019",
+  "open_hours": {
+   "mon": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "tue": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "wed": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "thu": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "fri": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "sat": {
+    "open": "10:00",
+    "close": "16:00"
+   },
+   "sun": null
+  },
+  "supported_languages": [
+   "ko"
+  ],
+  "has_interpreter": false,
+  "verified_at": "2026-07-24",
+  "description_ko": "청담에 위치한 성형외과 의원입니다. 안면윤곽과 지방 성형 수술을 진료합니다.",
+  "description_en": "A plastic surgery clinic in Cheongdam. Performs facial contouring and fat-related procedures.",
+  "description_zh": "位于清潭的整形外科诊所。提供面部轮廓及脂肪相关手术。",
+  "description_ja": "清潭にある美容外科クリニックです。輪郭形成と脂肪関連の手術を行っています。"
+ },
+ {
+  "id": 20,
+  "name_ko": "솔빛담 성형외과의원",
+  "name_en": "Solbitdam Plastic Surgery Clinic",
+  "name_zh": "松光潭整形外科诊所",
+  "name_ja": "ソルビッダム美容外科クリニック",
+  "category": "PLASTIC",
+  "area_code": "APGUJEONG",
+  "address_ko": "서울특별시 강남구 압구정로 274, 4층",
+  "address_en": "4F, 274 Apgujeong-ro, Gangnam-gu, Seoul",
+  "lat": 37.525542,
+  "lng": 127.030763,
+  "phone": "02-0000-1020",
+  "open_hours": {
+   "mon": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "tue": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "wed": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "thu": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "fri": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "sat": {
+    "open": "10:00",
+    "close": "17:00"
+   },
+   "sun": null
+  },
+  "supported_languages": [
+   "ko",
+   "zh"
+  ],
+  "has_interpreter": false,
+  "verified_at": "2026-06-22",
+  "description_ko": "압구정에 위치한 성형외과 의원입니다. 안면윤곽과 지방 성형 수술을 진료합니다.",
+  "description_en": "A plastic surgery clinic in Apgujeong. Performs facial contouring and fat-related procedures.",
+  "description_zh": "位于狎鸥亭的整形外科诊所。提供面部轮廓及脂肪相关手术。",
+  "description_ja": "狎鴎亭にある美容外科クリニックです。輪郭形成と脂肪関連の手術を行っています。"
+ },
+ {
+  "id": 21,
+  "name_ko": "소담채 성형외과·피부과의원",
+  "name_en": "Sodamchae Plastic Surgery & Dermatology",
+  "name_zh": "素淡彩整形皮肤科诊所",
+  "name_ja": "ソダムチェ美容外科・皮膚科クリニック",
+  "category": "BOTH",
+  "area_code": "JAMSIL",
+  "address_ko": "서울특별시 송파구 올림픽로 229, 2층",
+  "address_en": "2F, 229 Olympic-ro, Songpa-gu, Seoul",
+  "lat": 37.514736,
+  "lng": 127.102849,
+  "phone": "02-0000-1021",
+  "open_hours": {
+   "mon": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "tue": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "wed": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "thu": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "fri": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "sat": {
+    "open": "09:30",
+    "close": "15:00"
+   },
+   "sun": null
+  },
+  "supported_languages": [
+   "ko",
+   "en",
+   "zh",
+   "ja"
+  ],
+  "has_interpreter": true,
+  "verified_at": "2026-06-09",
+  "description_ko": "잠실에 위치한 성형외과·피부과 의원입니다. 외국인 환자를 위한 통역 상담을 운영합니다.",
+  "description_en": "A plastic surgery & dermatology clinic in Jamsil. Provides interpreter-assisted consultations for international patients.",
+  "description_zh": "位于蚕室的整形外科及皮肤科诊所。为外国患者提供翻译咨询服务。",
+  "description_ja": "蚕室にある美容外科・皮膚科クリニックです。外国人患者向けに通訳付きカウンセリングを行っています。"
+ },
+ {
+  "id": 22,
+  "name_ko": "라임솔 피부과의원",
+  "name_en": "Laimsol Dermatology Clinic",
+  "name_zh": "莱姆松皮肤科诊所",
+  "name_ja": "ライムソル皮膚科クリニック",
+  "category": "DERMA",
+  "area_code": "SINSA",
+  "address_ko": "서울특별시 강남구 논현로 29, 3층",
+  "address_en": "3F, 29 Nonhyeon-ro, Gangnam-gu, Seoul",
+  "lat": 37.518128,
+  "lng": 127.018909,
+  "phone": "02-0000-1022",
+  "open_hours": {
+   "mon": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "tue": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "wed": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "thu": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "fri": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "sat": {
+    "open": "10:00",
+    "close": "16:00"
+   },
+   "sun": null
+  },
+  "supported_languages": [
+   "ko",
+   "zh"
+  ],
+  "has_interpreter": false,
+  "verified_at": "2026-06-28",
+  "description_ko": "신사에 위치한 피부과 의원입니다. 레이저 토닝과 색소 치료에 강점이 있습니다.",
+  "description_en": "A dermatology clinic in Sinsa. Known for laser toning and pigmentation care.",
+  "description_zh": "位于新沙的皮肤科诊所。擅长激光嫩肤和色素治疗。",
+  "description_ja": "新沙にある皮膚科クリニックです。レーザートーニングとシミ治療に力を入れています。"
+ },
+ {
+  "id": 23,
+  "name_ko": "가온누리 피부과의원",
+  "name_en": "Gaonnuri Dermatology Clinic",
+  "name_zh": "佳温努丽皮肤科诊所",
+  "name_ja": "ガオンヌリ皮膚科クリニック",
+  "category": "DERMA",
+  "area_code": "CHEONGDAM",
+  "address_ko": "서울특별시 강남구 압구정로 524, 3층",
+  "address_en": "3F, 524 Apgujeong-ro, Gangnam-gu, Seoul",
+  "lat": 37.526455,
+  "lng": 127.049836,
+  "phone": "02-0000-1023",
+  "open_hours": {
+   "mon": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "tue": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "wed": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "thu": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "fri": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "sat": {
+    "open": "10:00",
+    "close": "16:00"
+   },
+   "sun": null
+  },
+  "supported_languages": [
+   "ko",
+   "en",
+   "ja"
+  ],
+  "has_interpreter": false,
+  "verified_at": "2026-06-02",
+  "description_ko": "청담에 위치한 피부과 의원입니다. 보톡스·필러 등 쁘띠 시술을 빠르게 받을 수 있습니다.",
+  "description_en": "A dermatology clinic in Cheongdam. Offers quick injectables such as toxin and filler.",
+  "description_zh": "位于清潭的皮肤科诊所。可快速进行肉毒素、玻尿酸等微整形项目。",
+  "description_ja": "清潭にある皮膚科クリニックです。ボトックス・フィラーなどのプチ施術を手軽に受けられます。"
+ },
+ {
+  "id": 24,
+  "name_ko": "벨루체 성형외과의원",
+  "name_en": "Beluce Plastic Surgery Clinic",
+  "name_zh": "贝露丝整形外科诊所",
+  "name_ja": "ベルーチェ美容外科クリニック",
+  "category": "PLASTIC",
+  "area_code": "JAMSIL",
+  "address_ko": "서울특별시 송파구 올림픽로 373, 8층",
+  "address_en": "8F, 373 Olympic-ro, Songpa-gu, Seoul",
+  "lat": 37.511774,
+  "lng": 127.099367,
+  "phone": "02-0000-1024",
+  "open_hours": {
+   "mon": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "tue": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "wed": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "thu": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "fri": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "sat": {
+    "open": "10:00",
+    "close": "16:00"
+   },
+   "sun": null
+  },
+  "supported_languages": [
+   "ko",
+   "en",
+   "ja"
+  ],
+  "has_interpreter": true,
+  "verified_at": "2026-08-02",
+  "description_ko": "잠실에 위치한 성형외과 의원입니다. 수술 후 회복 관리 프로그램을 운영합니다.",
+  "description_en": "A plastic surgery clinic in Jamsil. Runs a post-operative recovery care program.",
+  "description_zh": "位于蚕室的整形外科诊所。提供术后恢复管理项目。",
+  "description_ja": "蚕室にある美容外科クリニックです。術後のリカバリーケアプログラムを運営しています。"
+ },
+ {
+  "id": 25,
+  "name_ko": "이든솔 성형외과·피부과의원",
+  "name_en": "Idensol Plastic Surgery & Dermatology",
+  "name_zh": "伊登松整形皮肤科诊所",
+  "name_ja": "イドゥンソル美容外科・皮膚科クリニック",
+  "category": "BOTH",
+  "area_code": "CHEONGDAM",
+  "address_ko": "서울특별시 강남구 도산대로 303, 10층",
+  "address_en": "10F, 303 Dosan-daero, Gangnam-gu, Seoul",
+  "lat": 37.525083,
+  "lng": 127.043903,
+  "phone": "02-0000-1025",
+  "open_hours": {
+   "mon": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "tue": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "wed": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "thu": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "fri": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "sat": {
+    "open": "10:00",
+    "close": "17:00"
+   },
+   "sun": null
+  },
+  "supported_languages": [
+   "ko",
+   "en",
+   "zh"
+  ],
+  "has_interpreter": true,
+  "verified_at": "2026-08-01",
+  "description_ko": "청담에 위치한 성형외과·피부과 의원입니다. 외국인 환자를 위한 통역 상담을 운영합니다.",
+  "description_en": "A plastic surgery & dermatology clinic in Cheongdam. Provides interpreter-assisted consultations for international patients.",
+  "description_zh": "位于清潭的整形外科及皮肤科诊所。为外国患者提供翻译咨询服务。",
+  "description_ja": "清潭にある美容外科・皮膚科クリニックです。外国人患者向けに通訳付きカウンセリングを行っています。"
+ },
+ {
+  "id": 26,
+  "name_ko": "청아린 피부과의원",
+  "name_en": "Cheongarin Dermatology Clinic",
+  "name_zh": "清雅琳皮肤科诊所",
+  "name_ja": "チョンアリン皮膚科クリニック",
+  "category": "DERMA",
+  "area_code": "MYEONGDONG",
+  "address_ko": "서울특별시 중구 을지로 216, 8층",
+  "address_en": "8F, 216 Eulji-ro, Jung-gu, Seoul",
+  "lat": 37.560278,
+  "lng": 126.982824,
+  "phone": "02-0000-1026",
+  "open_hours": {
+   "mon": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "tue": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "wed": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "thu": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "fri": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "sat": {
+    "open": "10:00",
+    "close": "17:00"
+   },
+   "sun": null
+  },
+  "supported_languages": [
+   "ko",
+   "zh",
+   "ja"
+  ],
+  "has_interpreter": true,
+  "verified_at": "2026-09-04",
+  "description_ko": "명동에 위치한 피부과 의원입니다. 보톡스·필러 등 쁘띠 시술을 빠르게 받을 수 있습니다.",
+  "description_en": "A dermatology clinic in Myeongdong. Offers quick injectables such as toxin and filler.",
+  "description_zh": "位于明洞的皮肤科诊所。可快速进行肉毒素、玻尿酸等微整形项目。",
+  "description_ja": "明洞にある皮膚科クリニックです。ボトックス・フィラーなどのプチ施術を手軽に受けられます。"
+ },
+ {
+  "id": 27,
+  "name_ko": "빛나래 성형외과의원",
+  "name_en": "Bitnarae Plastic Surgery Clinic",
+  "name_zh": "光翼整形外科诊所",
+  "name_ja": "ビッナレ美容外科クリニック",
+  "category": "PLASTIC",
+  "area_code": "APGUJEONG",
+  "address_ko": "서울특별시 강남구 언주로 344, 3층",
+  "address_en": "3F, 344 Eonju-ro, Gangnam-gu, Seoul",
+  "lat": 37.530971,
+  "lng": 127.02929,
+  "phone": "02-0000-1027",
+  "open_hours": {
+   "mon": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "tue": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "wed": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "thu": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "fri": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "sat": {
+    "open": "10:00",
+    "close": "17:00"
+   },
+   "sun": null
+  },
+  "supported_languages": [
+   "ko"
+  ],
+  "has_interpreter": true,
+  "verified_at": "2026-10-06",
+  "description_ko": "압구정에 위치한 성형외과 의원입니다. 눈·코 성형을 중심으로 1:1 맞춤 상담을 제공합니다.",
+  "description_en": "A plastic surgery clinic in Apgujeong. Offers one-to-one consultations focused on eye and nose surgery.",
+  "description_zh": "位于狎鸥亭的整形外科诊所。以眼鼻整形为主，提供一对一定制咨询。",
+  "description_ja": "狎鴎亭にある美容外科クリニックです。目・鼻の整形を中心に1対1のカウンセリングを行っています。"
+ },
+ {
+  "id": 28,
+  "name_ko": "하랑 성형외과의원",
+  "name_en": "Harang Plastic Surgery Clinic",
+  "name_zh": "夏朗整形外科诊所",
+  "name_ja": "ハラン美容外科クリニック",
+  "category": "PLASTIC",
+  "area_code": "SINSA",
+  "address_ko": "서울특별시 강남구 도산대로 467, 8층",
+  "address_en": "8F, 467 Dosan-daero, Gangnam-gu, Seoul",
+  "lat": 37.512344,
+  "lng": 127.022408,
+  "phone": "02-0000-1028",
+  "open_hours": {
+   "mon": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "tue": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "wed": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "thu": {
+    "open": "10:00",
+    "close": "21:00"
+   },
+   "fri": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "sat": {
+    "open": "10:00",
+    "close": "16:00"
+   },
+   "sun": {
+    "open": "11:00",
+    "close": "16:00"
+   }
+  },
+  "supported_languages": [
+   "ko"
+  ],
+  "has_interpreter": false,
+  "verified_at": "2026-05-03",
+  "description_ko": "신사에 위치한 성형외과 의원입니다. 수술 후 회복 관리 프로그램을 운영합니다.",
+  "description_en": "A plastic surgery clinic in Sinsa. Runs a post-operative recovery care program.",
+  "description_zh": "位于新沙的整形外科诊所。提供术后恢复管理项目。",
+  "description_ja": "新沙にある美容外科クリニックです。術後のリカバリーケアプログラムを運営しています。"
+ },
+ {
+  "id": 29,
+  "name_ko": "초아린 성형외과의원",
+  "name_en": "Choarin Plastic Surgery Clinic",
+  "name_zh": "楚雅琳整形外科诊所",
+  "name_ja": "チョアリン美容外科クリニック",
+  "category": "PLASTIC",
+  "area_code": "APGUJEONG",
+  "address_ko": "서울특별시 강남구 압구정로 436, 5층",
+  "address_en": "5F, 436 Apgujeong-ro, Gangnam-gu, Seoul",
+  "lat": 37.524167,
+  "lng": 127.028117,
+  "phone": "02-0000-1029",
+  "open_hours": {
+   "mon": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "tue": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "wed": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "thu": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "fri": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "sat": {
+    "open": "10:00",
+    "close": "17:00"
+   },
+   "sun": null
+  },
+  "supported_languages": [
+   "ko",
+   "en"
+  ],
+  "has_interpreter": true,
+  "verified_at": "2026-09-16",
+  "description_ko": "압구정에 위치한 성형외과 의원입니다. 안면윤곽과 지방 성형 수술을 진료합니다.",
+  "description_en": "A plastic surgery clinic in Apgujeong. Performs facial contouring and fat-related procedures.",
+  "description_zh": "位于狎鸥亭的整形外科诊所。提供面部轮廓及脂肪相关手术。",
+  "description_ja": "狎鴎亭にある美容外科クリニックです。輪郭形成と脂肪関連の手術を行っています。"
+ },
+ {
+  "id": 30,
+  "name_ko": "오델린 피부과의원",
+  "name_en": "Odelin Dermatology Clinic",
+  "name_zh": "奥黛琳皮肤科诊所",
+  "name_ja": "オデリン皮膚科クリニック",
+  "category": "DERMA",
+  "area_code": "MYEONGDONG",
+  "address_ko": "서울특별시 중구 을지로 454, 11층",
+  "address_en": "11F, 454 Eulji-ro, Jung-gu, Seoul",
+  "lat": 37.561674,
+  "lng": 126.980678,
+  "phone": "02-0000-1030",
+  "open_hours": {
+   "mon": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "tue": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "wed": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "thu": {
+    "open": "10:00",
+    "close": "21:00"
+   },
+   "fri": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "sat": {
+    "open": "10:00",
+    "close": "16:00"
+   },
+   "sun": {
+    "open": "11:00",
+    "close": "16:00"
+   }
+  },
+  "supported_languages": [
+   "ko",
+   "ja"
+  ],
+  "has_interpreter": false,
+  "verified_at": "2026-06-18",
+  "description_ko": "명동에 위치한 피부과 의원입니다. 레이저 토닝과 색소 치료에 강점이 있습니다.",
+  "description_en": "A dermatology clinic in Myeongdong. Known for laser toning and pigmentation care.",
+  "description_zh": "位于明洞的皮肤科诊所。擅长激光嫩肤和色素治疗。",
+  "description_ja": "明洞にある皮膚科クリニックです。レーザートーニングとシミ治療に力を入れています。"
+ },
+ {
+  "id": 31,
+  "name_ko": "모아엘 피부과의원",
+  "name_en": "Moael Dermatology Clinic",
+  "name_zh": "茉雅艾皮肤科诊所",
+  "name_ja": "モアエル皮膚科クリニック",
+  "category": "DERMA",
+  "area_code": "HONGDAE",
+  "address_ko": "서울특별시 마포구 홍익로 284, 14층",
+  "address_en": "14F, 284 Hongik-ro, Mapo-gu, Seoul",
+  "lat": 37.559444,
+  "lng": 126.918645,
+  "phone": "02-0000-1031",
+  "open_hours": {
+   "mon": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "tue": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "wed": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "thu": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "fri": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "sat": {
+    "open": "09:30",
+    "close": "15:00"
+   },
+   "sun": null
+  },
+  "supported_languages": [
+   "ko",
+   "zh",
+   "ja"
+  ],
+  "has_interpreter": true,
+  "verified_at": "2026-07-24",
+  "description_ko": "홍대에 위치한 피부과 의원입니다. 레이저 토닝과 색소 치료에 강점이 있습니다.",
+  "description_en": "A dermatology clinic in Hongdae. Known for laser toning and pigmentation care.",
+  "description_zh": "位于弘大的皮肤科诊所。擅长激光嫩肤和色素治疗。",
+  "description_ja": "弘大にある皮膚科クリニックです。レーザートーニングとシミ治療に力を入れています。"
+ },
+ {
+  "id": 32,
+  "name_ko": "로하엘 성형외과의원",
+  "name_en": "Rohael Plastic Surgery Clinic",
+  "name_zh": "罗哈艾整形外科诊所",
+  "name_ja": "ロハエル美容外科クリニック",
+  "category": "PLASTIC",
+  "area_code": "GANGNAM",
+  "address_ko": "서울특별시 강남구 테헤란로 237, 8층",
+  "address_en": "8F, 237 Teheran-ro, Gangnam-gu, Seoul",
+  "lat": 37.500563,
+  "lng": 127.026716,
+  "phone": "02-0000-1032",
+  "open_hours": {
+   "mon": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "tue": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "wed": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "thu": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "fri": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "sat": {
+    "open": "11:00",
+    "close": "18:00"
+   },
+   "sun": {
+    "open": "11:00",
+    "close": "17:00"
+   }
+  },
+  "supported_languages": [
+   "ko",
+   "en",
+   "ja"
+  ],
+  "has_interpreter": true,
+  "verified_at": "2026-10-02",
+  "description_ko": "강남에 위치한 성형외과 의원입니다. 눈·코 성형을 중심으로 1:1 맞춤 상담을 제공합니다.",
+  "description_en": "A plastic surgery clinic in Gangnam. Offers one-to-one consultations focused on eye and nose surgery.",
+  "description_zh": "位于江南的整形外科诊所。以眼鼻整形为主，提供一对一定制咨询。",
+  "description_ja": "江南にある美容外科クリニックです。目・鼻の整形を中心に1対1のカウンセリングを行っています。"
+ },
+ {
+  "id": 33,
+  "name_ko": "엘린담 성형외과의원",
+  "name_en": "Ellindam Plastic Surgery Clinic",
+  "name_zh": "艾琳潭整形外科诊所",
+  "name_ja": "エリンダム美容外科クリニック",
+  "category": "PLASTIC",
+  "area_code": "SINSA",
+  "address_ko": "서울특별시 강남구 강남대로 21, 15층",
+  "address_en": "15F, 21 Gangnam-daero, Gangnam-gu, Seoul",
+  "lat": 37.51828,
+  "lng": 127.020769,
+  "phone": "02-0000-1033",
+  "open_hours": {
+   "mon": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "tue": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "wed": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "thu": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "fri": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "sat": {
+    "open": "09:30",
+    "close": "15:00"
+   },
+   "sun": null
+  },
+  "supported_languages": [
+   "ko"
+  ],
+  "has_interpreter": false,
+  "verified_at": "2026-07-02",
+  "description_ko": "신사에 위치한 성형외과 의원입니다. 수술 후 회복 관리 프로그램을 운영합니다.",
+  "description_en": "A plastic surgery clinic in Sinsa. Runs a post-operative recovery care program.",
+  "description_zh": "位于新沙的整形外科诊所。提供术后恢复管理项目。",
+  "description_ja": "新沙にある美容外科クリニックです。術後のリカバリーケアプログラムを運営しています。"
+ },
+ {
+  "id": 34,
+  "name_ko": "온유담 성형외과의원",
+  "name_en": "Onyudam Plastic Surgery Clinic",
+  "name_zh": "温柔潭整形外科诊所",
+  "name_ja": "オニュダム美容外科クリニック",
+  "category": "PLASTIC",
+  "area_code": "SINSA",
+  "address_ko": "서울특별시 강남구 강남대로 226, 9층",
+  "address_en": "9F, 226 Gangnam-daero, Gangnam-gu, Seoul",
+  "lat": 37.520146,
+  "lng": 127.020673,
+  "phone": "02-0000-1034",
+  "open_hours": {
+   "mon": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "tue": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "wed": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "thu": {
+    "open": "10:00",
+    "close": "21:00"
+   },
+   "fri": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "sat": {
+    "open": "10:00",
+    "close": "16:00"
+   },
+   "sun": {
+    "open": "11:00",
+    "close": "16:00"
+   }
+  },
+  "supported_languages": [
+   "ko",
+   "en",
+   "zh",
+   "ja"
+  ],
+  "has_interpreter": true,
+  "verified_at": "2026-06-20",
+  "description_ko": "신사에 위치한 성형외과 의원입니다. 눈·코 성형을 중심으로 1:1 맞춤 상담을 제공합니다.",
+  "description_en": "A plastic surgery clinic in Sinsa. Offers one-to-one consultations focused on eye and nose surgery.",
+  "description_zh": "位于新沙的整形外科诊所。以眼鼻整形为主，提供一对一定制咨询。",
+  "description_ja": "新沙にある美容外科クリニックです。目・鼻の整形を中心に1対1のカウンセリングを行っています。"
+ },
+ {
+  "id": 35,
+  "name_ko": "뮤엘담 성형외과·피부과의원",
+  "name_en": "Mueldam Plastic Surgery & Dermatology",
+  "name_zh": "慕艾潭整形皮肤科诊所",
+  "name_ja": "ミュエルダム美容外科・皮膚科クリニック",
+  "category": "BOTH",
+  "area_code": "HONGDAE",
+  "address_ko": "서울특별시 마포구 와우산로 28, 3층",
+  "address_en": "3F, 28 Wausan-ro, Mapo-gu, Seoul",
+  "lat": 37.555,
+  "lng": 126.925037,
+  "phone": "02-0000-1035",
+  "open_hours": {
+   "mon": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "tue": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "wed": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "thu": {
+    "open": "10:00",
+    "close": "21:00"
+   },
+   "fri": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "sat": {
+    "open": "10:00",
+    "close": "16:00"
+   },
+   "sun": {
+    "open": "11:00",
+    "close": "16:00"
+   }
+  },
+  "supported_languages": [
+   "ko",
+   "en",
+   "zh",
+   "ja"
+  ],
+  "has_interpreter": true,
+  "verified_at": "2026-06-23",
+  "description_ko": "홍대에 위치한 성형외과·피부과 의원입니다. 외국인 환자를 위한 통역 상담을 운영합니다.",
+  "description_en": "A plastic surgery & dermatology clinic in Hongdae. Provides interpreter-assisted consultations for international patients.",
+  "description_zh": "位于弘大的整形外科及皮肤科诊所。为外国患者提供翻译咨询服务。",
+  "description_ja": "弘大にある美容外科・皮膚科クリニックです。外国人患者向けに通訳付きカウンセリングを行っています。"
+ },
+ {
+  "id": 36,
+  "name_ko": "윤슬빛 성형외과의원",
+  "name_en": "Yunseulbit Plastic Surgery Clinic",
+  "name_zh": "允瑟光整形外科诊所",
+  "name_ja": "ユンスルビッ美容外科クリニック",
+  "category": "PLASTIC",
+  "area_code": "SINSA",
+  "address_ko": "서울특별시 강남구 논현로 432, 6층",
+  "address_en": "6F, 432 Nonhyeon-ro, Gangnam-gu, Seoul",
+  "lat": 37.512622,
+  "lng": 127.016648,
+  "phone": "02-0000-1036",
+  "open_hours": {
+   "mon": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "tue": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "wed": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "thu": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "fri": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "sat": {
+    "open": "09:30",
+    "close": "15:00"
+   },
+   "sun": null
+  },
+  "supported_languages": [
+   "ko",
+   "zh"
+  ],
+  "has_interpreter": true,
+  "verified_at": "2026-09-30",
+  "description_ko": "신사에 위치한 성형외과 의원입니다. 수술 후 회복 관리 프로그램을 운영합니다.",
+  "description_en": "A plastic surgery clinic in Sinsa. Runs a post-operative recovery care program.",
+  "description_zh": "位于新沙的整形外科诊所。提供术后恢复管理项目。",
+  "description_ja": "新沙にある美容外科クリニックです。術後のリカバリーケアプログラムを運営しています。"
+ },
+ {
+  "id": 37,
+  "name_ko": "노을빛 피부과의원",
+  "name_en": "Noeulbit Dermatology Clinic",
+  "name_zh": "霞光皮肤科诊所",
+  "name_ja": "ノウルビッ皮膚科クリニック",
+  "category": "DERMA",
+  "area_code": "MYEONGDONG",
+  "address_ko": "서울특별시 중구 남대문로 205, 15층",
+  "address_en": "15F, 205 Namdaemun-ro, Jung-gu, Seoul",
+  "lat": 37.56165,
+  "lng": 126.981651,
+  "phone": "02-0000-1037",
+  "open_hours": {
+   "mon": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "tue": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "wed": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "thu": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "fri": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "sat": {
+    "open": "11:00",
+    "close": "18:00"
+   },
+   "sun": {
+    "open": "11:00",
+    "close": "17:00"
+   }
+  },
+  "supported_languages": [
+   "ko",
+   "en",
+   "zh",
+   "ja"
+  ],
+  "has_interpreter": true,
+  "verified_at": "2026-06-20",
+  "description_ko": "명동에 위치한 피부과 의원입니다. 보톡스·필러 등 쁘띠 시술을 빠르게 받을 수 있습니다.",
+  "description_en": "A dermatology clinic in Myeongdong. Offers quick injectables such as toxin and filler.",
+  "description_zh": "位于明洞的皮肤科诊所。可快速进行肉毒素、玻尿酸等微整形项目。",
+  "description_ja": "明洞にある皮膚科クリニックです。ボトックス・フィラーなどのプチ施術を手軽に受けられます。"
+ },
+ {
+  "id": 38,
+  "name_ko": "누리안 성형외과·피부과의원",
+  "name_en": "Nurian Plastic Surgery & Dermatology",
+  "name_zh": "努丽安整形皮肤科诊所",
+  "name_ja": "ヌリアン美容外科・皮膚科クリニック",
+  "category": "BOTH",
+  "area_code": "HONGDAE",
+  "address_ko": "서울특별시 마포구 홍익로 118, 14층",
+  "address_en": "14F, 118 Hongik-ro, Mapo-gu, Seoul",
+  "lat": 37.559832,
+  "lng": 126.919587,
+  "phone": "02-0000-1038",
+  "open_hours": {
+   "mon": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "tue": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "wed": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "thu": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "fri": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "sat": {
+    "open": "09:30",
+    "close": "15:00"
+   },
+   "sun": null
+  },
+  "supported_languages": [
+   "ko",
+   "ja"
+  ],
+  "has_interpreter": true,
+  "verified_at": "2026-07-13",
+  "description_ko": "홍대에 위치한 성형외과·피부과 의원입니다. 외국인 환자를 위한 통역 상담을 운영합니다.",
+  "description_en": "A plastic surgery & dermatology clinic in Hongdae. Provides interpreter-assisted consultations for international patients.",
+  "description_zh": "位于弘大的整形外科及皮肤科诊所。为外国患者提供翻译咨询服务。",
+  "description_ja": "弘大にある美容外科・皮膚科クリニックです。外国人患者向けに通訳付きカウンセリングを行っています。"
+ },
+ {
+  "id": 39,
+  "name_ko": "마루엘 성형외과·피부과의원",
+  "name_en": "Maruel Plastic Surgery & Dermatology",
+  "name_zh": "玛如艾整形皮肤科诊所",
+  "name_ja": "マルエル美容外科・皮膚科クリニック",
+  "category": "BOTH",
+  "area_code": "GANGNAM",
+  "address_ko": "서울특별시 강남구 테헤란로 105, 13층",
+  "address_en": "13F, 105 Teheran-ro, Gangnam-gu, Seoul",
+  "lat": 37.499192,
+  "lng": 127.024152,
+  "phone": "02-0000-1039",
+  "open_hours": {
+   "mon": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "tue": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "wed": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "thu": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "fri": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "sat": {
+    "open": "11:00",
+    "close": "18:00"
+   },
+   "sun": {
+    "open": "11:00",
+    "close": "17:00"
+   }
+  },
+  "supported_languages": [
+   "ko"
+  ],
+  "has_interpreter": true,
+  "verified_at": "2026-07-21",
+  "description_ko": "강남에 위치한 성형외과·피부과 의원입니다. 외국인 환자를 위한 통역 상담을 운영합니다.",
+  "description_en": "A plastic surgery & dermatology clinic in Gangnam. Provides interpreter-assisted consultations for international patients.",
+  "description_zh": "位于江南的整形外科及皮肤科诊所。为外国患者提供翻译咨询服务。",
+  "description_ja": "江南にある美容外科・皮膚科クリニックです。外国人患者向けに通訳付きカウンセリングを行っています。"
+ },
+ {
+  "id": 40,
+  "name_ko": "가람채 성형외과·피부과의원",
+  "name_en": "Garamchae Plastic Surgery & Dermatology",
+  "name_zh": "佳蓝彩整形皮肤科诊所",
+  "name_ja": "ガラムチェ美容外科・皮膚科クリニック",
+  "category": "BOTH",
+  "area_code": "APGUJEONG",
+  "address_ko": "서울특별시 강남구 언주로 350, 2층",
+  "address_en": "2F, 350 Eonju-ro, Gangnam-gu, Seoul",
+  "lat": 37.52897,
+  "lng": 127.032124,
+  "phone": "02-0000-1040",
+  "open_hours": {
+   "mon": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "tue": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "wed": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "thu": {
+    "open": "10:00",
+    "close": "21:00"
+   },
+   "fri": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "sat": {
+    "open": "10:00",
+    "close": "16:00"
+   },
+   "sun": {
+    "open": "11:00",
+    "close": "16:00"
+   }
+  },
+  "supported_languages": [
+   "ko",
+   "ja"
+  ],
+  "has_interpreter": false,
+  "verified_at": "2026-06-28",
+  "description_ko": "압구정에 위치한 성형외과·피부과 의원입니다. 성형 수술과 피부 시술을 한 곳에서 상담할 수 있습니다.",
+  "description_en": "A plastic surgery & dermatology clinic in Apgujeong. Consult on both surgery and skin treatments in one place.",
+  "description_zh": "位于狎鸥亭的整形外科及皮肤科诊所。可在一处同时咨询整形手术和皮肤项目。",
+  "description_ja": "狎鴎亭にある美容外科・皮膚科クリニックです。整形手術と肌施術を一か所で相談できます。"
+ },
+ {
+  "id": 41,
+  "name_ko": "라엘린 성형외과의원",
+  "name_en": "Raelin Plastic Surgery Clinic",
+  "name_zh": "拉艾琳整形外科诊所",
+  "name_ja": "ラエリン美容外科クリニック",
+  "category": "PLASTIC",
+  "area_code": "GANGNAM",
+  "address_ko": "서울특별시 강남구 역삼로 552, 14층",
+  "address_en": "14F, 552 Yeoksam-ro, Gangnam-gu, Seoul",
+  "lat": 37.500953,
+  "lng": 127.025551,
+  "phone": "02-0000-1041",
+  "open_hours": {
+   "mon": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "tue": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "wed": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "thu": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "fri": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "sat": {
+    "open": "10:00",
+    "close": "17:00"
+   },
+   "sun": null
+  },
+  "supported_languages": [
+   "ko",
+   "en",
+   "zh"
+  ],
+  "has_interpreter": true,
+  "verified_at": "2026-09-25",
+  "description_ko": "강남에 위치한 성형외과 의원입니다. 안면윤곽과 지방 성형 수술을 진료합니다.",
+  "description_en": "A plastic surgery clinic in Gangnam. Performs facial contouring and fat-related procedures.",
+  "description_zh": "位于江南的整形外科诊所。提供面部轮廓及脂肪相关手术。",
+  "description_ja": "江南にある美容外科クリニックです。輪郭形成と脂肪関連の手術を行っています。"
+ },
+ {
+  "id": 42,
+  "name_ko": "보담엘 피부과의원",
+  "name_en": "Bodamel Dermatology Clinic",
+  "name_zh": "宝潭艾皮肤科诊所",
+  "name_ja": "ボダメル皮膚科クリニック",
+  "category": "DERMA",
+  "area_code": "MYEONGDONG",
+  "address_ko": "서울특별시 중구 퇴계로 389, 7층",
+  "address_en": "7F, 389 Toegye-ro, Jung-gu, Seoul",
+  "lat": 37.566641,
+  "lng": 126.983146,
+  "phone": "02-0000-1042",
+  "open_hours": {
+   "mon": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "tue": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "wed": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "thu": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "fri": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "sat": {
+    "open": "09:30",
+    "close": "15:00"
+   },
+   "sun": null
+  },
+  "supported_languages": [
+   "ko",
+   "en",
+   "ja"
+  ],
+  "has_interpreter": true,
+  "verified_at": "2026-05-18",
+  "description_ko": "명동에 위치한 피부과 의원입니다. 보톡스·필러 등 쁘띠 시술을 빠르게 받을 수 있습니다.",
+  "description_en": "A dermatology clinic in Myeongdong. Offers quick injectables such as toxin and filler.",
+  "description_zh": "位于明洞的皮肤科诊所。可快速进行肉毒素、玻尿酸等微整形项目。",
+  "description_ja": "明洞にある皮膚科クリニックです。ボトックス・フィラーなどのプチ施術を手軽に受けられます。"
+ },
+ {
+  "id": 43,
+  "name_ko": "아라엘 피부과의원",
+  "name_en": "Arael Dermatology Clinic",
+  "name_zh": "雅拉艾皮肤科诊所",
+  "name_ja": "アラエル皮膚科クリニック",
+  "category": "DERMA",
+  "area_code": "GANGNAM",
+  "address_ko": "서울특별시 강남구 테헤란로 88, 5층",
+  "address_en": "5F, 88 Teheran-ro, Gangnam-gu, Seoul",
+  "lat": 37.496254,
+  "lng": 127.026835,
+  "phone": "02-0000-1043",
+  "open_hours": {
+   "mon": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "tue": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "wed": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "thu": {
+    "open": "10:00",
+    "close": "21:00"
+   },
+   "fri": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "sat": {
+    "open": "10:00",
+    "close": "16:00"
+   },
+   "sun": {
+    "open": "11:00",
+    "close": "16:00"
+   }
+  },
+  "supported_languages": [
+   "ko",
+   "en",
+   "zh"
+  ],
+  "has_interpreter": true,
+  "verified_at": "2026-10-13",
+  "description_ko": "강남에 위치한 피부과 의원입니다. 리프팅과 스킨부스터 시술을 중심으로 진료합니다.",
+  "description_en": "A dermatology clinic in Gangnam. Focuses on lifting and skin-booster treatments.",
+  "description_zh": "位于江南的皮肤科诊所。以提升和皮肤管理项目为主。",
+  "description_ja": "江南にある皮膚科クリニックです。リフティングとスキンブースター施術を中心に診療しています。"
+ },
+ {
+  "id": 44,
+  "name_ko": "비채 피부과의원",
+  "name_en": "Bichae Dermatology Clinic",
+  "name_zh": "碧彩皮肤科诊所",
+  "name_ja": "ビチェ皮膚科クリニック",
+  "category": "DERMA",
+  "area_code": "GANGNAM",
+  "address_ko": "서울특별시 강남구 테헤란로 314, 12층",
+  "address_en": "12F, 314 Teheran-ro, Gangnam-gu, Seoul",
+  "lat": 37.496353,
+  "lng": 127.025444,
+  "phone": "02-0000-1044",
+  "open_hours": {
+   "mon": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "tue": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "wed": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "thu": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "fri": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "sat": {
+    "open": "11:00",
+    "close": "18:00"
+   },
+   "sun": {
+    "open": "11:00",
+    "close": "17:00"
+   }
+  },
+  "supported_languages": [
+   "ko",
+   "en",
+   "zh"
+  ],
+  "has_interpreter": true,
+  "verified_at": "2026-06-23",
+  "description_ko": "강남에 위치한 피부과 의원입니다. 레이저 토닝과 색소 치료에 강점이 있습니다.",
+  "description_en": "A dermatology clinic in Gangnam. Known for laser toning and pigmentation care.",
+  "description_zh": "位于江南的皮肤科诊所。擅长激光嫩肤和色素治疗。",
+  "description_ja": "江南にある皮膚科クリニックです。レーザートーニングとシミ治療に力を入れています。"
+ },
+ {
+  "id": 45,
+  "name_ko": "한결담 성형외과의원",
+  "name_en": "Hangyeoldam Plastic Surgery Clinic",
+  "name_zh": "韩洁潭整形外科诊所",
+  "name_ja": "ハンギョルダム美容外科クリニック",
+  "category": "PLASTIC",
+  "area_code": "SINSA",
+  "address_ko": "서울특별시 강남구 강남대로 198, 7층",
+  "address_en": "7F, 198 Gangnam-daero, Gangnam-gu, Seoul",
+  "lat": 37.517017,
+  "lng": 127.022482,
+  "phone": "02-0000-1045",
+  "open_hours": {
+   "mon": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "tue": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "wed": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "thu": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "fri": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "sat": {
+    "open": "10:00",
+    "close": "17:00"
+   },
+   "sun": null
+  },
+  "supported_languages": [
+   "ko",
+   "en"
+  ],
+  "has_interpreter": true,
+  "verified_at": "2026-08-08",
+  "description_ko": "신사에 위치한 성형외과 의원입니다. 수술 후 회복 관리 프로그램을 운영합니다.",
+  "description_en": "A plastic surgery clinic in Sinsa. Runs a post-operative recovery care program.",
+  "description_zh": "位于新沙的整形外科诊所。提供术后恢复管理项目。",
+  "description_ja": "新沙にある美容外科クリニックです。術後のリカバリーケアプログラムを運営しています。"
+ },
+ {
+  "id": 46,
+  "name_ko": "아리솔 성형외과의원",
+  "name_en": "Arisol Plastic Surgery Clinic",
+  "name_zh": "雅丽松整形外科诊所",
+  "name_ja": "アリソル美容外科クリニック",
+  "category": "PLASTIC",
+  "area_code": "SINSA",
+  "address_ko": "서울특별시 강남구 강남대로 290, 3층",
+  "address_en": "3F, 290 Gangnam-daero, Gangnam-gu, Seoul",
+  "lat": 37.516727,
+  "lng": 127.021979,
+  "phone": "02-0000-1046",
+  "open_hours": {
+   "mon": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "tue": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "wed": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "thu": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "fri": {
+    "open": "11:00",
+    "close": "20:00"
+   },
+   "sat": {
+    "open": "11:00",
+    "close": "18:00"
+   },
+   "sun": {
+    "open": "11:00",
+    "close": "17:00"
+   }
+  },
+  "supported_languages": [
+   "ko",
+   "zh"
+  ],
+  "has_interpreter": false,
+  "verified_at": "2026-10-06",
+  "description_ko": "신사에 위치한 성형외과 의원입니다. 눈·코 성형을 중심으로 1:1 맞춤 상담을 제공합니다.",
+  "description_en": "A plastic surgery clinic in Sinsa. Offers one-to-one consultations focused on eye and nose surgery.",
+  "description_zh": "位于新沙的整形外科诊所。以眼鼻整形为主，提供一对一定制咨询。",
+  "description_ja": "新沙にある美容外科クリニックです。目・鼻の整形を中心に1対1のカウンセリングを行っています。"
+ },
+ {
+  "id": 47,
+  "name_ko": "세움채 성형외과·피부과의원",
+  "name_en": "Seumchae Plastic Surgery & Dermatology",
+  "name_zh": "世音彩整形皮肤科诊所",
+  "name_ja": "セウムチェ美容外科・皮膚科クリニック",
+  "category": "BOTH",
+  "area_code": "SINSA",
+  "address_ko": "서울특별시 강남구 도산대로 503, 3층",
+  "address_en": "3F, 503 Dosan-daero, Gangnam-gu, Seoul",
+  "lat": 37.513213,
+  "lng": 127.016923,
+  "phone": "02-0000-1047",
+  "open_hours": {
+   "mon": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "tue": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "wed": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "thu": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "fri": {
+    "open": "10:00",
+    "close": "20:00"
+   },
+   "sat": {
+    "open": "10:00",
+    "close": "17:00"
+   },
+   "sun": null
+  },
+  "supported_languages": [
+   "ko"
+  ],
+  "has_interpreter": false,
+  "verified_at": "2026-08-14",
+  "description_ko": "신사에 위치한 성형외과·피부과 의원입니다. 외국인 환자를 위한 통역 상담을 운영합니다.",
+  "description_en": "A plastic surgery & dermatology clinic in Sinsa. Provides interpreter-assisted consultations for international patients.",
+  "description_zh": "位于新沙的整形外科及皮肤科诊所。为外国患者提供翻译咨询服务。",
+  "description_ja": "新沙にある美容外科・皮膚科クリニックです。外国人患者向けに通訳付きカウンセリングを行っています。"
+ },
+ {
+  "id": 48,
+  "name_ko": "연우결 성형외과·피부과의원",
+  "name_en": "Yeonugyeol Plastic Surgery & Dermatology",
+  "name_zh": "妍雨洁整形皮肤科诊所",
+  "name_ja": "ヨヌギョル美容外科・皮膚科クリニック",
+  "category": "BOTH",
+  "area_code": "GANGNAM",
+  "address_ko": "서울특별시 강남구 봉은사로 76, 11층",
+  "address_en": "11F, 76 Bongeunsa-ro, Gangnam-gu, Seoul",
+  "lat": 37.494848,
+  "lng": 127.029716,
+  "phone": "02-0000-1048",
+  "open_hours": {
+   "mon": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "tue": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "wed": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "thu": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "fri": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "sat": {
+    "open": "09:30",
+    "close": "15:00"
+   },
+   "sun": null
+  },
+  "supported_languages": [
+   "ko",
+   "en",
+   "zh",
+   "ja"
+  ],
+  "has_interpreter": true,
+  "verified_at": null,
+  "description_ko": "강남에 위치한 성형외과·피부과 의원입니다. 성형 수술과 피부 시술을 한 곳에서 상담할 수 있습니다.",
+  "description_en": "A plastic surgery & dermatology clinic in Gangnam. Consult on both surgery and skin treatments in one place.",
+  "description_zh": "位于江南的整形外科及皮肤科诊所。可在一处同时咨询整形手术和皮肤项目。",
+  "description_ja": "江南にある美容外科・皮膚科クリニックです。整形手術と肌施術を一か所で相談できます。"
+ },
+ {
+  "id": 49,
+  "name_ko": "펠리체온 성형외과의원",
+  "name_en": "Feliceon Plastic Surgery Clinic",
+  "name_zh": "菲丽切温整形外科诊所",
+  "name_ja": "フェリーチェオン美容外科クリニック",
+  "category": "PLASTIC",
+  "area_code": "GANGNAM",
+  "address_ko": "서울특별시 강남구 테헤란로 536, 8층",
+  "address_en": "8F, 536 Teheran-ro, Gangnam-gu, Seoul",
+  "lat": 37.501581,
+  "lng": 127.024394,
+  "phone": "02-0000-1049",
+  "open_hours": {
+   "mon": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "tue": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "wed": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "thu": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "fri": {
+    "open": "09:30",
+    "close": "18:30"
+   },
+   "sat": {
+    "open": "09:30",
+    "close": "15:00"
+   },
+   "sun": null
+  },
+  "supported_languages": [
+   "ko",
+   "en",
+   "zh"
+  ],
+  "has_interpreter": false,
+  "verified_at": "2026-10-02",
+  "description_ko": "강남에 위치한 성형외과 의원입니다. 수술 후 회복 관리 프로그램을 운영합니다.",
+  "description_en": "A plastic surgery clinic in Gangnam. Runs a post-operative recovery care program.",
+  "description_zh": "位于江南的整形外科诊所。提供术后恢复管理项目。",
+  "description_ja": "江南にある美容外科クリニックです。術後のリカバリーケアプログラムを運営しています。"
+ },
+ {
+  "id": 50,
+  "name_ko": "다온결 피부과의원",
+  "name_en": "Daongyeol Dermatology Clinic",
+  "name_zh": "多温洁皮肤科诊所",
+  "name_ja": "ダオンギョル皮膚科クリニック",
+  "category": "DERMA",
+  "area_code": "MYEONGDONG",
+  "address_ko": "서울특별시 중구 남대문로 217, 6층",
+  "address_en": "6F, 217 Namdaemun-ro, Jung-gu, Seoul",
+  "lat": 37.563359,
+  "lng": 126.978961,
+  "phone": "02-0000-1050",
+  "open_hours": {
+   "mon": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "tue": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "wed": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "thu": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "fri": {
+    "open": "10:00",
+    "close": "19:00"
+   },
+   "sat": {
+    "open": "10:00",
+    "close": "16:00"
+   },
+   "sun": null
+  },
+  "supported_languages": [
+   "ko",
+   "en",
+   "zh",
+   "ja"
+  ],
+  "has_interpreter": true,
+  "verified_at": "2026-04-24",
+  "description_ko": "명동에 위치한 피부과 의원입니다. 보톡스·필러 등 쁘띠 시술을 빠르게 받을 수 있습니다.",
+  "description_en": "A dermatology clinic in Myeongdong. Offers quick injectables such as toxin and filler.",
+  "description_zh": "位于明洞的皮肤科诊所。可快速进行肉毒素、玻尿酸等微整形项目。",
+  "description_ja": "明洞にある皮膚科クリニックです。ボトックス・フィラーなどのプチ施術を手軽に受けられます。"
+ }
+]

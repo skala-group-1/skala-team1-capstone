@@ -1,0 +1,20 @@
+[
+ {
+  "id": "14b46725-af1f-421e-9e26-b61de7a4e064",
+  "user_id": 3,
+  "parent_conversation_id": null,
+  "mode": "HUMAN",
+  "selected_hospital_id": 1,
+  "consultation_id": 1,
+  "created_at": "2026-10-20T08:53:00+09:00"
+ },
+ {
+  "id": "c531e074-dbd1-492c-9ca3-2e67670d0f86",
+  "user_id": 5,
+  "parent_conversation_id": null,
+  "mode": "HUMAN",
+  "selected_hospital_id": 1,
+  "consultation_id": 2,
+  "created_at": "2026-10-20T09:32:00+09:00"
+ }
+]

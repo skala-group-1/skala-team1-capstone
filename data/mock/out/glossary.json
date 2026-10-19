@@ -1,0 +1,530 @@
+[
+ {
+  "id": 1,
+  "term_ko": "사각턱 보톡스",
+  "term_en": "jaw botox",
+  "term_zh": "瘦脸针",
+  "term_ja": "エラボトックス",
+  "note": "procedure: JAW_BOTOX"
+ },
+ {
+  "id": 2,
+  "term_ko": "이마 보톡스",
+  "term_en": "forehead botox",
+  "term_zh": "额头肉毒素",
+  "term_ja": "額ボトックス",
+  "note": "procedure: FOREHEAD_BOTOX"
+ },
+ {
+  "id": 3,
+  "term_ko": "입술 필러",
+  "term_en": "lip filler",
+  "term_zh": "嘴唇玻尿酸",
+  "term_ja": "唇ヒアルロン酸",
+  "note": "procedure: LIP_FILLER"
+ },
+ {
+  "id": 4,
+  "term_ko": "코 필러",
+  "term_en": "nose filler",
+  "term_zh": "鼻子玻尿酸",
+  "term_ja": "鼻ヒアルロン酸",
+  "note": "procedure: NOSE_FILLER"
+ },
+ {
+  "id": 5,
+  "term_ko": "리쥬란",
+  "term_en": "Rejuran",
+  "term_zh": "丽珠兰",
+  "term_ja": "リジュラン",
+  "note": "procedure: REJURAN; polynucleotide skin booster"
+ },
+ {
+  "id": 6,
+  "term_ko": "울쎄라",
+  "term_en": "Ultherapy",
+  "term_zh": "超声刀",
+  "term_ja": "ウルセラ",
+  "note": "procedure: ULTHERAPY"
+ },
+ {
+  "id": 7,
+  "term_ko": "써마지",
+  "term_en": "Thermage",
+  "term_zh": "热玛吉",
+  "term_ja": "サーマクール",
+  "note": "procedure: THERMAGE"
+ },
+ {
+  "id": 8,
+  "term_ko": "슈링크",
+  "term_en": "Shurink",
+  "term_zh": "舒铃",
+  "term_ja": "シュリンク",
+  "note": "procedure: SHURINK"
+ },
+ {
+  "id": 9,
+  "term_ko": "피코토닝",
+  "term_en": "pico toning",
+  "term_zh": "皮秒激光",
+  "term_ja": "ピコトーニング",
+  "note": "procedure: PICO_TONING"
+ },
+ {
+  "id": 10,
+  "term_ko": "레이저 제모",
+  "term_en": "laser hair removal",
+  "term_zh": "激光脱毛",
+  "term_ja": "レーザー脱毛",
+  "note": "procedure: LASER_HAIR_REMOVAL"
+ },
+ {
+  "id": 11,
+  "term_ko": "매몰법",
+  "term_en": "non-incisional double eyelid",
+  "term_zh": "埋线双眼皮",
+  "term_ja": "埋没法",
+  "note": "procedure: DOUBLE_EYELID_NONINCISION"
+ },
+ {
+  "id": 12,
+  "term_ko": "절개법",
+  "term_en": "incisional double eyelid",
+  "term_zh": "全切双眼皮",
+  "term_ja": "切開法",
+  "note": "procedure: DOUBLE_EYELID_INCISION"
+ },
+ {
+  "id": 13,
+  "term_ko": "눈매교정",
+  "term_en": "ptosis correction",
+  "term_zh": "眼睑下垂矫正",
+  "term_ja": "眼瞼下垂手術",
+  "note": "procedure: PTOSIS_CORRECTION"
+ },
+ {
+  "id": 14,
+  "term_ko": "코성형",
+  "term_en": "rhinoplasty",
+  "term_zh": "隆鼻手术",
+  "term_ja": "鼻整形",
+  "note": "procedure: RHINOPLASTY"
+ },
+ {
+  "id": 15,
+  "term_ko": "안면윤곽",
+  "term_en": "facial contouring",
+  "term_zh": "面部轮廓手术",
+  "term_ja": "輪郭形成",
+  "note": "procedure: FACIAL_CONTOURING"
+ },
+ {
+  "id": 16,
+  "term_ko": "지방이식",
+  "term_en": "fat grafting",
+  "term_zh": "自体脂肪移植",
+  "term_ja": "脂肪注入",
+  "note": "procedure: FAT_GRAFTING"
+ },
+ {
+  "id": 17,
+  "term_ko": "지방흡입",
+  "term_en": "liposuction",
+  "term_zh": "吸脂",
+  "term_ja": "脂肪吸引",
+  "note": "procedure: LIPOSUCTION"
+ },
+ {
+  "id": 18,
+  "term_ko": "가슴성형",
+  "term_en": "breast augmentation",
+  "term_zh": "隆胸",
+  "term_ja": "豊胸手術",
+  "note": "procedure: BREAST_AUGMENTATION"
+ },
+ {
+  "id": 19,
+  "term_ko": "앞트임",
+  "term_en": "epicanthoplasty",
+  "term_zh": "开眼角",
+  "term_ja": "目頭切開",
+  "note": "often combined with double eyelid surgery"
+ },
+ {
+  "id": 20,
+  "term_ko": "쌍꺼풀",
+  "term_en": "double eyelid",
+  "term_zh": "双眼皮",
+  "term_ja": "二重まぶた",
+  "note": null
+ },
+ {
+  "id": 21,
+  "term_ko": "보톡스",
+  "term_en": "botulinum toxin",
+  "term_zh": "肉毒素",
+  "term_ja": "ボトックス",
+  "note": "generic: botulinum toxin"
+ },
+ {
+  "id": 22,
+  "term_ko": "필러",
+  "term_en": "filler",
+  "term_zh": "玻尿酸",
+  "term_ja": "ヒアルロン酸フィラー",
+  "note": "usually hyaluronic acid"
+ },
+ {
+  "id": 23,
+  "term_ko": "스킨부스터",
+  "term_en": "skin booster",
+  "term_zh": "水光针",
+  "term_ja": "スキンブースター",
+  "note": null
+ },
+ {
+  "id": 24,
+  "term_ko": "리프팅",
+  "term_en": "lifting",
+  "term_zh": "提升",
+  "term_ja": "リフトアップ",
+  "note": null
+ },
+ {
+  "id": 25,
+  "term_ko": "보형물",
+  "term_en": "implant",
+  "term_zh": "假体",
+  "term_ja": "プロテーゼ",
+  "note": null
+ },
+ {
+  "id": 26,
+  "term_ko": "자가 연골",
+  "term_en": "autologous cartilage",
+  "term_zh": "自体软骨",
+  "term_ja": "自家軟骨",
+  "note": "e.g. septal / ear / rib cartilage"
+ },
+ {
+  "id": 27,
+  "term_ko": "재수술",
+  "term_en": "revision surgery",
+  "term_zh": "修复手术",
+  "term_ja": "再手術",
+  "note": null
+ },
+ {
+  "id": 28,
+  "term_ko": "붓기",
+  "term_en": "swelling",
+  "term_zh": "肿胀",
+  "term_ja": "腫れ",
+  "note": null
+ },
+ {
+  "id": 29,
+  "term_ko": "멍",
+  "term_en": "bruising",
+  "term_zh": "淤青",
+  "term_ja": "内出血",
+  "note": null
+ },
+ {
+  "id": 30,
+  "term_ko": "통증",
+  "term_en": "pain",
+  "term_zh": "疼痛",
+  "term_ja": "痛み",
+  "note": null
+ },
+ {
+  "id": 31,
+  "term_ko": "흉터",
+  "term_en": "scar",
+  "term_zh": "疤痕",
+  "term_ja": "傷跡",
+  "note": null
+ },
+ {
+  "id": 32,
+  "term_ko": "절개",
+  "term_en": "incision",
+  "term_zh": "切开",
+  "term_ja": "切開",
+  "note": null
+ },
+ {
+  "id": 33,
+  "term_ko": "봉합사",
+  "term_en": "suture",
+  "term_zh": "缝线",
+  "term_ja": "縫合糸",
+  "note": null
+ },
+ {
+  "id": 34,
+  "term_ko": "실밥 제거",
+  "term_en": "suture removal",
+  "term_zh": "拆线",
+  "term_ja": "抜糸",
+  "note": "typically several days after surgery"
+ },
+ {
+  "id": 35,
+  "term_ko": "국소 마취",
+  "term_en": "local anesthesia",
+  "term_zh": "局部麻醉",
+  "term_ja": "局所麻酔",
+  "note": null
+ },
+ {
+  "id": 36,
+  "term_ko": "수면 마취",
+  "term_en": "IV sedation",
+  "term_zh": "睡眠麻醉",
+  "term_ja": "静脈麻酔",
+  "note": null
+ },
+ {
+  "id": 37,
+  "term_ko": "전신 마취",
+  "term_en": "general anesthesia",
+  "term_zh": "全身麻醉",
+  "term_ja": "全身麻酔",
+  "note": null
+ },
+ {
+  "id": 38,
+  "term_ko": "마취 크림",
+  "term_en": "numbing cream",
+  "term_zh": "麻药膏",
+  "term_ja": "麻酔クリーム",
+  "note": null
+ },
+ {
+  "id": 39,
+  "term_ko": "부작용",
+  "term_en": "side effect",
+  "term_zh": "副作用",
+  "term_ja": "副作用",
+  "note": null
+ },
+ {
+  "id": 40,
+  "term_ko": "알레르기",
+  "term_en": "allergy",
+  "term_zh": "过敏",
+  "term_ja": "アレルギー",
+  "note": null
+ },
+ {
+  "id": 41,
+  "term_ko": "항생제",
+  "term_en": "antibiotic",
+  "term_zh": "抗生素",
+  "term_ja": "抗生物質",
+  "note": null
+ },
+ {
+  "id": 42,
+  "term_ko": "진통제",
+  "term_en": "painkiller",
+  "term_zh": "止痛药",
+  "term_ja": "痛み止め",
+  "note": null
+ },
+ {
+  "id": 43,
+  "term_ko": "처방전",
+  "term_en": "prescription",
+  "term_zh": "处方",
+  "term_ja": "処方箋",
+  "note": null
+ },
+ {
+  "id": 44,
+  "term_ko": "혈액 응고 억제제",
+  "term_en": "blood thinner",
+  "term_zh": "抗凝血药",
+  "term_ja": "抗凝固薬",
+  "note": "inform the doctor before any procedure"
+ },
+ {
+  "id": 45,
+  "term_ko": "냉찜질",
+  "term_en": "cold compress",
+  "term_zh": "冷敷",
+  "term_ja": "冷却",
+  "note": null
+ },
+ {
+  "id": 46,
+  "term_ko": "회복 기간",
+  "term_en": "recovery period",
+  "term_zh": "恢复期",
+  "term_ja": "回復期間",
+  "note": null
+ },
+ {
+  "id": 47,
+  "term_ko": "다운타임",
+  "term_en": "downtime",
+  "term_zh": "恢复期(停工期)",
+  "term_ja": "ダウンタイム",
+  "note": null
+ },
+ {
+  "id": 48,
+  "term_ko": "금식",
+  "term_en": "fasting",
+  "term_zh": "禁食",
+  "term_ja": "絶食",
+  "note": "often required before sedation or general anesthesia"
+ },
+ {
+  "id": 49,
+  "term_ko": "임신",
+  "term_en": "pregnancy",
+  "term_zh": "怀孕",
+  "term_ja": "妊娠",
+  "note": "tell the clinic if pregnant or breastfeeding"
+ },
+ {
+  "id": 50,
+  "term_ko": "상담",
+  "term_en": "consultation",
+  "term_zh": "咨询",
+  "term_ja": "カウンセリング",
+  "note": null
+ },
+ {
+  "id": 51,
+  "term_ko": "상담실장",
+  "term_en": "patient coordinator",
+  "term_zh": "咨询师",
+  "term_ja": "カウンセラー",
+  "note": null
+ },
+ {
+  "id": 52,
+  "term_ko": "원장",
+  "term_en": "doctor (clinic director)",
+  "term_zh": "院长",
+  "term_ja": "院長",
+  "note": null
+ },
+ {
+  "id": 53,
+  "term_ko": "통역",
+  "term_en": "interpreter",
+  "term_zh": "翻译",
+  "term_ja": "通訳",
+  "note": null
+ },
+ {
+  "id": 54,
+  "term_ko": "예약",
+  "term_en": "reservation",
+  "term_zh": "预约",
+  "term_ja": "予約",
+  "note": null
+ },
+ {
+  "id": 55,
+  "term_ko": "예약금",
+  "term_en": "deposit",
+  "term_zh": "预约金",
+  "term_ja": "予約金",
+  "note": null
+ },
+ {
+  "id": 56,
+  "term_ko": "예약 취소",
+  "term_en": "cancellation",
+  "term_zh": "取消预约",
+  "term_ja": "予約キャンセル",
+  "note": null
+ },
+ {
+  "id": 57,
+  "term_ko": "환불",
+  "term_en": "refund",
+  "term_zh": "退款",
+  "term_ja": "返金",
+  "note": null
+ },
+ {
+  "id": 58,
+  "term_ko": "부가세",
+  "term_en": "VAT",
+  "term_zh": "增值税",
+  "term_ja": "付加価値税",
+  "note": "Korean VAT is 10%"
+ },
+ {
+  "id": 59,
+  "term_ko": "부가세 환급",
+  "term_en": "VAT refund",
+  "term_zh": "退税",
+  "term_ja": "VAT還付",
+  "note": "eligibility changes; verify with clinic"
+ },
+ {
+  "id": 60,
+  "term_ko": "영수증",
+  "term_en": "receipt",
+  "term_zh": "收据",
+  "term_ja": "領収書",
+  "note": null
+ },
+ {
+  "id": 61,
+  "term_ko": "사후 관리",
+  "term_en": "aftercare",
+  "term_zh": "术后护理",
+  "term_ja": "アフターケア",
+  "note": null
+ },
+ {
+  "id": 62,
+  "term_ko": "경과 확인",
+  "term_en": "follow-up visit",
+  "term_zh": "复诊",
+  "term_ja": "経過観察",
+  "note": null
+ },
+ {
+  "id": 63,
+  "term_ko": "동의서",
+  "term_en": "consent form",
+  "term_zh": "同意书",
+  "term_ja": "同意書",
+  "note": null
+ },
+ {
+  "id": 64,
+  "term_ko": "전후 사진",
+  "term_en": "before & after photos",
+  "term_zh": "术前术后照片",
+  "term_ja": "ビフォーアフター写真",
+  "note": null
+ },
+ {
+  "id": 65,
+  "term_ko": "피부과",
+  "term_en": "dermatology",
+  "term_zh": "皮肤科",
+  "term_ja": "皮膚科",
+  "note": null
+ },
+ {
+  "id": 66,
+  "term_ko": "성형외과",
+  "term_en": "plastic surgery",
+  "term_zh": "整形外科",
+  "term_ja": "美容外科",
+  "note": null
+ }
+]

@@ -1,0 +1,95 @@
+[
+ {
+  "id": 1,
+  "consultation_id": 1,
+  "sender_id": 3,
+  "sender_role": "CUSTOMER",
+  "original_text": "您好，我想咨询一下埋线双眼皮。下周可以预约吗？",
+  "original_lang": "zh",
+  "translated_text": "안녕하세요, 매몰법 쌍꺼풀 상담을 받고 싶어요. 다음 주에 예약이 가능할까요?",
+  "translated_lang": "ko",
+  "translation_status": "DONE",
+  "flags": {
+   "glossary_hits": [
+    "埋线双眼皮=매몰법"
+   ]
+  },
+  "created_at": "2026-10-20T09:06:00+09:00"
+ },
+ {
+  "id": 2,
+  "consultation_id": 1,
+  "sender_id": 7,
+  "sender_role": "COUNSELOR",
+  "original_text": "안녕하세요! 네, 다음 주 화요일과 목요일 오후에 상담 가능한 시간이 있습니다. 원하시는 날짜가 있으신가요?",
+  "original_lang": "ko",
+  "translated_text": "您好！是的，下周二和周四下午有可以面诊的时间。您有希望的日期吗？",
+  "translated_lang": "zh",
+  "translation_status": "DONE",
+  "flags": {},
+  "created_at": "2026-10-20T09:08:00+09:00"
+ },
+ {
+  "id": 3,
+  "consultation_id": 1,
+  "sender_id": 3,
+  "sender_role": "CUSTOMER",
+  "original_text": "周四下午比较好。手术后多久可以坐飞机回国？",
+  "original_lang": "zh",
+  "translated_text": "목요일 오후가 좋아요. 수술 후 얼마나 지나야 비행기를 타고 귀국할 수 있나요?",
+  "translated_lang": "ko",
+  "translation_status": "DONE",
+  "flags": {},
+  "created_at": "2026-10-20T09:10:00+09:00"
+ },
+ {
+  "id": 4,
+  "consultation_id": 1,
+  "sender_id": 7,
+  "sender_role": "COUNSELOR",
+  "original_text": "개인차가 있지만 매몰법은 보통 수술 후 며칠 내 비행하는 경우가 많습니다. 정확한 일정은 원장님 진료 시 확인해 주세요.",
+  "original_lang": "ko",
+  "translated_text": "虽然因人而异，但埋线法通常在术后几天内乘坐飞机的情况较多。具体日程请在院长面诊时确认。",
+  "translated_lang": "zh",
+  "translation_status": "DONE",
+  "flags": {
+   "medical_content": true,
+   "glossary_hits": [
+    "매몰법=埋线法"
+   ]
+  },
+  "created_at": "2026-10-20T09:13:00+09:00"
+ },
+ {
+  "id": 5,
+  "consultation_id": 1,
+  "sender_id": 3,
+  "sender_role": "CUSTOMER",
+  "original_text": "好的。价格大概是多少？包含增值税吗？",
+  "original_lang": "zh",
+  "translated_text": "알겠습니다. 가격은 대략 얼마인가요? 부가세 포함인가요?",
+  "translated_lang": "ko",
+  "translation_status": "DONE",
+  "flags": {
+   "glossary_hits": [
+    "增值税=부가세"
+   ]
+  },
+  "created_at": "2026-10-20T09:15:00+09:00"
+ },
+ {
+  "id": 6,
+  "consultation_id": 1,
+  "sender_id": 7,
+  "sender_role": "COUNSELOR",
+  "original_text": "매몰법 양쪽 기준 860,000원부터이며, 최종 금액은 상담 후 확정됩니다. 예약 요청을 남겨주시면 병원 확인 후 확정됩니다.",
+  "original_lang": "ko",
+  "translated_text": "埋线法双眼起价860,000韩元，最终价格将在面诊后确定。提交预约申请后，经医院确认即可确定预约。",
+  "translated_lang": "zh",
+  "translation_status": "DONE",
+  "flags": {
+   "price_quote": true
+  },
+  "created_at": "2026-10-20T09:18:00+09:00"
+ }
+]

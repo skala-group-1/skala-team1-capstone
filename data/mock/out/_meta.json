@@ -1,0 +1,29 @@
+{
+ "base_date": "2026-10-20",
+ "seed": 42,
+ "persona_hospital_ids": [
+  1,
+  7,
+  11,
+  12,
+  15
+ ],
+ "counts": {
+  "hospitals": 50,
+  "users": 13,
+  "procedures": 18,
+  "doctors": 159,
+  "price_options": 678,
+  "slots": 14244,
+  "reviews": 2111,
+  "glossary": 66,
+  "conversations": 2,
+  "consultations": 2,
+  "chat_messages": 6,
+  "reservations": 20,
+  "ai_tasks": 0,
+  "notifications": 0,
+  "audit_logs": 0,
+  "refresh_tokens": 0
+ }
+}

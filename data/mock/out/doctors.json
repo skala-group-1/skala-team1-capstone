@@ -1,0 +1,2966 @@
+[
+ {
+  "id": 1,
+  "hospital_id": 1,
+  "name_ko": "조우혜",
+  "name_en": "Cho Woo-hye",
+  "title": "대표원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "ULTHERAPY",
+   "SHURINK",
+   "DOUBLE_EYELID_NONINCISION"
+  ],
+  "languages": [
+   "ko",
+   "en",
+   "zh",
+   "ja"
+  ],
+  "career_years": 17
+ },
+ {
+  "id": 2,
+  "hospital_id": 1,
+  "name_ko": "최수성",
+  "name_en": "Choi Su-sung",
+  "title": "원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "FOREHEAD_BOTOX",
+   "LIP_FILLER",
+   "SHURINK",
+   "DOUBLE_EYELID_NONINCISION",
+   "DOUBLE_EYELID_INCISION"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 9
+ },
+ {
+  "id": 3,
+  "hospital_id": 1,
+  "name_ko": "이예민",
+  "name_en": "Lee Ye-min",
+  "title": "원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "LIP_FILLER",
+   "ULTHERAPY",
+   "PTOSIS_CORRECTION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 7
+ },
+ {
+  "id": 4,
+  "hospital_id": 1,
+  "name_ko": "송윤성",
+  "name_en": "Song Yoon-sung",
+  "title": "부원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "FOREHEAD_BOTOX",
+   "REJURAN",
+   "DOUBLE_EYELID_INCISION",
+   "RHINOPLASTY"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 5
+ },
+ {
+  "id": 5,
+  "hospital_id": 2,
+  "name_ko": "홍서은",
+  "name_en": "Hong Seo-eun",
+  "title": "대표원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "REJURAN",
+   "ULTHERAPY",
+   "PICO_TONING"
+  ],
+  "languages": [
+   "ko",
+   "en",
+   "zh",
+   "ja"
+  ],
+  "career_years": 6
+ },
+ {
+  "id": 6,
+  "hospital_id": 2,
+  "name_ko": "임현태",
+  "name_en": "Lim Hyun-tae",
+  "title": "원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "FOREHEAD_BOTOX",
+   "ULTHERAPY",
+   "THERMAGE",
+   "SHURINK",
+   "LASER_HAIR_REMOVAL"
+  ],
+  "languages": [
+   "ko",
+   "ja"
+  ],
+  "career_years": 8
+ },
+ {
+  "id": 7,
+  "hospital_id": 2,
+  "name_ko": "최성은",
+  "name_en": "Choi Sung-eun",
+  "title": "원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "LIP_FILLER",
+   "NOSE_FILLER",
+   "THERMAGE",
+   "PICO_TONING"
+  ],
+  "languages": [
+   "ko",
+   "en",
+   "zh",
+   "ja"
+  ],
+  "career_years": 17
+ },
+ {
+  "id": 8,
+  "hospital_id": 2,
+  "name_ko": "한현진",
+  "name_en": "Han Hyun-jin",
+  "title": "부원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "NOSE_FILLER",
+   "SHURINK",
+   "LASER_HAIR_REMOVAL"
+  ],
+  "languages": [
+   "ko",
+   "zh"
+  ],
+  "career_years": 11
+ },
+ {
+  "id": 9,
+  "hospital_id": 3,
+  "name_ko": "류서준",
+  "name_en": "Ryu Seo-jun",
+  "title": "대표원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "DOUBLE_EYELID_NONINCISION",
+   "PTOSIS_CORRECTION",
+   "FACIAL_CONTOURING",
+   "FAT_GRAFTING"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 10
+ },
+ {
+  "id": 10,
+  "hospital_id": 3,
+  "name_ko": "김성지",
+  "name_en": "Kim Sung-ji",
+  "title": "원장",
+  "specialties": [
+   "DOUBLE_EYELID_INCISION",
+   "FACIAL_CONTOURING",
+   "FAT_GRAFTING"
+  ],
+  "languages": [
+   "ko",
+   "en",
+   "zh",
+   "ja"
+  ],
+  "career_years": 25
+ },
+ {
+  "id": 11,
+  "hospital_id": 3,
+  "name_ko": "류윤재",
+  "name_en": "Ryu Yoon-jae",
+  "title": "원장",
+  "specialties": [
+   "PTOSIS_CORRECTION",
+   "FAT_GRAFTING",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 9
+ },
+ {
+  "id": 12,
+  "hospital_id": 3,
+  "name_ko": "조준하",
+  "name_en": "Cho Jun-ha",
+  "title": "부원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "DOUBLE_EYELID_INCISION",
+   "PTOSIS_CORRECTION",
+   "RHINOPLASTY",
+   "BREAST_AUGMENTATION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 24
+ },
+ {
+  "id": 13,
+  "hospital_id": 4,
+  "name_ko": "홍수혜",
+  "name_en": "Hong Su-hye",
+  "title": "대표원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "LIP_FILLER",
+   "THERMAGE"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 25
+ },
+ {
+  "id": 14,
+  "hospital_id": 4,
+  "name_ko": "조하서",
+  "name_en": "Cho Ha-seo",
+  "title": "원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "LIP_FILLER",
+   "REJURAN",
+   "THERMAGE",
+   "SHURINK",
+   "PICO_TONING"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 20
+ },
+ {
+  "id": 15,
+  "hospital_id": 4,
+  "name_ko": "황우유",
+  "name_en": "Hwang Woo-yu",
+  "title": "원장",
+  "specialties": [
+   "LIP_FILLER",
+   "REJURAN",
+   "THERMAGE",
+   "PICO_TONING"
+  ],
+  "languages": [
+   "ko",
+   "zh"
+  ],
+  "career_years": 25
+ },
+ {
+  "id": 16,
+  "hospital_id": 4,
+  "name_ko": "오윤예",
+  "name_en": "Oh Yoon-ye",
+  "title": "부원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "ULTHERAPY",
+   "THERMAGE",
+   "PICO_TONING"
+  ],
+  "languages": [
+   "ko",
+   "zh"
+  ],
+  "career_years": 19
+ },
+ {
+  "id": 17,
+  "hospital_id": 5,
+  "name_ko": "황영현",
+  "name_en": "Hwang Young-hyun",
+  "title": "대표원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "LIP_FILLER",
+   "ULTHERAPY",
+   "PICO_TONING"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 12
+ },
+ {
+  "id": 18,
+  "hospital_id": 5,
+  "name_ko": "권진유",
+  "name_en": "Kwon Jin-yu",
+  "title": "원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "FOREHEAD_BOTOX",
+   "LIP_FILLER",
+   "NOSE_FILLER",
+   "THERMAGE",
+   "PICO_TONING",
+   "LASER_HAIR_REMOVAL"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 11
+ },
+ {
+  "id": 19,
+  "hospital_id": 6,
+  "name_ko": "조유태",
+  "name_en": "Cho Yu-tae",
+  "title": "대표원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "REJURAN",
+   "SHURINK",
+   "FACIAL_CONTOURING"
+  ],
+  "languages": [
+   "ko",
+   "en",
+   "zh"
+  ],
+  "career_years": 19
+ },
+ {
+  "id": 20,
+  "hospital_id": 6,
+  "name_ko": "조수하",
+  "name_en": "Cho Su-ha",
+  "title": "원장",
+  "specialties": [
+   "REJURAN",
+   "LASER_HAIR_REMOVAL",
+   "BREAST_AUGMENTATION"
+  ],
+  "languages": [
+   "ko",
+   "en",
+   "zh"
+  ],
+  "career_years": 23
+ },
+ {
+  "id": 21,
+  "hospital_id": 6,
+  "name_ko": "이하준",
+  "name_en": "Lee Ha-jun",
+  "title": "원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "REJURAN",
+   "SHURINK",
+   "LASER_HAIR_REMOVAL"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 18
+ },
+ {
+  "id": 22,
+  "hospital_id": 6,
+  "name_ko": "강도은",
+  "name_en": "Kang Do-eun",
+  "title": "부원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "REJURAN",
+   "LASER_HAIR_REMOVAL",
+   "FACIAL_CONTOURING",
+   "BREAST_AUGMENTATION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 25
+ },
+ {
+  "id": 23,
+  "hospital_id": 7,
+  "name_ko": "류은진",
+  "name_en": "Ryu Eun-jin",
+  "title": "대표원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "PTOSIS_CORRECTION",
+   "RHINOPLASTY",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 5
+ },
+ {
+  "id": 24,
+  "hospital_id": 7,
+  "name_ko": "신서유",
+  "name_en": "Shin Seo-yu",
+  "title": "원장",
+  "specialties": [
+   "DOUBLE_EYELID_NONINCISION",
+   "DOUBLE_EYELID_INCISION",
+   "PTOSIS_CORRECTION",
+   "RHINOPLASTY",
+   "FACIAL_CONTOURING",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 21
+ },
+ {
+  "id": 25,
+  "hospital_id": 7,
+  "name_ko": "이재영",
+  "name_en": "Lee Jae-young",
+  "title": "원장",
+  "specialties": [
+   "DOUBLE_EYELID_INCISION",
+   "FACIAL_CONTOURING",
+   "FAT_GRAFTING"
+  ],
+  "languages": [
+   "ko",
+   "zh"
+  ],
+  "career_years": 8
+ },
+ {
+  "id": 26,
+  "hospital_id": 7,
+  "name_ko": "권성은",
+  "name_en": "Kwon Sung-eun",
+  "title": "부원장",
+  "specialties": [
+   "DOUBLE_EYELID_INCISION",
+   "PTOSIS_CORRECTION",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko",
+   "zh"
+  ],
+  "career_years": 18
+ },
+ {
+  "id": 27,
+  "hospital_id": 8,
+  "name_ko": "임우태",
+  "name_en": "Lim Woo-tae",
+  "title": "대표원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "NOSE_FILLER",
+   "DOUBLE_EYELID_NONINCISION",
+   "PTOSIS_CORRECTION",
+   "FACIAL_CONTOURING",
+   "FAT_GRAFTING"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 5
+ },
+ {
+  "id": 28,
+  "hospital_id": 8,
+  "name_ko": "권태준",
+  "name_en": "Kwon Tae-jun",
+  "title": "원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "NOSE_FILLER",
+   "DOUBLE_EYELID_INCISION",
+   "FACIAL_CONTOURING",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 16
+ },
+ {
+  "id": 29,
+  "hospital_id": 9,
+  "name_ko": "이영수",
+  "name_en": "Lee Young-su",
+  "title": "대표원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "LIP_FILLER",
+   "REJURAN",
+   "PICO_TONING",
+   "LASER_HAIR_REMOVAL"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 8
+ },
+ {
+  "id": 30,
+  "hospital_id": 9,
+  "name_ko": "서수태",
+  "name_en": "Seo Su-tae",
+  "title": "원장",
+  "specialties": [
+   "LIP_FILLER",
+   "REJURAN",
+   "SHURINK",
+   "LASER_HAIR_REMOVAL"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 16
+ },
+ {
+  "id": 31,
+  "hospital_id": 9,
+  "name_ko": "오우혜",
+  "name_en": "Oh Woo-hye",
+  "title": "원장",
+  "specialties": [
+   "LIP_FILLER",
+   "REJURAN",
+   "PICO_TONING",
+   "LASER_HAIR_REMOVAL"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 22
+ },
+ {
+  "id": 32,
+  "hospital_id": 9,
+  "name_ko": "조준도",
+  "name_en": "Cho Jun-do",
+  "title": "부원장",
+  "specialties": [
+   "REJURAN",
+   "SHURINK",
+   "PICO_TONING"
+  ],
+  "languages": [
+   "ko",
+   "ja"
+  ],
+  "career_years": 8
+ },
+ {
+  "id": 33,
+  "hospital_id": 10,
+  "name_ko": "송혜윤",
+  "name_en": "Song Hye-yoon",
+  "title": "대표원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "LIP_FILLER",
+   "NOSE_FILLER",
+   "REJURAN",
+   "ULTHERAPY",
+   "THERMAGE",
+   "SHURINK"
+  ],
+  "languages": [
+   "ko",
+   "en",
+   "ja"
+  ],
+  "career_years": 7
+ },
+ {
+  "id": 34,
+  "hospital_id": 10,
+  "name_ko": "조태지",
+  "name_en": "Cho Tae-ji",
+  "title": "원장",
+  "specialties": [
+   "LIP_FILLER",
+   "REJURAN",
+   "ULTHERAPY",
+   "THERMAGE",
+   "LASER_HAIR_REMOVAL"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 14
+ },
+ {
+  "id": 35,
+  "hospital_id": 10,
+  "name_ko": "박현우",
+  "name_en": "Park Hyun-woo",
+  "title": "원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "NOSE_FILLER",
+   "THERMAGE",
+   "SHURINK",
+   "LASER_HAIR_REMOVAL"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 20
+ },
+ {
+  "id": 36,
+  "hospital_id": 10,
+  "name_ko": "정예영",
+  "name_en": "Jung Ye-young",
+  "title": "부원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "REJURAN",
+   "ULTHERAPY",
+   "SHURINK",
+   "LASER_HAIR_REMOVAL"
+  ],
+  "languages": [
+   "ko",
+   "ja"
+  ],
+  "career_years": 18
+ },
+ {
+  "id": 37,
+  "hospital_id": 11,
+  "name_ko": "황진영",
+  "name_en": "Hwang Jin-young",
+  "title": "대표원장",
+  "specialties": [
+   "REJURAN",
+   "SHURINK",
+   "LASER_HAIR_REMOVAL",
+   "DOUBLE_EYELID_NONINCISION",
+   "FAT_GRAFTING"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 14
+ },
+ {
+  "id": 38,
+  "hospital_id": 11,
+  "name_ko": "류준윤",
+  "name_en": "Ryu Jun-yoon",
+  "title": "원장",
+  "specialties": [
+   "REJURAN",
+   "THERMAGE",
+   "SHURINK",
+   "DOUBLE_EYELID_NONINCISION",
+   "RHINOPLASTY",
+   "FAT_GRAFTING"
+  ],
+  "languages": [
+   "ko",
+   "en",
+   "zh"
+  ],
+  "career_years": 20
+ },
+ {
+  "id": 39,
+  "hospital_id": 11,
+  "name_ko": "오윤서",
+  "name_en": "Oh Yoon-seo",
+  "title": "원장",
+  "specialties": [
+   "REJURAN",
+   "THERMAGE",
+   "SHURINK",
+   "FAT_GRAFTING"
+  ],
+  "languages": [
+   "ko",
+   "en",
+   "zh"
+  ],
+  "career_years": 10
+ },
+ {
+  "id": 40,
+  "hospital_id": 11,
+  "name_ko": "홍우혜",
+  "name_en": "Hong Woo-hye",
+  "title": "부원장",
+  "specialties": [
+   "SHURINK",
+   "LASER_HAIR_REMOVAL",
+   "DOUBLE_EYELID_NONINCISION",
+   "RHINOPLASTY"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 9
+ },
+ {
+  "id": 41,
+  "hospital_id": 12,
+  "name_ko": "강예혜",
+  "name_en": "Kang Ye-hye",
+  "title": "대표원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "DOUBLE_EYELID_NONINCISION",
+   "FAT_GRAFTING",
+   "BREAST_AUGMENTATION"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 16
+ },
+ {
+  "id": 42,
+  "hospital_id": 12,
+  "name_ko": "정수태",
+  "name_en": "Jung Su-tae",
+  "title": "원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "DOUBLE_EYELID_NONINCISION",
+   "PTOSIS_CORRECTION",
+   "FAT_GRAFTING",
+   "BREAST_AUGMENTATION"
+  ],
+  "languages": [
+   "ko",
+   "zh"
+  ],
+  "career_years": 14
+ },
+ {
+  "id": 43,
+  "hospital_id": 13,
+  "name_ko": "김혜영",
+  "name_en": "Kim Hye-young",
+  "title": "대표원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "LIP_FILLER",
+   "REJURAN",
+   "SHURINK",
+   "PICO_TONING",
+   "LASER_HAIR_REMOVAL"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 14
+ },
+ {
+  "id": 44,
+  "hospital_id": 13,
+  "name_ko": "류준진",
+  "name_en": "Ryu Jun-jin",
+  "title": "원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "NOSE_FILLER",
+   "THERMAGE",
+   "PICO_TONING"
+  ],
+  "languages": [
+   "ko",
+   "ja"
+  ],
+  "career_years": 8
+ },
+ {
+  "id": 45,
+  "hospital_id": 14,
+  "name_ko": "권지영",
+  "name_en": "Kwon Ji-young",
+  "title": "대표원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "FOREHEAD_BOTOX",
+   "LIP_FILLER",
+   "REJURAN",
+   "PICO_TONING",
+   "LASER_HAIR_REMOVAL"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 24
+ },
+ {
+  "id": 46,
+  "hospital_id": 14,
+  "name_ko": "홍영서",
+  "name_en": "Hong Young-seo",
+  "title": "원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "FOREHEAD_BOTOX",
+   "LIP_FILLER",
+   "NOSE_FILLER",
+   "ULTHERAPY",
+   "SHURINK",
+   "LASER_HAIR_REMOVAL"
+  ],
+  "languages": [
+   "ko",
+   "zh"
+  ],
+  "career_years": 9
+ },
+ {
+  "id": 47,
+  "hospital_id": 14,
+  "name_ko": "신수연",
+  "name_en": "Shin Su-yeon",
+  "title": "원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "LIP_FILLER",
+   "NOSE_FILLER",
+   "THERMAGE",
+   "PICO_TONING"
+  ],
+  "languages": [
+   "ko",
+   "en",
+   "zh"
+  ],
+  "career_years": 16
+ },
+ {
+  "id": 48,
+  "hospital_id": 14,
+  "name_ko": "임태혜",
+  "name_en": "Lim Tae-hye",
+  "title": "부원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "FOREHEAD_BOTOX",
+   "NOSE_FILLER",
+   "REJURAN",
+   "SHURINK"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 19
+ },
+ {
+  "id": 49,
+  "hospital_id": 15,
+  "name_ko": "신우혜",
+  "name_en": "Shin Woo-hye",
+  "title": "대표원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "PICO_TONING",
+   "DOUBLE_EYELID_INCISION",
+   "PTOSIS_CORRECTION",
+   "RHINOPLASTY",
+   "FAT_GRAFTING"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 11
+ },
+ {
+  "id": 50,
+  "hospital_id": 15,
+  "name_ko": "강연윤",
+  "name_en": "Kang Yeon-yoon",
+  "title": "원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "PICO_TONING",
+   "DOUBLE_EYELID_INCISION",
+   "PTOSIS_CORRECTION",
+   "RHINOPLASTY",
+   "FAT_GRAFTING"
+  ],
+  "languages": [
+   "ko",
+   "zh"
+  ],
+  "career_years": 23
+ },
+ {
+  "id": 51,
+  "hospital_id": 15,
+  "name_ko": "임성혜",
+  "name_en": "Lim Sung-hye",
+  "title": "원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "DOUBLE_EYELID_INCISION",
+   "PTOSIS_CORRECTION",
+   "RHINOPLASTY"
+  ],
+  "languages": [
+   "ko",
+   "zh"
+  ],
+  "career_years": 9
+ },
+ {
+  "id": 52,
+  "hospital_id": 15,
+  "name_ko": "장윤성",
+  "name_en": "Jang Yoon-sung",
+  "title": "부원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "PICO_TONING",
+   "DOUBLE_EYELID_INCISION",
+   "PTOSIS_CORRECTION",
+   "FAT_GRAFTING"
+  ],
+  "languages": [
+   "ko",
+   "en",
+   "ja"
+  ],
+  "career_years": 10
+ },
+ {
+  "id": 53,
+  "hospital_id": 16,
+  "name_ko": "황현수",
+  "name_en": "Hwang Hyun-su",
+  "title": "대표원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "FOREHEAD_BOTOX",
+   "NOSE_FILLER",
+   "THERMAGE"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 23
+ },
+ {
+  "id": 54,
+  "hospital_id": 16,
+  "name_ko": "김하우",
+  "name_en": "Kim Ha-woo",
+  "title": "원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "REJURAN",
+   "ULTHERAPY",
+   "SHURINK"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 9
+ },
+ {
+  "id": 55,
+  "hospital_id": 16,
+  "name_ko": "한태준",
+  "name_en": "Han Tae-jun",
+  "title": "원장",
+  "specialties": [
+   "LIP_FILLER",
+   "ULTHERAPY",
+   "THERMAGE",
+   "SHURINK",
+   "LASER_HAIR_REMOVAL"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 6
+ },
+ {
+  "id": 56,
+  "hospital_id": 17,
+  "name_ko": "홍우혜",
+  "name_en": "Hong Woo-hye",
+  "title": "대표원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "PTOSIS_CORRECTION",
+   "RHINOPLASTY",
+   "FAT_GRAFTING",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 15
+ },
+ {
+  "id": 57,
+  "hospital_id": 17,
+  "name_ko": "임하수",
+  "name_en": "Lim Ha-su",
+  "title": "원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "DOUBLE_EYELID_INCISION",
+   "FACIAL_CONTOURING",
+   "FAT_GRAFTING",
+   "BREAST_AUGMENTATION"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 23
+ },
+ {
+  "id": 58,
+  "hospital_id": 17,
+  "name_ko": "오준민",
+  "name_en": "Oh Jun-min",
+  "title": "원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "PTOSIS_CORRECTION",
+   "FAT_GRAFTING",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 14
+ },
+ {
+  "id": 59,
+  "hospital_id": 18,
+  "name_ko": "박현준",
+  "name_en": "Park Hyun-jun",
+  "title": "대표원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "DOUBLE_EYELID_INCISION",
+   "FACIAL_CONTOURING",
+   "FAT_GRAFTING",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 5
+ },
+ {
+  "id": 60,
+  "hospital_id": 18,
+  "name_ko": "황수윤",
+  "name_en": "Hwang Su-yoon",
+  "title": "원장",
+  "specialties": [
+   "DOUBLE_EYELID_INCISION",
+   "LIPOSUCTION",
+   "BREAST_AUGMENTATION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 16
+ },
+ {
+  "id": 61,
+  "hospital_id": 18,
+  "name_ko": "정태영",
+  "name_en": "Jung Tae-young",
+  "title": "원장",
+  "specialties": [
+   "FACIAL_CONTOURING",
+   "FAT_GRAFTING",
+   "BREAST_AUGMENTATION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 15
+ },
+ {
+  "id": 62,
+  "hospital_id": 19,
+  "name_ko": "조준지",
+  "name_en": "Cho Jun-ji",
+  "title": "대표원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "FOREHEAD_BOTOX",
+   "DOUBLE_EYELID_NONINCISION",
+   "PTOSIS_CORRECTION",
+   "FAT_GRAFTING",
+   "LIPOSUCTION",
+   "BREAST_AUGMENTATION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 18
+ },
+ {
+  "id": 63,
+  "hospital_id": 19,
+  "name_ko": "최지민",
+  "name_en": "Choi Ji-min",
+  "title": "원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "DOUBLE_EYELID_INCISION",
+   "PTOSIS_CORRECTION",
+   "FACIAL_CONTOURING",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 20
+ },
+ {
+  "id": 64,
+  "hospital_id": 20,
+  "name_ko": "박윤민",
+  "name_en": "Park Yoon-min",
+  "title": "대표원장",
+  "specialties": [
+   "NOSE_FILLER",
+   "RHINOPLASTY",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 8
+ },
+ {
+  "id": 65,
+  "hospital_id": 20,
+  "name_ko": "홍예진",
+  "name_en": "Hong Ye-jin",
+  "title": "원장",
+  "specialties": [
+   "NOSE_FILLER",
+   "DOUBLE_EYELID_INCISION",
+   "RHINOPLASTY",
+   "FACIAL_CONTOURING",
+   "BREAST_AUGMENTATION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 10
+ },
+ {
+  "id": 66,
+  "hospital_id": 20,
+  "name_ko": "오민지",
+  "name_en": "Oh Min-ji",
+  "title": "원장",
+  "specialties": [
+   "NOSE_FILLER",
+   "PTOSIS_CORRECTION",
+   "FACIAL_CONTOURING",
+   "FAT_GRAFTING"
+  ],
+  "languages": [
+   "ko",
+   "zh"
+  ],
+  "career_years": 13
+ },
+ {
+  "id": 67,
+  "hospital_id": 21,
+  "name_ko": "김현예",
+  "name_en": "Kim Hyun-ye",
+  "title": "대표원장",
+  "specialties": [
+   "THERMAGE",
+   "SHURINK",
+   "DOUBLE_EYELID_NONINCISION",
+   "RHINOPLASTY",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 23
+ },
+ {
+  "id": 68,
+  "hospital_id": 21,
+  "name_ko": "강태현",
+  "name_en": "Kang Tae-hyun",
+  "title": "원장",
+  "specialties": [
+   "THERMAGE",
+   "SHURINK",
+   "RHINOPLASTY",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko",
+   "en",
+   "zh",
+   "ja"
+  ],
+  "career_years": 11
+ },
+ {
+  "id": 69,
+  "hospital_id": 21,
+  "name_ko": "안은재",
+  "name_en": "Ahn Eun-jae",
+  "title": "원장",
+  "specialties": [
+   "SHURINK",
+   "DOUBLE_EYELID_NONINCISION",
+   "RHINOPLASTY",
+   "BREAST_AUGMENTATION"
+  ],
+  "languages": [
+   "ko",
+   "en",
+   "ja"
+  ],
+  "career_years": 8
+ },
+ {
+  "id": 70,
+  "hospital_id": 21,
+  "name_ko": "안준성",
+  "name_en": "Ahn Jun-sung",
+  "title": "부원장",
+  "specialties": [
+   "SHURINK",
+   "DOUBLE_EYELID_NONINCISION",
+   "PTOSIS_CORRECTION",
+   "RHINOPLASTY"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 6
+ },
+ {
+  "id": 71,
+  "hospital_id": 22,
+  "name_ko": "임재예",
+  "name_en": "Lim Jae-ye",
+  "title": "대표원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "LIP_FILLER",
+   "REJURAN",
+   "ULTHERAPY",
+   "PICO_TONING",
+   "LASER_HAIR_REMOVAL"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 20
+ },
+ {
+  "id": 72,
+  "hospital_id": 22,
+  "name_ko": "오우민",
+  "name_en": "Oh Woo-min",
+  "title": "원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "REJURAN",
+   "ULTHERAPY",
+   "SHURINK",
+   "PICO_TONING",
+   "LASER_HAIR_REMOVAL"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 20
+ },
+ {
+  "id": 73,
+  "hospital_id": 23,
+  "name_ko": "한예연",
+  "name_en": "Han Ye-yeon",
+  "title": "대표원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "NOSE_FILLER",
+   "ULTHERAPY",
+   "PICO_TONING"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 20
+ },
+ {
+  "id": 74,
+  "hospital_id": 23,
+  "name_ko": "장진유",
+  "name_en": "Jang Jin-yu",
+  "title": "원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "SHURINK",
+   "LASER_HAIR_REMOVAL"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 25
+ },
+ {
+  "id": 75,
+  "hospital_id": 23,
+  "name_ko": "서수성",
+  "name_en": "Seo Su-sung",
+  "title": "원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "FOREHEAD_BOTOX",
+   "LIP_FILLER",
+   "ULTHERAPY",
+   "SHURINK",
+   "PICO_TONING"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 20
+ },
+ {
+  "id": 76,
+  "hospital_id": 23,
+  "name_ko": "안하준",
+  "name_en": "Ahn Ha-jun",
+  "title": "부원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "NOSE_FILLER",
+   "SHURINK",
+   "LASER_HAIR_REMOVAL"
+  ],
+  "languages": [
+   "ko",
+   "ja"
+  ],
+  "career_years": 13
+ },
+ {
+  "id": 77,
+  "hospital_id": 24,
+  "name_ko": "정윤현",
+  "name_en": "Jung Yoon-hyun",
+  "title": "대표원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "DOUBLE_EYELID_INCISION",
+   "PTOSIS_CORRECTION",
+   "RHINOPLASTY",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 21
+ },
+ {
+  "id": 78,
+  "hospital_id": 24,
+  "name_ko": "황태예",
+  "name_en": "Hwang Tae-ye",
+  "title": "원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "DOUBLE_EYELID_INCISION",
+   "RHINOPLASTY",
+   "FAT_GRAFTING"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 21
+ },
+ {
+  "id": 79,
+  "hospital_id": 24,
+  "name_ko": "장혜도",
+  "name_en": "Jang Hye-do",
+  "title": "원장",
+  "specialties": [
+   "PTOSIS_CORRECTION",
+   "RHINOPLASTY",
+   "FAT_GRAFTING",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 5
+ },
+ {
+  "id": 80,
+  "hospital_id": 25,
+  "name_ko": "임우성",
+  "name_en": "Lim Woo-sung",
+  "title": "대표원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "NOSE_FILLER",
+   "ULTHERAPY",
+   "THERMAGE",
+   "LASER_HAIR_REMOVAL",
+   "RHINOPLASTY",
+   "FAT_GRAFTING",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko",
+   "en",
+   "zh"
+  ],
+  "career_years": 17
+ },
+ {
+  "id": 81,
+  "hospital_id": 25,
+  "name_ko": "황현진",
+  "name_en": "Hwang Hyun-jin",
+  "title": "원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "NOSE_FILLER",
+   "THERMAGE",
+   "LASER_HAIR_REMOVAL",
+   "DOUBLE_EYELID_NONINCISION",
+   "FAT_GRAFTING",
+   "LIPOSUCTION",
+   "BREAST_AUGMENTATION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 22
+ },
+ {
+  "id": 82,
+  "hospital_id": 26,
+  "name_ko": "류민도",
+  "name_en": "Ryu Min-do",
+  "title": "대표원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "FOREHEAD_BOTOX",
+   "ULTHERAPY",
+   "THERMAGE",
+   "SHURINK"
+  ],
+  "languages": [
+   "ko",
+   "zh"
+  ],
+  "career_years": 16
+ },
+ {
+  "id": 83,
+  "hospital_id": 26,
+  "name_ko": "신수서",
+  "name_en": "Shin Su-seo",
+  "title": "원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "NOSE_FILLER",
+   "ULTHERAPY",
+   "THERMAGE",
+   "SHURINK",
+   "LASER_HAIR_REMOVAL"
+  ],
+  "languages": [
+   "ko",
+   "ja"
+  ],
+  "career_years": 25
+ },
+ {
+  "id": 84,
+  "hospital_id": 26,
+  "name_ko": "임진지",
+  "name_en": "Lim Jin-ji",
+  "title": "원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "NOSE_FILLER",
+   "THERMAGE",
+   "SHURINK",
+   "LASER_HAIR_REMOVAL"
+  ],
+  "languages": [
+   "ko",
+   "ja"
+  ],
+  "career_years": 14
+ },
+ {
+  "id": 85,
+  "hospital_id": 26,
+  "name_ko": "최도우",
+  "name_en": "Choi Do-woo",
+  "title": "부원장",
+  "specialties": [
+   "NOSE_FILLER",
+   "ULTHERAPY",
+   "SHURINK",
+   "LASER_HAIR_REMOVAL"
+  ],
+  "languages": [
+   "ko",
+   "zh",
+   "ja"
+  ],
+  "career_years": 19
+ },
+ {
+  "id": 86,
+  "hospital_id": 27,
+  "name_ko": "한우윤",
+  "name_en": "Han Woo-yoon",
+  "title": "대표원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "DOUBLE_EYELID_NONINCISION",
+   "PTOSIS_CORRECTION",
+   "FACIAL_CONTOURING",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 16
+ },
+ {
+  "id": 87,
+  "hospital_id": 27,
+  "name_ko": "신예성",
+  "name_en": "Shin Ye-sung",
+  "title": "원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "NOSE_FILLER",
+   "DOUBLE_EYELID_NONINCISION",
+   "PTOSIS_CORRECTION",
+   "FACIAL_CONTOURING",
+   "FAT_GRAFTING",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 25
+ },
+ {
+  "id": 88,
+  "hospital_id": 27,
+  "name_ko": "박혜예",
+  "name_en": "Park Hye-ye",
+  "title": "원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "DOUBLE_EYELID_NONINCISION",
+   "PTOSIS_CORRECTION",
+   "FACIAL_CONTOURING",
+   "FAT_GRAFTING",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 14
+ },
+ {
+  "id": 89,
+  "hospital_id": 27,
+  "name_ko": "장서윤",
+  "name_en": "Jang Seo-yoon",
+  "title": "부원장",
+  "specialties": [
+   "DOUBLE_EYELID_NONINCISION",
+   "PTOSIS_CORRECTION",
+   "FACIAL_CONTOURING"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 23
+ },
+ {
+  "id": 90,
+  "hospital_id": 28,
+  "name_ko": "조수지",
+  "name_en": "Cho Su-ji",
+  "title": "대표원장",
+  "specialties": [
+   "NOSE_FILLER",
+   "DOUBLE_EYELID_NONINCISION",
+   "PTOSIS_CORRECTION",
+   "RHINOPLASTY",
+   "FACIAL_CONTOURING",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 25
+ },
+ {
+  "id": 91,
+  "hospital_id": 28,
+  "name_ko": "임영윤",
+  "name_en": "Lim Young-yoon",
+  "title": "원장",
+  "specialties": [
+   "DOUBLE_EYELID_NONINCISION",
+   "DOUBLE_EYELID_INCISION",
+   "RHINOPLASTY",
+   "FACIAL_CONTOURING",
+   "BREAST_AUGMENTATION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 18
+ },
+ {
+  "id": 92,
+  "hospital_id": 28,
+  "name_ko": "송도예",
+  "name_en": "Song Do-ye",
+  "title": "원장",
+  "specialties": [
+   "DOUBLE_EYELID_INCISION",
+   "PTOSIS_CORRECTION",
+   "FACIAL_CONTOURING",
+   "BREAST_AUGMENTATION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 18
+ },
+ {
+  "id": 93,
+  "hospital_id": 29,
+  "name_ko": "홍재진",
+  "name_en": "Hong Jae-jin",
+  "title": "대표원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "PTOSIS_CORRECTION",
+   "RHINOPLASTY",
+   "FACIAL_CONTOURING",
+   "FAT_GRAFTING",
+   "LIPOSUCTION",
+   "BREAST_AUGMENTATION"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 6
+ },
+ {
+  "id": 94,
+  "hospital_id": 29,
+  "name_ko": "안예수",
+  "name_en": "Ahn Ye-su",
+  "title": "원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "FOREHEAD_BOTOX",
+   "DOUBLE_EYELID_INCISION",
+   "RHINOPLASTY",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 12
+ },
+ {
+  "id": 95,
+  "hospital_id": 29,
+  "name_ko": "정윤재",
+  "name_en": "Jung Yoon-jae",
+  "title": "원장",
+  "specialties": [
+   "DOUBLE_EYELID_INCISION",
+   "PTOSIS_CORRECTION",
+   "RHINOPLASTY",
+   "FACIAL_CONTOURING",
+   "LIPOSUCTION",
+   "BREAST_AUGMENTATION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 7
+ },
+ {
+  "id": 96,
+  "hospital_id": 30,
+  "name_ko": "임태성",
+  "name_en": "Lim Tae-sung",
+  "title": "대표원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "NOSE_FILLER",
+   "ULTHERAPY",
+   "PICO_TONING",
+   "LASER_HAIR_REMOVAL"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 18
+ },
+ {
+  "id": 97,
+  "hospital_id": 30,
+  "name_ko": "신서예",
+  "name_en": "Shin Seo-ye",
+  "title": "원장",
+  "specialties": [
+   "LIP_FILLER",
+   "ULTHERAPY",
+   "SHURINK",
+   "LASER_HAIR_REMOVAL"
+  ],
+  "languages": [
+   "ko",
+   "ja"
+  ],
+  "career_years": 9
+ },
+ {
+  "id": 98,
+  "hospital_id": 30,
+  "name_ko": "김하유",
+  "name_en": "Kim Ha-yu",
+  "title": "원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "LIP_FILLER",
+   "NOSE_FILLER",
+   "PICO_TONING"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 10
+ },
+ {
+  "id": 99,
+  "hospital_id": 30,
+  "name_ko": "이성민",
+  "name_en": "Lee Sung-min",
+  "title": "부원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "LIP_FILLER",
+   "REJURAN",
+   "LASER_HAIR_REMOVAL"
+  ],
+  "languages": [
+   "ko",
+   "ja"
+  ],
+  "career_years": 7
+ },
+ {
+  "id": 100,
+  "hospital_id": 31,
+  "name_ko": "최도유",
+  "name_en": "Choi Do-yu",
+  "title": "대표원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "FOREHEAD_BOTOX",
+   "NOSE_FILLER",
+   "REJURAN",
+   "PICO_TONING"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 12
+ },
+ {
+  "id": 101,
+  "hospital_id": 31,
+  "name_ko": "신예준",
+  "name_en": "Shin Ye-jun",
+  "title": "원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "FOREHEAD_BOTOX",
+   "NOSE_FILLER",
+   "ULTHERAPY",
+   "SHURINK",
+   "LASER_HAIR_REMOVAL"
+  ],
+  "languages": [
+   "ko",
+   "zh",
+   "ja"
+  ],
+  "career_years": 13
+ },
+ {
+  "id": 102,
+  "hospital_id": 31,
+  "name_ko": "권재하",
+  "name_en": "Kwon Jae-ha",
+  "title": "원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "FOREHEAD_BOTOX",
+   "NOSE_FILLER",
+   "ULTHERAPY",
+   "SHURINK",
+   "LASER_HAIR_REMOVAL"
+  ],
+  "languages": [
+   "ko",
+   "ja"
+  ],
+  "career_years": 22
+ },
+ {
+  "id": 103,
+  "hospital_id": 32,
+  "name_ko": "이서은",
+  "name_en": "Lee Seo-eun",
+  "title": "대표원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "DOUBLE_EYELID_INCISION",
+   "FACIAL_CONTOURING",
+   "FAT_GRAFTING"
+  ],
+  "languages": [
+   "ko",
+   "en",
+   "ja"
+  ],
+  "career_years": 25
+ },
+ {
+  "id": 104,
+  "hospital_id": 32,
+  "name_ko": "오현혜",
+  "name_en": "Oh Hyun-hye",
+  "title": "원장",
+  "specialties": [
+   "NOSE_FILLER",
+   "DOUBLE_EYELID_NONINCISION",
+   "DOUBLE_EYELID_INCISION",
+   "PTOSIS_CORRECTION",
+   "FAT_GRAFTING",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 17
+ },
+ {
+  "id": 105,
+  "hospital_id": 32,
+  "name_ko": "김연하",
+  "name_en": "Kim Yeon-ha",
+  "title": "원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "DOUBLE_EYELID_NONINCISION",
+   "PTOSIS_CORRECTION",
+   "FACIAL_CONTOURING",
+   "LIPOSUCTION",
+   "BREAST_AUGMENTATION"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 12
+ },
+ {
+  "id": 106,
+  "hospital_id": 33,
+  "name_ko": "최우하",
+  "name_en": "Choi Woo-ha",
+  "title": "대표원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "DOUBLE_EYELID_NONINCISION",
+   "DOUBLE_EYELID_INCISION",
+   "RHINOPLASTY",
+   "FACIAL_CONTOURING",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 21
+ },
+ {
+  "id": 107,
+  "hospital_id": 33,
+  "name_ko": "박수재",
+  "name_en": "Park Su-jae",
+  "title": "원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "NOSE_FILLER",
+   "DOUBLE_EYELID_NONINCISION",
+   "PTOSIS_CORRECTION",
+   "FACIAL_CONTOURING",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 24
+ },
+ {
+  "id": 108,
+  "hospital_id": 33,
+  "name_ko": "송도태",
+  "name_en": "Song Do-tae",
+  "title": "원장",
+  "specialties": [
+   "DOUBLE_EYELID_NONINCISION",
+   "DOUBLE_EYELID_INCISION",
+   "RHINOPLASTY",
+   "FACIAL_CONTOURING",
+   "LIPOSUCTION",
+   "BREAST_AUGMENTATION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 5
+ },
+ {
+  "id": 109,
+  "hospital_id": 34,
+  "name_ko": "임도진",
+  "name_en": "Lim Do-jin",
+  "title": "대표원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "NOSE_FILLER",
+   "DOUBLE_EYELID_NONINCISION",
+   "PTOSIS_CORRECTION",
+   "RHINOPLASTY",
+   "BREAST_AUGMENTATION"
+  ],
+  "languages": [
+   "ko",
+   "en",
+   "zh"
+  ],
+  "career_years": 25
+ },
+ {
+  "id": 110,
+  "hospital_id": 34,
+  "name_ko": "정유재",
+  "name_en": "Jung Yu-jae",
+  "title": "원장",
+  "specialties": [
+   "NOSE_FILLER",
+   "PTOSIS_CORRECTION",
+   "BREAST_AUGMENTATION"
+  ],
+  "languages": [
+   "ko",
+   "zh"
+  ],
+  "career_years": 9
+ },
+ {
+  "id": 111,
+  "hospital_id": 35,
+  "name_ko": "김민혜",
+  "name_en": "Kim Min-hye",
+  "title": "대표원장",
+  "specialties": [
+   "LIP_FILLER",
+   "LASER_HAIR_REMOVAL",
+   "RHINOPLASTY",
+   "FAT_GRAFTING",
+   "BREAST_AUGMENTATION"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 19
+ },
+ {
+  "id": 112,
+  "hospital_id": 35,
+  "name_ko": "조하우",
+  "name_en": "Cho Ha-woo",
+  "title": "원장",
+  "specialties": [
+   "LIP_FILLER",
+   "NOSE_FILLER",
+   "RHINOPLASTY",
+   "FAT_GRAFTING",
+   "BREAST_AUGMENTATION"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 9
+ },
+ {
+  "id": 113,
+  "hospital_id": 35,
+  "name_ko": "박수우",
+  "name_en": "Park Su-woo",
+  "title": "원장",
+  "specialties": [
+   "NOSE_FILLER",
+   "LASER_HAIR_REMOVAL",
+   "RHINOPLASTY",
+   "BREAST_AUGMENTATION"
+  ],
+  "languages": [
+   "ko",
+   "zh"
+  ],
+  "career_years": 18
+ },
+ {
+  "id": 114,
+  "hospital_id": 36,
+  "name_ko": "홍예윤",
+  "name_en": "Hong Ye-yoon",
+  "title": "대표원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "FOREHEAD_BOTOX",
+   "PTOSIS_CORRECTION",
+   "RHINOPLASTY",
+   "FACIAL_CONTOURING",
+   "FAT_GRAFTING",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 11
+ },
+ {
+  "id": 115,
+  "hospital_id": 36,
+  "name_ko": "신우재",
+  "name_en": "Shin Woo-jae",
+  "title": "원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "PTOSIS_CORRECTION",
+   "RHINOPLASTY",
+   "FACIAL_CONTOURING",
+   "FAT_GRAFTING",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 5
+ },
+ {
+  "id": 116,
+  "hospital_id": 36,
+  "name_ko": "임하은",
+  "name_en": "Lim Ha-eun",
+  "title": "원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "DOUBLE_EYELID_INCISION",
+   "FACIAL_CONTOURING",
+   "FAT_GRAFTING",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 12
+ },
+ {
+  "id": 117,
+  "hospital_id": 37,
+  "name_ko": "이도은",
+  "name_en": "Lee Do-eun",
+  "title": "대표원장",
+  "specialties": [
+   "LIP_FILLER",
+   "NOSE_FILLER",
+   "REJURAN",
+   "THERMAGE",
+   "SHURINK"
+  ],
+  "languages": [
+   "ko",
+   "en",
+   "zh"
+  ],
+  "career_years": 24
+ },
+ {
+  "id": 118,
+  "hospital_id": 37,
+  "name_ko": "이민하",
+  "name_en": "Lee Min-ha",
+  "title": "원장",
+  "specialties": [
+   "LIP_FILLER",
+   "NOSE_FILLER",
+   "REJURAN",
+   "THERMAGE",
+   "SHURINK"
+  ],
+  "languages": [
+   "ko",
+   "zh"
+  ],
+  "career_years": 16
+ },
+ {
+  "id": 119,
+  "hospital_id": 37,
+  "name_ko": "정혜서",
+  "name_en": "Jung Hye-seo",
+  "title": "원장",
+  "specialties": [
+   "LIP_FILLER",
+   "REJURAN",
+   "SHURINK"
+  ],
+  "languages": [
+   "ko",
+   "zh"
+  ],
+  "career_years": 15
+ },
+ {
+  "id": 120,
+  "hospital_id": 38,
+  "name_ko": "오재윤",
+  "name_en": "Oh Jae-yoon",
+  "title": "대표원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "LIP_FILLER",
+   "NOSE_FILLER",
+   "REJURAN",
+   "PICO_TONING",
+   "DOUBLE_EYELID_NONINCISION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 13
+ },
+ {
+  "id": 121,
+  "hospital_id": 38,
+  "name_ko": "홍하영",
+  "name_en": "Hong Ha-young",
+  "title": "원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "LIP_FILLER",
+   "NOSE_FILLER",
+   "ULTHERAPY",
+   "PICO_TONING",
+   "DOUBLE_EYELID_NONINCISION",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko",
+   "ja"
+  ],
+  "career_years": 10
+ },
+ {
+  "id": 122,
+  "hospital_id": 38,
+  "name_ko": "한성준",
+  "name_en": "Han Sung-jun",
+  "title": "원장",
+  "specialties": [
+   "NOSE_FILLER",
+   "PICO_TONING",
+   "DOUBLE_EYELID_NONINCISION",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 25
+ },
+ {
+  "id": 123,
+  "hospital_id": 39,
+  "name_ko": "강태재",
+  "name_en": "Kang Tae-jae",
+  "title": "대표원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "REJURAN",
+   "ULTHERAPY",
+   "DOUBLE_EYELID_INCISION",
+   "BREAST_AUGMENTATION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 8
+ },
+ {
+  "id": 124,
+  "hospital_id": 39,
+  "name_ko": "황서태",
+  "name_en": "Hwang Seo-tae",
+  "title": "원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "REJURAN",
+   "ULTHERAPY",
+   "PICO_TONING",
+   "RHINOPLASTY"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 16
+ },
+ {
+  "id": 125,
+  "hospital_id": 39,
+  "name_ko": "송성태",
+  "name_en": "Song Sung-tae",
+  "title": "원장",
+  "specialties": [
+   "REJURAN",
+   "PICO_TONING",
+   "DOUBLE_EYELID_NONINCISION",
+   "RHINOPLASTY",
+   "FAT_GRAFTING"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 20
+ },
+ {
+  "id": 126,
+  "hospital_id": 40,
+  "name_ko": "안하진",
+  "name_en": "Ahn Ha-jin",
+  "title": "대표원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "PTOSIS_CORRECTION",
+   "FAT_GRAFTING",
+   "BREAST_AUGMENTATION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 23
+ },
+ {
+  "id": 127,
+  "hospital_id": 40,
+  "name_ko": "조진민",
+  "name_en": "Cho Jin-min",
+  "title": "원장",
+  "specialties": [
+   "LIP_FILLER",
+   "PTOSIS_CORRECTION",
+   "RHINOPLASTY",
+   "FAT_GRAFTING",
+   "BREAST_AUGMENTATION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 23
+ },
+ {
+  "id": 128,
+  "hospital_id": 41,
+  "name_ko": "서수진",
+  "name_en": "Seo Su-jin",
+  "title": "대표원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "DOUBLE_EYELID_NONINCISION",
+   "PTOSIS_CORRECTION",
+   "RHINOPLASTY",
+   "BREAST_AUGMENTATION"
+  ],
+  "languages": [
+   "ko",
+   "en",
+   "zh"
+  ],
+  "career_years": 15
+ },
+ {
+  "id": 129,
+  "hospital_id": 41,
+  "name_ko": "정민지",
+  "name_en": "Jung Min-ji",
+  "title": "원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "DOUBLE_EYELID_NONINCISION",
+   "PTOSIS_CORRECTION",
+   "RHINOPLASTY"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 20
+ },
+ {
+  "id": 130,
+  "hospital_id": 42,
+  "name_ko": "서지연",
+  "name_en": "Seo Ji-yeon",
+  "title": "대표원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "REJURAN",
+   "THERMAGE",
+   "SHURINK",
+   "PICO_TONING",
+   "LASER_HAIR_REMOVAL"
+  ],
+  "languages": [
+   "ko",
+   "en",
+   "ja"
+  ],
+  "career_years": 17
+ },
+ {
+  "id": 131,
+  "hospital_id": 42,
+  "name_ko": "박민예",
+  "name_en": "Park Min-ye",
+  "title": "원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "LIP_FILLER",
+   "NOSE_FILLER",
+   "ULTHERAPY",
+   "THERMAGE",
+   "PICO_TONING"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 14
+ },
+ {
+  "id": 132,
+  "hospital_id": 42,
+  "name_ko": "정현윤",
+  "name_en": "Jung Hyun-yoon",
+  "title": "원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "LIP_FILLER",
+   "NOSE_FILLER",
+   "ULTHERAPY",
+   "THERMAGE",
+   "SHURINK",
+   "LASER_HAIR_REMOVAL"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 14
+ },
+ {
+  "id": 133,
+  "hospital_id": 43,
+  "name_ko": "박서영",
+  "name_en": "Park Seo-young",
+  "title": "대표원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "THERMAGE",
+   "SHURINK",
+   "LASER_HAIR_REMOVAL"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 12
+ },
+ {
+  "id": 134,
+  "hospital_id": 43,
+  "name_ko": "정성영",
+  "name_en": "Jung Sung-young",
+  "title": "원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "NOSE_FILLER",
+   "SHURINK",
+   "PICO_TONING",
+   "LASER_HAIR_REMOVAL"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 14
+ },
+ {
+  "id": 135,
+  "hospital_id": 43,
+  "name_ko": "권재지",
+  "name_en": "Kwon Jae-ji",
+  "title": "원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "LIP_FILLER",
+   "NOSE_FILLER",
+   "THERMAGE",
+   "PICO_TONING",
+   "LASER_HAIR_REMOVAL"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 9
+ },
+ {
+  "id": 136,
+  "hospital_id": 43,
+  "name_ko": "정윤은",
+  "name_en": "Jung Yoon-eun",
+  "title": "부원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "NOSE_FILLER",
+   "THERMAGE",
+   "SHURINK",
+   "PICO_TONING",
+   "LASER_HAIR_REMOVAL"
+  ],
+  "languages": [
+   "ko",
+   "zh"
+  ],
+  "career_years": 6
+ },
+ {
+  "id": 137,
+  "hospital_id": 44,
+  "name_ko": "안민현",
+  "name_en": "Ahn Min-hyun",
+  "title": "대표원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "REJURAN"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 10
+ },
+ {
+  "id": 138,
+  "hospital_id": 44,
+  "name_ko": "서서지",
+  "name_en": "Seo Seo-ji",
+  "title": "원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "NOSE_FILLER",
+   "ULTHERAPY",
+   "THERMAGE"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 15
+ },
+ {
+  "id": 139,
+  "hospital_id": 44,
+  "name_ko": "류태유",
+  "name_en": "Ryu Tae-yu",
+  "title": "원장",
+  "specialties": [
+   "LIP_FILLER",
+   "ULTHERAPY",
+   "THERMAGE",
+   "PICO_TONING"
+  ],
+  "languages": [
+   "ko",
+   "zh"
+  ],
+  "career_years": 10
+ },
+ {
+  "id": 140,
+  "hospital_id": 44,
+  "name_ko": "조우지",
+  "name_en": "Cho Woo-ji",
+  "title": "부원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "LIP_FILLER",
+   "NOSE_FILLER",
+   "REJURAN",
+   "ULTHERAPY",
+   "PICO_TONING"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 8
+ },
+ {
+  "id": 141,
+  "hospital_id": 45,
+  "name_ko": "임유수",
+  "name_en": "Lim Yu-su",
+  "title": "대표원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "PTOSIS_CORRECTION",
+   "FAT_GRAFTING"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 17
+ },
+ {
+  "id": 142,
+  "hospital_id": 45,
+  "name_ko": "임지준",
+  "name_en": "Lim Ji-jun",
+  "title": "원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "DOUBLE_EYELID_NONINCISION",
+   "RHINOPLASTY",
+   "BREAST_AUGMENTATION"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 11
+ },
+ {
+  "id": 143,
+  "hospital_id": 45,
+  "name_ko": "최민예",
+  "name_en": "Choi Min-ye",
+  "title": "원장",
+  "specialties": [
+   "DOUBLE_EYELID_INCISION",
+   "PTOSIS_CORRECTION",
+   "RHINOPLASTY",
+   "FACIAL_CONTOURING",
+   "FAT_GRAFTING",
+   "BREAST_AUGMENTATION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 11
+ },
+ {
+  "id": 144,
+  "hospital_id": 46,
+  "name_ko": "최우준",
+  "name_en": "Choi Woo-jun",
+  "title": "대표원장",
+  "specialties": [
+   "NOSE_FILLER",
+   "DOUBLE_EYELID_NONINCISION",
+   "PTOSIS_CORRECTION",
+   "FACIAL_CONTOURING",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 19
+ },
+ {
+  "id": 145,
+  "hospital_id": 46,
+  "name_ko": "황성민",
+  "name_en": "Hwang Sung-min",
+  "title": "원장",
+  "specialties": [
+   "NOSE_FILLER",
+   "DOUBLE_EYELID_NONINCISION",
+   "DOUBLE_EYELID_INCISION",
+   "PTOSIS_CORRECTION",
+   "RHINOPLASTY"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 23
+ },
+ {
+  "id": 146,
+  "hospital_id": 46,
+  "name_ko": "윤예윤",
+  "name_en": "Yoon Ye-yoon",
+  "title": "원장",
+  "specialties": [
+   "NOSE_FILLER",
+   "DOUBLE_EYELID_INCISION",
+   "PTOSIS_CORRECTION",
+   "FACIAL_CONTOURING",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 17
+ },
+ {
+  "id": 147,
+  "hospital_id": 47,
+  "name_ko": "황연성",
+  "name_en": "Hwang Yeon-sung",
+  "title": "대표원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "THERMAGE",
+   "LASER_HAIR_REMOVAL",
+   "DOUBLE_EYELID_INCISION",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 21
+ },
+ {
+  "id": 148,
+  "hospital_id": 47,
+  "name_ko": "류유성",
+  "name_en": "Ryu Yu-sung",
+  "title": "원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "REJURAN",
+   "THERMAGE",
+   "LASER_HAIR_REMOVAL",
+   "DOUBLE_EYELID_INCISION",
+   "FAT_GRAFTING",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 12
+ },
+ {
+  "id": 149,
+  "hospital_id": 48,
+  "name_ko": "오태은",
+  "name_en": "Oh Tae-eun",
+  "title": "대표원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "DOUBLE_EYELID_INCISION"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 24
+ },
+ {
+  "id": 150,
+  "hospital_id": 48,
+  "name_ko": "권준윤",
+  "name_en": "Kwon Jun-yoon",
+  "title": "원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "FOREHEAD_BOTOX",
+   "LIP_FILLER",
+   "DOUBLE_EYELID_INCISION",
+   "FACIAL_CONTOURING",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko",
+   "zh"
+  ],
+  "career_years": 25
+ },
+ {
+  "id": 151,
+  "hospital_id": 48,
+  "name_ko": "오성우",
+  "name_en": "Oh Sung-woo",
+  "title": "원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "FOREHEAD_BOTOX",
+   "LIP_FILLER",
+   "PICO_TONING",
+   "LIPOSUCTION"
+  ],
+  "languages": [
+   "ko",
+   "zh"
+  ],
+  "career_years": 20
+ },
+ {
+  "id": 152,
+  "hospital_id": 48,
+  "name_ko": "정우예",
+  "name_en": "Jung Woo-ye",
+  "title": "부원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "FOREHEAD_BOTOX",
+   "LIP_FILLER",
+   "PICO_TONING",
+   "FACIAL_CONTOURING"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 20
+ },
+ {
+  "id": 153,
+  "hospital_id": 49,
+  "name_ko": "박도재",
+  "name_en": "Park Do-jae",
+  "title": "대표원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "DOUBLE_EYELID_NONINCISION",
+   "PTOSIS_CORRECTION",
+   "RHINOPLASTY",
+   "BREAST_AUGMENTATION"
+  ],
+  "languages": [
+   "ko",
+   "en",
+   "zh"
+  ],
+  "career_years": 22
+ },
+ {
+  "id": 154,
+  "hospital_id": 49,
+  "name_ko": "윤성하",
+  "name_en": "Yoon Sung-ha",
+  "title": "원장",
+  "specialties": [
+   "DOUBLE_EYELID_NONINCISION",
+   "DOUBLE_EYELID_INCISION",
+   "RHINOPLASTY",
+   "BREAST_AUGMENTATION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 6
+ },
+ {
+  "id": 155,
+  "hospital_id": 49,
+  "name_ko": "송하준",
+  "name_en": "Song Ha-jun",
+  "title": "원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "DOUBLE_EYELID_NONINCISION",
+   "DOUBLE_EYELID_INCISION",
+   "FACIAL_CONTOURING",
+   "BREAST_AUGMENTATION"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 24
+ },
+ {
+  "id": 156,
+  "hospital_id": 50,
+  "name_ko": "강윤태",
+  "name_en": "Kang Yoon-tae",
+  "title": "대표원장",
+  "specialties": [
+   "JAW_BOTOX",
+   "REJURAN",
+   "SHURINK",
+   "PICO_TONING"
+  ],
+  "languages": [
+   "ko",
+   "en"
+  ],
+  "career_years": 9
+ },
+ {
+  "id": 157,
+  "hospital_id": 50,
+  "name_ko": "오도준",
+  "name_en": "Oh Do-jun",
+  "title": "원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "REJURAN",
+   "ULTHERAPY",
+   "THERMAGE",
+   "PICO_TONING",
+   "LASER_HAIR_REMOVAL"
+  ],
+  "languages": [
+   "ko",
+   "en",
+   "zh"
+  ],
+  "career_years": 5
+ },
+ {
+  "id": 158,
+  "hospital_id": 50,
+  "name_ko": "윤성도",
+  "name_en": "Yoon Sung-do",
+  "title": "원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "LIP_FILLER",
+   "THERMAGE",
+   "PICO_TONING"
+  ],
+  "languages": [
+   "ko",
+   "en",
+   "zh",
+   "ja"
+  ],
+  "career_years": 18
+ },
+ {
+  "id": 159,
+  "hospital_id": 50,
+  "name_ko": "오은준",
+  "name_en": "Oh Eun-jun",
+  "title": "부원장",
+  "specialties": [
+   "FOREHEAD_BOTOX",
+   "NOSE_FILLER",
+   "ULTHERAPY",
+   "SHURINK"
+  ],
+  "languages": [
+   "ko"
+  ],
+  "career_years": 9
+ }
+]

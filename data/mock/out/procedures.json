@@ -1,0 +1,348 @@
+[
+ {
+  "code": "JAW_BOTOX",
+  "category": "SKIN",
+  "name_ko": "사각턱 보톡스",
+  "name_en": "Jaw (Masseter) Botox",
+  "name_zh": "瘦脸针",
+  "name_ja": "エラボトックス",
+  "synonyms": [
+   "사각턱 보톡스",
+   "턱보톡스",
+   "masseter botox",
+   "jaw botox",
+   "瘦脸针",
+   "エラボトックス"
+  ],
+  "duration_min": 15,
+  "downtime_days": 0,
+  "description_ko": "저작근에 보툴리눔 톡신을 주입해 턱선을 갸름하게 보이도록 돕는 시술입니다.",
+  "description_en": "Botulinum toxin injected into the masseter muscles to help slim the appearance of the lower face."
+ },
+ {
+  "code": "FOREHEAD_BOTOX",
+  "category": "SKIN",
+  "name_ko": "이마 보톡스",
+  "name_en": "Forehead Botox",
+  "name_zh": "额头肉毒素",
+  "name_ja": "額ボトックス",
+  "synonyms": [
+   "이마 주름 보톡스",
+   "forehead botox",
+   "forehead wrinkle botox",
+   "抬头纹肉毒",
+   "額のしわボトックス"
+  ],
+  "duration_min": 10,
+  "downtime_days": 0,
+  "description_ko": "이마 근육의 움직임을 줄여 가로 주름을 완화하는 시술입니다.",
+  "description_en": "Botulinum toxin to soften horizontal forehead lines by relaxing the frontalis muscle."
+ },
+ {
+  "code": "LIP_FILLER",
+  "category": "SKIN",
+  "name_ko": "입술 필러",
+  "name_en": "Lip Filler",
+  "name_zh": "嘴唇玻尿酸",
+  "name_ja": "唇ヒアルロン酸",
+  "synonyms": [
+   "입술필러",
+   "lip filler",
+   "lip augmentation",
+   "丰唇",
+   "唇フィラー"
+  ],
+  "duration_min": 20,
+  "downtime_days": 1,
+  "description_ko": "히알루론산 필러로 입술 볼륨과 라인을 보완하는 시술입니다.",
+  "description_en": "Hyaluronic acid filler to add volume and definition to the lips."
+ },
+ {
+  "code": "NOSE_FILLER",
+  "category": "SKIN",
+  "name_ko": "코 필러",
+  "name_en": "Nose Filler",
+  "name_zh": "鼻子玻尿酸",
+  "name_ja": "鼻ヒアルロン酸",
+  "synonyms": [
+   "코필러",
+   "nose filler",
+   "non-surgical rhinoplasty",
+   "隆鼻针",
+   "鼻フィラー"
+  ],
+  "duration_min": 20,
+  "downtime_days": 1,
+  "description_ko": "필러로 콧대와 코끝 라인을 비수술적으로 보완하는 시술입니다.",
+  "description_en": "Non-surgical reshaping of the nasal bridge or tip using hyaluronic acid filler."
+ },
+ {
+  "code": "REJURAN",
+  "category": "SKIN",
+  "name_ko": "리쥬란 힐러",
+  "name_en": "Rejuran Healer",
+  "name_zh": "丽珠兰",
+  "name_ja": "リジュラン",
+  "synonyms": [
+   "리쥬란",
+   "rejuran",
+   "skin booster",
+   "丽珠兰",
+   "婴儿针",
+   "リジュランヒーラー"
+  ],
+  "duration_min": 40,
+  "downtime_days": 2,
+  "description_ko": "폴리뉴클레오타이드 성분을 피부에 주입해 피부 컨디션 개선을 돕는 스킨부스터입니다.",
+  "description_en": "A polynucleotide-based skin-booster injection aimed at improving skin texture and condition."
+ },
+ {
+  "code": "ULTHERAPY",
+  "category": "SKIN",
+  "name_ko": "울쎄라",
+  "name_en": "Ultherapy",
+  "name_zh": "超声刀",
+  "name_ja": "ウルセラ",
+  "synonyms": [
+   "울쎄라 리프팅",
+   "ultherapy",
+   "HIFU lifting",
+   "超声刀",
+   "ウルセラリフト"
+  ],
+  "duration_min": 60,
+  "downtime_days": 0,
+  "description_ko": "고강도 집속 초음파로 피부 깊은 층을 자극해 리프팅 효과를 기대하는 시술입니다.",
+  "description_en": "Microfocused ultrasound treatment targeting deeper skin layers for a lifting effect."
+ },
+ {
+  "code": "THERMAGE",
+  "category": "SKIN",
+  "name_ko": "써마지",
+  "name_en": "Thermage FLX",
+  "name_zh": "热玛吉",
+  "name_ja": "サーマクール",
+  "synonyms": [
+   "써마지FLX",
+   "thermage",
+   "RF skin tightening",
+   "热玛吉",
+   "サーマクールFLX"
+  ],
+  "duration_min": 60,
+  "downtime_days": 0,
+  "description_ko": "고주파 에너지로 피부 탄력 개선을 돕는 시술입니다.",
+  "description_en": "Monopolar radiofrequency treatment intended to tighten and firm the skin."
+ },
+ {
+  "code": "SHURINK",
+  "category": "SKIN",
+  "name_ko": "슈링크",
+  "name_en": "Shurink (HIFU)",
+  "name_zh": "舒铃超声提拉",
+  "name_ja": "シュリンク",
+  "synonyms": [
+   "슈링크 유니버스",
+   "shurink",
+   "HIFU",
+   "舒铃",
+   "シュリンク"
+  ],
+  "duration_min": 30,
+  "downtime_days": 0,
+  "description_ko": "집속 초음파 장비로 비교적 짧은 시간에 리프팅을 기대하는 시술입니다.",
+  "description_en": "A focused-ultrasound lifting treatment with relatively short treatment time."
+ },
+ {
+  "code": "PICO_TONING",
+  "category": "SKIN",
+  "name_ko": "피코토닝",
+  "name_en": "Pico Toning",
+  "name_zh": "皮秒激光",
+  "name_ja": "ピコトーニング",
+  "synonyms": [
+   "피코 레이저",
+   "pico toning",
+   "pico laser",
+   "皮秒",
+   "ピコレーザー"
+  ],
+  "duration_min": 20,
+  "downtime_days": 0,
+  "description_ko": "피코초 레이저로 색소와 피부톤 개선을 돕는 시술입니다.",
+  "description_en": "Picosecond laser toning aimed at pigmentation and uneven skin tone."
+ },
+ {
+  "code": "LASER_HAIR_REMOVAL",
+  "category": "SKIN",
+  "name_ko": "레이저 제모",
+  "name_en": "Laser Hair Removal",
+  "name_zh": "激光脱毛",
+  "name_ja": "レーザー脱毛",
+  "synonyms": [
+   "제모",
+   "laser hair removal",
+   "hair removal",
+   "激光脱毛",
+   "医療脱毛"
+  ],
+  "duration_min": 30,
+  "downtime_days": 0,
+  "description_ko": "레이저로 모낭을 표적해 체모를 줄이는 시술로 여러 회차가 필요합니다.",
+  "description_en": "Laser treatment targeting hair follicles to reduce hair growth; multiple sessions are usually needed."
+ },
+ {
+  "code": "DOUBLE_EYELID_NONINCISION",
+  "category": "SURGERY",
+  "name_ko": "매몰법 쌍꺼풀",
+  "name_en": "Non-incisional Double Eyelid",
+  "name_zh": "埋线双眼皮",
+  "name_ja": "埋没法二重",
+  "synonyms": [
+   "매몰법",
+   "비절개 쌍꺼풀",
+   "non-incisional double eyelid",
+   "suture double eyelid",
+   "埋线双眼皮",
+   "埋没法"
+  ],
+  "duration_min": 40,
+  "downtime_days": 5,
+  "description_ko": "피부를 절개하지 않고 봉합사로 쌍꺼풀 라인을 만드는 수술입니다.",
+  "description_en": "Creates a double eyelid crease with sutures, without a skin incision."
+ },
+ {
+  "code": "DOUBLE_EYELID_INCISION",
+  "category": "SURGERY",
+  "name_ko": "절개법 쌍꺼풀",
+  "name_en": "Incisional Double Eyelid",
+  "name_zh": "全切双眼皮",
+  "name_ja": "切開法二重",
+  "synonyms": [
+   "절개 쌍꺼풀",
+   "incisional double eyelid",
+   "incisional blepharoplasty",
+   "全切双眼皮",
+   "切開法"
+  ],
+  "duration_min": 90,
+  "downtime_days": 10,
+  "description_ko": "눈꺼풀 피부를 절개해 지방·피부를 정리하고 쌍꺼풀 라인을 만드는 수술입니다.",
+  "description_en": "Creates a crease through an eyelid incision, often with removal of excess skin or fat."
+ },
+ {
+  "code": "PTOSIS_CORRECTION",
+  "category": "SURGERY",
+  "name_ko": "눈매교정",
+  "name_en": "Ptosis Correction",
+  "name_zh": "眼睑下垂矫正",
+  "name_ja": "眼瞼下垂手術",
+  "synonyms": [
+   "눈매 교정술",
+   "ptosis correction",
+   "eye opening surgery",
+   "眼睑下垂矫正",
+   "眼瞼下垂"
+  ],
+  "duration_min": 90,
+  "downtime_days": 10,
+  "description_ko": "눈을 뜨는 근육의 힘을 보완해 또렷한 눈매를 만드는 수술입니다.",
+  "description_en": "Adjusts the eyelid-lifting muscle to correct drooping lids and open the eyes."
+ },
+ {
+  "code": "RHINOPLASTY",
+  "category": "SURGERY",
+  "name_ko": "코성형",
+  "name_en": "Rhinoplasty",
+  "name_zh": "隆鼻手术",
+  "name_ja": "鼻整形",
+  "synonyms": [
+   "코 수술",
+   "rhinoplasty",
+   "nose job",
+   "隆鼻",
+   "鼻整形"
+  ],
+  "duration_min": 150,
+  "downtime_days": 10,
+  "description_ko": "보형물이나 자가 연골을 이용해 코의 모양을 개선하는 수술입니다.",
+  "description_en": "Surgical reshaping of the nose using implants and/or the patient's own cartilage."
+ },
+ {
+  "code": "FACIAL_CONTOURING",
+  "category": "SURGERY",
+  "name_ko": "안면윤곽",
+  "name_en": "Facial Contouring",
+  "name_zh": "面部轮廓手术",
+  "name_ja": "輪郭形成",
+  "synonyms": [
+   "윤곽 수술",
+   "광대축소",
+   "facial contouring",
+   "V-line surgery",
+   "削骨",
+   "輪郭手術"
+  ],
+  "duration_min": 240,
+  "downtime_days": 21,
+  "description_ko": "광대·사각턱·턱끝 뼈를 다듬어 얼굴 윤곽을 바꾸는 수술입니다.",
+  "description_en": "Bone surgery on the cheekbones, jaw angle and/or chin to change the facial outline."
+ },
+ {
+  "code": "FAT_GRAFTING",
+  "category": "SURGERY",
+  "name_ko": "지방이식",
+  "name_en": "Fat Grafting",
+  "name_zh": "自体脂肪移植",
+  "name_ja": "脂肪注入",
+  "synonyms": [
+   "얼굴 지방이식",
+   "fat grafting",
+   "fat transfer",
+   "脂肪填充",
+   "脂肪注入"
+  ],
+  "duration_min": 120,
+  "downtime_days": 7,
+  "description_ko": "자신의 지방을 채취·정제해 볼륨이 필요한 부위에 이식하는 수술입니다.",
+  "description_en": "Harvests and purifies the patient's own fat and injects it where volume is desired."
+ },
+ {
+  "code": "LIPOSUCTION",
+  "category": "SURGERY",
+  "name_ko": "지방흡입",
+  "name_en": "Liposuction",
+  "name_zh": "吸脂",
+  "name_ja": "脂肪吸引",
+  "synonyms": [
+   "지방 흡입술",
+   "liposuction",
+   "lipo",
+   "抽脂",
+   "脂肪吸引"
+  ],
+  "duration_min": 150,
+  "downtime_days": 7,
+  "description_ko": "캐뉼라로 피하지방을 제거해 체형을 다듬는 수술입니다.",
+  "description_en": "Removes subcutaneous fat with a cannula to contour body areas."
+ },
+ {
+  "code": "BREAST_AUGMENTATION",
+  "category": "SURGERY",
+  "name_ko": "가슴성형",
+  "name_en": "Breast Augmentation",
+  "name_zh": "隆胸",
+  "name_ja": "豊胸手術",
+  "synonyms": [
+   "가슴 확대",
+   "breast augmentation",
+   "breast implants",
+   "隆胸",
+   "豊胸"
+  ],
+  "duration_min": 150,
+  "downtime_days": 14,
+  "description_ko": "보형물 등을 이용해 가슴 볼륨을 보완하는 수술입니다.",
+  "description_en": "Increases breast volume, typically with implants."
+ }
+]

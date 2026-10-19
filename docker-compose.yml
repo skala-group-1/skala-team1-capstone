@@ -1,0 +1,40 @@
+# 1단계: 인프라만 (postgres + pgvector, rabbitmq)
+# 각 파트 서비스(frontend, backend, agent, business-mcp, rag-mcp)는 개발되는 대로 추가
+# 공개 포트 원칙: 최종본에서는 frontend(80), backend(8080)만 공개. 아래 포트 노출은 개발 편의용.
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-capstone}
+      POSTGRES_USER: ${POSTGRES_USER:-capstone}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-capstone}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # 최초 기동 시에만 실행됨 (볼륨이 비어 있을 때). 재적재: docker compose down -v
+      # backend Flyway 도입 후에는 이 마운트를 제거하고 Flyway로 이관
+      - ./data/mock/out/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+      - ./data/mock/out/V100__seed.sql:/docker-entrypoint-initdb.d/02_seed.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-capstone} -d ${POSTGRES_DB:-capstone}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-guest}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pgdata:

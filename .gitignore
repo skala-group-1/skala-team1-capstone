@@ -1,0 +1,29 @@
+# env / secrets
+.env
+.env.*
+!.env.example
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.iml
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+
+# Node / Vue
+node_modules/
+dist/
+
+# Java / Gradle
+build/
+.gradle/
+out/production/
+
+# logs
+*.log

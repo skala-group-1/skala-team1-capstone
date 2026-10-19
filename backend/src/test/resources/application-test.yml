@@ -2,3 +2,7 @@ app:
   jwt:
     secret: test-secret-test-secret-test-secret-0123456789
   service-token: test-service-token
+  agent:
+    # 테스트에는 agent 가 없다 → 문서 원문 조회는 503 이어야 함
+    base-url: http://localhost:1
+    timeout: 1s

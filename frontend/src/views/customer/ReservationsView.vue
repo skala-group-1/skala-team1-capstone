@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// 08 문서 C9 내 예약
+// 「화면 목록」 C9 내 예약
 // TODO(fe): reservation.loadMine() — 상태 배지 5종(PENDING·CONFIRMED·REJECTED·EXPIRED·CANCELLED)
 // TODO(fe): PENDING: 홀드 남은 시간 카운트다운(holdExpiresAt)
 // TODO(fe): REJECTED: 반려 사유 + 대안 시간 선택 → reservation.acceptAlternative()

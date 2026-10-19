@@ -1,5 +1,5 @@
 /**
- * data/mock/out/*.json (DB 행, snake_case) → 12 계약서 DTO (camelCase) 변환.
+ * data/mock/out/*.json (DB 행, snake_case) → 「공통 계약서」 DTO (camelCase) 변환.
  * dev 전용 — main.ts 에서 import.meta.env.DEV 일 때만 동적 import 되므로 운영 번들에 들어가지 않는다.
  * JSON 은 직접 고치지 말고 data/mock/generate.py 로 재생성 (README 협업 규칙).
  *

@@ -1,4 +1,4 @@
-// 07 문서 2장 AI 상담. 실시간 진행은 sse.ts 의 streamTask 로 받는다
+// 「API·이벤트 명세」 2장 AI 상담. 실시간 진행은 sse.ts 의 streamTask 로 받는다
 import type {
   AiTask,
   ApprovalRequest,
@@ -21,5 +21,5 @@ export const aiApi = {
   /** 202. 같은 taskId 스트림이 이어진다. TASK_NOT_WAITING_APPROVAL(409) 주의 */
   approve: (id: Uuid, body: ApprovalRequest) => http.post<void>(`/ai/tasks/${id}/approval`, body).then(() => undefined),
   myTasks: () => http.get<AiTask[]>('/ai/tasks', { params: { mine: true } }).then((r) => r.data),
-  // TODO(fe): GET/DELETE /api/me/ai-profile (장기 기억 조회·삭제, 03 문서 9-4) — P1
+  // TODO(fe): GET/DELETE /api/me/ai-profile (장기 기억 조회·삭제, 「AI Agent 설계」 9-4) — P1
 }

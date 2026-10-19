@@ -1,4 +1,4 @@
-// 07 문서 2장 예약 (고객). 상태 전이 규칙은 12-4 — FE 는 판단하지 않고 status 만 보여준다
+// 「API·이벤트 명세」 2장 예약 (고객). 상태 전이 규칙은 「공통 계약서」 4장 — FE 는 판단하지 않고 status 만 보여준다
 import type { CreateReservationRequest, Reservation, Slot } from '@/types/contract'
 import { http, newIdempotencyKey } from './http'
 

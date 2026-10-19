@@ -1,4 +1,4 @@
-// 11 문서 1장 API (backend PR #1 에 구현됨: AuthController, MeController)
+// 「인증·인가 설계」 1장 API (backend PR #1 에 구현됨: AuthController, MeController)
 import type { LoginRequest, LoginResponse, SignupRequest, UserSummary } from '@/types/contract'
 import { http, refreshAccessToken } from './http'
 

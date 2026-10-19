@@ -1,4 +1,4 @@
-// 07 문서 2장 탐색·비교 (backend PR #1 에 구현됨: CatalogController)
+// 「API·이벤트 명세」 2장 탐색·비교 (backend PR #1 에 구현됨: CatalogController)
 import type {
   CompareRequest,
   CompareResponse,
@@ -35,6 +35,6 @@ export const catalogApi = {
     http.get<Page<Review>>(`/hospitals/${id}/reviews`, { params: q }).then((r) => r.data),
   /** 최대 3곳 */
   compare: (body: CompareRequest) => http.post<CompareResponse>('/hospitals/compare', body).then((r) => r.data),
-  /** 근거 문서 원문 (C4-1 바텀시트). TODO(fe): 응답 형식은 BE-17 구현 시 확정 (04 문서 doc:// Resource 메타 포함) */
+  /** 근거 문서 원문 (C4-1 바텀시트). TODO(fe): 응답 형식은 BE-17 구현 시 확정 (「MCP 설계」 doc:// Resource 메타 포함) */
   doc: (docId: string) => http.get<unknown>(`/docs/${encodeURIComponent(docId)}`).then((r) => r.data),
 }

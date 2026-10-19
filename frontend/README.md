@@ -1,7 +1,7 @@
 # frontend — Vue 3 (고객·상담사·병원관리자 웹, 앱 사이즈 390px)
 
 > 지금은 **골격**입니다. 화면은 무스타일 placeholder 이고, 해야 할 일은 코드에 `// TODO(fe):` 주석으로 적어 두었습니다.
-> 기준 문서: Notion `12 공통 계약서`(타입), `07 API·이벤트 명세`(엔드포인트·SSE·STOMP), `08 화면 목록`(화면·라우트), `11 인증`(토큰·가드)
+> 기준 문서: Notion 「공통 계약서」(타입), 「API·이벤트 명세」(엔드포인트·SSE·STOMP), 「화면 목록」(화면·라우트), 「인증·인가 설계」(토큰·가드)
 
 ## 실행
 
@@ -30,10 +30,10 @@ MSW 로 구현된 API: 로그인·refresh·로그아웃·me, 시술 목록, 병�
 
 ```
 src/
-├─ types/contract.ts   12 계약서 enum·DTO·SSE 이벤트·오류 타입 (계약 변경 시 Notion 12 먼저 → 여기)
+├─ types/contract.ts   「공통 계약서」 enum·DTO·SSE 이벤트·오류 타입 (계약 변경 시 Notion 12 먼저 → 여기)
 ├─ api/
 │  ├─ http.ts          axios: Bearer·Accept-Language, 401 TOKEN_EXPIRED → refresh 1회(동시 요청 공유) → 재시도
-│  ├─ session.ts       access token 메모리 보관 (localStorage 금지, 11 문서)
+│  ├─ session.ts       access token 메모리 보관 (localStorage 금지, 「인증·인가 설계」)
 │  ├─ auth.ts catalog.ts ai.ts reservations.ts consultations.ts notifications.ts hospitalAdmin.ts
 │  ├─ sse.ts           AI 작업 스트림 (fetch-event-source + Authorization + Last-Event-ID)
 │  └─ stomp.ts         상담 채팅·알림 (CONNECT 헤더 JWT)

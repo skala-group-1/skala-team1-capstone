@@ -1,5 +1,5 @@
 /**
- * 인증 상태 (11 문서 1·5장).
+ * 인증 상태 (「인증·인가 설계」 1·5장).
  * - access token 은 메모리(session)에만. 새로고침 시 bootstrap() 이 /api/auth/refresh 로 복구
  * - 역할별 홈: 고객 /, 상담사 /counselor, 병원관리자 /hospital-admin, 운영자 /ops
  */
@@ -46,7 +46,7 @@ export const useAuthStore = defineStore('auth', {
       return res.user
     },
     async signup(body: SignupRequest) {
-      // TODO(fe): 가입 후 자동 로그인할지 /login 으로 보낼지 결정 (11 문서에 명시 없음)
+      // TODO(fe): 가입 후 자동 로그인할지 /login 으로 보낼지 결정 (「인증·인가 설계」에 명시 없음)
       return authApi.signup(body)
     },
     async logout() {

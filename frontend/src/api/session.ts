@@ -1,5 +1,5 @@
 /**
- * access token 보관소 (11 문서 1장: 메모리에만, localStorage 저장 금지).
+ * access token 보관소 (「인증·인가 설계」 1장: 메모리에만, localStorage 저장 금지).
  * axios·SSE·STOMP 가 공용으로 읽는다. Pinia auth 스토어가 값을 넣고 뺀다 (스토어 ↔ http 순환 import 방지용).
  */
 import type { Locale } from '@/types/contract'

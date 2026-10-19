@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// 08 문서 C4 AI 채팅 (메인/병원/상담사 모드 공용)
+// 「화면 목록」 C4 AI 채팅 (메인/병원/상담사 모드 공용)
 // TODO(fe): route.params.conversationId 로 conversation.load(), 없으면 open()
 // TODO(fe): 메시지 목록 + 스트리밍 draft(TOKEN), 진행 칩(activeTools), 조건 칩 바(conditions·missing, 탭하면 수정)
 // TODO(fe): RESULT_CARDS → 병원 카드 가로 스크롤, '이 병원 상담' → send(null, {type:'SELECT_HOSPITAL', hospitalId})

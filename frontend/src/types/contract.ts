@@ -1,8 +1,8 @@
 /**
- * 12 공통 계약서 (DTO·Enum·오류·메시지) 를 TypeScript 로 옮긴 것.
- * 필드명·enum 값은 계약서와 1:1 이다. 바꾸려면 Notion 12 문서를 먼저 고치고 팀에 공지한 뒤 여기를 맞춘다.
+ * 「공통 계약서」 (DTO·Enum·오류·메시지) 를 TypeScript 로 옮긴 것.
+ * 필드명·enum 값은 계약서와 1:1 이다. 바꾸려면 Notion 「공통 계약서」를 먼저 고치고 팀에 공지한 뒤 여기를 맞춘다.
  *
- * 공통 규칙 (12-1)
+ * 공통 규칙 (「공통 계약서」 1장)
  * - JSON 필드는 camelCase
  * - 업무 ID 는 number, conversationId·taskId·traceId·idempotencyKey 는 UUID string
  * - 일시는 ISO-8601 + 오프셋 문자열(`2026-10-21T15:00:00+09:00`), 날짜는 `2026-10-21`
@@ -513,7 +513,7 @@ export type SseEvent = { [K in SseEventName]: { event: K; data: SseEventMap[K]; 
 /** 스트림이 끝나는 이벤트 (12-7: 마지막은 반드시 이 셋 중 하나) */
 export const TERMINAL_SSE_EVENTS: readonly SseEventName[] = ['DONE', 'FAILED', 'APPROVAL_REQUIRED']
 
-// ─── 07 문서 4장: STOMP 이벤트 ───────────────────────────────
+// ─── 「API·이벤트 명세」 4장: STOMP 이벤트 ───────────────────────────────
 // TODO(fe): STOMP 프레임 바디 형식(type 필드 이름 등)은 07·12 에 확정돼 있지 않다. backend BE-16 구현에 맞춰 확정할 것
 export type ConsultationTopicEvent =
   | { type: 'MESSAGE_CREATED'; message: ChatMessage }

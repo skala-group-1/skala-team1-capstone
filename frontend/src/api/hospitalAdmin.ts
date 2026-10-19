@@ -1,4 +1,4 @@
-// 07 문서 2장 병원관리자 / 운영자
+// 「API·이벤트 명세」 2장 병원관리자 / 운영자
 import type { HospitalDashboard, IsoDate, RejectRequest, Reservation, ReservationStatus } from '@/types/contract'
 import { http } from './http'
 
@@ -14,7 +14,7 @@ export const hospitalAdminApi = {
 }
 
 export const opsApi = {
-  // TODO(fe): P1 — 응답 DTO 가 12 계약서에 없음. BE-18 구현 시 타입 추가
+  // TODO(fe): P1 — 응답 DTO 가 「공통 계약서」에 없음. BE-18 구현 시 타입 추가
   auditLogs: () => http.get<unknown>('/ops/audit-logs').then((r) => r.data),
   failedTasks: () => http.get<unknown>('/ops/ai-tasks', { params: { status: 'FAILED' } }).then((r) => r.data),
 }

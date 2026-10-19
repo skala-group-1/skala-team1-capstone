@@ -1,5 +1,5 @@
 /**
- * AI 대화 (C4 채팅). SSE 이벤트를 reducer(applyEvent) 하나로 state 에 반영한다 (07 문서 3장 "FE 처리" 열).
+ * AI 대화 (C4 채팅). SSE 이벤트를 reducer(applyEvent) 하나로 state 에 반영한다 (「API·이벤트 명세」 3장 "FE 처리" 열).
  * 대화창 = conversationId(=thread_id) 1개. 병원 선택 시 새 대화창이 열린다 (D-20)
  */
 import { defineStore } from 'pinia'
@@ -95,7 +95,7 @@ export const useConversationStore = defineStore('conversation', {
         },
       })
     },
-    /** SSE reducer — 12 문서 6장 이벤트별 처리 */
+    /** SSE reducer — 「공통 계약서」 6장 이벤트별 처리 */
     applyEvent(e: SseEvent) {
       switch (e.event) {
         case 'STATUS':
@@ -130,7 +130,7 @@ export const useConversationStore = defineStore('conversation', {
           this.pendingAction = e.data
           break
         case 'TRIP_PLAN':
-          // TODO(fe): 일정 카드(타임라인) 컴포넌트 (03 문서 9-2)
+          // TODO(fe): 일정 카드(타임라인) 컴포넌트 (「AI Agent 설계」 9-2)
           this.tripPlan = e.data
           break
         case 'MEMORY_PROPOSAL':

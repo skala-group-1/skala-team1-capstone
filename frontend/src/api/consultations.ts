@@ -1,4 +1,4 @@
-// 07 문서 2장 상담 (고객·상담사 공통 + 상담사 전용). 실시간 메시지는 stomp.ts
+// 「API·이벤트 명세」 2장 상담 (고객·상담사 공통 + 상담사 전용). 실시간 메시지는 stomp.ts
 import type { ChatMessage, Consultation, ConsultationStatus } from '@/types/contract'
 import { http } from './http'
 

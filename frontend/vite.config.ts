@@ -2,7 +2,7 @@ import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
-// 개발 서버: 5173 (12 계약서 9장). 운영(docker)은 nginx 80 이 /api, /ws 를 backend 로 프록시한다.
+// 개발 서버: 5173 (「공통 계약서」 9장). 운영(docker)은 nginx 80 이 /api, /ws 를 backend 로 프록시한다.
 export default defineConfig({
   plugins: [vue()],
   resolve: {
@@ -21,7 +21,7 @@ export default defineConfig({
     proxy: {
       // VITE_USE_MSW=false 일 때 실제 backend(8080)로 붙는다. SSE 도 같은 경로(/api/ai/tasks/{id}/stream)
       '/api': { target: 'http://localhost:8080', changeOrigin: true },
-      // STOMP (07 문서 4장)
+      // STOMP (「API·이벤트 명세」 4장)
       '/ws': { target: 'ws://localhost:8080', ws: true },
     },
   },

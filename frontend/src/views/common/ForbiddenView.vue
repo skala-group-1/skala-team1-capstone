@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// 403 "권한 없음" (11 문서 5장). 권한 판단은 backend 가 하고 FE 는 표시만
+// 403 "권한 없음" (「인증·인가 설계」 5장). 권한 판단은 backend 가 하고 FE 는 표시만
 import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 </script>

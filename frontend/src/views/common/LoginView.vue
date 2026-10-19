@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// 08 문서 C2 로그인 — 골격 중 유일하게 실제 동작하는 화면 (MSW 또는 backend 로 로그인 → 역할 홈 이동)
+// 「화면 목록」 C2 로그인 — 골격 중 유일하게 실제 동작하는 화면 (MSW 또는 backend 로 로그인 → 역할 홈 이동)
 // TODO(fe): 디자인 적용, 검증 오류 표시, 데모 계정 빠른 선택(로컬 데모용)
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'

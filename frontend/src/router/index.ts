@@ -1,5 +1,5 @@
 /**
- * 라우트 = 08 문서 "FE 라우트 초안". 가드는 화면 표시용일 뿐, 권한 판단은 backend (08·11 문서)
+ * 라우트 = 「화면 목록」 "FE 라우트 초안". 가드는 화면 표시용일 뿐, 권한 판단은 backend (08·「인증·인가 설계」)
  * - 비로그인: /onboarding, /login, /signup 만 (D-17) → 그 외는 /login?redirect=
  * - meta.roles 와 역할이 다르면 그 역할의 홈으로 (고객 / · 상담사 /counselor · 병원관리자 /hospital-admin · 운영자 /ops)
  */
@@ -28,7 +28,7 @@ const routes: RouteRecordRaw[] = [
   { path: '/', component: () => import('@/views/customer/HomeView.vue'), meta: { roles: C } },
   // conversationId 없이 들어오면 새 메인 대화를 연다
   { path: '/chat/:conversationId?', component: () => import('@/views/customer/ChatView.vue'), meta: { roles: C } },
-  // 탐색·비교·상세는 모든 역할 조회 가능 (11 문서 권한 매트릭스)
+  // 탐색·비교·상세는 모든 역할 조회 가능 (「인증·인가 설계」 권한 매트릭스)
   { path: '/explore', component: () => import('@/views/customer/ExploreView.vue') },
   { path: '/compare', component: () => import('@/views/customer/CompareView.vue') },
   { path: '/hospitals/:id', component: () => import('@/views/customer/HospitalDetailView.vue') },

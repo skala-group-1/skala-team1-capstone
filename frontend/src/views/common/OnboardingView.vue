@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// 08 문서 C1 언어 선택/온보딩
+// 「화면 목록」 C1 언어 선택/온보딩
 // TODO(fe): 서비스 소개 1장, 재방문 시 스킵(localStorage 'onboarded')
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'

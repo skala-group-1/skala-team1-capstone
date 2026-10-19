@@ -1,4 +1,4 @@
-/** 예약 (C8 예약 시트, C9 내 예약). 상태 전이 판단은 backend (12-4) */
+/** 예약 (C8 예약 시트, C9 내 예약). 상태 전이 판단은 backend (「공통 계약서」 4장) */
 import { defineStore } from 'pinia'
 import { catalogApi, reservationApi, newIdempotencyKey, toApiError } from '@/api'
 import type { CreateReservationRequest, Reservation, Slot } from '@/types/contract'

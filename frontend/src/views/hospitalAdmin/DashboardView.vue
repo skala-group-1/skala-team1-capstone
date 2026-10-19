@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// 08 문서 H1 병원관리자 대시보드
+// 「화면 목록」 H1 병원관리자 대시보드
 // TODO(fe): hospitalAdminApi.dashboard() — 오늘 예약 수, 승인 대기 수, 진행 상담 수, 최근 요청 5건
 import PagePlaceholder from '@/components/PagePlaceholder.vue'
 </script>

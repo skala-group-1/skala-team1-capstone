@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// 08 문서 S2 통역 채팅
+// 「화면 목록」 S2 통역 채팅
 // TODO(fe): consultation.open(id) — REST 히스토리 + STOMP 구독
 // TODO(fe): 상단 한국어 요약 카드(summaryCard, 접기)
 // TODO(fe): 메시지: 번역문 우선 + 원문 토글, ⚠️ 플래그(NUMBER_MISMATCH / MEDICAL_QUESTION), 번역 실패 → 재시도

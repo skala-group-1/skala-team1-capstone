@@ -1,5 +1,5 @@
 /**
- * 상담 실시간 채팅·알림 (07 문서 4장, 11 문서 4장).
+ * 상담 실시간 채팅·알림 (「API·이벤트 명세」 4장, 「인증·인가 설계」 4장).
  * - CONNECT 헤더 Authorization: Bearer (ChannelInterceptor 에서 JWT 검증)
  * - 토큰 만료 시 refresh 후 재연결
  */

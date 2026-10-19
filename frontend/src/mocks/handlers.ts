@@ -1,7 +1,7 @@
 /**
  * MSW 핸들러 — backend 없이 화면 흐름을 검증하기 위한 가짜 응답.
  * 구현된 것: 인증(login/refresh/logout/me), 시술 목록, 병원 검색·상세·슬롯, AI 대화·작업 + 가짜 SSE
- * 경로·바디는 12 계약서·07 문서와 같다. 실제 backend 로 바꾸려면 .env.local 에서 VITE_USE_MSW=false
+ * 경로·바디는 「공통 계약서」·「API·이벤트 명세」와 같다. 실제 backend 로 바꾸려면 .env.local 에서 VITE_USE_MSW=false
  */
 import { delay, http, HttpResponse } from 'msw'
 import type {
@@ -59,7 +59,7 @@ function requireUser(request: Request) {
 }
 
 export const handlers = [
-  // ─── 인증 (11 문서) ────────────────────────────────────────
+  // ─── 인증 (「인증·인가 설계」) ────────────────────────────────────────
   http.post(`${API}/auth/login`, async ({ request }) => {
     const body = (await request.json()) as LoginRequest
     const u = users.find((x) => x.email === body.email && x.password === body.password)
@@ -81,7 +81,7 @@ export const handlers = [
     return u ? HttpResponse.json(toUserSummary(u)) : error(401, 'UNAUTHENTICATED', 'Login required')
   }),
 
-  // ─── 탐색 (07 문서 2장) ────────────────────────────────────
+  // ─── 탐색 (「API·이벤트 명세」 2장) ────────────────────────────────────
   http.get(`${API}/procedures`, ({ request }) => {
     return requireUser(request) ?? HttpResponse.json(procedures.map((p) => toProcedure(p, localeOf(request))))
   }),
@@ -130,7 +130,7 @@ export const handlers = [
   }),
   // TODO(fe): GET /hospitals/:id/reviews, POST /hospitals/compare, GET /docs/:docId mock
 
-  // ─── AI 상담 (07 문서 2·3장) ───────────────────────────────
+  // ─── AI 상담 (「API·이벤트 명세」 2·3장) ───────────────────────────────
   http.post(`${API}/ai/conversations`, ({ request }) => {
     const denied = requireUser(request)
     if (denied) return denied

@@ -16,8 +16,8 @@ class Settings(BaseSettings):
     backend_timeout_s: float = 3.0  # 04 문서 1장: 타임아웃 3s 후 1회 재시도
 
     # stdio(로컬·agent fake 모드)에는 HTTP 헤더가 없으므로 이 값을 acting user 로 쓴다.
-    # 1 = customer.zh1 (mock users.json). http 모드에서는 X-Acting-User-Id 헤더가 우선.
-    default_acting_user_id: int = 1
+    # 3 = customer.zh1 (mock users.json, 데모 시나리오 A 의 중국어 고객). http 모드에서는 X-Acting-User-Id 헤더가 우선.
+    default_acting_user_id: int = 3
 
 
 settings = Settings()

@@ -1,8 +1,8 @@
 # mcp/ — business-mcp · rag-mcp
 
-FastMCP 서버 2개 (04 MCP 설계 문서). agent 는 두 서버를 한 Client 에 붙여 도구명 접두어 `business_`, `rag_` 로 쓴다.
+FastMCP 서버 2개 (「MCP 설계」). agent 는 두 서버를 한 Client 에 붙여 도구명 접두어 `business_`, `rag_` 로 쓴다.
 
-> **지금 상태: 골격.** 도구 이름·시그니처·description·힌트·오류 규칙은 확정본(04 문서) 기준으로 작성했고,
+> **지금 상태: 골격.** 도구 이름·시그니처·description·힌트·오류 규칙은 확정본(「MCP 설계」) 기준으로 작성했고,
 > 실제 로직은 `# TODO(mcp):` / `# TODO(rag):` 주석이 달린 곳을 채우면 된다.
 > stub 모드는 `data/mock` 데이터를 실제로 돌려주므로 agent 담당은 지금 바로 붙여서 개발할 수 있다.
 
@@ -34,7 +34,7 @@ npx @modelcontextprotocol/inspector       # Inspector 에서 위 URL 로 접속�
 
 `.env` 는 저장소 루트의 것을 읽는다 (`mcp/` 에서 실행 기준 `../.env`).
 
-## agent 연결 계약 (D-29)
+## agent 연결 계약 (D-31)
 
 - **fake 모드** (`USE_FAKE_TOOLS=true`): agent 가 두 서버를 **stdio 서브프로세스**로 띄운다.
   `MCP_TRANSPORT=stdio USE_STUB=true uv run --project mcp python -m business_mcp.server` (rag 도 동일).
@@ -54,7 +54,7 @@ npx @modelcontextprotocol/inspector       # Inspector 에서 위 URL 로 접속�
 | business | `get_price_options` | readOnly | `GET /internal/hospitals/{id}/prices` |
 | business | `get_available_slots` | readOnly | `GET /internal/hospitals/{id}/slots` (최대 20) |
 | business | `compare_hospitals` | readOnly | `POST /internal/hospitals/compare` (`procedureCode`) |
-| business | `get_my_reservations` | readOnly | `GET /internal/reservations/mine` (12 계약서 기준, 04 문서와 다름) |
+| business | `get_my_reservations` | readOnly | `GET /internal/reservations/mine` (「공통 계약서」 기준, 「MCP 설계」와 다름) |
 | business | `plan_trip` | readOnly | `POST /internal/trip-plans` |
 | business | `create_reservation_request` | destructive·idempotent | `POST /internal/reservations` + `Idempotency-Key` |
 | business | `cancel_reservation` | destructive·idempotent | `POST /internal/reservations/{id}/cancel` |
@@ -63,7 +63,7 @@ npx @modelcontextprotocol/inspector       # Inspector 에서 위 URL 로 접속�
 | rag | `search_hospital_docs` | readOnly | 병원 FAQ |
 | rag | Resource `doc://{doc_id}`, `doc://{doc_id}/sections/{section}` | — | 원문 / 섹션 원문 |
 
-변경 도구는 agent 가 **승인 interrupt 후에만** 호출한다 (03 문서 4장). 도구를 추가·삭제하면 `tests/test_list_tools.py` 스냅샷과 agent 담당에게 공유.
+변경 도구는 agent 가 **승인 interrupt 후에만** 호출한다 (「AI Agent 설계」 4장). 도구를 추가·삭제하면 `tests/test_list_tools.py` 스냅샷과 agent 담당에게 공유.
 
 ## 구조
 
@@ -72,7 +72,7 @@ mcp/
 ├─ mcp_common/        casing(camel↔snake), paths(mock 위치), run(transport 선택)
 ├─ business_mcp/
 │  ├─ server.py       도구 12개 (시그니처·docstring·힌트)
-│  ├─ models.py       출력 Pydantic 모델 (12 계약서 DTO 의 snake_case 판)
+│  ├─ models.py       출력 Pydantic 모델 (「공통 계약서」 DTO 의 snake_case 판)
 │  ├─ context.py      acting user·trace id 헤더 읽기
 │  ├─ backend_client.py  BackendClient 인터페이스 + HttpBackendClient(3s, 1회 재시도)
 │  ├─ stub_backend.py    StubBackendClient (mock JSON 근사치 — backend 규칙 복제 금지)
@@ -95,5 +95,5 @@ mcp/
 
 **RAG 담당**
 - [ ] `PgVectorStore` 구현 + `data/rag_docs/indexer.py` (섹션 청킹·임베딩·모델/차원 메타)
-- [ ] `RAG_SCORE_THRESHOLD` 실측 후 확정, 다국어 질의 검색 품질 점검 (03 문서 예시 질문 10개)
+- [ ] `RAG_SCORE_THRESHOLD` 실측 후 확정, 다국어 질의 검색 품질 점검 (「AI Agent 설계」 예시 질문 10개)
 - [ ] Resource 메타에 임베딩 모델·색인 시각 추가, (선택) Prompt `answer_with_citations`

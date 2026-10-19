@@ -1,7 +1,7 @@
-"""ToolError 규칙 (04 문서 1장 '오류 처리 규칙').
+"""ToolError 규칙 (「MCP 설계」 1장 '오류 처리 규칙').
 
 원칙: LLM 이 다음 행동을 고를 수 있게 메시지에 '무엇이 틀렸고 무엇을 하면 되는지'를 넣는다.
-backend 오류 응답 형식은 12 계약서 3장 { code, message, traceId, details }.
+backend 오류 응답 형식은 「공통 계약서」 3장 { code, message, traceId, details }.
 """
 
 from __future__ import annotations
@@ -52,5 +52,5 @@ def from_backend_error(status: int, body: dict[str, Any] | None) -> ToolError:
     if status >= 500:
         return temporary_backend_error()
     # TODO(mcp): 409 CONCURRENT_UPDATE / INVALID_STATE_TRANSITION / CONSENT_REQUIRED 등
-    #            코드별 안내 문구를 04 문서 표 형식으로 추가 (12 계약서 3장 오류 코드 표)
+    #            코드별 안내 문구를 「MCP 설계」 표 형식으로 추가 (「공통 계약서」 3장 오류 코드 표)
     return ToolError(f"{code or 'ERROR'}: {body.get('message', 'Request failed')}")

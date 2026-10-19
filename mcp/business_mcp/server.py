@@ -1,10 +1,10 @@
-"""business-mcp 서버 (port 9101). 도구 12개 = 조회 9 + 변경 3 (04 문서 2장).
+"""business-mcp 서버 (port 9101). 도구 12개 = 조회 9 + 변경 3 (「MCP 설계」 2장).
 
-규칙 (04 문서 1장)
+규칙 (「MCP 설계」 1장)
 - 함수명 = 도구명. agent 에서는 접두어가 붙어 business_<name> 으로 보인다
 - docstring = description (영어, 입력·출력·단위·언제 쓰는지). LLM 이 읽는 문장이므로 신중히 수정
 - 조회 도구 readOnlyHint=true / 변경 도구 destructiveHint=true + idempotentHint
-- 변경 도구는 agent 가 반드시 승인 interrupt 를 거친 뒤 호출한다 (03 문서 4장)
+- 변경 도구는 agent 가 반드시 승인 interrupt 를 거친 뒤 호출한다 (「AI Agent 설계」 4장)
 - acting_user_id·trace_id 는 인자로 받지 않는다 → context.current_context()
 
 실행: cd mcp && uv run python -m business_mcp.server   (MCP_TRANSPORT=stdio 로 stdio)
@@ -82,7 +82,7 @@ async def search_hospitals(
     If total is 0, relax ONE condition (date ±1 day, budget, or area), search again and tell the user what was relaxed.
     Results are filtered and sorted only; do not describe any hospital as 'best' or 'recommended'.
     """
-    # TODO(mcp): 0건일 때 완화 옵션별 예상 건수(relaxOptions)를 이 도구가 줄지, agent 가 재호출할지 결정 (03 문서 9-1)
+    # TODO(mcp): 0건일 때 완화 옵션별 예상 건수(relaxOptions)를 이 도구가 줄지, agent 가 재호출할지 결정 (「AI Agent 설계」 9-1)
     result = await backend.search_hospitals(current_context(), {
         "procedure_code": procedure_code, "areas": areas, "date_from": date_from, "date_to": date_to,
         "budget_max_krw": budget_max_krw, "consult_language": language, "sort_by": sort_by, "limit": limit,
@@ -185,7 +185,7 @@ async def plan_trip(
 
 # ============================== 변경 도구 (3) ==============================
 # ⚠️ agent 는 이 도구들을 approval 노드(interrupt) 승인 후에만 호출한다.
-#    hospital_id 는 병원 서브그래프 state 에서 강제 주입 (03 문서 4장) — MCP 는 받은 값 그대로 backend 에 넘김.
+#    hospital_id 는 병원 서브그래프 state 에서 강제 주입 (「AI Agent 설계」 4장) — MCP 는 받은 값 그대로 backend 에 넘김.
 
 @mcp.tool(annotations=DESTRUCTIVE_IDEMPOTENT)
 async def create_reservation_request(

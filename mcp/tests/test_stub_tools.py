@@ -1,6 +1,6 @@
 """stub 모드에서 대표 도구 정상 1건 + 오류 1건.
 
-TODO(mcp): 도구별 오류 케이스(404·409·403) 를 모두 채우기 (04 문서 4장: 각 도구 정상 1 + 오류 1 이상)
+TODO(mcp): 도구별 오류 케이스(404·409·403) 를 모두 채우기 (「MCP 설계」 4장: 각 도구 정상 1 + 오류 1 이상)
 TODO(mcp): HttpBackendClient 테스트 — httpx.MockTransport 로 backend 응답(camelCase·오류 형식)을 흉내
 """
 

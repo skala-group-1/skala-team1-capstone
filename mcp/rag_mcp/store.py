@@ -4,7 +4,7 @@
 - PgVectorStore   : rag.documents / rag.chunks (pgvector) 검색 — RAG 담당 구현 몫
 
 문서 형식 (data/mock/rag_docs): YAML front matter(doc_id, title, doc_type, procedure_code | hospital_id, lang, version)
-+ 본문은 '## ' 제목 단위 섹션. 색인 규칙과 동일하게 '##' 섹션 = 1 chunk 로 본다 (13 문서 4장).
++ 본문은 '## ' 제목 단위 섹션. 색인 규칙과 동일하게 '##' 섹션 = 1 chunk 로 본다 (「파트별 착수 가이드」 4장).
 """
 
 from __future__ import annotations
@@ -61,7 +61,7 @@ class DocStore(Protocol):
 
 
 def slugify(title: str) -> str:
-    """'Recovery & downtime' → 'recovery-downtime' (12 계약서 Source.uri 예시와 같은 규칙)"""
+    """'Recovery & downtime' → 'recovery-downtime' (「공통 계약서」 Source.uri 예시와 같은 규칙)"""
     return re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")
 
 
@@ -116,7 +116,7 @@ class StubDocStore:
 class PgVectorStore:
     """rag.chunks 임베딩 검색.
 
-    TODO(rag): 구현 (13 문서 4장, 06 문서 rag 스키마)
+    TODO(rag): 구현 (「파트별 착수 가이드」 4장, 「데이터·DB 설계」 rag 스키마)
       1. data/rag_docs/indexer.py 가 front matter 파싱 → '##' 섹션 청킹 → 임베딩 → rag.documents·rag.chunks 저장
          (임베딩 모델·차원을 메타로 함께 저장)
       2. 여기서는 query 를 같은 EMBEDDING_MODEL 로 임베딩 → `ORDER BY embedding <=> :q LIMIT top_k`

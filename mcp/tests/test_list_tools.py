@@ -1,6 +1,6 @@
-"""list_tools 스냅샷: 도구 이름·description·힌트 누락 방지 (04 문서 4장).
+"""list_tools 스냅샷: 도구 이름·description·힌트 누락 방지 (「MCP 설계」 4장).
 
-도구를 추가·삭제하면 아래 목록도 고치고 agent 담당에게 공유한다 (13 문서 3장).
+도구를 추가·삭제하면 아래 목록도 고치고 agent 담당에게 공유한다 (「파트별 착수 가이드」 3장).
 """
 
 from fastmcp import Client

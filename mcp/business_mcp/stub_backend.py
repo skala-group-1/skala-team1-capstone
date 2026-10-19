@@ -1,7 +1,7 @@
 """StubBackendClient: data/mock/out/*.json 으로 /internal/** 응답을 흉내 낸다 (USE_STUB=true).
 
 ⚠️ backend 규칙 복제 금지. 여기 필터·정렬은 개발용 '근사치'다.
-   진짜 검색·예약·일정 계산 규칙은 backend 하나에만 있다 (02 문서 계층별 금지사항, 03 문서 9-2).
+   진짜 검색·예약·일정 계산 규칙은 backend 하나에만 있다 (「시스템 아키텍처」 계층별 금지사항, 「AI Agent 설계」 9-2).
    stub 결과와 backend 결과가 달라도 backend 가 정답.
 
 변경 도구(예약·취소·상담)는 프로세스 메모리에서만 상태를 바꾼다 (재기동하면 초기화).
@@ -251,7 +251,7 @@ class StubBackendClient:
                 if r["user_id"] == ctx.acting_user_id and (not status or r["status"] == status)]
 
     async def plan_trip(self, ctx, body):
-        # ⚠️ 근사치. 실제 규칙(TRIP_MIN_BUFFER_DAYS 등)은 backend POST /internal/trip-plans (03 문서 9-2)
+        # ⚠️ 근사치. 실제 규칙(TRIP_MIN_BUFFER_DAYS 등)은 backend POST /internal/trip-plans (「AI Agent 설계」 9-2)
         code = body["procedure_code"]
         self._check_procedure(code)
         downtime = self.procedures[code]["downtime_days"]
@@ -278,7 +278,7 @@ class StubBackendClient:
 
     # --- 변경 (메모리 내에서만) ----------------------------------------------
     async def create_reservation(self, ctx, body, idempotency_key):
-        if idempotency_key in self._idempotency:  # 같은 키 → 기존 결과 그대로 (12 계약서 4장)
+        if idempotency_key in self._idempotency:  # 같은 키 → 기존 결과 그대로 (「공통 계약서」 4장)
             return self._idempotency[idempotency_key]
         self._hospital(body["hospital_id"])
         self._check_procedure(body["procedure_code"])

@@ -1,4 +1,4 @@
-"""rag-mcp 출력 모델. agent 는 chunk 를 근거(Source, 12 계약서 5장 AI)로 변환해 SSE DONE 에 싣는다."""
+"""rag-mcp 출력 모델. agent 는 chunk 를 근거(Source, 「공통 계약서」 5장 AI)로 변환해 SSE DONE 에 싣는다."""
 
 from __future__ import annotations
 

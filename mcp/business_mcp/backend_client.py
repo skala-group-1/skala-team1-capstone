@@ -4,12 +4,12 @@
 - HttpBackendClient   : 실제 backend 호출 (USE_STUB=false)
 - StubBackendClient   : mock JSON 근사 구현 (USE_STUB=true) → stub_backend.py
 
-backend 쪽 계약 (12 계약서 8장 + feat/be-bootstrap InternalCatalogController 기준)
+backend 쪽 계약 (「공통 계약서」 8장 + feat/be-bootstrap InternalCatalogController 기준)
 - 헤더 X-Service-Token, X-Acting-User-Id 는 필수. 없으면 401
 - X-Trace-Id 는 그대로 응답 헤더로 돌려준다 → 로그 상관관계에 사용
 - locale 파라미터가 없으면 backend 가 acting user 의 locale 로 고른다
 - 변경 API 는 Idempotency-Key 헤더
-- compare 요청 바디 필드는 procedureCode (07 문서의 procedure 는 alias 로만 허용)
+- compare 요청 바디 필드는 procedureCode (「API·이벤트 명세」의 procedure 는 alias 로만 허용)
 """
 
 from __future__ import annotations
@@ -55,7 +55,7 @@ class BackendClient(Protocol):
 
 
 class HttpBackendClient:
-    """실제 backend 호출. 타임아웃 3s, 5xx·타임아웃은 1회 재시도 후 ToolError (04 문서 1장)."""
+    """실제 backend 호출. 타임아웃 3s, 5xx·타임아웃은 1회 재시도 후 ToolError (「MCP 설계」 1장)."""
 
     def __init__(self, base_url: str | None = None, service_token: str | None = None) -> None:
         self._client = httpx.AsyncClient(
@@ -131,7 +131,7 @@ class HttpBackendClient:
                                    json={"hospital_ids": hospital_ids, "procedure_code": procedure_code})
 
     async def get_my_reservations(self, ctx, status):
-        # 04 문서는 /internal/reservations?userId= 로 적혀 있으나 12 계약서 8장 /internal/reservations/mine 을 따른다.
+        # 「MCP 설계」는 /internal/reservations?userId= 로 적혀 있으나 「공통 계약서」 8장 /internal/reservations/mine 을 따른다.
         # acting user 는 X-Acting-User-Id 헤더로 backend 가 판단.
         # TODO(mcp): backend BE-13 구현 후 경로 재확인 (현재 feat/be-bootstrap 에는 조회 7종만 있음)
         return await self._request("GET", "/reservations/mine", ctx, params={"status": status})

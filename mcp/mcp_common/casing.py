@@ -1,6 +1,6 @@
 """camelCase ↔ snake_case 변환.
 
-12 계약서 1장: backend JSON 은 camelCase, MCP 도구 입출력(Python)은 snake_case.
+「공통 계약서」 1장: backend JSON 은 camelCase, MCP 도구 입출력(Python)은 snake_case.
 business-mcp 가 경계에서 한 번만 변환한다 (agent 는 snake_case 만 본다).
 """
 

@@ -1,7 +1,7 @@
-"""도구 출력 모델 (snake_case). 필드는 12 계약서 5장 DTO 를 snake_case 로 옮긴 것.
+"""도구 출력 모델 (snake_case). 필드는 「공통 계약서」 5장 DTO 를 snake_case 로 옮긴 것.
 
-- Pydantic 반환 → FastMCP 가 structuredContent + outputSchema 로 노출 (04 문서 1장)
-- null 허용 필드는 생략하지 않고 None (12 계약서 1장: FE 는 null 이면 '확인 필요')
+- Pydantic 반환 → FastMCP 가 structuredContent + outputSchema 로 노출 (「MCP 설계」 1장)
+- null 허용 필드는 생략하지 않고 None (「공통 계약서」 1장: FE 는 null 이면 '확인 필요')
 - backend 가 필드를 더 주더라도 무시하도록 extra="ignore"
 """
 
@@ -166,7 +166,7 @@ class Reservation(_Model):
     hold_expires_at: str | None = None
     reject_reason: str | None = None
     created_at: str | None = None
-    # TODO(mcp): 12 계약서 Reservation 의 procedure·price_option·alternatives 를 그대로 넘길지,
+    # TODO(mcp): 「공통 계약서」 Reservation 의 procedure·price_option·alternatives 를 그대로 넘길지,
     #            LLM 에 필요한 필드만 남길지 agent 담당과 합의
 
 
@@ -175,7 +175,7 @@ class ReservationList(_Model):
 
 
 class SummaryCard(_Model):
-    """상담 요청 시 넘기는 니즈 요약 카드 (12 계약서 SummaryCard)."""
+    """상담 요청 시 넘기는 니즈 요약 카드 (「공통 계약서」 SummaryCard)."""
 
     procedure: str
     preferred_dates: str | None = None

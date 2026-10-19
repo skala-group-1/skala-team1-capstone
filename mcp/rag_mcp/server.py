@@ -1,4 +1,4 @@
-"""rag-mcp 서버 (port 9102). 검색 도구 2 + Resource doc:// (04 문서 3장).
+"""rag-mcp 서버 (port 9102). 검색 도구 2 + Resource doc:// (「MCP 설계」 3장).
 
 agent 에서는 rag_search_procedure_docs / rag_search_hospital_docs 로 보인다.
 FE 근거 패널: backend GET /api/docs/{docId} → agent read_resource → 이 서버의 doc:// (BE-17, AGENT-16)
@@ -55,7 +55,7 @@ async def search_procedure_docs(
     If chunks is empty, say the information could not be confirmed; do not answer from memory.
     General information only, never a personal medical judgment.
     """
-    # TODO(rag): 다국어 질의 → 다국어 임베딩 검색 (03 문서 6장). stub 은 영어 키워드만 잘 맞음
+    # TODO(rag): 다국어 질의 → 다국어 임베딩 검색 (「AI Agent 설계」 6장). stub 은 영어 키워드만 잘 맞음
     return _to_result(store.search(query, procedure_code=procedure_code, doc_type=doc_type, top_k=top_k))
 
 
@@ -68,7 +68,7 @@ async def search_hospital_docs(
     """Search one hospital's FAQ / visitor notes (location, languages, payment, interpreter, visit flow).
     Same output format as search_procedure_docs.
     """
-    # TODO(rag): 병원 대화창에서는 hospital_id 를 agent state 에서 강제 주입 (03 문서 4장)
+    # TODO(rag): 병원 대화창에서는 hospital_id 를 agent state 에서 강제 주입 (「AI Agent 설계」 4장)
     return _to_result(store.search(query, hospital_id=hospital_id, top_k=top_k))
 
 
@@ -78,7 +78,7 @@ def read_document(doc_id: str) -> str:
     doc = store.get(doc_id)
     if doc is None:
         raise ResourceError(f"Document {doc_id} not found")
-    # TODO(rag): 메타에 임베딩 모델·색인 시각도 포함 (04 문서 3장 Resource 메타: 출처, 버전, 언어, 임베딩 모델)
+    # TODO(rag): 메타에 임베딩 모델·색인 시각도 포함 (「MCP 설계」 3장 Resource 메타: 출처, 버전, 언어, 임베딩 모델)
     header = "\n".join(f"{k}: {v}" for k, v in doc.meta.items())
     return f"---\n{header}\n---\n\n{doc.body}"
 
@@ -93,7 +93,7 @@ def read_section(doc_id: str, section: str) -> str:
     return f"## {sec.title}\n\n{sec.text}"
 
 
-# TODO(rag): (선택) Prompt answer_with_citations(question, locale) — 근거 인용 답변 템플릿 (04 문서 3장)
+# TODO(rag): (선택) Prompt answer_with_citations(question, locale) — 근거 인용 답변 템플릿 (「MCP 설계」 3장)
 
 
 if __name__ == "__main__":

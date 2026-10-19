@@ -2,7 +2,7 @@
 
 MCP_TRANSPORT
 - http  (기본): Streamable HTTP. compose 에서 http://business-mcp:9101/mcp 로 접근 (04 문서 1장)
-- stdio       : agent 의 fake 모드(USE_FAKE_TOOLS=true)가 서브프로세스로 띄워 쓴다 (D-26)
+- stdio       : agent 의 fake 모드(USE_FAKE_TOOLS=true)가 서브프로세스로 띄워 쓴다 (D-29)
 """
 
 from __future__ import annotations

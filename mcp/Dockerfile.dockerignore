@@ -1,0 +1,11 @@
+# mcp/Dockerfile 전용 (BuildKit 은 <Dockerfile>.dockerignore 를 우선 사용)
+**/.git
+**/.venv
+**/__pycache__
+**/.pytest_cache
+**/node_modules
+**/build
+**/.gradle
+.env
+.env.*
+*.pdf

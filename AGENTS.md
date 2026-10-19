@@ -67,9 +67,15 @@ LLM은 `LLM_PRIMARY_MODEL`(현재 gpt-5-nano), 임베딩은 `EMBEDDING_MODEL`(te
 
 ```bash
 cp .env.example .env
-docker compose up -d                     # 현재: postgres + rabbitmq (최초 기동 시 mock 데이터 적재)
+docker compose up -d postgres rabbitmq
+docker compose run --rm db-seed          # Flyway로 스키마 + mock 데이터 적재 (backend 없이)
+docker compose up -d --build backend     # 로그인이 필요하면 (PasswordSeeder가 데모 비밀번호를 채움)
 python3 data/mock/validate.py
 ```
+
+- DB 적재는 backend Flyway가 담당한다 (`schema.sql` → V1, backend 변경 → V2~V99, `V100__seed.sql` → V100).
+- mock 데이터를 다시 생성했거나 예전 볼륨이 있으면 `docker compose down -v` 후 다시 적재한다 (Flyway 체크섬).
+- RabbitMQ 큐는 backend가 기동 시 선언한다. 같은 큐를 다른 곳에서 선언하려면 인자를 완전히 같게 한다.
 
 ## 8. 작업 방식
 

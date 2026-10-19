@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -353,15 +354,7 @@ public class CatalogService {
 		if (procedureCode != null) {
 			spec = spec.param("procedure", procedureCode);
 		}
-		return spec.query((rs, i) -> new PriceOption(
-				rs.getLong("id"),
-				rs.getString("procedure_code"),
-				rs.getString("product"),
-				rs.getString("dose"),
-				rs.getInt("price_krw"),
-				rs.getBoolean("vat_included"),
-				"ko".equals(locale) ? rs.getString("conditions_ko") : rs.getString("conditions_en"),
-				rs.getObject("verified_at", LocalDate.class))).list();
+		return spec.query((rs, i) -> priceOption(rs, locale)).list();
 	}
 
 	/** 예약 가능한(AVAILABLE) 미래 슬롯, 시작 시각 순. 시술 지정 시 그 시술 담당 의사 슬롯만. */
@@ -385,15 +378,67 @@ public class CatalogService {
 			params.put("doctorId", doctorId);
 		}
 		sql.append(" ORDER BY s.start_at, s.id LIMIT :limit");
-		return jdbc.sql(sql.toString()).params(params).query((rs, i) -> new Slot(
-				rs.getLong("id"),
-				Times.kst(rs.getObject("start_at", OffsetDateTime.class)),
-				Times.kst(rs.getObject("end_at", OffsetDateTime.class)),
-				(Long) rs.getObject("doctor_id"),
-				rs.getObject("doctor_id") == null ? null
-						: "ko".equals(locale) || rs.getString("name_en") == null ? rs.getString("name_ko")
-								: rs.getString("name_en"),
-				rs.getString("status"))).list();
+		return jdbc.sql(sql.toString()).params(params).query((rs, i) -> slot(rs, locale)).list();
+	}
+
+	// ---------------------------------------------------------------- 단건 조회 (예약·일정 응답 조립용)
+
+	/** 슬롯 단건 (상태 무관) */
+	public Optional<Slot> slot(long slotId, String locale) {
+		return jdbc.sql("""
+				SELECT s.id, s.start_at, s.end_at, s.doctor_id, s.status, d.name_ko, d.name_en
+				FROM app.slots s LEFT JOIN app.doctors d ON d.id = s.doctor_id WHERE s.id = :id
+				""").param("id", slotId).query((rs, i) -> slot(rs, locale)).optional();
+	}
+
+	/** 여러 슬롯을 요청한 id 순서대로 (없는 id 는 건너뜀) */
+	public List<Slot> slotsByIds(List<Long> ids, String locale) {
+		if (ids == null || ids.isEmpty()) {
+			return List.of();
+		}
+		Map<Long, Slot> byId = jdbc.sql("""
+				SELECT s.id, s.start_at, s.end_at, s.doctor_id, s.status, d.name_ko, d.name_en
+				FROM app.slots s LEFT JOIN app.doctors d ON d.id = s.doctor_id WHERE s.id IN (:ids)
+				""").param("ids", ids).query((rs, i) -> slot(rs, locale)).list().stream()
+				.collect(Collectors.toMap(Slot::id, Function.identity()));
+		return ids.stream().map(byId::get).filter(java.util.Objects::nonNull).toList();
+	}
+
+	/**
+	 * 요청 시각에서 가장 가까운 예약 가능 슬롯 (SLOT_UNAVAILABLE 의 대안 제시용).
+	 * 같은 병원, 현재 이후, 시술 담당 의사 슬롯만.
+	 */
+	public List<Slot> nearestAvailableSlots(long hospitalId, String procedureCode, OffsetDateTime around,
+			long excludeSlotId, int limit, String locale) {
+		return jdbc.sql("""
+				SELECT s.id, s.start_at, s.end_at, s.doctor_id, s.status, d.name_ko, d.name_en
+				FROM app.slots s LEFT JOIN app.doctors d ON d.id = s.doctor_id
+				WHERE s.hospital_id = :h AND s.status = 'AVAILABLE' AND s.start_at > now() AND s.id <> :ex
+				  AND (s.doctor_id IS NULL OR :procedure = ANY(d.specialties))
+				ORDER BY abs(extract(epoch FROM s.start_at - CAST(:around AS timestamptz))), s.start_at
+				LIMIT :limit
+				""").param("h", hospitalId).param("procedure", procedureCode).param("around", around)
+				.param("ex", excludeSlotId).param("limit", limit)
+				.query((rs, i) -> slot(rs, locale)).list();
+	}
+
+	public Optional<Procedure> procedure(String code, String locale) {
+		return jdbc.sql("SELECT * FROM app.procedures WHERE code = :c").param("c", code)
+				.query((rs, i) -> procedure(rs, locale)).optional();
+	}
+
+	public Optional<PriceOption> priceOption(long id, String locale) {
+		return jdbc.sql("SELECT * FROM app.price_options WHERE id = :id").param("id", id)
+				.query((rs, i) -> priceOption(rs, locale)).optional();
+	}
+
+	/** 병원 이름 (요청자 locale) */
+	public Optional<String> hospitalName(long hospitalId, String locale) {
+		return jdbc.sql("SELECT name_ko, name_en, name_zh, name_ja FROM app.hospitals WHERE id = :id")
+				.param("id", hospitalId)
+				.query((rs, i) -> Localized.pick(locale, rs.getString("name_ko"), rs.getString("name_en"),
+						rs.getString("name_zh"), rs.getString("name_ja")))
+				.optional();
 	}
 
 	// ---------------------------------------------------------------- reviews
@@ -462,7 +507,7 @@ public class CatalogService {
 
 	// ---------------------------------------------------------------- helpers
 
-	private void requireHospital(long hospitalId) {
+	public void requireHospital(long hospitalId) {
 		Integer n = jdbc.sql("SELECT count(*) FROM app.hospitals WHERE id = :id").param("id", hospitalId)
 				.query(Integer.class).single();
 		if (n == 0) {
@@ -475,6 +520,30 @@ public class CatalogService {
 				Localized.pick(locale, rs.getString("name_ko"), rs.getString("name_en"), rs.getString("name_zh"),
 						rs.getString("name_ja")),
 				(Integer) rs.getObject("duration_min"), (Integer) rs.getObject("downtime_days"));
+	}
+
+	private static PriceOption priceOption(ResultSet rs, String locale) throws SQLException {
+		return new PriceOption(
+				rs.getLong("id"),
+				rs.getString("procedure_code"),
+				rs.getString("product"),
+				rs.getString("dose"),
+				rs.getInt("price_krw"),
+				rs.getBoolean("vat_included"),
+				"ko".equals(locale) ? rs.getString("conditions_ko") : rs.getString("conditions_en"),
+				rs.getObject("verified_at", LocalDate.class));
+	}
+
+	private static Slot slot(ResultSet rs, String locale) throws SQLException {
+		return new Slot(
+				rs.getLong("id"),
+				Times.kst(rs.getObject("start_at", OffsetDateTime.class)),
+				Times.kst(rs.getObject("end_at", OffsetDateTime.class)),
+				(Long) rs.getObject("doctor_id"),
+				rs.getObject("doctor_id") == null ? null
+						: "ko".equals(locale) || rs.getString("name_en") == null ? rs.getString("name_ko")
+								: rs.getString("name_en"),
+				rs.getString("status"));
 	}
 
 	private static List<String> strings(ResultSet rs, String column) throws SQLException {

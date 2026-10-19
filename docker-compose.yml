@@ -66,10 +66,18 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-capstone}
       JWT_SECRET: ${JWT_SECRET:-change-me-to-a-32-byte-or-longer-random-string}
       SERVICE_TOKEN: ${SERVICE_TOKEN:-change-me-internal-service-token}
+      # RabbitMQ: backend 가 기동 시 exchange·큐·DLQ·재시도 큐를 선언한다 (「Backend API 상세 명세」 10장)
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-guest}
+      # 근거 문서 원문(/api/docs) 조회용. agent 가 아직 없으면 그 API 만 503
+      AGENT_BASE_URL: http://agent:8000
     ports:
       - "8080:8080"
     depends_on:
       postgres:
+        condition: service_healthy
+      rabbitmq:
         condition: service_healthy
 
 volumes:

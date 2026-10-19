@@ -9,6 +9,7 @@ spring:
     username: ${SPRING_DATASOURCE_USERNAME:${POSTGRES_USER:capstone}}
     password: ${SPRING_DATASOURCE_PASSWORD:${POSTGRES_PASSWORD:capstone}}
   flyway:
+    # V1 schema · V2 · V100 seed 이후 backend 변경은 V101 부터 (이미 v100 인 DB 에도 그대로 이어서 적용됨)
     default-schema: app
     schemas: app
     create-schemas: true
@@ -28,6 +29,16 @@ spring:
   messages:
     basename: messages
     fallback-to-system-locale: false
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_DEFAULT_USER:guest}
+    password: ${RABBITMQ_DEFAULT_PASS:guest}
+    listener:
+      simple:
+        # 처리 실패 메시지를 무한 반복하지 않는다 (재시도는 retry 큐 규약으로 처리)
+        default-requeue-rejected: false
+        missing-queues-fatal: false
 
 server:
   port: 8080
@@ -46,6 +57,18 @@ app:
   service-token: ${SERVICE_TOKEN:change-me-internal-service-token}
   cors:
     allowed-origins: http://localhost,http://localhost:80,http://localhost:5173
+  agent:
+    # /api/docs/{docId} 문서 원문 조회 시 backend → agent 내부 HTTP
+    base-url: ${AGENT_BASE_URL:http://localhost:8000}
+    timeout: 3s
+  ai:
+    # QUEUED/RUNNING 상태로 이 시간 넘게 진행이 없으면 FAILED (agent 장애 시 무한 대기 방지)
+    task-timeout: 5m
+  reservation:
+    hold: 30m
+  trip:
+    # 일정 적합성: 회복 완료 후 출국까지 최소 여유일 (03 문서 9-2)
+    min-buffer-days: ${TRIP_MIN_BUFFER_DAYS:1}
   seed:
     # PasswordSeeder: mock 사용자의 {bcrypt}PLACEHOLDER 를 이 비밀번호의 BCrypt 해시로 교체 (로컬 데모 전용)
     demo-password: Passw0rd!

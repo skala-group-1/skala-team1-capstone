@@ -1,0 +1,68 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.5.16'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.skala'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+ext {
+	jjwtVersion = '0.12.7'
+	springdocVersion = '2.8.17'
+	testcontainersVersion = '2.0.5'
+}
+// Docker Engine 29+ 는 Testcontainers 2.x 필요 (Boot 3.5 기본 관리 버전은 1.x)
+ext['testcontainers.version'] = testcontainersVersion
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.flywaydb:flyway-core'
+	implementation 'org.flywaydb:flyway-database-postgresql'
+	implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdocVersion}"
+	implementation "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
+	runtimeOnly "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
+	runtimeOnly "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
+	runtimeOnly 'org.postgresql:postgresql'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+	testImplementation "org.testcontainers:testcontainers-junit-jupiter:${testcontainersVersion}"
+	testImplementation "org.testcontainers:testcontainers-postgresql:${testcontainersVersion}"
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+// mock 데이터(data/mock/out)를 단일 원천으로 두고 Flyway 마이그레이션으로 패키징한다.
+// V1 = schema.sql, V100 = seed. backend 전용 변경은 src/main/resources/db/migration 의 V2~V99 로 추가.
+def mockOut = rootProject.file('../data/mock/out')
+tasks.named('processResources') {
+	inputs.dir(mockOut)
+	from(mockOut) {
+		include 'schema.sql', 'V100__seed.sql'
+		rename 'schema.sql', 'V1__schema.sql'
+		into 'db/migration'
+	}
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+// bootJar 하나만 만든다 (Dockerfile 이 build/libs/*.jar 를 복사)
+tasks.named('jar') {
+	enabled = false
+}

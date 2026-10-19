@@ -1,5 +1,5 @@
-# 1단계: 인프라만 (postgres + pgvector, rabbitmq)
-# 각 파트 서비스(frontend, backend, agent, business-mcp, rag-mcp)는 개발되는 대로 추가
+# 2단계: 인프라(postgres + pgvector, rabbitmq) + backend
+# 나머지 파트 서비스(frontend, agent, business-mcp, rag-mcp)는 개발되는 대로 추가
 # 공개 포트 원칙: 최종본에서는 frontend(80), backend(8080)만 공개. 아래 포트 노출은 개발 편의용.
 services:
   postgres:
@@ -11,11 +11,8 @@ services:
     ports:
       - "5432:5432"
     volumes:
+      # 스키마·mock 데이터 적재는 backend 기동 시 Flyway 가 한다 (V1 schema → V2.. → V100 seed)
       - pgdata:/var/lib/postgresql/data
-      # 최초 기동 시에만 실행됨 (볼륨이 비어 있을 때). 재적재: docker compose down -v
-      # backend Flyway 도입 후에는 이 마운트를 제거하고 Flyway로 이관
-      - ./data/mock/out/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
-      - ./data/mock/out/V100__seed.sql:/docker-entrypoint-initdb.d/02_seed.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-capstone} -d ${POSTGRES_DB:-capstone}"]
       interval: 5s
@@ -35,6 +32,45 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+
+  # backend 없이 DB만 채우기 (agent·MCP·RAG 담당용): docker compose run --rm db-seed
+  # backend 와 같은 Flyway 버전·같은 파일이라 나중에 backend 를 띄워도 이력이 그대로 이어진다.
+  # 데모 계정 비밀번호(PasswordSeeder)는 backend 기동 시에만 채워진다 → 로그인이 필요하면 backend 를 띄울 것.
+  db-seed:
+    image: flyway/flyway:11.7.2-alpine
+    profiles: ["tools"]
+    command: migrate
+    environment:
+      FLYWAY_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-capstone}
+      FLYWAY_USER: ${POSTGRES_USER:-capstone}
+      FLYWAY_PASSWORD: ${POSTGRES_PASSWORD:-capstone}
+      FLYWAY_SCHEMAS: app
+      FLYWAY_DEFAULT_SCHEMA: app
+      FLYWAY_CREATE_SCHEMAS: "true"
+      FLYWAY_LOCATIONS: filesystem:/flyway/sql
+    volumes:
+      - ./data/mock/out/schema.sql:/flyway/sql/V1__schema.sql:ro
+      - ./backend/src/main/resources/db/migration:/flyway/sql/backend:ro
+      - ./data/mock/out/V100__seed.sql:/flyway/sql/V100__seed.sql:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-capstone}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-capstone}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-capstone}
+      JWT_SECRET: ${JWT_SECRET:-change-me-to-a-32-byte-or-longer-random-string}
+      SERVICE_TOKEN: ${SERVICE_TOKEN:-change-me-internal-service-token}
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 volumes:
   pgdata:

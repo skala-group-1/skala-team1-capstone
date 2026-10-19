@@ -1,0 +1,4 @@
+app:
+  jwt:
+    secret: test-secret-test-secret-test-secret-0123456789
+  service-token: test-service-token

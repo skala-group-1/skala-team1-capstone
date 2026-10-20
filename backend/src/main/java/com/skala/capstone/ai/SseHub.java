@@ -27,6 +27,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class SseHub {
 
 	public static final Set<String> TERMINAL = Set.of("DONE", "FAILED", "APPROVAL_REQUIRED");
+	/** 작업이 다시 재개되지 않는 진짜 끝 */
+	private static final Set<String> FINAL = Set.of("DONE", "FAILED");
 	private static final long EMITTER_TIMEOUT_MS = 5 * 60 * 1000L;
 
 	public record Event(int seq, String event, JsonNode data) {
@@ -77,7 +79,9 @@ public class SseHub {
 					return emitter;
 				}
 			}
-			if (!stillRunning) {
+			// DB 상태를 읽은 직후 작업이 끝났으면(stillRunning=true 인데 버퍼 끝이 DONE·FAILED) 여기서 닫는다
+			boolean finished = !replay.isEmpty() && FINAL.contains(replay.get(replay.size() - 1).event());
+			if (!stillRunning || finished) {
 				if (replay.isEmpty() && fallback != null && fallback.seq() > from) {
 					send(emitter, fallback);
 				}
@@ -115,15 +119,22 @@ public class SseHub {
 
 	/**
 	 * 이미 끝난 앞 구간의 마지막 seq (없으면 0).
-	 * 작업이 다시 실행 중이면 버퍼의 종료 이벤트는 모두 지나간 것, 아니면 맨 끝(현재 상태)을 뺀 나머지만.
+	 * 맨 끝 이벤트는 현재 상태라 보낸다. 단, 작업이 다시 실행 중인데 맨 끝이 APPROVAL_REQUIRED 면 이미 승인된 것이라 건너뛴다.
+	 * DONE·FAILED 는 그 뒤로 재개되지 않으므로 맨 끝에 있으면 stillRunning 과 관계없이 보낸다
+	 * (DB 상태를 읽은 직후 작업이 끝나는 경합에서 DONE 을 건너뛰어 스트림이 멈추지 않도록).
 	 */
-	private static int finishedSegmentEnd(List<Event> buffer, boolean stillRunning) {
+	static int finishedSegmentEnd(List<Event> buffer, boolean stillRunning) {
 		int end = 0;
-		int last = stillRunning ? buffer.size() : buffer.size() - 1;
-		for (int i = 0; i < last; i++) {
-			if (TERMINAL.contains(buffer.get(i).event())) {
-				end = buffer.get(i).seq();
+		for (int i = 0; i < buffer.size(); i++) {
+			Event e = buffer.get(i);
+			if (!TERMINAL.contains(e.event())) {
+				continue;
 			}
+			boolean lastOne = i == buffer.size() - 1;
+			if (lastOne && !(stillRunning && "APPROVAL_REQUIRED".equals(e.event()))) {
+				break;
+			}
+			end = e.seq();
 		}
 		return end;
 	}

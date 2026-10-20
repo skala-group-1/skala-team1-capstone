@@ -159,11 +159,21 @@ class AiIntegrationTest extends IntegrationTest {
 				.andExpect(status().isConflict())
 				.andExpect(jsonPath("$.code").value("TASK_NOT_WAITING_APPROVAL"));
 
-		// 재연결(Last-Event-ID=1) 후 이어지는 이벤트 수신
+		// 재연결(Last-Event-ID=1) 후 이어지는 이벤트 수신.
+		// Last-Event-ID 없이 다시 열어도 승인 전 구간(APPROVAL_REQUIRED)은 다시 오지 않아야 한다
 		CompletableFuture<List<String>> sse = openSse(token, taskId, "1");
+		CompletableFuture<List<String>> fresh = openSse(token, taskId, null);
 		Thread.sleep(300);
-		event(taskId, 2, "DONE", Map.of("answer", "予約を申請しました", "sources", List.of()));
+		event(taskId, 2, "STATUS", Map.of("status", "RUNNING"));
+		event(taskId, 3, "DONE", Map.of("answer", "予約を申請しました", "sources", List.of()));
 		assertThat(sse.get(10, TimeUnit.SECONDS)).contains("event:DONE");
+		List<String> freshEvents = fresh.get(10, TimeUnit.SECONDS).stream().filter(l -> l.startsWith("event:")).toList();
+		assertThat(freshEvents).containsExactly("event:STATUS", "event:DONE");
+
+		// 끝난 뒤 처음부터 다시 열어도 승인 카드가 아니라 DONE 으로 끝난다 (새로고침)
+		List<String> afterDone = openSse(token, taskId, null).get(10, TimeUnit.SECONDS).stream()
+				.filter(l -> l.startsWith("event:")).toList();
+		assertThat(afterDone).containsExactly("event:STATUS", "event:DONE");
 	}
 
 	@Test

@@ -43,7 +43,7 @@ class Document:
     @property
     def hospital_id(self) -> int | None:
         v = self.meta.get("hospital_id")
-        return int(v) if v and v != "null" else None
+        return None if v is None or v.strip().lower() in ("", "null", "~") else int(v)
 
 
 @dataclass
@@ -67,6 +67,10 @@ def slugify(title: str) -> str:
 
 def _parse(path: Path) -> Document:
     raw = path.read_text(encoding="utf-8")
+    return parse_text(raw, path.stem)
+
+
+def parse_text(raw: str, fallback_id: str) -> Document:
     meta: dict[str, str] = {}
     body = raw
     if raw.startswith("---"):
@@ -79,7 +83,7 @@ def _parse(path: Path) -> Document:
     for block in re.split(r"^## ", body, flags=re.M)[1:]:
         heading, _, text = block.partition("\n")
         sections.append(Section(title=heading.strip(), slug=slugify(heading), text=text.strip()))
-    return Document(doc_id=meta.get("doc_id", path.stem), title=meta.get("title", path.stem),
+    return Document(doc_id=meta.get("doc_id", fallback_id), title=meta.get("title", fallback_id),
                     doc_type=meta.get("doc_type", ""), meta=meta, body=body.strip(), sections=sections)
 
 
@@ -94,17 +98,19 @@ class StubDocStore:
         return self._docs.get(doc_id)
 
     def search(self, query, *, procedure_code=None, doc_type=None, hospital_id=None, top_k=5):
-        terms = {t for t in re.findall(r"\w+", query.lower()) if len(t) > 2}
+        if hospital_id is not None and (isinstance(hospital_id, bool) or hospital_id <= 0):
+            raise ValueError("hospital_id must be a positive ID")
+        # Include two-character Korean topics such as 통역, 예약 and 흉터.
+        terms = {t for t in re.findall(r"\w+", query.lower()) if len(t) >= 2}
         hits: list[Hit] = []
         for doc in self._docs.values():
+            # Scope BEFORE ranking/top_k. No hospital context means common only.
+            if doc.hospital_id is not None and doc.hospital_id != hospital_id:
+                continue
             if procedure_code and doc.procedure_code not in (procedure_code, None):
                 continue
             if doc_type and doc.doc_type != doc_type:
                 continue
-            if hospital_id is not None and doc.hospital_id != hospital_id:
-                continue
-            if hospital_id is None and doc.doc_type == "HOSPITAL_FAQ":
-                continue  # 병원 FAQ 는 search_hospital_docs 로만
             for sec in doc.sections:
                 words = set(re.findall(r"\w+", f"{sec.title} {sec.text}".lower()))
                 score = len(terms & words) / len(terms) if terms else 0.0
@@ -114,24 +120,73 @@ class StubDocStore:
 
 
 class PgVectorStore:
-    """rag.chunks 임베딩 검색.
+    """Exact cosine search, scoped before ranking. Connections are read-only."""
 
-    TODO(rag): 구현 (「파트별 착수 가이드」 4장, 「데이터·DB 설계」 rag 스키마)
-      1. data/rag_docs/indexer.py 가 front matter 파싱 → '##' 섹션 청킹 → 임베딩 → rag.documents·rag.chunks 저장
-         (임베딩 모델·차원을 메타로 함께 저장)
-      2. 여기서는 query 를 같은 EMBEDDING_MODEL 로 임베딩 → `ORDER BY embedding <=> :q LIMIT top_k`
-      3. procedure_code / doc_type / hospital_id 필터는 WHERE 로
-      4. DATABASE_URL 은 읽기 전용 계정 rag_ro (INFRA-01)
-    """
-
-    def __init__(self, database_url: str) -> None:
+    def __init__(self, database_url: str, embedder=None) -> None:
+        from rag_mcp.config import settings
+        from rag_mcp.embeddings import Embedder
+        if not database_url:
+            raise ValueError("Set RAG_DATABASE_URL or DATABASE_URL for vector search")
         self._database_url = database_url
+        self.embedder = embedder or Embedder(settings.openai_api_key, settings.embedding_model)
+
+    def _connect(self):
+        import psycopg
+        from psycopg.rows import dict_row
+        conn = psycopg.connect(self._database_url, row_factory=dict_row, connect_timeout=10)
+        conn.read_only = True
+        return conn
 
     def search(self, query, *, procedure_code=None, doc_type=None, hospital_id=None, top_k=5):
-        raise NotImplementedError("TODO(rag): pgvector 검색 구현")
+        from rag_mcp.embeddings import vector_literal
+        if hospital_id is not None and (type(hospital_id) is not int or hospital_id <= 0):
+            raise ValueError("hospital_id must be a positive ID")
+        if type(top_k) is not int or not 1 <= top_k <= 10:
+            raise ValueError("top_k must be between 1 and 10")
+        if not query.strip():
+            return []
+        vector = vector_literal(self.embedder.embed([query])[0])
+        with self._connect() as conn:
+            rows = conn.execute("""
+                SELECT d.doc_id, d.body, c.section, c.text,
+                       1 - (c.embedding <=> %(vector)s::vector) AS score
+                FROM rag.chunks c JOIN rag.documents d USING (doc_id)
+                WHERE (d.hospital_id = %(hospital)s OR d.hospital_id IS NULL)
+                  AND (%(procedure)s::text IS NULL OR d.procedure_code = %(procedure)s
+                       OR d.procedure_code IS NULL)
+                  AND (%(type)s::text IS NULL OR d.doc_type = %(type)s)
+                  AND c.embedding_model = %(model)s AND c.embedding IS NOT NULL
+                ORDER BY c.embedding <=> %(vector)s::vector, c.chunk_id
+                LIMIT %(limit)s
+            """, {"vector": vector, "hospital": hospital_id, "procedure": procedure_code,
+                  "type": doc_type, "model": self.embedder.model, "limit": top_k}).fetchall()
+        return [Hit(parse_text(r["body"], r["doc_id"]),
+                    Section(r["section"], slugify(r["section"]), r["text"]), float(r["score"]))
+                for r in rows]
 
     def get(self, doc_id):
-        raise NotImplementedError("TODO(rag): rag.documents 원문 조회 구현")
+        with self._connect() as conn:
+            row = conn.execute("SELECT body FROM rag.documents WHERE doc_id = %s",
+                               (doc_id,)).fetchone()
+            if row is None:
+                return None
+            chunks = conn.execute("""
+                SELECT section, text, embedding_model, created_at FROM rag.chunks
+                WHERE doc_id = %s ORDER BY chunk_id
+            """, (doc_id,)).fetchall()
+        doc = parse_text(row["body"], doc_id)
+        # Include split-section resource targets while retaining original full sections.
+        slugs = {s.slug for s in doc.sections}
+        for chunk in chunks:
+            slug = slugify(chunk["section"])
+            if slug not in slugs:
+                doc.sections.append(Section(chunk["section"], slug, chunk["text"]))
+                slugs.add(slug)
+        if chunks:
+            doc.meta["embedding_model"] = chunks[0]["embedding_model"]
+            doc.meta["indexed_at"] = chunks[0]["created_at"].isoformat()
+            doc.meta["embedding_dimensions"] = "1536"
+        return doc
 
 
 def build_store() -> DocStore:
@@ -139,4 +194,4 @@ def build_store() -> DocStore:
 
     if settings.use_stub:
         return StubDocStore()
-    return PgVectorStore(settings.database_url)
+    return PgVectorStore(settings.rag_database_url or settings.database_url)

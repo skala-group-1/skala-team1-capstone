@@ -6,15 +6,36 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from langgraph.graph import END, START, StateGraph
 
 from app.config import get_settings
+from app.graph.builder import build_hospital_subgraph
+from app.graph.state import AgentState
+from app.harness.memory import open_checkpointer_and_store
+from app.nodes.respond import respond
+from app.workers.consumer import start_consumers
+
+
+def compile_hospital_chat(checkpointer, store):
+    """Standalone hospital entry point: no main-agent/planner nodes."""
+    graph = StateGraph(AgentState)
+    graph.add_node("hospital", build_hospital_subgraph().compile())
+    graph.add_node("respond", respond)
+    graph.add_edge(START, "hospital")
+    graph.add_edge("hospital", "respond")
+    graph.add_edge("respond", END)
+    return graph.compile(checkpointer=checkpointer, store=store)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # TODO(agent): open_checkpointer_and_store() 로 그래프 compile → app.state.graph
-    # TODO(agent): workers.consumer.start_consumers() 로 큐 소비 시작, 종료 시 connection.close()
-    yield
+    async with open_checkpointer_and_store() as (checkpointer, store):
+        app.state.graph = compile_hospital_chat(checkpointer, store)
+        connection = await start_consumers(app.state.graph, store)
+        try:
+            yield
+        finally:
+            await connection.close()
 
 
 app = FastAPI(title="capstone-agent", lifespan=lifespan)

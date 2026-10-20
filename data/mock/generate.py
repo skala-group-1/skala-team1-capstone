@@ -18,6 +18,8 @@ import json
 import os
 import random
 import uuid
+from collections import Counter
+from pathlib import Path
 
 KST = dt.timezone(dt.timedelta(hours=9))
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -1344,13 +1346,88 @@ def hospital_faq(h, docs, options):
 # ---------------------------------------------------------------------------
 
 
+def sample_faq_documents(hospitals):
+    """Map reviewed FAQ sources to documents; reject stale hospital facts."""
+    root = Path(HERE) / "faq_samples"
+    rows = [json.loads(line) for line in (root / "faq.jsonl").read_text(encoding="utf-8").splitlines()]
+    dataset = json.loads((root / "source_policies.json").read_text(encoding="utf-8"))
+    by_id = {h["id"]: h for h in hospitals}
+    profiles = dataset["hospitals"]
+    assert len(profiles) == len(by_id) == 50
+    assert {p["hospital_id"] for p in profiles} == set(by_id)
+    policies = {}
+    for profile in profiles:
+        h = by_id[profile["hospital_id"]]
+        assert profile["hospital_name"] == h["name_ko"]
+        for key in ("category", "supported_languages", "has_interpreter"):
+            assert profile["existing_mock_snapshot"][key] == h[key], (h["id"], key)
+        for policy in profile["policies"]:
+            assert policy["policy_id"] not in policies
+            policies[policy["policy_id"]] = (h["id"], policy)
+    assert len(rows) == len(policies) == 750
+    assert Counter(r["hospital_id"] for r in rows) == Counter({hid: 15 for hid in by_id})
+    assert len({r["faq_id"] for r in rows}) == 750
+    assert {r["source_policy_id"] for r in rows} == set(policies)
+    documents = {}
+    topics = {"language", "interpreter", "consultation_only", "preconsultation", "first_visit",
+              "quote_scope", "late_arrival", "companion", "schedule_change", "records",
+              "followup_abroad", "photos", "accessibility", "cancellation_terms", "after_hours"}
+    for hid, h in by_id.items():
+        doc_id = "SAMPLE_HOSPITAL_FAQ_%03d" % hid
+        hospital_rows = [r for r in rows if r["hospital_id"] == hid]
+        assert {r["topic"] for r in hospital_rows} == topics
+        lines = [
+            "---", "doc_id: " + doc_id,
+            "title: " + json.dumps(h["name_ko"] + " — 방문·상담 FAQ", ensure_ascii=False),
+            "doc_type: HOSPITAL_FAQ", "hospital_id: %d" % hid, "lang: ko",
+            'source: "%s"' % SOURCE, "version: 1", "is_synthetic: true",
+            "source_file: faq_samples/faq.jsonl", "---", "",
+            "> Fictional educational content. Not medical advice.", "",
+            "가상 운영 정책입니다. 병원의 실제 승인·의료 검토를 받은 지침이 아닙니다.", "",
+        ]
+        for row in hospital_rows:
+            owner, policy = policies[row["source_policy_id"]]
+            assert owner == hid and row["hospital_name"] == h["name_ko"]
+            assert row["doc_id"] == doc_id and row["faq_id"] == doc_id + "#" + row["topic"]
+            assert row["is_synthetic"] is True and row["lang"] == "ko" and row["version"] == 1
+            assert row["doc_type"] == "HOSPITAL_FAQ" and row["question"]
+            assert row["source_quote"] == policy["text"]
+            assert row["source_origin"] == policy["origin"] and row["status"] == policy["status"]
+            assert row["topic"] == policy["topic"]
+            assert row["answer"] == h["name_ko"] + " 안내: " + policy["text"]
+            assert row["text"] == f'병원: {h["name_ko"]} (hospital_id={hid})\n질문: {row["question"]}\n답변: {row["answer"]}'
+            # ASCII topic headings give every Korean question a stable, unique resource slug.
+            body = (row["text"] + "\n\n가상 목업 (is_synthetic: true). "
+                    + "근거: " + row["source_policy_id"] + "\n"
+                    + "source_origin: " + row["source_origin"] + "\nstatus: " + row["status"])
+            assert len(body) <= 800, row["faq_id"]
+            lines.extend(["## " + row["topic"].replace("_", "-"), "", body, ""])
+        documents[doc_id] = "\n".join(lines)
+    return documents
+
+
+def write_sample_faqs(hospitals, rag_out):
+    documents = sample_faq_documents(hospitals)
+    Path(rag_out).mkdir(parents=True, exist_ok=True)
+    for doc_id, text in documents.items():
+        (Path(rag_out) / (doc_id + ".md")).write_text(text, encoding="utf-8")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--base-date", default=dt.datetime.now(KST).date().isoformat())
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--out", default=os.path.join(HERE, "out"))
     ap.add_argument("--rag-out", default=os.path.join(HERE, "rag_docs", "hospitals"))
+    ap.add_argument("--faq-only", action="store_true",
+                    help="generate supplemental FAQs from existing hospitals without rewriting business data")
     args = ap.parse_args()
+
+    if args.faq_only:
+        hospitals = json.loads((Path(args.out) / "hospitals.json").read_text(encoding="utf-8"))
+        write_sample_faqs(hospitals, args.rag_out)
+        print("wrote 50 supplemental hospital FAQ documents (750 questions)")
+        return
 
     base = dt.date.fromisoformat(args.base_date)
     rng = random.Random(args.seed)
@@ -1408,6 +1485,8 @@ def main():
     for h in hospitals:
         with open(os.path.join(args.rag_out, "HOSPITAL_FAQ_%03d.md" % h["id"]), "w", encoding="utf-8") as f:
             f.write(hospital_faq(h, docs_by_h[h["id"]], opts_by_h[h["id"]]))
+
+    write_sample_faqs(hospitals, args.rag_out)
 
     for t in INSERT_ORDER + EMPTY_TABLES:
         print("%-15s %6d" % (t, len(data[t])))

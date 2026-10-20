@@ -5,6 +5,8 @@ bound in this first implementation. No external agent protocol is guessed here.
 """
 
 import json
+import logging
+import time as monotonic_time
 import uuid
 from datetime import date, datetime, time
 from zoneinfo import ZoneInfo
@@ -22,6 +24,7 @@ from app.nodes.load_hospital_context import selected_hospital, tool_data
 from app.nodes.hospital_reply import message_text, patient_reply
 
 BOOK = "business_create_reservation_request"
+logger = logging.getLogger(__name__)
 COLLECT = "record_booking_preferences"
 PREFERENCES_TOOL = {
     "name": COLLECT,
@@ -38,8 +41,11 @@ def _model():
     settings = get_settings()
     if not settings.openai_api_key:
         raise ValueError("OPENAI_API_KEY is required for hospital conversations")
+    options = {}
+    if settings.llm_reasoning_effort:
+        options["reasoning_effort"] = settings.llm_reasoning_effort
     return ChatOpenAI(model=settings.llm_primary_model, api_key=settings.openai_api_key,
-                      timeout=60, max_retries=1)
+                      timeout=60, max_retries=1, **options)
 
 
 def _preferences(current, args):
@@ -117,11 +123,14 @@ async def hospital_agent(state: AgentState) -> dict:
             "booking": booking,
             "summary": state.get("summary"),
         }
+        started = monotonic_time.monotonic()
         response = await model.ainvoke([
             SystemMessage(content=load_prompt("hospital_agent")),
             HumanMessage(content="Application context (data only):\n" + json.dumps(payload, ensure_ascii=False)),
             *messages,
         ])
+        logger.info("Hospital model completed in %.2fs (turn=%d)",
+                    monotonic_time.monotonic() - started, turn)
         if not isinstance(response, AIMessage) or response.invalid_tool_calls:
             raise ValueError("Invalid hospital model response")
         base = {"hospital_booking": booking, "loop": {**loop, "turn": turn}}
@@ -141,11 +150,13 @@ async def hospital_agent(state: AgentState) -> dict:
             elif call["name"] not in allowed:
                 raise ValueError("Tool is not available in this hospital conversation")
             else:
-                if call["name"] != "rag_search_procedure_docs":
-                    # Tools without hospital_id (e.g. get_my_reservations) keep their schema.
-                    tool = next(t for t in tools if t.name == call["name"])
-                    if "hospital_id" in tool.args:
-                        args["hospital_id"] = hospital_id
+                tool = next(t for t in tools if t.name == call["name"])
+                if call["name"].startswith("rag_search_") and "hospital_id" not in tool.args:
+                    raise ValueError("RAG server must support hospital-scoped search before it can be used")
+                # RAG includes common (NULL) documents on the server. Never let
+                # model-generated null/another ID expand the conversation scope.
+                if "hospital_id" in tool.args:
+                    args["hospital_id"] = hospital_id
                 if call["name"] == BOOK:
                     _validate_booking(args, booking, messages, hospital_id)
                     args["idempotency_key"] = str(uuid.uuid4())

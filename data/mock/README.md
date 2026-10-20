@@ -101,7 +101,36 @@ data/mock/
 
 ## RAG 문서
 
-모든 문서는 YAML front matter(`doc_id`, `title`, `doc_type`, `procedure_code` 또는 `hospital_id`, `lang: en`, `source: "SKALA capstone fictional dataset"`, `version: 1`)로 시작하고, 그 다음 줄에 `> Fictional educational content. Not medical advice.`가 있습니다.
+### 추가 병원 FAQ (2026-10-20)
+
+`faq_samples/faq.jsonl`과 `source_policies.json`은 새 한국어 FAQ 750문항과
+그 근거 정책 원본입니다. CSV는 같은 내용의 검토용 형식이라 중복 저장하지 않습니다.
+`generate.py`가 `rag_docs/hospitals/SAMPLE_HOSPITAL_FAQ_001.md` ~ `050.md`를
+생성합니다. 기존 영어 FAQ 50개를 유지하여 병원 문서는 총 100개, 전체 문서는 122개입니다.
+새 문서는 병원당 15개 섹션이며 섹션별 `hospital_id`, 질문·답변, 가상 데이터 표시,
+근거 정책 ID, 출처 구분과 상태를 보존합니다. 근거 원문은 `source_policies.json`에 있습니다.
+ASCII 주제명을 섹션 제목으로 사용해 한국어 질문의 `doc://` 섹션 경로가 겹치지 않습니다.
+
+```bash
+python3 data/mock/generate.py --faq-only
+python3 data/mock/validate.py
+```
+
+`--faq-only`는 기존 업무 JSON/SQL과 영어 FAQ를 다시 쓰지 않습니다.
+전체 생성 시에도 추가 FAQ를 생성하며, 병원명·지원 언어·통역 지원 등 기준 사실이
+원본 정책과 달라지면 실패하므로 새 기준과 원본 자료를 먼저 대조해야 합니다.
+
+비교 결과: 50곳의 병원명·지원 언어·통역 지원 여부가 일치합니다.
+새 통역 FAQ는 신청 기한·채널·배정 확인 절차를 보충합니다. 기존 예약 승인·30분 홀드와
+새 일정 변경 안내는 모순되지 않으며, 두 자료 모두 환불 조건을 별도 확인하도록 합니다.
+새 FAQ는 가격·영업시간·의료진을 다시 정의하지 않아 해당 기존 항목과 충돌하지 않습니다.
+신규 정책은 합성 초안이며 기존 `verified_at`을 신규 정책의 검토일로 사용하지 않습니다.
+
+기존 MCP stub는 두 종류의 Markdown을 모두 읽습니다. 벡터 DB 적재와 상담방 기반
+접근 통제는 이 데이터 추가에 포함되지 않습니다. 가격·영업시간 등 변동 정보는
+서비스 답변 시 최신 업무 조회를 우선해야 합니다.
+
+모든 문서는 YAML front matter(`doc_id`, `title`, `doc_type`, `procedure_code` 또는 `hospital_id`, `lang: en` 또는 신규 FAQ의 `ko`, `source: "SKALA capstone fictional dataset"`, `version: 1`)로 시작하고, 본문에 `> Fictional educational content. Not medical advice.`가 있습니다.
 
 - 시술 가이드 18개: `## Overview` ~ `## Questions to ask your doctor` 7개 섹션 고정
 - 공통 문서 4개: 한국 방문 FAQ, 준비 체크리스트, 일반 사후 관리, 부가세 환급·결제 안내 (제도는 바뀔 수 있으니 확인하라는 단서 포함)

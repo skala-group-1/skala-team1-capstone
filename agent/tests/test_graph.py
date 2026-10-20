@@ -1,10 +1,18 @@
 """그래프 골격 테스트 — 노드 연결과 분기가 「AI Agent 설계」 그림대로인지. 노드 로직이 채워지면 케이스를 늘린다."""
 
-from langchain_core.messages import HumanMessage
+import importlib
+import json
+from unittest.mock import AsyncMock
+
+import pytest
+from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
+from langchain_core.tools import StructuredTool
+from langgraph.checkpoint.memory import MemorySaver
+from langgraph.store.memory import InMemoryStore
 from langgraph.types import Command
 
 from app.graph import routing
-from app.graph.builder import build_hospital_subgraph, build_main_graph
+from app.graph.builder import build_hospital_subgraph, build_main_graph, compile_graph
 
 MAIN_NODES = {"load_memory", "guard_input", "guard_reply", "open_hospital_conversation", "extract_conditions",
               "ask_clarify", "planner_agent", "tools", "verify", "memory_propose", "respond", "hospital_subgraph"}
@@ -41,18 +49,93 @@ def test_human_mode_stops_ai_reply(graph, config):
     assert r["messages"][-1].type == "human"
 
 
-def test_hospital_booking_interrupt_and_resume(graph, config):
-    r = graph.invoke({"messages": [HumanMessage("예약할래요")], "mode": "HOSPITAL", "selected_hospital_id": 1}, config)
+@pytest.fixture
+def booking_graph(monkeypatch):
+    """Exercise real async nodes/ToolNode/interrupt with deterministic boundaries.
+
+    The mutation boundary is a spy; these tests do not claim a DB write.
+    Live MCP connectivity is checked separately against the running servers.
+    """
+    hospital = importlib.import_module("app.nodes.hospital_agent")
+    context = importlib.import_module("app.nodes.load_hospital_context")
+    client = importlib.import_module("app.mcp_client.client")
+    builder = importlib.import_module("app.graph.builder")
+
+    async def detail(hospital_id: int):
+        return {"id": hospital_id, "name": "Test hospital"}
+
+    async def slots(hospital_id: int, procedure_code: str, date_from: str, date_to: str):
+        return {"slots": [{"id": 12, "start_at": "2026-10-22T10:00:00+09:00", "status": "AVAILABLE"}]}
+
+    async def booking(hospital_id: int, slot_id: int, procedure_code: str):
+        raise AssertionError("Mutation must only execute through the approval boundary")
+
+    tools = [
+        StructuredTool.from_function(coroutine=fn, name=name, description="Test MCP boundary")
+        for name, fn in (
+            ("business_get_hospital_detail", detail), ("business_list_doctors", detail),
+            ("business_get_available_slots", slots), (hospital.BOOK, booking),
+        )
+    ]
+
+    async def get_tools(allowed):
+        return [t for t in tools if t.name in allowed]
+
+    for module in (hospital, context, client):
+        monkeypatch.setattr(module, "get_tools", get_tools)
+
+    def call(name, args, id):
+        return AIMessage(content="", tool_calls=[{"name": name, "args": args, "id": id}])
+
+    model = AsyncMock()
+    model.bind_tools = lambda *args, **kwargs: model
+    model.ainvoke.side_effect = [
+        call(hospital.COLLECT, {"procedure_code": "JAW_BOTOX", "date": "2026-10-22", "time": "10:00"}, "prefs"),
+        call("business_get_available_slots", {
+            "hospital_id": 1, "procedure_code": "JAW_BOTOX",
+            "date_from": "2026-10-22", "date_to": "2026-10-22",
+        }, "slots"),
+        call(hospital.BOOK, {"hospital_id": 1, "slot_id": 12, "procedure_code": "JAW_BOTOX"}, "book"),
+        AIMessage(content="요청을 처리했습니다."),
+    ]
+    monkeypatch.setattr(hospital, "_model", lambda: model)
+
+    async def mutation(state):
+        action = state["pending_action"]
+        assert action["approved"] is True
+        return {"messages": [ToolMessage(content=json.dumps({"status": "PENDING"}),
+                                         tool_call_id=action["tool_call_id"])], "pending_action": None}
+
+    execute = AsyncMock(side_effect=mutation)
+    monkeypatch.setattr(builder, "execute_action", execute)
+    return compile_graph(MemorySaver(), InMemoryStore()), execute
+
+
+async def test_hospital_booking_interrupt_and_resume(booking_graph, config):
+    graph, execute = booking_graph
+    r = await graph.ainvoke({"messages": [HumanMessage("10월 22일 10시에 턱 보톡스 예약할래요")],
+                            "mode": "HOSPITAL", "selected_hospital_id": 1}, config)
     pending = r["__interrupt__"][0].value
     assert pending["action"] == "CREATE_RESERVATION"
-    r = graph.invoke(Command(resume={"approved": True}), config)
-    assert "execute_action" in r["messages"][-1].content
+    assert pending["args"]["slot_id"] == 12
+    assert pending["args"]["hospital_id"] == 1
+    assert pending["args"]["idempotency_key"]
+    execute.assert_not_awaited()
+    r = await graph.ainvoke(Command(resume={"approved": True}), config)
+    execute.assert_awaited_once()
+    assert execute.call_args.args[0]["pending_action"]["args"] == pending["args"]
+    assert not r.get("__interrupt__") and r["pending_action"] is None
+    assert r["messages"][-1].content == "요청을 처리했습니다."
 
 
-def test_hospital_booking_rejected(graph, config):
-    graph.invoke({"messages": [HumanMessage("book please")], "mode": "HOSPITAL", "selected_hospital_id": 1}, config)
-    r = graph.invoke(Command(resume={"approved": False, "reason": "no"}), config)
-    assert "User rejected" in r["messages"][-1].content
+async def test_hospital_booking_rejected(booking_graph, config):
+    graph, execute = booking_graph
+    await graph.ainvoke({"messages": [HumanMessage("book please")], "mode": "HOSPITAL",
+                        "selected_hospital_id": 1}, config)
+    r = await graph.ainvoke(Command(resume={"approved": False, "reason": "no"}), config)
+    execute.assert_not_awaited()
+    assert any(isinstance(m, ToolMessage) and "User rejected" in m.content for m in r["messages"])
+    assert not r.get("__interrupt__")
 
 
 def test_verify_retries_once():

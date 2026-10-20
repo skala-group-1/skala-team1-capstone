@@ -17,6 +17,7 @@ import re
 import subprocess
 import sys
 from collections import Counter
+from generate import sample_faq_documents
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 errors = []
@@ -265,7 +266,8 @@ def validate_sql(out, data):
 
 
 def validate_rag(rag, data):
-    want = {"GUIDE": 18, "TRAVEL": 1, "PREP": 1, "AFTERCARE": 1, "FAQ": 1, "HOSPITAL_FAQ": 50}
+    want = {"GUIDE": 18, "TRAVEL": 1, "PREP": 1, "AFTERCARE": 1, "FAQ": 1, "HOSPITAL_FAQ": 100}
+    expected_samples = sample_faq_documents(data["hospitals"])
     got = Counter()
     ids = set()
     procs = {p["code"] for p in data["procedures"]}
@@ -282,7 +284,9 @@ def validate_rag(rag, data):
             fm = dict(line.split(": ", 1) for line in m.group(1).split("\n") if ": " in line)
             for k in ("doc_id", "title", "doc_type", "lang", "source", "version"):
                 check(k in fm, "%s: front matter missing %s" % (fn, k))
-            check(fm.get("lang") == "en" and fm.get("version") == "1", "%s: lang/version" % fn)
+            is_sample = fm.get("doc_id") in expected_samples
+            check(fm.get("lang") == ("ko" if is_sample else "en") and fm.get("version") == "1",
+                  "%s: lang/version" % fn)
             check(fm.get("source") == '"SKALA capstone fictional dataset"', "%s: source" % fn)
             check("> Fictional educational content. Not medical advice." in text, "%s: disclaimer" % fn)
             check(fm.get("doc_id") not in ids, "%s: duplicate doc_id" % fn)
@@ -295,7 +299,11 @@ def validate_rag(rag, data):
                     check("\n## %s\n" % sec in text, "%s: missing section %s" % (fn, sec))
             if fm.get("doc_type") == "HOSPITAL_FAQ":
                 check(int(fm.get("hospital_id", 0)) in {h["id"] for h in data["hospitals"]}, "%s: hospital_id" % fn)
-                check("slot is held for 30 minutes" in text, "%s: booking policy" % fn)
+                if is_sample:
+                    check(text == expected_samples[fm["doc_id"]], "%s: FAQ source/metadata mismatch" % fn)
+                else:
+                    check("slot is held for 30 minutes" in text, "%s: booking policy" % fn)
+    check(set(expected_samples) <= ids, "missing supplemental FAQ documents")
     check(got == Counter(want), "rag doc counts %s" % dict(got))
     return got
 

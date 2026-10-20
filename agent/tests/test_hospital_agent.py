@@ -134,6 +134,24 @@ def test_invalid_preferences():
     assert previous == {"time": "10:00"}
 
 
+@pytest.mark.parametrize("effort", ["low", None, ""])
+def test_model_reasoning_effort_is_configurable(monkeypatch, effort):
+    from app.config import Settings
+    monkeypatch.setattr(agent, "get_settings", lambda: Settings(
+        _env_file=None, openai_api_key="test-key", llm_reasoning_effort=effort,
+    ))
+    assert agent._model().reasoning_effort == (effort or None)
+
+
+async def test_price_option_id_can_be_removed_without_changing_price():
+    model = AsyncMock()
+    model.ainvoke.return_value = AIMessage(content="국산 제품: 150,000원, 50단위 × 2회.")
+    assert await patient_reply("옵션 10: 국산 제품: 150,000원, 50단위 × 2회.", "ko", model) == (
+        "국산 제품: 150,000원, 50단위 × 2회."
+    )
+    assert "literal copy editor" in model.ainvoke.call_args.args[0][0].content
+
+
 # Display guard regression cases use deliberately noncompliant model responses.
 async def test_clean_reply_does_not_call_model():
     model = AsyncMock()

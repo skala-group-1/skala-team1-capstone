@@ -42,7 +42,7 @@ async def test_hospital_not_found():
 async def test_reservation_idempotent():
     async with Client(business) as c:
         slots = (await c.call_tool("get_available_slots", {
-            "hospital_id": 1, "procedure_code": "JAW_BOTOX", "date_from": "2026-10-21", "date_to": "2026-10-21"}
+            "hospital_id": 1, "procedure_code": "JAW_BOTOX", "date_from": "2026-10-22", "date_to": "2026-10-22"}
         )).structured_content["slots"]
         args = {"hospital_id": 1, "slot_id": slots[0]["id"], "procedure_code": "JAW_BOTOX", "idempotency_key": "k-1"}
         first = (await c.call_tool("create_reservation_request", args)).structured_content

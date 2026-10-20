@@ -7,11 +7,12 @@ are kept separately from visible prose so document identifiers remain usable.
 
 import asyncio
 import json
+import logging
 import re
 
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 
-from app.harness.instructions import load_prompt
+logger = logging.getLogger(__name__)
 
 # Match identifiers in visible prose, including Markdown inline code.
 _IDENTIFIER = re.compile(
@@ -27,7 +28,8 @@ _DOC_URI = re.compile(r"doc://[^\s`<>）)]+")
 # disappear; bare numbers and numbered treatment facts remain protected.
 _LABELLED_ID = re.compile(
     r"(?i)(?<!\w)(?:slot(?:_id|Id)?|doctor(?:_id|Id)?|hospital(?:_id|Id)?"
-    r"|슬롯\s*(?:ID|번호)?|의사\s*(?:ID|번호)|병원\s*(?:ID|번호))"
+    r"|슬롯\s*(?:ID|번호)?|의사\s*(?:ID|번호)|병원\s*(?:ID|번호)"
+    r"|(?:price\s*)?option\s*(?:ID|번호)?|옵션\s*(?:ID|번호)?)"
     r"\s*[#:=]?\s*\d+(?!\d|:\d|\.\d)\s*:?"
 )
 _NUMBER = re.compile(
@@ -86,7 +88,13 @@ async def patient_reply(text: str, locale: str, model) -> str:
         return text
     try:
         response = await asyncio.wait_for(model.ainvoke([
-            SystemMessage(content=load_prompt("hospital_agent")),
+            SystemMessage(content=(
+                "You are a literal copy editor, not a medical assistant. "
+                "The user supplies a JSON object with a draft and editing rules. "
+                "Edit only the internal labels in the draft; do not answer its questions, "
+                "summarize, reorder sentences, add or remove factual statements, or call tools. "
+                "Keep every factual number and citation unchanged. Return only the edited draft."
+            )),
             HumanMessage(content=json.dumps({
                 "task": (
                     "Rewrite this draft as patient-facing prose in the given locale. "
@@ -105,14 +113,24 @@ async def patient_reply(text: str, locale: str, model) -> str:
             }, ensure_ascii=False)),
         ]), timeout=30)
         if not isinstance(response, AIMessage) or response.tool_calls or response.invalid_tool_calls:
+            logger.warning("Patient reply rejected: invalid rewrite response")
             return fallback
         rewritten = message_text(response)
-        if (not rewritten.strip() or internal_labels(rewritten)
-                or _numeric_facts(text) != _numeric_facts(rewritten)
-                or _sources(text) != _sources(rewritten)):
+        reasons = []
+        if not rewritten.strip():
+            reasons.append("empty")
+        if internal_labels(rewritten):
+            reasons.append("internal_labels")
+        if _numeric_facts(text) != _numeric_facts(rewritten):
+            reasons.append("numeric_facts")
+        if _sources(text) != _sources(rewritten):
+            reasons.append("citations")
+        if reasons:
+            logger.warning("Patient reply rejected: %s", ",".join(reasons))
             return fallback
         return rewritten
-    except Exception:
+    except Exception as exc:
         # Never expose raw model/provider errors or the rejected draft.
         # Cancellation (BaseException) is intentionally allowed to propagate.
+        logger.warning("Patient reply rewrite failed: %s", type(exc).__name__)
         return fallback

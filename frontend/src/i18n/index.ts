@@ -2,7 +2,8 @@
  * 화면 문구 다국어 (en/zh/ja/ko — 고객도 ko 선택 가능, 스태프는 ko/en).
  * locale 우선순위 (「공통 계약서」 1장 과 동일하게): 로그인 사용자 locale → 온보딩에서 고른 언어 → 브라우저 언어 → en
  * - API 응답의 병원명·시술명은 backend 가 Accept-Language 로 골라서 준다 → 여기서 번역하지 않음
- * - 온보딩에서 고른 언어는 localStorage('locale') 에 저장 (토큰이 아니므로 저장 가능)
+ * - 화면 언어는 localStorage('locale') 에 저장 (토큰이 아니므로 저장 가능). 로그인 사용자 locale 로도 바뀐다(App.vue)
+ * - 온보딩에서 고른 언어는 따로 localStorage('localePicked') 에 두고, 다음 고객 로그인 때 계정에 1번 반영한다(auth.setUser)
  */
 import { createI18n } from 'vue-i18n'
 import en from './locales/en'

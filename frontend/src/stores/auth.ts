@@ -62,8 +62,10 @@ export const useAuthStore = defineStore('auth', {
       }
     },
     setUser(user: UserSummary) {
-      // 고객: 이 기기에서 고른 언어(온보딩·내 정보, i18n setLocale 이 저장)가 계정 언어보다 우선 → 계정에도 저장
-      const picked = localStorage.getItem('locale') as Locale | null
+      // 고객: 로그인 전 온보딩에서 고른 언어가 있으면 계정 언어보다 우선 → 계정에도 1번 저장하고 지운다.
+      // 화면 언어('locale')는 직원 로그인 때도 ko 로 바뀌므로 쓰지 않는다 (같은 브라우저에서 직원 다음 고객이 로그인하면 고객 언어가 ko 로 바뀌던 문제)
+      const picked = localStorage.getItem('localePicked') as Locale | null
+      localStorage.removeItem('localePicked')
       if (user.role === 'CUSTOMER' && picked && ['en', 'zh', 'ja', 'ko'].includes(picked) && picked !== user.locale) {
         user = { ...user, locale: picked }
         void authApi.updateMe({ locale: picked }).catch(() => undefined)

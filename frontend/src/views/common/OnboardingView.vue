@@ -31,8 +31,9 @@ function pick(l: Locale) {
   setLocale(l)
 }
 function next() {
-  // 기본 선택(브라우저 언어)을 그대로 두고 넘어가도 '고른 언어'로 저장 → 로그인 후에도 이 언어 유지
+  // 기본 선택(브라우저 언어)을 그대로 두고 넘어가도 '고른 언어'로 저장 → 다음 고객 로그인 때 계정 언어로 1번 반영 (auth.setUser)
   setLocale(picked.value)
+  localStorage.setItem('localePicked', picked.value)
   step.value = 'intro'
 }
 function finish(to: '/signup' | '/login') {

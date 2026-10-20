@@ -80,5 +80,45 @@ services:
       rabbitmq:
         condition: service_healthy
 
+  # 공용 에이전트: 통역 채팅·요약 카드 번역 워커 (chat.translate/summary.translate 소비)
+  translator:
+    build:
+      context: .
+      dockerfile: translator/Dockerfile
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      LLM_FAST_MODEL: ${LLM_FAST_MODEL:-gpt-5-nano}
+      RABBITMQ_URL: amqp://${RABBITMQ_DEFAULT_USER:-guest}:${RABBITMQ_DEFAULT_PASS:-guest}@rabbitmq:5672/
+    # 내부 전용 — 포트 비공개. 개발 편의로 열려면 주석 해제:
+    # ports:
+    #   - "8001:8001"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      backend:
+        condition: service_started   # 큐 선언 주체가 backend 라서
+
+  # 공용 에이전트: 상담 요청 요약 카드 (POST /summarize — agent 그래프 노드가 동기 호출)
+  summarizer:
+    build:
+      context: .
+      dockerfile: summarizer/Dockerfile
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      LLM_FAST_MODEL: ${LLM_FAST_MODEL:-gpt-5-nano}
+    # 내부 전용 — 포트 비공개. 개발 편의로 열려면 주석 해제:
+    # ports:
+    #   - "8002:8002"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8002/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
 volumes:
   pgdata:

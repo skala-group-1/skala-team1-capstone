@@ -58,7 +58,7 @@ LLM은 `LLM_PRIMARY_MODEL`(현재 gpt-5-nano), 임베딩은 `EMBEDDING_MODEL`(te
 
 ## 6. 데이터
 
-- mock 데이터: `data/mock/out/*.json`, `schema.sql`, `V100__seed.sql` (기준일 2026-10-20, seed 42)
+- mock 데이터: `data/mock/out/*.json`, `schema.sql`, `V100__seed.sql` (기준일 2026-10-22 목요일 = 데모 시작일, seed 42)
 - 데이터를 고칠 때는 JSON/SQL을 직접 수정하지 말고 `data/mock/generate.py`를 수정 → 재생성 → `python3 data/mock/validate.py` 통과
 - 데모 계정 비밀번호 `Passw0rd!` (`password_hash`는 자리표시자, backend PasswordSeeder가 BCrypt로 교체)
 - 다른 파트가 아직 없으면 `data/mock/out/*.json`을 읽는 stub/fake로 먼저 개발한다

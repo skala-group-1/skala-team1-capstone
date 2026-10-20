@@ -10,7 +10,7 @@ Python 3 표준 라이브러리만 사용하며, 같은 `--base-date`와 `--seed
 
 ```bash
 cd data/mock
-python3 generate.py --base-date 2026-10-20 --seed 42 --out out/   # 생성
+python3 generate.py --base-date 2026-10-22 --seed 42 --out out/   # 생성
 python3 validate.py                                               # 검증 (FK·업무 규칙·SQL 구조·RAG 문서)
 ```
 
@@ -49,7 +49,7 @@ data/mock/
     └── hospitals/         # 병원 FAQ 50개 (generate.py 생성) doc_type=HOSPITAL_FAQ
 ```
 
-## 테이블 건수 (`--base-date 2026-10-20 --seed 42`)
+## 테이블 건수 (`--base-date 2026-10-22 --seed 42`)
 
 | 테이블 | 건수 | 비고 |
 | --- | ---: | --- |

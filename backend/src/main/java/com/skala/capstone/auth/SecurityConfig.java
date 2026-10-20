@@ -2,6 +2,8 @@ package com.skala.capstone.auth;
 
 import java.util.List;
 
+import jakarta.servlet.DispatcherType;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -38,10 +40,14 @@ public class SecurityConfig {
 				.formLogin(AbstractHttpConfigurer::disable)
 				.logout(AbstractHttpConfigurer::disable)
 				.authorizeHttpRequests(auth -> auth
+						// SSE 응답 마무리(ASYNC)·오류 페이지(ERROR) 재진입은 이미 인증된 요청의 연장이므로 통과
+						.dispatcherTypeMatchers(DispatcherType.ASYNC, DispatcherType.ERROR).permitAll()
 						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 						.requestMatchers("/api/auth/**").permitAll()
 						.requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
 						.requestMatchers("/error").permitAll()
+						// WebSocket 핸드셰이크는 열어 두고, 인증은 STOMP CONNECT 프레임에서 한다 (StompAuthInterceptor)
+						.requestMatchers("/ws", "/ws/**").permitAll()
 						.requestMatchers("/api/counselor/**").hasRole("COUNSELOR")
 						.requestMatchers("/api/hospital-admin/**").hasRole("HOSPITAL_ADMIN")
 						.requestMatchers("/api/ops/**").hasRole("OPERATOR")

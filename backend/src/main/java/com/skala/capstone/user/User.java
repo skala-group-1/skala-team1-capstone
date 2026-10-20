@@ -70,6 +70,10 @@ public class User {
 		return u;
 	}
 
+	public void changeLocale(String locale) {
+		this.locale = locale;
+	}
+
 	public CurrentUser toCurrentUser() {
 		return new CurrentUser(id, role, hospitalId, locale);
 	}

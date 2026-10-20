@@ -40,7 +40,10 @@ class MiscIntegrationTest extends IntegrationTest {
 	void customerCanChangeLocaleWithinAllowedSet() throws Exception {
 		String token = accessToken("customer.en2@demo.local");
 		mvc.perform(patch("/api/me").header(HttpHeaders.AUTHORIZATION, token).contentType(MediaType.APPLICATION_JSON)
-				.content(json(Map.of("locale", "ko")))).andExpect(status().isBadRequest());
+				.content(json(Map.of("locale", "fr")))).andExpect(status().isBadRequest());
+		// 고객도 한국어 선택 가능 (D-43)
+		mvc.perform(patch("/api/me").header(HttpHeaders.AUTHORIZATION, token).contentType(MediaType.APPLICATION_JSON)
+				.content(json(Map.of("locale", "ko")))).andExpect(status().isOk()).andExpect(jsonPath("$.locale").value("ko"));
 		mvc.perform(patch("/api/me").header(HttpHeaders.AUTHORIZATION, token).contentType(MediaType.APPLICATION_JSON)
 				.content(json(Map.of("locale", "ja")))).andExpect(status().isOk()).andExpect(jsonPath("$.locale").value("ja"));
 		mvc.perform(patch("/api/me").header(HttpHeaders.AUTHORIZATION, token).contentType(MediaType.APPLICATION_JSON)

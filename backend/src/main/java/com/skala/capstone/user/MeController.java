@@ -41,7 +41,7 @@ public class MeController {
 	}
 
 	/**
-	 * 화면 언어 변경. 고객은 en/zh/ja, 스태프·운영자는 ko/en.
+	 * 화면 언어 변경. 고객은 en/zh/ja/ko (D-43), 스태프·운영자는 ko/en.
 	 * 토큰 안의 locale 은 다음 refresh 때 바뀐다 (그 전까지 응답 언어는 Accept-Language 로 맞추면 됨).
 	 */
 	@PatchMapping
@@ -49,11 +49,11 @@ public class MeController {
 	public MeResponse update(@AuthenticationPrincipal CurrentUser current, @Valid @RequestBody UpdateMeRequest req) {
 		User u = users.findById(current.id()).orElseThrow(() -> ApiException.notFound("user"));
 		boolean customer = u.getRole() == Role.CUSTOMER;
-		boolean allowed = customer ? Set.of("en", "zh", "ja").contains(req.locale())
+		boolean allowed = customer ? Set.of("en", "zh", "ja", "ko").contains(req.locale())
 				: Set.of("ko", "en").contains(req.locale());
 		if (!allowed) {
 			throw new ApiException(ErrorCode.VALIDATION_FAILED, Map.of("fields", List.of(
-					Map.of("field", "locale", "reason", customer ? "one of en, zh, ja" : "one of ko, en"))));
+					Map.of("field", "locale", "reason", customer ? "one of en, zh, ja, ko" : "one of ko, en"))));
 		}
 		u.changeLocale(req.locale());
 		return toResponse(u);

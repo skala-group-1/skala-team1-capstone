@@ -2,9 +2,12 @@
 
 import json
 
+from aio_pika.exceptions import ChannelNotFoundEntity
+
+from app import worker
 from app.messages import HEADER_ATTEMPT, HEADER_TRACE_ID, ChatTranslate
 from app.translate import ChatTranslation
-from app.worker import handle_chat_translate, retry_or_dead_letter, retry_target
+from app.worker import handle_chat_translate, retry_or_dead_letter, retry_target, start_consumers
 
 
 class FakeExchange:
@@ -66,3 +69,59 @@ async def test_retry_exhausted_goes_to_dlq():
     [(routing_key, message)] = channel.exchange.published
     assert routing_key == "summary.translate.dlq"
     assert message.headers[HEADER_ATTEMPT] == 3
+
+
+class FakeQueue:
+    def __init__(self):
+        self.consumers = []
+
+    async def consume(self, callback):
+        self.consumers.append(callback)
+
+
+class FakeConsumeChannel:
+    """start_consumers 용 — fail=True 면 큐가 아직 선언 안 된 상황."""
+
+    def __init__(self, fail: bool):
+        self.fail = fail
+        self.queues: dict[str, FakeQueue] = {}
+
+    async def set_qos(self, prefetch_count):
+        self.prefetch = prefetch_count
+
+    async def get_queue(self, name):
+        if self.fail:
+            raise ChannelNotFoundEntity(f"no queue '{name}'")
+        return self.queues.setdefault(name, FakeQueue())
+
+
+class FakeConnection:
+    def __init__(self, channel):
+        self._channel = channel
+        self.closed = False
+
+    async def channel(self):
+        return self._channel
+
+    async def close(self):
+        self.closed = True
+
+
+async def test_start_consumers_waits_until_backend_declares_queues(monkeypatch):
+    """backend 보다 먼저 떠서 큐가 없으면 재시도, 선언되면 모든 큐에 consumer 를 붙인다."""
+    first = FakeConnection(FakeConsumeChannel(fail=True))
+    second = FakeConnection(FakeConsumeChannel(fail=False))
+    connections = [first, second]
+
+    async def fake_connect(url):
+        return connections.pop(0)
+
+    monkeypatch.setattr(worker.aio_pika, "connect_robust", fake_connect)
+    monkeypatch.setattr(worker, "QUEUE_WAIT_SECONDS", 0)
+
+    connection = await start_consumers()
+    assert connection is second and first.closed
+    channel = second._channel
+    assert channel.prefetch == worker.PREFETCH_COUNT
+    assert set(channel.queues) == {"chat.translate", "summary.translate"}
+    assert all(q.consumers for q in channel.queues.values())

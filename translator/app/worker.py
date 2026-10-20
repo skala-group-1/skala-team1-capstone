@@ -5,6 +5,7 @@
 그 이상 → {큐}.dlq. 재발행 시 x-attempt 를 +1 한다 (TTL 후 원래 큐 복귀는 토폴로지가 처리).
 """
 
+import asyncio
 import logging
 
 import aio_pika
@@ -24,6 +25,7 @@ from app.translate import translate_chat, translate_summary
 log = logging.getLogger(__name__)
 
 PREFETCH_COUNT = 2
+QUEUE_WAIT_SECONDS = 3.0
 
 
 async def handle_chat_translate(msg: ChatTranslate, trace_id: str,
@@ -79,21 +81,36 @@ async def retry_or_dead_letter(channel: aio_pika.abc.AbstractChannel, queue_name
 
 
 async def start_consumers() -> aio_pika.abc.AbstractRobustConnection:
-    """큐마다 consumer 를 붙이고 연결을 돌려준다 (종료 시 close)."""
-    connection = await aio_pika.connect_robust(get_settings().rabbitmq_url)
-    channel = await connection.channel()
-    await channel.set_qos(prefetch_count=PREFETCH_COUNT)
-    for queue_name, (model, handler) in HANDLERS.items():
-        queue = await channel.get_queue(queue_name)
+    """큐마다 consumer 를 붙이고 연결을 돌려준다 (종료 시 close).
 
-        async def on_message(message: aio_pika.abc.AbstractIncomingMessage,
-                             queue_name=queue_name, model=model, handler=handler):
-            async with message.process(requeue=False):
-                trace_id = (message.headers or {}).get(HEADER_TRACE_ID, "")
-                try:
-                    await handler(model.model_validate_json(message.body), trace_id, channel)
-                except Exception as e:  # noqa: BLE001 — 재시도 규약으로 넘긴다
-                    await retry_or_dead_letter(channel, queue_name, message, e)
+    큐 선언 주체는 backend 라서 backend 보다 먼저 뜨면 큐가 아직 없다 (compose depends_on 은
+    Spring 부팅 완료를 못 기다린다) → 큐가 선언될 때까지 재시도한다.
+    """
+    settings = get_settings()
+    attempt = 0
+    while True:
+        connection = await aio_pika.connect_robust(settings.rabbitmq_url)
+        try:
+            channel = await connection.channel()
+            await channel.set_qos(prefetch_count=PREFETCH_COUNT)
+            for queue_name, (model, handler) in HANDLERS.items():
+                queue = await channel.get_queue(queue_name)
 
-        await queue.consume(on_message)
-    return connection
+                async def on_message(message: aio_pika.abc.AbstractIncomingMessage,
+                                     queue_name=queue_name, model=model, handler=handler,
+                                     channel=channel):
+                    async with message.process(requeue=False):
+                        trace_id = (message.headers or {}).get(HEADER_TRACE_ID, "")
+                        try:
+                            await handler(model.model_validate_json(message.body), trace_id, channel)
+                        except Exception as e:  # noqa: BLE001 — 재시도 규약으로 넘긴다
+                            await retry_or_dead_letter(channel, queue_name, message, e)
+
+                await queue.consume(on_message)
+            return connection
+        except aio_pika.exceptions.ChannelNotFoundEntity:
+            await connection.close()
+            attempt += 1
+            log.info("queues not declared yet (waiting for backend), retry %s in %ss",
+                     attempt, QUEUE_WAIT_SECONDS)
+            await asyncio.sleep(QUEUE_WAIT_SECONDS)

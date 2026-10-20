@@ -68,10 +68,17 @@ export const useAuthStore = defineStore('auth', {
         user = { ...user, locale: picked }
         void authApi.updateMe({ locale: picked }).catch(() => undefined)
       }
+      // 다른 계정으로 바뀌면(로그아웃 없이 다시 로그인) 이전 계정으로 맺은 STOMP 연결을 끊고 새 토큰으로 다시 연결
+      const switched = !!this.user && this.user.id !== user.id
       this.user = user
       session.setLocale(user.locale)
+      if (switched) void disconnectStomp()
       // TODO(fe): STOMP 는 상담·알림 화면에서만 필요하면 지연 연결로 바꿔도 됨. MSW 모드에서는 /ws 가 없어 재연결 로그가 남음
-      if (import.meta.env.VITE_USE_MSW !== 'true') connectStomp()
+      if (import.meta.env.VITE_USE_MSW !== 'true') {
+        connectStomp()
+        // 실시간 알림 (예약 확정·반려, 새 상담 요청, 새 예약 요청)
+        useNotificationStore().listen()
+      }
     },
     async setLocale(locale: Locale) {
       session.setLocale(locale)
@@ -85,6 +92,7 @@ export const useAuthStore = defineStore('auth', {
       const conv = useConversationStore()
       conv.unsubscribe?.()
       useConsultationStore().close()
+      useNotificationStore().stopListening()
       for (const s of [conv, useConsultationStore(), useNotificationStore(), useReservationStore(), useSearchStore()]) s.$reset()
     },
   },

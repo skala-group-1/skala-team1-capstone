@@ -8,6 +8,7 @@ import {
   subscribeConsultation,
   whenStompConnected,
   isStompConnected,
+  safeUnsubscribe,
   http,
 } from '@/api'
 import type { ChatMessage, Consultation, ConsultationStatus, ConsultationTopicEvent, Locale } from '@/types/contract'
@@ -27,17 +28,26 @@ export const useConsultationStore = defineStore('consultation', {
       this.close()
       this.current = await consultationApi.get(id)
       this.messages = await consultationApi.messages(id)
-      this.cancelWait = whenStompConnected(() => {
-        this.connected = true
-        this.sub = subscribeConsultation(id, (e) => this.applyEvent(e))
-        // 끊긴 동안 놓친 메시지 채우기 (13-2 afterId)
-        void this.refetch()
-      })
+      // 연결될 때마다(재연결 포함) 상담방을 다시 구독. 끊기면 connected=false → "재연결 중" 표시
+      this.cancelWait = whenStompConnected(
+        () => {
+          this.connected = true
+          this.sub = subscribeConsultation(id, (e) => this.applyEvent(e))
+          // 끊긴 동안 놓친 메시지 채우기 (13-2 afterId)
+          void this.refetch()
+        },
+        () => {
+          this.connected = false
+          this.sub = null
+        },
+      )
     },
     close() {
       this.cancelWait?.()
-      this.sub?.unsubscribe()
+      this.cancelWait = null
+      safeUnsubscribe(this.sub)
       this.sub = null
+      this.connected = false
       this.current = null
       this.messages = []
     },

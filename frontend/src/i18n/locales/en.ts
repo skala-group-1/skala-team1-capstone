@@ -423,6 +423,7 @@ export default {
       pick: 'Choose a consultation',
       pickBody: 'Pick a request from the inbox to see the summary and chat.',
       autoTranslate: '{lang} ↔ Korean auto translation · connected {time}',
+      sameLanguage: '{lang} consultation · no translation needed · connected {time}',
       showOriginal: 'Show originals',
       accept: 'Accept',
       close: 'End consultation',
@@ -432,6 +433,7 @@ export default {
       flags: { MEDICAL_QUESTION: 'Medical question · doctor should confirm', NUMBER_MISMATCH: 'Check numbers' },
       sentIn: 'Sent translated into {lang}',
       placeholder: 'Type in Korean — it is translated into {lang}',
+      placeholderSame: 'Type a message',
       acceptFirst: 'Accept the consultation to reply',
       hint: 'The customer receives it in {lang}',
       keys: 'Enter to send · Shift+Enter for a new line',
@@ -449,6 +451,7 @@ export default {
       customerLang: 'Language',
       closeNote: 'After you end it, the AI answers in the customer chat again',
       notice: 'During the consultation the AI stops answering the customer; only your replies are translated and delivered.',
+      noticeSame: 'During the consultation the AI stops answering the customer; only your replies are delivered as written.',
     },
     ops: {
       failedTitle: 'Failed AI tasks',

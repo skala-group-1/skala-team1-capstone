@@ -12,11 +12,11 @@
   "reject_reason": null,
   "alternative_slot_ids": [],
   "decided_by": 8,
-  "decided_at": "2026-10-18T12:34:00+09:00",
+  "decided_at": "2026-10-20T12:34:00+09:00",
   "cancelled_at": null,
   "hold_expires_at": null,
-  "created_at": "2026-10-18T12:25:00+09:00",
-  "updated_at": "2026-10-18T12:34:00+09:00"
+  "created_at": "2026-10-20T12:25:00+09:00",
+  "updated_at": "2026-10-20T12:34:00+09:00"
  },
  {
   "id": 2,
@@ -33,9 +33,9 @@
   "decided_by": null,
   "decided_at": null,
   "cancelled_at": null,
-  "hold_expires_at": "2026-10-20T09:30:00+09:00",
-  "created_at": "2026-10-20T09:00:00+09:00",
-  "updated_at": "2026-10-20T09:00:00+09:00"
+  "hold_expires_at": "2026-10-22T09:30:00+09:00",
+  "created_at": "2026-10-22T09:00:00+09:00",
+  "updated_at": "2026-10-22T09:00:00+09:00"
  },
  {
   "id": 3,
@@ -54,11 +54,11 @@
    172
   ],
   "decided_by": 8,
-  "decided_at": "2026-10-15T15:17:00+09:00",
+  "decided_at": "2026-10-17T15:17:00+09:00",
   "cancelled_at": null,
   "hold_expires_at": null,
-  "created_at": "2026-10-15T15:00:00+09:00",
-  "updated_at": "2026-10-15T15:17:00+09:00"
+  "created_at": "2026-10-17T15:00:00+09:00",
+  "updated_at": "2026-10-17T15:17:00+09:00"
  },
  {
   "id": 4,
@@ -73,11 +73,11 @@
   "reject_reason": null,
   "alternative_slot_ids": [],
   "decided_by": 8,
-  "decided_at": "2026-10-18T20:05:00+09:00",
+  "decided_at": "2026-10-20T20:05:00+09:00",
   "cancelled_at": null,
   "hold_expires_at": null,
-  "created_at": "2026-10-18T20:00:00+09:00",
-  "updated_at": "2026-10-18T20:05:00+09:00"
+  "created_at": "2026-10-20T20:00:00+09:00",
+  "updated_at": "2026-10-20T20:05:00+09:00"
  },
  {
   "id": 5,
@@ -94,9 +94,9 @@
   "decided_by": null,
   "decided_at": null,
   "cancelled_at": null,
-  "hold_expires_at": "2026-10-20T10:30:00+09:00",
-  "created_at": "2026-10-20T10:00:00+09:00",
-  "updated_at": "2026-10-20T10:00:00+09:00"
+  "hold_expires_at": "2026-10-22T10:30:00+09:00",
+  "created_at": "2026-10-22T10:00:00+09:00",
+  "updated_at": "2026-10-22T10:00:00+09:00"
  },
  {
   "id": 6,
@@ -111,11 +111,11 @@
   "reject_reason": null,
   "alternative_slot_ids": [],
   "decided_by": 8,
-  "decided_at": "2026-10-15T13:40:00+09:00",
-  "cancelled_at": "2026-10-16T09:25:00+09:00",
+  "decided_at": "2026-10-17T13:40:00+09:00",
+  "cancelled_at": "2026-10-18T09:25:00+09:00",
   "hold_expires_at": null,
-  "created_at": "2026-10-15T13:25:00+09:00",
-  "updated_at": "2026-10-16T09:25:00+09:00"
+  "created_at": "2026-10-17T13:25:00+09:00",
+  "updated_at": "2026-10-18T09:25:00+09:00"
  },
  {
   "id": 7,
@@ -132,9 +132,9 @@
   "decided_by": null,
   "decided_at": null,
   "cancelled_at": null,
-  "hold_expires_at": "2026-10-20T09:30:00+09:00",
-  "created_at": "2026-10-20T09:00:00+09:00",
-  "updated_at": "2026-10-20T09:00:00+09:00"
+  "hold_expires_at": "2026-10-22T09:30:00+09:00",
+  "created_at": "2026-10-22T09:00:00+09:00",
+  "updated_at": "2026-10-22T09:00:00+09:00"
  },
  {
   "id": 8,
@@ -149,11 +149,11 @@
   "reject_reason": null,
   "alternative_slot_ids": [],
   "decided_by": 8,
-  "decided_at": "2026-10-16T09:25:00+09:00",
+  "decided_at": "2026-10-18T09:25:00+09:00",
   "cancelled_at": null,
   "hold_expires_at": null,
-  "created_at": "2026-10-16T09:10:00+09:00",
-  "updated_at": "2026-10-16T09:25:00+09:00"
+  "created_at": "2026-10-18T09:10:00+09:00",
+  "updated_at": "2026-10-18T09:25:00+09:00"
  },
  {
   "id": 9,
@@ -168,11 +168,11 @@
   "reject_reason": null,
   "alternative_slot_ids": [],
   "decided_by": 10,
-  "decided_at": "2026-10-13T13:24:00+09:00",
+  "decided_at": "2026-10-15T13:24:00+09:00",
   "cancelled_at": null,
   "hold_expires_at": null,
-  "created_at": "2026-10-13T13:10:00+09:00",
-  "updated_at": "2026-10-13T13:24:00+09:00"
+  "created_at": "2026-10-15T13:10:00+09:00",
+  "updated_at": "2026-10-15T13:24:00+09:00"
  },
  {
   "id": 10,
@@ -189,9 +189,9 @@
   "decided_by": null,
   "decided_at": null,
   "cancelled_at": null,
-  "hold_expires_at": "2026-10-20T11:45:00+09:00",
-  "created_at": "2026-10-20T11:15:00+09:00",
-  "updated_at": "2026-10-20T11:15:00+09:00"
+  "hold_expires_at": "2026-10-22T11:45:00+09:00",
+  "created_at": "2026-10-22T11:15:00+09:00",
+  "updated_at": "2026-10-22T11:15:00+09:00"
  },
  {
   "id": 11,
@@ -205,16 +205,16 @@
   "customer_note": "I can only visit in the afternoon.",
   "reject_reason": "해당 시간에 원장님 수술 일정이 있어 예약이 어렵습니다. 대체 가능한 시간을 확인해 주세요.",
   "alternative_slot_ids": [
-   385,
-   414,
+   382,
+   412,
    427
   ],
   "decided_by": 10,
-  "decided_at": "2026-10-14T14:27:00+09:00",
+  "decided_at": "2026-10-16T14:27:00+09:00",
   "cancelled_at": null,
   "hold_expires_at": null,
-  "created_at": "2026-10-14T14:10:00+09:00",
-  "updated_at": "2026-10-14T14:27:00+09:00"
+  "created_at": "2026-10-16T14:10:00+09:00",
+  "updated_at": "2026-10-16T14:27:00+09:00"
  },
  {
   "id": 12,
@@ -229,11 +229,11 @@
   "reject_reason": null,
   "alternative_slot_ids": [],
   "decided_by": 10,
-  "decided_at": "2026-10-17T11:15:00+09:00",
-  "cancelled_at": "2026-10-17T13:00:00+09:00",
+  "decided_at": "2026-10-19T11:15:00+09:00",
+  "cancelled_at": "2026-10-19T13:00:00+09:00",
   "hold_expires_at": null,
-  "created_at": "2026-10-17T11:00:00+09:00",
-  "updated_at": "2026-10-17T13:00:00+09:00"
+  "created_at": "2026-10-19T11:00:00+09:00",
+  "updated_at": "2026-10-19T13:00:00+09:00"
  },
  {
   "id": 13,
@@ -248,11 +248,11 @@
   "reject_reason": null,
   "alternative_slot_ids": [],
   "decided_by": 10,
-  "decided_at": "2026-10-13T15:05:00+09:00",
+  "decided_at": "2026-10-15T15:05:00+09:00",
   "cancelled_at": null,
   "hold_expires_at": null,
-  "created_at": "2026-10-13T15:00:00+09:00",
-  "updated_at": "2026-10-13T15:05:00+09:00"
+  "created_at": "2026-10-15T15:00:00+09:00",
+  "updated_at": "2026-10-15T15:05:00+09:00"
  },
  {
   "id": 14,
@@ -269,9 +269,9 @@
   "decided_by": null,
   "decided_at": null,
   "cancelled_at": null,
-  "hold_expires_at": "2026-10-20T09:45:00+09:00",
-  "created_at": "2026-10-20T09:15:00+09:00",
-  "updated_at": "2026-10-20T09:15:00+09:00"
+  "hold_expires_at": "2026-10-22T09:45:00+09:00",
+  "created_at": "2026-10-22T09:15:00+09:00",
+  "updated_at": "2026-10-22T09:15:00+09:00"
  },
  {
   "id": 15,
@@ -285,16 +285,16 @@
   "customer_note": "初めてなので詳しく相談したいです。",
   "reject_reason": "해당 시간에 원장님 수술 일정이 있어 예약이 어렵습니다. 대체 가능한 시간을 확인해 주세요.",
   "alternative_slot_ids": [
-   715,
-   757,
-   762
+   710,
+   734,
+   737
   ],
   "decided_by": 12,
-  "decided_at": "2026-10-17T09:25:00+09:00",
+  "decided_at": "2026-10-19T09:25:00+09:00",
   "cancelled_at": null,
   "hold_expires_at": null,
-  "created_at": "2026-10-17T09:00:00+09:00",
-  "updated_at": "2026-10-17T09:25:00+09:00"
+  "created_at": "2026-10-19T09:00:00+09:00",
+  "updated_at": "2026-10-19T09:25:00+09:00"
  },
  {
   "id": 16,
@@ -309,11 +309,11 @@
   "reject_reason": null,
   "alternative_slot_ids": [],
   "decided_by": 12,
-  "decided_at": "2026-10-16T09:39:00+09:00",
+  "decided_at": "2026-10-18T09:39:00+09:00",
   "cancelled_at": null,
   "hold_expires_at": null,
-  "created_at": "2026-10-16T09:25:00+09:00",
-  "updated_at": "2026-10-16T09:39:00+09:00"
+  "created_at": "2026-10-18T09:25:00+09:00",
+  "updated_at": "2026-10-18T09:39:00+09:00"
  },
  {
   "id": 17,
@@ -328,11 +328,11 @@
   "reject_reason": null,
   "alternative_slot_ids": [],
   "decided_by": 12,
-  "decided_at": "2026-10-18T12:41:00+09:00",
+  "decided_at": "2026-10-20T12:41:00+09:00",
   "cancelled_at": null,
   "hold_expires_at": null,
-  "created_at": "2026-10-18T12:25:00+09:00",
-  "updated_at": "2026-10-18T12:41:00+09:00"
+  "created_at": "2026-10-20T12:25:00+09:00",
+  "updated_at": "2026-10-20T12:41:00+09:00"
  },
  {
   "id": 18,
@@ -349,9 +349,9 @@
   "decided_by": null,
   "decided_at": null,
   "cancelled_at": null,
-  "hold_expires_at": "2026-10-20T11:45:00+09:00",
-  "created_at": "2026-10-20T11:15:00+09:00",
-  "updated_at": "2026-10-20T11:15:00+09:00"
+  "hold_expires_at": "2026-10-22T11:45:00+09:00",
+  "created_at": "2026-10-22T11:15:00+09:00",
+  "updated_at": "2026-10-22T11:15:00+09:00"
  },
  {
   "id": 19,
@@ -365,16 +365,16 @@
   "customer_note": "I can only visit in the afternoon.",
   "reject_reason": "해당 일자 예약이 마감되었습니다. 가능한 다른 시간을 안내드립니다.",
   "alternative_slot_ids": [
-   9745,
-   9763,
-   9765
+   9759,
+   9773,
+   9779
   ],
   "decided_by": null,
-  "decided_at": "2026-10-15T20:14:00+09:00",
+  "decided_at": "2026-10-17T20:14:00+09:00",
   "cancelled_at": null,
   "hold_expires_at": null,
-  "created_at": "2026-10-15T20:00:00+09:00",
-  "updated_at": "2026-10-15T20:14:00+09:00"
+  "created_at": "2026-10-17T20:00:00+09:00",
+  "updated_at": "2026-10-17T20:14:00+09:00"
  },
  {
   "id": 20,
@@ -389,10 +389,10 @@
   "reject_reason": null,
   "alternative_slot_ids": [],
   "decided_by": null,
-  "decided_at": "2026-10-16T10:25:00+09:00",
-  "cancelled_at": "2026-10-17T09:10:00+09:00",
+  "decided_at": "2026-10-18T10:25:00+09:00",
+  "cancelled_at": "2026-10-19T09:10:00+09:00",
   "hold_expires_at": null,
-  "created_at": "2026-10-16T10:10:00+09:00",
-  "updated_at": "2026-10-17T09:10:00+09:00"
+  "created_at": "2026-10-18T10:10:00+09:00",
+  "updated_at": "2026-10-19T09:10:00+09:00"
  }
 ]

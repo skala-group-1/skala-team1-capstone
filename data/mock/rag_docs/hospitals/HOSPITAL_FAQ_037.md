@@ -72,4 +72,4 @@ You can cancel from the app. Deposit and refund rules, if any, are set by each c
 
 ## When was this information last verified?
 
-Clinic information was last verified on 2026-06-20.
+Clinic information was last verified on 2026-06-22.

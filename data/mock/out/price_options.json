@@ -9,7 +9,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-29"
+  "verified_at": "2026-08-31"
  },
  {
   "id": 2,
@@ -21,7 +21,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-10-10"
+  "verified_at": "2026-10-12"
  },
  {
   "id": 3,
@@ -33,7 +33,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-07-20"
+  "verified_at": "2026-07-22"
  },
  {
   "id": 4,
@@ -45,7 +45,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-22"
+  "verified_at": "2026-08-24"
  },
  {
   "id": 5,
@@ -57,7 +57,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-07-19"
+  "verified_at": "2026-07-21"
  },
  {
   "id": 6,
@@ -69,7 +69,7 @@
   "vat_included": false,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-07-06"
+  "verified_at": "2026-07-08"
  },
  {
   "id": 7,
@@ -81,7 +81,7 @@
   "vat_included": true,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-09-30"
+  "verified_at": "2026-10-02"
  },
  {
   "id": 8,
@@ -93,7 +93,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-09"
+  "verified_at": "2026-10-11"
  },
  {
   "id": 9,
@@ -105,7 +105,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-10-03"
+  "verified_at": "2026-10-05"
  },
  {
   "id": 10,
@@ -117,7 +117,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-06-24"
+  "verified_at": "2026-06-26"
  },
  {
   "id": 11,
@@ -129,7 +129,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-08-07"
+  "verified_at": "2026-08-09"
  },
  {
   "id": 12,
@@ -141,7 +141,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-08-07"
+  "verified_at": "2026-08-09"
  },
  {
   "id": 13,
@@ -153,7 +153,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-08-02"
+  "verified_at": "2026-08-04"
  },
  {
   "id": 14,
@@ -165,7 +165,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-19"
+  "verified_at": "2026-10-21"
  },
  {
   "id": 15,
@@ -177,7 +177,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-07-30"
+  "verified_at": "2026-08-01"
  },
  {
   "id": 16,
@@ -189,7 +189,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-08"
+  "verified_at": "2026-09-10"
  },
  {
   "id": 17,
@@ -201,7 +201,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-09-29"
+  "verified_at": "2026-10-01"
  },
  {
   "id": 18,
@@ -213,7 +213,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-07-15"
+  "verified_at": "2026-07-17"
  },
  {
   "id": 19,
@@ -225,7 +225,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-07-25"
+  "verified_at": "2026-07-27"
  },
  {
   "id": 20,
@@ -237,7 +237,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-22"
+  "verified_at": "2026-09-24"
  },
  {
   "id": 21,
@@ -249,7 +249,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-08-17"
+  "verified_at": "2026-08-19"
  },
  {
   "id": 22,
@@ -261,7 +261,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-10-10"
+  "verified_at": "2026-10-12"
  },
  {
   "id": 23,
@@ -273,7 +273,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-10"
+  "verified_at": "2026-10-12"
  },
  {
   "id": 24,
@@ -285,7 +285,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-08-27"
+  "verified_at": "2026-08-29"
  },
  {
   "id": 25,
@@ -297,7 +297,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-09-03"
+  "verified_at": "2026-09-05"
  },
  {
   "id": 26,
@@ -309,7 +309,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-13"
+  "verified_at": "2026-08-15"
  },
  {
   "id": 27,
@@ -321,7 +321,7 @@
   "vat_included": false,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-08-13"
+  "verified_at": "2026-08-15"
  },
  {
   "id": 28,
@@ -333,7 +333,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-07"
+  "verified_at": "2026-07-09"
  },
  {
   "id": 29,
@@ -345,7 +345,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-10-10"
+  "verified_at": "2026-10-12"
  },
  {
   "id": 30,
@@ -357,7 +357,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-14"
+  "verified_at": "2026-07-16"
  },
  {
   "id": 31,
@@ -369,7 +369,7 @@
   "vat_included": true,
   "conditions_ko": "마취 크림 포함",
   "conditions_en": "Numbing cream included",
-  "verified_at": "2026-08-05"
+  "verified_at": "2026-08-07"
  },
  {
   "id": 32,
@@ -381,7 +381,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-12"
+  "verified_at": "2026-10-14"
  },
  {
   "id": 33,
@@ -393,7 +393,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-08-02"
+  "verified_at": "2026-08-04"
  },
  {
   "id": 34,
@@ -405,7 +405,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-08"
+  "verified_at": "2026-09-10"
  },
  {
   "id": 35,
@@ -417,7 +417,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-23"
+  "verified_at": "2026-08-25"
  },
  {
   "id": 36,
@@ -429,7 +429,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-08-24"
+  "verified_at": "2026-08-26"
  },
  {
   "id": 37,
@@ -441,7 +441,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-06-24"
+  "verified_at": "2026-06-26"
  },
  {
   "id": 38,
@@ -453,7 +453,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-09-07"
+  "verified_at": "2026-09-09"
  },
  {
   "id": 39,
@@ -465,7 +465,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-07-02"
+  "verified_at": "2026-07-04"
  },
  {
   "id": 40,
@@ -477,7 +477,7 @@
   "vat_included": true,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-07-27"
+  "verified_at": "2026-07-29"
  },
  {
   "id": 41,
@@ -489,7 +489,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-01"
+  "verified_at": "2026-09-03"
  },
  {
   "id": 42,
@@ -501,7 +501,7 @@
   "vat_included": true,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-07-13"
+  "verified_at": "2026-07-15"
  },
  {
   "id": 43,
@@ -513,7 +513,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-07-11"
+  "verified_at": "2026-07-13"
  },
  {
   "id": 44,
@@ -525,7 +525,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-15"
+  "verified_at": "2026-10-17"
  },
  {
   "id": 45,
@@ -537,7 +537,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-07-08"
+  "verified_at": "2026-07-10"
  },
  {
   "id": 46,
@@ -549,7 +549,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-09-03"
+  "verified_at": "2026-09-05"
  },
  {
   "id": 47,
@@ -561,7 +561,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-09-19"
+  "verified_at": "2026-09-21"
  },
  {
   "id": 48,
@@ -573,7 +573,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-05"
+  "verified_at": "2026-07-07"
  },
  {
   "id": 49,
@@ -585,7 +585,7 @@
   "vat_included": true,
   "conditions_ko": "마취 크림 포함",
   "conditions_en": "Numbing cream included",
-  "verified_at": "2026-08-27"
+  "verified_at": "2026-08-29"
  },
  {
   "id": 50,
@@ -597,7 +597,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-10-02"
+  "verified_at": "2026-10-04"
  },
  {
   "id": 51,
@@ -609,7 +609,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-09-13"
+  "verified_at": "2026-09-15"
  },
  {
   "id": 52,
@@ -621,7 +621,7 @@
   "vat_included": true,
   "conditions_ko": "마취 크림 포함",
   "conditions_en": "Numbing cream included",
-  "verified_at": "2026-10-01"
+  "verified_at": "2026-10-03"
  },
  {
   "id": 53,
@@ -633,7 +633,7 @@
   "vat_included": false,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-06-28"
+  "verified_at": "2026-06-30"
  },
  {
   "id": 54,
@@ -645,7 +645,7 @@
   "vat_included": true,
   "conditions_ko": "마취 크림 포함",
   "conditions_en": "Numbing cream included",
-  "verified_at": "2026-09-02"
+  "verified_at": "2026-09-04"
  },
  {
   "id": 55,
@@ -657,7 +657,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-07-28"
+  "verified_at": "2026-07-30"
  },
  {
   "id": 56,
@@ -669,7 +669,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-07-05"
+  "verified_at": "2026-07-07"
  },
  {
   "id": 57,
@@ -681,7 +681,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-09-22"
+  "verified_at": "2026-09-24"
  },
  {
   "id": 58,
@@ -693,7 +693,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-08-13"
+  "verified_at": "2026-08-15"
  },
  {
   "id": 59,
@@ -705,7 +705,7 @@
   "vat_included": true,
   "conditions_ko": "마취 크림 포함",
   "conditions_en": "Numbing cream included",
-  "verified_at": "2026-08-01"
+  "verified_at": "2026-08-03"
  },
  {
   "id": 60,
@@ -717,7 +717,7 @@
   "vat_included": true,
   "conditions_ko": "마취 크림 포함",
   "conditions_en": "Numbing cream included",
-  "verified_at": "2026-10-17"
+  "verified_at": "2026-10-19"
  },
  {
   "id": 61,
@@ -729,7 +729,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-12"
+  "verified_at": "2026-09-14"
  },
  {
   "id": 62,
@@ -741,7 +741,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-08-13"
+  "verified_at": "2026-08-15"
  },
  {
   "id": 63,
@@ -753,7 +753,7 @@
   "vat_included": false,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-07-11"
+  "verified_at": "2026-07-13"
  },
  {
   "id": 64,
@@ -765,7 +765,7 @@
   "vat_included": true,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-07-11"
+  "verified_at": "2026-07-13"
  },
  {
   "id": 65,
@@ -777,7 +777,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-07-17"
+  "verified_at": "2026-07-19"
  },
  {
   "id": 66,
@@ -789,7 +789,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-07-22"
+  "verified_at": "2026-07-24"
  },
  {
   "id": 67,
@@ -801,7 +801,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-09-12"
+  "verified_at": "2026-09-14"
  },
  {
   "id": 68,
@@ -813,7 +813,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-07-07"
+  "verified_at": "2026-07-09"
  },
  {
   "id": 69,
@@ -825,7 +825,7 @@
   "vat_included": false,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-09-15"
+  "verified_at": "2026-09-17"
  },
  {
   "id": 70,
@@ -837,7 +837,7 @@
   "vat_included": true,
   "conditions_ko": "마취 크림 포함",
   "conditions_en": "Numbing cream included",
-  "verified_at": "2026-09-26"
+  "verified_at": "2026-09-28"
  },
  {
   "id": 71,
@@ -849,7 +849,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-18"
+  "verified_at": "2026-07-20"
  },
  {
   "id": 72,
@@ -861,7 +861,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-09"
+  "verified_at": "2026-10-11"
  },
  {
   "id": 73,
@@ -873,7 +873,7 @@
   "vat_included": true,
   "conditions_ko": "마취 크림 포함",
   "conditions_en": "Numbing cream included",
-  "verified_at": "2026-07-23"
+  "verified_at": "2026-07-25"
  },
  {
   "id": 74,
@@ -885,7 +885,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-14"
+  "verified_at": "2026-09-16"
  },
  {
   "id": 75,
@@ -897,7 +897,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-15"
+  "verified_at": "2026-08-17"
  },
  {
   "id": 76,
@@ -921,7 +921,7 @@
   "vat_included": false,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-07-14"
+  "verified_at": "2026-07-16"
  },
  {
   "id": 78,
@@ -933,7 +933,7 @@
   "vat_included": true,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-10-05"
+  "verified_at": "2026-10-07"
  },
  {
   "id": 79,
@@ -945,7 +945,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-21"
+  "verified_at": "2026-07-23"
  },
  {
   "id": 80,
@@ -969,7 +969,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-09"
+  "verified_at": "2026-09-11"
  },
  {
   "id": 82,
@@ -981,7 +981,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-07-10"
+  "verified_at": "2026-07-12"
  },
  {
   "id": 83,
@@ -993,7 +993,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-09-03"
+  "verified_at": "2026-09-05"
  },
  {
   "id": 84,
@@ -1005,7 +1005,7 @@
   "vat_included": true,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-08-28"
+  "verified_at": "2026-08-30"
  },
  {
   "id": 85,
@@ -1017,7 +1017,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-08-23"
+  "verified_at": "2026-08-25"
  },
  {
   "id": 86,
@@ -1029,7 +1029,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-10-03"
+  "verified_at": "2026-10-05"
  },
  {
   "id": 87,
@@ -1041,7 +1041,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-28"
+  "verified_at": "2026-09-30"
  },
  {
   "id": 88,
@@ -1053,7 +1053,7 @@
   "vat_included": false,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-09-17"
+  "verified_at": "2026-09-19"
  },
  {
   "id": 89,
@@ -1065,7 +1065,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-08-06"
+  "verified_at": "2026-08-08"
  },
  {
   "id": 90,
@@ -1077,7 +1077,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-06"
+  "verified_at": "2026-07-08"
  },
  {
   "id": 91,
@@ -1089,7 +1089,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-27"
+  "verified_at": "2026-08-29"
  },
  {
   "id": 92,
@@ -1101,7 +1101,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-07-08"
+  "verified_at": "2026-07-10"
  },
  {
   "id": 93,
@@ -1113,7 +1113,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-08-21"
+  "verified_at": "2026-08-23"
  },
  {
   "id": 94,
@@ -1125,7 +1125,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-01"
+  "verified_at": "2026-07-03"
  },
  {
   "id": 95,
@@ -1137,7 +1137,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-08-23"
+  "verified_at": "2026-08-25"
  },
  {
   "id": 96,
@@ -1149,7 +1149,7 @@
   "vat_included": true,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-07-01"
+  "verified_at": "2026-07-03"
  },
  {
   "id": 97,
@@ -1161,7 +1161,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-08-21"
+  "verified_at": "2026-08-23"
  },
  {
   "id": 98,
@@ -1173,7 +1173,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-22"
+  "verified_at": "2026-09-24"
  },
  {
   "id": 99,
@@ -1185,7 +1185,7 @@
   "vat_included": true,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-07-28"
+  "verified_at": "2026-07-30"
  },
  {
   "id": 100,
@@ -1197,7 +1197,7 @@
   "vat_included": false,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-09-03"
+  "verified_at": "2026-09-05"
  },
  {
   "id": 101,
@@ -1209,7 +1209,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-10-10"
+  "verified_at": "2026-10-12"
  },
  {
   "id": 102,
@@ -1233,7 +1233,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-03"
+  "verified_at": "2026-08-05"
  },
  {
   "id": 104,
@@ -1245,7 +1245,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-30"
+  "verified_at": "2026-10-02"
  },
  {
   "id": 105,
@@ -1257,7 +1257,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-29"
+  "verified_at": "2026-10-01"
  },
  {
   "id": 106,
@@ -1269,7 +1269,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-20"
+  "verified_at": "2026-08-22"
  },
  {
   "id": 107,
@@ -1281,7 +1281,7 @@
   "vat_included": false,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-09-10"
+  "verified_at": "2026-09-12"
  },
  {
   "id": 108,
@@ -1293,7 +1293,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-20"
+  "verified_at": "2026-09-22"
  },
  {
   "id": 109,
@@ -1305,7 +1305,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-06"
+  "verified_at": "2026-07-08"
  },
  {
   "id": 110,
@@ -1329,7 +1329,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-08-02"
+  "verified_at": "2026-08-04"
  },
  {
   "id": 112,
@@ -1341,7 +1341,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-08-19"
+  "verified_at": "2026-08-21"
  },
  {
   "id": 113,
@@ -1353,7 +1353,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-08-11"
+  "verified_at": "2026-08-13"
  },
  {
   "id": 114,
@@ -1365,7 +1365,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-09-11"
+  "verified_at": "2026-09-13"
  },
  {
   "id": 115,
@@ -1377,7 +1377,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-08-19"
+  "verified_at": "2026-08-21"
  },
  {
   "id": 116,
@@ -1389,7 +1389,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-30"
+  "verified_at": "2026-09-01"
  },
  {
   "id": 117,
@@ -1401,7 +1401,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-09-13"
+  "verified_at": "2026-09-15"
  },
  {
   "id": 118,
@@ -1413,7 +1413,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-09"
+  "verified_at": "2026-08-11"
  },
  {
   "id": 119,
@@ -1437,7 +1437,7 @@
   "vat_included": false,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-10-07"
+  "verified_at": "2026-10-09"
  },
  {
   "id": 121,
@@ -1449,7 +1449,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-08-20"
+  "verified_at": "2026-08-22"
  },
  {
   "id": 122,
@@ -1473,7 +1473,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-06-25"
+  "verified_at": "2026-06-27"
  },
  {
   "id": 124,
@@ -1485,7 +1485,7 @@
   "vat_included": false,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-08-17"
+  "verified_at": "2026-08-19"
  },
  {
   "id": 125,
@@ -1497,7 +1497,7 @@
   "vat_included": false,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-09-07"
+  "verified_at": "2026-09-09"
  },
  {
   "id": 126,
@@ -1509,7 +1509,7 @@
   "vat_included": false,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-10-05"
+  "verified_at": "2026-10-07"
  },
  {
   "id": 127,
@@ -1521,7 +1521,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-18"
+  "verified_at": "2026-10-20"
  },
  {
   "id": 128,
@@ -1533,7 +1533,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-15"
+  "verified_at": "2026-08-17"
  },
  {
   "id": 129,
@@ -1545,7 +1545,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-09-08"
+  "verified_at": "2026-09-10"
  },
  {
   "id": 130,
@@ -1557,7 +1557,7 @@
   "vat_included": true,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-07-19"
+  "verified_at": "2026-07-21"
  },
  {
   "id": 131,
@@ -1569,7 +1569,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-29"
+  "verified_at": "2026-08-31"
  },
  {
   "id": 132,
@@ -1581,7 +1581,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-09-02"
+  "verified_at": "2026-09-04"
  },
  {
   "id": 133,
@@ -1593,7 +1593,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-22"
+  "verified_at": "2026-09-24"
  },
  {
   "id": 134,
@@ -1605,7 +1605,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-10-10"
+  "verified_at": "2026-10-12"
  },
  {
   "id": 135,
@@ -1617,7 +1617,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-07-02"
+  "verified_at": "2026-07-04"
  },
  {
   "id": 136,
@@ -1641,7 +1641,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-07-19"
+  "verified_at": "2026-07-21"
  },
  {
   "id": 138,
@@ -1653,7 +1653,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-10-11"
+  "verified_at": "2026-10-13"
  },
  {
   "id": 139,
@@ -1665,7 +1665,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-07-29"
+  "verified_at": "2026-07-31"
  },
  {
   "id": 140,
@@ -1677,7 +1677,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-06-30"
+  "verified_at": "2026-07-02"
  },
  {
   "id": 141,
@@ -1689,7 +1689,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-13"
+  "verified_at": "2026-08-15"
  },
  {
   "id": 142,
@@ -1701,7 +1701,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-08-26"
+  "verified_at": "2026-08-28"
  },
  {
   "id": 143,
@@ -1713,7 +1713,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-07-08"
+  "verified_at": "2026-07-10"
  },
  {
   "id": 144,
@@ -1725,7 +1725,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-11"
+  "verified_at": "2026-10-13"
  },
  {
   "id": 145,
@@ -1737,7 +1737,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-10-14"
+  "verified_at": "2026-10-16"
  },
  {
   "id": 146,
@@ -1749,7 +1749,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-12"
+  "verified_at": "2026-09-14"
  },
  {
   "id": 147,
@@ -1761,7 +1761,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-13"
+  "verified_at": "2026-07-15"
  },
  {
   "id": 148,
@@ -1773,7 +1773,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-09-14"
+  "verified_at": "2026-09-16"
  },
  {
   "id": 149,
@@ -1785,7 +1785,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-31"
+  "verified_at": "2026-08-02"
  },
  {
   "id": 150,
@@ -1797,7 +1797,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-01"
+  "verified_at": "2026-09-03"
  },
  {
   "id": 151,
@@ -1809,7 +1809,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-07-21"
+  "verified_at": "2026-07-23"
  },
  {
   "id": 152,
@@ -1821,7 +1821,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-13"
+  "verified_at": "2026-08-15"
  },
  {
   "id": 153,
@@ -1833,7 +1833,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-08-12"
+  "verified_at": "2026-08-14"
  },
  {
   "id": 154,
@@ -1845,7 +1845,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-05"
+  "verified_at": "2026-08-07"
  },
  {
   "id": 155,
@@ -1857,7 +1857,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-06-25"
+  "verified_at": "2026-06-27"
  },
  {
   "id": 156,
@@ -1869,7 +1869,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-19"
+  "verified_at": "2026-08-21"
  },
  {
   "id": 157,
@@ -1881,7 +1881,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-08-12"
+  "verified_at": "2026-08-14"
  },
  {
   "id": 158,
@@ -1893,7 +1893,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-14"
+  "verified_at": "2026-07-16"
  },
  {
   "id": 159,
@@ -1905,7 +1905,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-09-21"
+  "verified_at": "2026-09-23"
  },
  {
   "id": 160,
@@ -1917,7 +1917,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-20"
+  "verified_at": "2026-09-22"
  },
  {
   "id": 161,
@@ -1929,7 +1929,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-17"
+  "verified_at": "2026-09-19"
  },
  {
   "id": 162,
@@ -1941,7 +1941,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-07-18"
+  "verified_at": "2026-07-20"
  },
  {
   "id": 163,
@@ -1953,7 +1953,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-07-29"
+  "verified_at": "2026-07-31"
  },
  {
   "id": 164,
@@ -1977,7 +1977,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-22"
+  "verified_at": "2026-09-24"
  },
  {
   "id": 166,
@@ -1989,7 +1989,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-06-25"
+  "verified_at": "2026-06-27"
  },
  {
   "id": 167,
@@ -2001,7 +2001,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-18"
+  "verified_at": "2026-10-20"
  },
  {
   "id": 168,
@@ -2013,7 +2013,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-07-08"
+  "verified_at": "2026-07-10"
  },
  {
   "id": 169,
@@ -2025,7 +2025,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-09-04"
+  "verified_at": "2026-09-06"
  },
  {
   "id": 170,
@@ -2037,7 +2037,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-07-06"
+  "verified_at": "2026-07-08"
  },
  {
   "id": 171,
@@ -2061,7 +2061,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-07-29"
+  "verified_at": "2026-07-31"
  },
  {
   "id": 173,
@@ -2085,7 +2085,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-14"
+  "verified_at": "2026-10-16"
  },
  {
   "id": 175,
@@ -2097,7 +2097,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-09-09"
+  "verified_at": "2026-09-11"
  },
  {
   "id": 176,
@@ -2109,7 +2109,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-10"
+  "verified_at": "2026-10-12"
  },
  {
   "id": 177,
@@ -2121,7 +2121,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-17"
+  "verified_at": "2026-07-19"
  },
  {
   "id": 178,
@@ -2133,7 +2133,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-13"
+  "verified_at": "2026-10-15"
  },
  {
   "id": 179,
@@ -2145,7 +2145,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-07-12"
+  "verified_at": "2026-07-14"
  },
  {
   "id": 180,
@@ -2157,7 +2157,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-09-26"
+  "verified_at": "2026-09-28"
  },
  {
   "id": 181,
@@ -2169,7 +2169,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-20"
+  "verified_at": "2026-07-22"
  },
  {
   "id": 182,
@@ -2181,7 +2181,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-10-08"
+  "verified_at": "2026-10-10"
  },
  {
   "id": 183,
@@ -2193,7 +2193,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-09"
+  "verified_at": "2026-08-11"
  },
  {
   "id": 184,
@@ -2205,7 +2205,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-10-18"
+  "verified_at": "2026-10-20"
  },
  {
   "id": 185,
@@ -2217,7 +2217,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-09-18"
+  "verified_at": "2026-09-20"
  },
  {
   "id": 186,
@@ -2229,7 +2229,7 @@
   "vat_included": true,
   "conditions_ko": "마취 크림 포함",
   "conditions_en": "Numbing cream included",
-  "verified_at": "2026-09-15"
+  "verified_at": "2026-09-17"
  },
  {
   "id": 187,
@@ -2241,7 +2241,7 @@
   "vat_included": true,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-09-18"
+  "verified_at": "2026-09-20"
  },
  {
   "id": 188,
@@ -2253,7 +2253,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-10-19"
+  "verified_at": "2026-10-21"
  },
  {
   "id": 189,
@@ -2265,7 +2265,7 @@
   "vat_included": false,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-08-04"
+  "verified_at": "2026-08-06"
  },
  {
   "id": 190,
@@ -2277,7 +2277,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-09-09"
+  "verified_at": "2026-09-11"
  },
  {
   "id": 191,
@@ -2289,7 +2289,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-09-03"
+  "verified_at": "2026-09-05"
  },
  {
   "id": 192,
@@ -2301,7 +2301,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-10"
+  "verified_at": "2026-08-12"
  },
  {
   "id": 193,
@@ -2313,7 +2313,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-07"
+  "verified_at": "2026-07-09"
  },
  {
   "id": 194,
@@ -2325,7 +2325,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-08-23"
+  "verified_at": "2026-08-25"
  },
  {
   "id": 195,
@@ -2337,7 +2337,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-07-23"
+  "verified_at": "2026-07-25"
  },
  {
   "id": 196,
@@ -2349,7 +2349,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-09-18"
+  "verified_at": "2026-09-20"
  },
  {
   "id": 197,
@@ -2361,7 +2361,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-07-29"
+  "verified_at": "2026-07-31"
  },
  {
   "id": 198,
@@ -2373,7 +2373,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-08-07"
+  "verified_at": "2026-08-09"
  },
  {
   "id": 199,
@@ -2385,7 +2385,7 @@
   "vat_included": true,
   "conditions_ko": "마취 크림 포함",
   "conditions_en": "Numbing cream included",
-  "verified_at": "2026-09-05"
+  "verified_at": "2026-09-07"
  },
  {
   "id": 200,
@@ -2397,7 +2397,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-09-10"
+  "verified_at": "2026-09-12"
  },
  {
   "id": 201,
@@ -2409,7 +2409,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-09-09"
+  "verified_at": "2026-09-11"
  },
  {
   "id": 202,
@@ -2421,7 +2421,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-07-25"
+  "verified_at": "2026-07-27"
  },
  {
   "id": 203,
@@ -2433,7 +2433,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-07-09"
+  "verified_at": "2026-07-11"
  },
  {
   "id": 204,
@@ -2445,7 +2445,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-08-26"
+  "verified_at": "2026-08-28"
  },
  {
   "id": 205,
@@ -2457,7 +2457,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-11"
+  "verified_at": "2026-10-13"
  },
  {
   "id": 206,
@@ -2469,7 +2469,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-07-30"
+  "verified_at": "2026-08-01"
  },
  {
   "id": 207,
@@ -2481,7 +2481,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-07"
+  "verified_at": "2026-07-09"
  },
  {
   "id": 208,
@@ -2493,7 +2493,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-09"
+  "verified_at": "2026-09-11"
  },
  {
   "id": 209,
@@ -2505,7 +2505,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-08-07"
+  "verified_at": "2026-08-09"
  },
  {
   "id": 210,
@@ -2517,7 +2517,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-28"
+  "verified_at": "2026-09-30"
  },
  {
   "id": 211,
@@ -2529,7 +2529,7 @@
   "vat_included": true,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-10-18"
+  "verified_at": "2026-10-20"
  },
  {
   "id": 212,
@@ -2541,7 +2541,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-07-24"
+  "verified_at": "2026-07-26"
  },
  {
   "id": 213,
@@ -2553,7 +2553,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-08"
+  "verified_at": "2026-08-10"
  },
  {
   "id": 214,
@@ -2565,7 +2565,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-08-08"
+  "verified_at": "2026-08-10"
  },
  {
   "id": 215,
@@ -2577,7 +2577,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-15"
+  "verified_at": "2026-07-17"
  },
  {
   "id": 216,
@@ -2589,7 +2589,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-08"
  },
  {
   "id": 217,
@@ -2601,7 +2601,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-10-15"
+  "verified_at": "2026-10-17"
  },
  {
   "id": 218,
@@ -2613,7 +2613,7 @@
   "vat_included": false,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-07-08"
+  "verified_at": "2026-07-10"
  },
  {
   "id": 219,
@@ -2625,7 +2625,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-08-26"
+  "verified_at": "2026-08-28"
  },
  {
   "id": 220,
@@ -2637,7 +2637,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-08-04"
+  "verified_at": "2026-08-06"
  },
  {
   "id": 221,
@@ -2649,7 +2649,7 @@
   "vat_included": false,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-07-25"
+  "verified_at": "2026-07-27"
  },
  {
   "id": 222,
@@ -2661,7 +2661,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-10-03"
+  "verified_at": "2026-10-05"
  },
  {
   "id": 223,
@@ -2673,7 +2673,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-08-07"
+  "verified_at": "2026-08-09"
  },
  {
   "id": 224,
@@ -2685,7 +2685,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-14"
+  "verified_at": "2026-09-16"
  },
  {
   "id": 225,
@@ -2697,7 +2697,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-06-30"
+  "verified_at": "2026-07-02"
  },
  {
   "id": 226,
@@ -2709,7 +2709,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-09-04"
+  "verified_at": "2026-09-06"
  },
  {
   "id": 227,
@@ -2721,7 +2721,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-09-13"
+  "verified_at": "2026-09-15"
  },
  {
   "id": 228,
@@ -2745,7 +2745,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-02"
+  "verified_at": "2026-07-04"
  },
  {
   "id": 230,
@@ -2757,7 +2757,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-06-29"
+  "verified_at": "2026-07-01"
  },
  {
   "id": 231,
@@ -2769,7 +2769,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-08-30"
+  "verified_at": "2026-09-01"
  },
  {
   "id": 232,
@@ -2793,7 +2793,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-10-18"
+  "verified_at": "2026-10-20"
  },
  {
   "id": 234,
@@ -2817,7 +2817,7 @@
   "vat_included": true,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-07-15"
+  "verified_at": "2026-07-17"
  },
  {
   "id": 236,
@@ -2841,7 +2841,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-28"
+  "verified_at": "2026-08-30"
  },
  {
   "id": 238,
@@ -2853,7 +2853,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-08-26"
+  "verified_at": "2026-08-28"
  },
  {
   "id": 239,
@@ -2865,7 +2865,7 @@
   "vat_included": true,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-08-04"
+  "verified_at": "2026-08-06"
  },
  {
   "id": 240,
@@ -2877,7 +2877,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-03"
+  "verified_at": "2026-07-05"
  },
  {
   "id": 241,
@@ -2889,7 +2889,7 @@
   "vat_included": false,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-09-19"
+  "verified_at": "2026-09-21"
  },
  {
   "id": 242,
@@ -2913,7 +2913,7 @@
   "vat_included": false,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-07-01"
+  "verified_at": "2026-07-03"
  },
  {
   "id": 244,
@@ -2937,7 +2937,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-08-30"
+  "verified_at": "2026-09-01"
  },
  {
   "id": 246,
@@ -2949,7 +2949,7 @@
   "vat_included": false,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-10-09"
+  "verified_at": "2026-10-11"
  },
  {
   "id": 247,
@@ -2961,7 +2961,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-12"
+  "verified_at": "2026-08-14"
  },
  {
   "id": 248,
@@ -2973,7 +2973,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-29"
+  "verified_at": "2026-07-31"
  },
  {
   "id": 249,
@@ -2997,7 +2997,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-27"
+  "verified_at": "2026-09-29"
  },
  {
   "id": 251,
@@ -3009,7 +3009,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-08-14"
+  "verified_at": "2026-08-16"
  },
  {
   "id": 252,
@@ -3021,7 +3021,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-04"
+  "verified_at": "2026-10-06"
  },
  {
   "id": 253,
@@ -3045,7 +3045,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-09-03"
+  "verified_at": "2026-09-05"
  },
  {
   "id": 255,
@@ -3057,7 +3057,7 @@
   "vat_included": false,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-08-07"
+  "verified_at": "2026-08-09"
  },
  {
   "id": 256,
@@ -3069,7 +3069,7 @@
   "vat_included": false,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-08-31"
+  "verified_at": "2026-09-02"
  },
  {
   "id": 257,
@@ -3081,7 +3081,7 @@
   "vat_included": false,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-07-17"
+  "verified_at": "2026-07-19"
  },
  {
   "id": 258,
@@ -3093,7 +3093,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-09-15"
+  "verified_at": "2026-09-17"
  },
  {
   "id": 259,
@@ -3105,7 +3105,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-14"
+  "verified_at": "2026-08-16"
  },
  {
   "id": 260,
@@ -3117,7 +3117,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-10"
+  "verified_at": "2026-08-12"
  },
  {
   "id": 261,
@@ -3129,7 +3129,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-05"
+  "verified_at": "2026-08-07"
  },
  {
   "id": 262,
@@ -3141,7 +3141,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-07-10"
+  "verified_at": "2026-07-12"
  },
  {
   "id": 263,
@@ -3153,7 +3153,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-07-23"
+  "verified_at": "2026-07-25"
  },
  {
   "id": 264,
@@ -3165,7 +3165,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-08"
  },
  {
   "id": 265,
@@ -3177,7 +3177,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-14"
+  "verified_at": "2026-09-16"
  },
  {
   "id": 266,
@@ -3189,7 +3189,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-09-02"
+  "verified_at": "2026-09-04"
  },
  {
   "id": 267,
@@ -3201,7 +3201,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-12"
+  "verified_at": "2026-10-14"
  },
  {
   "id": 268,
@@ -3213,7 +3213,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-09"
+  "verified_at": "2026-09-11"
  },
  {
   "id": 269,
@@ -3225,7 +3225,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-07-13"
+  "verified_at": "2026-07-15"
  },
  {
   "id": 270,
@@ -3237,7 +3237,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-10-04"
+  "verified_at": "2026-10-06"
  },
  {
   "id": 271,
@@ -3249,7 +3249,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-09-11"
+  "verified_at": "2026-09-13"
  },
  {
   "id": 272,
@@ -3261,7 +3261,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-09-08"
+  "verified_at": "2026-09-10"
  },
  {
   "id": 273,
@@ -3273,7 +3273,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-07-07"
+  "verified_at": "2026-07-09"
  },
  {
   "id": 274,
@@ -3285,7 +3285,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-10-07"
+  "verified_at": "2026-10-09"
  },
  {
   "id": 275,
@@ -3297,7 +3297,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-09-02"
+  "verified_at": "2026-09-04"
  },
  {
   "id": 276,
@@ -3309,7 +3309,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-06-24"
+  "verified_at": "2026-06-26"
  },
  {
   "id": 277,
@@ -3321,7 +3321,7 @@
   "vat_included": false,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-06-26"
+  "verified_at": "2026-06-28"
  },
  {
   "id": 278,
@@ -3333,7 +3333,7 @@
   "vat_included": false,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-08-17"
+  "verified_at": "2026-08-19"
  },
  {
   "id": 279,
@@ -3345,7 +3345,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-26"
+  "verified_at": "2026-09-28"
  },
  {
   "id": 280,
@@ -3357,7 +3357,7 @@
   "vat_included": false,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-08-17"
+  "verified_at": "2026-08-19"
  },
  {
   "id": 281,
@@ -3369,7 +3369,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-02"
+  "verified_at": "2026-10-04"
  },
  {
   "id": 282,
@@ -3381,7 +3381,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-11"
+  "verified_at": "2026-07-13"
  },
  {
   "id": 283,
@@ -3393,7 +3393,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-08-08"
+  "verified_at": "2026-08-10"
  },
  {
   "id": 284,
@@ -3405,7 +3405,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-09-14"
+  "verified_at": "2026-09-16"
  },
  {
   "id": 285,
@@ -3417,7 +3417,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-20"
+  "verified_at": "2026-09-22"
  },
  {
   "id": 286,
@@ -3429,7 +3429,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-10-12"
+  "verified_at": "2026-10-14"
  },
  {
   "id": 287,
@@ -3441,7 +3441,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-08"
+  "verified_at": "2026-07-10"
  },
  {
   "id": 288,
@@ -3453,7 +3453,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-07-08"
+  "verified_at": "2026-07-10"
  },
  {
   "id": 289,
@@ -3465,7 +3465,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-10-08"
+  "verified_at": "2026-10-10"
  },
  {
   "id": 290,
@@ -3477,7 +3477,7 @@
   "vat_included": true,
   "conditions_ko": "마취 크림 포함",
   "conditions_en": "Numbing cream included",
-  "verified_at": "2026-09-24"
+  "verified_at": "2026-09-26"
  },
  {
   "id": 291,
@@ -3489,7 +3489,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-10-17"
+  "verified_at": "2026-10-19"
  },
  {
   "id": 292,
@@ -3501,7 +3501,7 @@
   "vat_included": false,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-10-10"
+  "verified_at": "2026-10-12"
  },
  {
   "id": 293,
@@ -3513,7 +3513,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-07-30"
+  "verified_at": "2026-08-01"
  },
  {
   "id": 294,
@@ -3525,7 +3525,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-07-23"
+  "verified_at": "2026-07-25"
  },
  {
   "id": 295,
@@ -3549,7 +3549,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-09-26"
+  "verified_at": "2026-09-28"
  },
  {
   "id": 297,
@@ -3561,7 +3561,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-06-22"
+  "verified_at": "2026-06-24"
  },
  {
   "id": 298,
@@ -3585,7 +3585,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-09-18"
+  "verified_at": "2026-09-20"
  },
  {
   "id": 300,
@@ -3597,7 +3597,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-09-28"
+  "verified_at": "2026-09-30"
  },
  {
   "id": 301,
@@ -3609,7 +3609,7 @@
   "vat_included": true,
   "conditions_ko": "마취 크림 포함",
   "conditions_en": "Numbing cream included",
-  "verified_at": "2026-09-21"
+  "verified_at": "2026-09-23"
  },
  {
   "id": 302,
@@ -3621,7 +3621,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-10-10"
+  "verified_at": "2026-10-12"
  },
  {
   "id": 303,
@@ -3633,7 +3633,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-07-21"
+  "verified_at": "2026-07-23"
  },
  {
   "id": 304,
@@ -3645,7 +3645,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-29"
+  "verified_at": "2026-10-01"
  },
  {
   "id": 305,
@@ -3657,7 +3657,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-11"
+  "verified_at": "2026-08-13"
  },
  {
   "id": 306,
@@ -3693,7 +3693,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-20"
+  "verified_at": "2026-08-22"
  },
  {
   "id": 309,
@@ -3705,7 +3705,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-23"
+  "verified_at": "2026-08-25"
  },
  {
   "id": 310,
@@ -3729,7 +3729,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-12"
+  "verified_at": "2026-10-14"
  },
  {
   "id": 312,
@@ -3741,7 +3741,7 @@
   "vat_included": true,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-08-16"
+  "verified_at": "2026-08-18"
  },
  {
   "id": 313,
@@ -3753,7 +3753,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-15"
+  "verified_at": "2026-07-17"
  },
  {
   "id": 314,
@@ -3765,7 +3765,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-08-25"
+  "verified_at": "2026-08-27"
  },
  {
   "id": 315,
@@ -3777,7 +3777,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-18"
+  "verified_at": "2026-07-20"
  },
  {
   "id": 316,
@@ -3789,7 +3789,7 @@
   "vat_included": true,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-06-24"
+  "verified_at": "2026-06-26"
  },
  {
   "id": 317,
@@ -3801,7 +3801,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-06-23"
+  "verified_at": "2026-06-25"
  },
  {
   "id": 318,
@@ -3813,7 +3813,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-07-28"
+  "verified_at": "2026-07-30"
  },
  {
   "id": 319,
@@ -3825,7 +3825,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-08-30"
+  "verified_at": "2026-09-01"
  },
  {
   "id": 320,
@@ -3837,7 +3837,7 @@
   "vat_included": false,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-09-02"
+  "verified_at": "2026-09-04"
  },
  {
   "id": 321,
@@ -3849,7 +3849,7 @@
   "vat_included": false,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-06-30"
+  "verified_at": "2026-07-02"
  },
  {
   "id": 322,
@@ -3861,7 +3861,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-18"
+  "verified_at": "2026-07-20"
  },
  {
   "id": 323,
@@ -3873,7 +3873,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-14"
+  "verified_at": "2026-08-16"
  },
  {
   "id": 324,
@@ -3885,7 +3885,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-09-10"
+  "verified_at": "2026-09-12"
  },
  {
   "id": 325,
@@ -3897,7 +3897,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-06-29"
+  "verified_at": "2026-07-01"
  },
  {
   "id": 326,
@@ -3909,7 +3909,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-06-24"
+  "verified_at": "2026-06-26"
  },
  {
   "id": 327,
@@ -3921,7 +3921,7 @@
   "vat_included": true,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-07-30"
+  "verified_at": "2026-08-01"
  },
  {
   "id": 328,
@@ -3933,7 +3933,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-20"
+  "verified_at": "2026-08-22"
  },
  {
   "id": 329,
@@ -3945,7 +3945,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-13"
+  "verified_at": "2026-09-15"
  },
  {
   "id": 330,
@@ -3957,7 +3957,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-09-21"
+  "verified_at": "2026-09-23"
  },
  {
   "id": 331,
@@ -3969,7 +3969,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-17"
+  "verified_at": "2026-10-19"
  },
  {
   "id": 332,
@@ -3981,7 +3981,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-07-08"
+  "verified_at": "2026-07-10"
  },
  {
   "id": 333,
@@ -3993,7 +3993,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-08-14"
+  "verified_at": "2026-08-16"
  },
  {
   "id": 334,
@@ -4005,7 +4005,7 @@
   "vat_included": false,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-07-04"
+  "verified_at": "2026-07-06"
  },
  {
   "id": 335,
@@ -4017,7 +4017,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-08"
+  "verified_at": "2026-09-10"
  },
  {
   "id": 336,
@@ -4029,7 +4029,7 @@
   "vat_included": false,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-09-25"
+  "verified_at": "2026-09-27"
  },
  {
   "id": 337,
@@ -4041,7 +4041,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-07-27"
+  "verified_at": "2026-07-29"
  },
  {
   "id": 338,
@@ -4053,7 +4053,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-08-31"
+  "verified_at": "2026-09-02"
  },
  {
   "id": 339,
@@ -4065,7 +4065,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-07-20"
+  "verified_at": "2026-07-22"
  },
  {
   "id": 340,
@@ -4077,7 +4077,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-07-04"
+  "verified_at": "2026-07-06"
  },
  {
   "id": 341,
@@ -4089,7 +4089,7 @@
   "vat_included": true,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-06-25"
+  "verified_at": "2026-06-27"
  },
  {
   "id": 342,
@@ -4113,7 +4113,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-07"
+  "verified_at": "2026-09-09"
  },
  {
   "id": 344,
@@ -4125,7 +4125,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-08-01"
+  "verified_at": "2026-08-03"
  },
  {
   "id": 345,
@@ -4137,7 +4137,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-01"
+  "verified_at": "2026-09-03"
  },
  {
   "id": 346,
@@ -4149,7 +4149,7 @@
   "vat_included": false,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-06-27"
+  "verified_at": "2026-06-29"
  },
  {
   "id": 347,
@@ -4161,7 +4161,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-07-12"
+  "verified_at": "2026-07-14"
  },
  {
   "id": 348,
@@ -4185,7 +4185,7 @@
   "vat_included": false,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-10-08"
+  "verified_at": "2026-10-10"
  },
  {
   "id": 350,
@@ -4197,7 +4197,7 @@
   "vat_included": true,
   "conditions_ko": "마취 크림 포함",
   "conditions_en": "Numbing cream included",
-  "verified_at": "2026-08-31"
+  "verified_at": "2026-09-02"
  },
  {
   "id": 351,
@@ -4209,7 +4209,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-13"
+  "verified_at": "2026-08-15"
  },
  {
   "id": 352,
@@ -4221,7 +4221,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-03"
+  "verified_at": "2026-10-05"
  },
  {
   "id": 353,
@@ -4233,7 +4233,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-07-18"
+  "verified_at": "2026-07-20"
  },
  {
   "id": 354,
@@ -4245,7 +4245,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-06-25"
+  "verified_at": "2026-06-27"
  },
  {
   "id": 355,
@@ -4257,7 +4257,7 @@
   "vat_included": false,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-10-17"
+  "verified_at": "2026-10-19"
  },
  {
   "id": 356,
@@ -4269,7 +4269,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-12"
+  "verified_at": "2026-08-14"
  },
  {
   "id": 357,
@@ -4281,7 +4281,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-04"
+  "verified_at": "2026-07-06"
  },
  {
   "id": 358,
@@ -4293,7 +4293,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-10"
+  "verified_at": "2026-08-12"
  },
  {
   "id": 359,
@@ -4305,7 +4305,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-14"
+  "verified_at": "2026-08-16"
  },
  {
   "id": 360,
@@ -4317,7 +4317,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-19"
+  "verified_at": "2026-07-21"
  },
  {
   "id": 361,
@@ -4329,7 +4329,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-09-24"
+  "verified_at": "2026-09-26"
  },
  {
   "id": 362,
@@ -4341,7 +4341,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-06-22"
+  "verified_at": "2026-06-24"
  },
  {
   "id": 363,
@@ -4353,7 +4353,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-07-26"
+  "verified_at": "2026-07-28"
  },
  {
   "id": 364,
@@ -4365,7 +4365,7 @@
   "vat_included": false,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-09-12"
+  "verified_at": "2026-09-14"
  },
  {
   "id": 365,
@@ -4377,7 +4377,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-07-25"
+  "verified_at": "2026-07-27"
  },
  {
   "id": 366,
@@ -4389,7 +4389,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-28"
+  "verified_at": "2026-09-30"
  },
  {
   "id": 367,
@@ -4401,7 +4401,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-02"
+  "verified_at": "2026-09-04"
  },
  {
   "id": 368,
@@ -4413,7 +4413,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-03"
+  "verified_at": "2026-07-05"
  },
  {
   "id": 369,
@@ -4425,7 +4425,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-10-12"
+  "verified_at": "2026-10-14"
  },
  {
   "id": 370,
@@ -4437,7 +4437,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-26"
+  "verified_at": "2026-09-28"
  },
  {
   "id": 371,
@@ -4449,7 +4449,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-08-19"
+  "verified_at": "2026-08-21"
  },
  {
   "id": 372,
@@ -4473,7 +4473,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-07-19"
+  "verified_at": "2026-07-21"
  },
  {
   "id": 374,
@@ -4485,7 +4485,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-18"
+  "verified_at": "2026-07-20"
  },
  {
   "id": 375,
@@ -4497,7 +4497,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-09"
+  "verified_at": "2026-08-11"
  },
  {
   "id": 376,
@@ -4521,7 +4521,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-08-29"
+  "verified_at": "2026-08-31"
  },
  {
   "id": 378,
@@ -4533,7 +4533,7 @@
   "vat_included": false,
   "conditions_ko": "마취 크림 포함",
   "conditions_en": "Numbing cream included",
-  "verified_at": "2026-07-02"
+  "verified_at": "2026-07-04"
  },
  {
   "id": 379,
@@ -4545,7 +4545,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-28"
+  "verified_at": "2026-08-30"
  },
  {
   "id": 380,
@@ -4557,7 +4557,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-01"
+  "verified_at": "2026-08-03"
  },
  {
   "id": 381,
@@ -4569,7 +4569,7 @@
   "vat_included": false,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-09-07"
+  "verified_at": "2026-09-09"
  },
  {
   "id": 382,
@@ -4581,7 +4581,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-20"
+  "verified_at": "2026-07-22"
  },
  {
   "id": 383,
@@ -4593,7 +4593,7 @@
   "vat_included": false,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-07-09"
+  "verified_at": "2026-07-11"
  },
  {
   "id": 384,
@@ -4617,7 +4617,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-02"
+  "verified_at": "2026-08-04"
  },
  {
   "id": 386,
@@ -4629,7 +4629,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-25"
+  "verified_at": "2026-09-27"
  },
  {
   "id": 387,
@@ -4641,7 +4641,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-06-27"
+  "verified_at": "2026-06-29"
  },
  {
   "id": 388,
@@ -4653,7 +4653,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-17"
+  "verified_at": "2026-08-19"
  },
  {
   "id": 389,
@@ -4665,7 +4665,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-07-12"
+  "verified_at": "2026-07-14"
  },
  {
   "id": 390,
@@ -4677,7 +4677,7 @@
   "vat_included": false,
   "conditions_ko": "마취 크림 포함",
   "conditions_en": "Numbing cream included",
-  "verified_at": "2026-06-29"
+  "verified_at": "2026-07-01"
  },
  {
   "id": 391,
@@ -4689,7 +4689,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-02"
+  "verified_at": "2026-10-04"
  },
  {
   "id": 392,
@@ -4701,7 +4701,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-04"
+  "verified_at": "2026-07-06"
  },
  {
   "id": 393,
@@ -4713,7 +4713,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-03"
+  "verified_at": "2026-10-05"
  },
  {
   "id": 394,
@@ -4725,7 +4725,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-07-23"
+  "verified_at": "2026-07-25"
  },
  {
   "id": 395,
@@ -4737,7 +4737,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-25"
+  "verified_at": "2026-07-27"
  },
  {
   "id": 396,
@@ -4749,7 +4749,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-07-08"
+  "verified_at": "2026-07-10"
  },
  {
   "id": 397,
@@ -4761,7 +4761,7 @@
   "vat_included": true,
   "conditions_ko": "마취 크림 포함",
   "conditions_en": "Numbing cream included",
-  "verified_at": "2026-09-24"
+  "verified_at": "2026-09-26"
  },
  {
   "id": 398,
@@ -4773,7 +4773,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-07-15"
+  "verified_at": "2026-07-17"
  },
  {
   "id": 399,
@@ -4785,7 +4785,7 @@
   "vat_included": true,
   "conditions_ko": "마취 크림 포함",
   "conditions_en": "Numbing cream included",
-  "verified_at": "2026-07-17"
+  "verified_at": "2026-07-19"
  },
  {
   "id": 400,
@@ -4797,7 +4797,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-26"
+  "verified_at": "2026-07-28"
  },
  {
   "id": 401,
@@ -4809,7 +4809,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-10"
+  "verified_at": "2026-08-12"
  },
  {
   "id": 402,
@@ -4821,7 +4821,7 @@
   "vat_included": false,
   "conditions_ko": "마취 크림 포함",
   "conditions_en": "Numbing cream included",
-  "verified_at": "2026-07-21"
+  "verified_at": "2026-07-23"
  },
  {
   "id": 403,
@@ -4833,7 +4833,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-09-26"
+  "verified_at": "2026-09-28"
  },
  {
   "id": 404,
@@ -4845,7 +4845,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-09-16"
+  "verified_at": "2026-09-18"
  },
  {
   "id": 405,
@@ -4857,7 +4857,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-30"
+  "verified_at": "2026-10-02"
  },
  {
   "id": 406,
@@ -4869,7 +4869,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-09-11"
+  "verified_at": "2026-09-13"
  },
  {
   "id": 407,
@@ -4881,7 +4881,7 @@
   "vat_included": false,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-09-29"
+  "verified_at": "2026-10-01"
  },
  {
   "id": 408,
@@ -4893,7 +4893,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-07"
+  "verified_at": "2026-09-09"
  },
  {
   "id": 409,
@@ -4905,7 +4905,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-28"
+  "verified_at": "2026-07-30"
  },
  {
   "id": 410,
@@ -4917,7 +4917,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-01"
+  "verified_at": "2026-08-03"
  },
  {
   "id": 411,
@@ -4929,7 +4929,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-06-25"
+  "verified_at": "2026-06-27"
  },
  {
   "id": 412,
@@ -4941,7 +4941,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-28"
+  "verified_at": "2026-09-30"
  },
  {
   "id": 413,
@@ -4953,7 +4953,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-07-31"
+  "verified_at": "2026-08-02"
  },
  {
   "id": 414,
@@ -4965,7 +4965,7 @@
   "vat_included": false,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-07-07"
+  "verified_at": "2026-07-09"
  },
  {
   "id": 415,
@@ -4989,7 +4989,7 @@
   "vat_included": true,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-09-09"
+  "verified_at": "2026-09-11"
  },
  {
   "id": 417,
@@ -5001,7 +5001,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-15"
+  "verified_at": "2026-07-17"
  },
  {
   "id": 418,
@@ -5013,7 +5013,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-13"
+  "verified_at": "2026-09-15"
  },
  {
   "id": 419,
@@ -5025,7 +5025,7 @@
   "vat_included": false,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-07-09"
+  "verified_at": "2026-07-11"
  },
  {
   "id": 420,
@@ -5037,7 +5037,7 @@
   "vat_included": false,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-07-10"
+  "verified_at": "2026-07-12"
  },
  {
   "id": 421,
@@ -5049,7 +5049,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-12"
+  "verified_at": "2026-08-14"
  },
  {
   "id": 422,
@@ -5061,7 +5061,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-08-28"
+  "verified_at": "2026-08-30"
  },
  {
   "id": 423,
@@ -5073,7 +5073,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-09-17"
+  "verified_at": "2026-09-19"
  },
  {
   "id": 424,
@@ -5085,7 +5085,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-06-22"
+  "verified_at": "2026-06-24"
  },
  {
   "id": 425,
@@ -5097,7 +5097,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-10-03"
+  "verified_at": "2026-10-05"
  },
  {
   "id": 426,
@@ -5109,7 +5109,7 @@
   "vat_included": true,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-08-23"
+  "verified_at": "2026-08-25"
  },
  {
   "id": 427,
@@ -5121,7 +5121,7 @@
   "vat_included": true,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-07-11"
+  "verified_at": "2026-07-13"
  },
  {
   "id": 428,
@@ -5133,7 +5133,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-18"
+  "verified_at": "2026-07-20"
  },
  {
   "id": 429,
@@ -5145,7 +5145,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-09"
+  "verified_at": "2026-10-11"
  },
  {
   "id": 430,
@@ -5157,7 +5157,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-06-28"
+  "verified_at": "2026-06-30"
  },
  {
   "id": 431,
@@ -5169,7 +5169,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-09-22"
+  "verified_at": "2026-09-24"
  },
  {
   "id": 432,
@@ -5181,7 +5181,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-07-12"
+  "verified_at": "2026-07-14"
  },
  {
   "id": 433,
@@ -5193,7 +5193,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-08-15"
+  "verified_at": "2026-08-17"
  },
  {
   "id": 434,
@@ -5205,7 +5205,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-09-28"
+  "verified_at": "2026-09-30"
  },
  {
   "id": 435,
@@ -5217,7 +5217,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-01"
+  "verified_at": "2026-10-03"
  },
  {
   "id": 436,
@@ -5229,7 +5229,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-14"
+  "verified_at": "2026-10-16"
  },
  {
   "id": 437,
@@ -5241,7 +5241,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-06-24"
+  "verified_at": "2026-06-26"
  },
  {
   "id": 438,
@@ -5253,7 +5253,7 @@
   "vat_included": false,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-09-14"
+  "verified_at": "2026-09-16"
  },
  {
   "id": 439,
@@ -5265,7 +5265,7 @@
   "vat_included": false,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-09-01"
+  "verified_at": "2026-09-03"
  },
  {
   "id": 440,
@@ -5277,7 +5277,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-06-30"
+  "verified_at": "2026-07-02"
  },
  {
   "id": 441,
@@ -5301,7 +5301,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-09-29"
+  "verified_at": "2026-10-01"
  },
  {
   "id": 443,
@@ -5313,7 +5313,7 @@
   "vat_included": true,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-08-19"
+  "verified_at": "2026-08-21"
  },
  {
   "id": 444,
@@ -5325,7 +5325,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-18"
+  "verified_at": "2026-09-20"
  },
  {
   "id": 445,
@@ -5337,7 +5337,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-10-01"
+  "verified_at": "2026-10-03"
  },
  {
   "id": 446,
@@ -5361,7 +5361,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-04"
+  "verified_at": "2026-08-06"
  },
  {
   "id": 448,
@@ -5373,7 +5373,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-28"
+  "verified_at": "2026-09-30"
  },
  {
   "id": 449,
@@ -5385,7 +5385,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-06-25"
+  "verified_at": "2026-06-27"
  },
  {
   "id": 450,
@@ -5397,7 +5397,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-06-26"
+  "verified_at": "2026-06-28"
  },
  {
   "id": 451,
@@ -5409,7 +5409,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-19"
+  "verified_at": "2026-10-21"
  },
  {
   "id": 452,
@@ -5421,7 +5421,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-08-19"
+  "verified_at": "2026-08-21"
  },
  {
   "id": 453,
@@ -5433,7 +5433,7 @@
   "vat_included": false,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-07-04"
+  "verified_at": "2026-07-06"
  },
  {
   "id": 454,
@@ -5445,7 +5445,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-13"
+  "verified_at": "2026-09-15"
  },
  {
   "id": 455,
@@ -5481,7 +5481,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-08-12"
+  "verified_at": "2026-08-14"
  },
  {
   "id": 458,
@@ -5493,7 +5493,7 @@
   "vat_included": true,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-09-23"
+  "verified_at": "2026-09-25"
  },
  {
   "id": 459,
@@ -5505,7 +5505,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-09"
+  "verified_at": "2026-08-11"
  },
  {
   "id": 460,
@@ -5517,7 +5517,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-01"
+  "verified_at": "2026-07-03"
  },
  {
   "id": 461,
@@ -5529,7 +5529,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-29"
+  "verified_at": "2026-10-01"
  },
  {
   "id": 462,
@@ -5541,7 +5541,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-24"
+  "verified_at": "2026-07-26"
  },
  {
   "id": 463,
@@ -5553,7 +5553,7 @@
   "vat_included": false,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-10-08"
+  "verified_at": "2026-10-10"
  },
  {
   "id": 464,
@@ -5565,7 +5565,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-08-29"
+  "verified_at": "2026-08-31"
  },
  {
   "id": 465,
@@ -5577,7 +5577,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-07"
+  "verified_at": "2026-07-09"
  },
  {
   "id": 466,
@@ -5589,7 +5589,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-07-11"
+  "verified_at": "2026-07-13"
  },
  {
   "id": 467,
@@ -5601,7 +5601,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-07-12"
+  "verified_at": "2026-07-14"
  },
  {
   "id": 468,
@@ -5625,7 +5625,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-07-07"
+  "verified_at": "2026-07-09"
  },
  {
   "id": 470,
@@ -5637,7 +5637,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-08"
  },
  {
   "id": 471,
@@ -5649,7 +5649,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-15"
+  "verified_at": "2026-08-17"
  },
  {
   "id": 472,
@@ -5661,7 +5661,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-07-12"
+  "verified_at": "2026-07-14"
  },
  {
   "id": 473,
@@ -5685,7 +5685,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-09"
+  "verified_at": "2026-09-11"
  },
  {
   "id": 475,
@@ -5697,7 +5697,7 @@
   "vat_included": false,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-10-10"
+  "verified_at": "2026-10-12"
  },
  {
   "id": 476,
@@ -5709,7 +5709,7 @@
   "vat_included": true,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-07-16"
+  "verified_at": "2026-07-18"
  },
  {
   "id": 477,
@@ -5721,7 +5721,7 @@
   "vat_included": true,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-08-01"
+  "verified_at": "2026-08-03"
  },
  {
   "id": 478,
@@ -5733,7 +5733,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-17"
+  "verified_at": "2026-08-19"
  },
  {
   "id": 479,
@@ -5745,7 +5745,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-01"
+  "verified_at": "2026-08-03"
  },
  {
   "id": 480,
@@ -5757,7 +5757,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-21"
+  "verified_at": "2026-09-23"
  },
  {
   "id": 481,
@@ -5769,7 +5769,7 @@
   "vat_included": false,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-08-11"
+  "verified_at": "2026-08-13"
  },
  {
   "id": 482,
@@ -5781,7 +5781,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-22"
+  "verified_at": "2026-07-24"
  },
  {
   "id": 483,
@@ -5793,7 +5793,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-07-01"
+  "verified_at": "2026-07-03"
  },
  {
   "id": 484,
@@ -5805,7 +5805,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-02"
+  "verified_at": "2026-08-04"
  },
  {
   "id": 485,
@@ -5817,7 +5817,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-08-23"
+  "verified_at": "2026-08-25"
  },
  {
   "id": 486,
@@ -5829,7 +5829,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-07-09"
+  "verified_at": "2026-07-11"
  },
  {
   "id": 487,
@@ -5841,7 +5841,7 @@
   "vat_included": false,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-08-17"
+  "verified_at": "2026-08-19"
  },
  {
   "id": 488,
@@ -5865,7 +5865,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-23"
+  "verified_at": "2026-08-25"
  },
  {
   "id": 490,
@@ -5877,7 +5877,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-28"
+  "verified_at": "2026-08-30"
  },
  {
   "id": 491,
@@ -5889,7 +5889,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-07"
+  "verified_at": "2026-08-09"
  },
  {
   "id": 492,
@@ -5901,7 +5901,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-08"
+  "verified_at": "2026-09-10"
  },
  {
   "id": 493,
@@ -5913,7 +5913,7 @@
   "vat_included": false,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-06-30"
+  "verified_at": "2026-07-02"
  },
  {
   "id": 494,
@@ -5925,7 +5925,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-07"
+  "verified_at": "2026-08-09"
  },
  {
   "id": 495,
@@ -5937,7 +5937,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-09"
+  "verified_at": "2026-09-11"
  },
  {
   "id": 496,
@@ -5949,7 +5949,7 @@
   "vat_included": true,
   "conditions_ko": "마취 크림 포함",
   "conditions_en": "Numbing cream included",
-  "verified_at": "2026-07-16"
+  "verified_at": "2026-07-18"
  },
  {
   "id": 497,
@@ -5961,7 +5961,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-17"
+  "verified_at": "2026-10-19"
  },
  {
   "id": 498,
@@ -5985,7 +5985,7 @@
   "vat_included": true,
   "conditions_ko": "마취 크림 포함",
   "conditions_en": "Numbing cream included",
-  "verified_at": "2026-07-14"
+  "verified_at": "2026-07-16"
  },
  {
   "id": 500,
@@ -5997,7 +5997,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-07-17"
+  "verified_at": "2026-07-19"
  },
  {
   "id": 501,
@@ -6009,7 +6009,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-08"
+  "verified_at": "2026-09-10"
  },
  {
   "id": 502,
@@ -6021,7 +6021,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-10-02"
+  "verified_at": "2026-10-04"
  },
  {
   "id": 503,
@@ -6033,7 +6033,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-10"
+  "verified_at": "2026-09-12"
  },
  {
   "id": 504,
@@ -6069,7 +6069,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-11"
+  "verified_at": "2026-09-13"
  },
  {
   "id": 507,
@@ -6081,7 +6081,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-06-29"
+  "verified_at": "2026-07-01"
  },
  {
   "id": 508,
@@ -6093,7 +6093,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-26"
+  "verified_at": "2026-08-28"
  },
  {
   "id": 509,
@@ -6105,7 +6105,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-15"
+  "verified_at": "2026-09-17"
  },
  {
   "id": 510,
@@ -6117,7 +6117,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-09-15"
+  "verified_at": "2026-09-17"
  },
  {
   "id": 511,
@@ -6129,7 +6129,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-10-17"
+  "verified_at": "2026-10-19"
  },
  {
   "id": 512,
@@ -6141,7 +6141,7 @@
   "vat_included": true,
   "conditions_ko": "마취 크림 포함",
   "conditions_en": "Numbing cream included",
-  "verified_at": "2026-08-17"
+  "verified_at": "2026-08-19"
  },
  {
   "id": 513,
@@ -6153,7 +6153,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-22"
+  "verified_at": "2026-07-24"
  },
  {
   "id": 514,
@@ -6165,7 +6165,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-11"
+  "verified_at": "2026-08-13"
  },
  {
   "id": 515,
@@ -6177,7 +6177,7 @@
   "vat_included": false,
   "conditions_ko": "마취 크림 포함",
   "conditions_en": "Numbing cream included",
-  "verified_at": "2026-07-13"
+  "verified_at": "2026-07-15"
  },
  {
   "id": 516,
@@ -6189,7 +6189,7 @@
   "vat_included": false,
   "conditions_ko": "마취 크림 포함",
   "conditions_en": "Numbing cream included",
-  "verified_at": "2026-09-24"
+  "verified_at": "2026-09-26"
  },
  {
   "id": 517,
@@ -6201,7 +6201,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-10"
+  "verified_at": "2026-09-12"
  },
  {
   "id": 518,
@@ -6213,7 +6213,7 @@
   "vat_included": false,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-08-14"
+  "verified_at": "2026-08-16"
  },
  {
   "id": 519,
@@ -6225,7 +6225,7 @@
   "vat_included": true,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-10-05"
+  "verified_at": "2026-10-07"
  },
  {
   "id": 520,
@@ -6237,7 +6237,7 @@
   "vat_included": true,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-10-14"
+  "verified_at": "2026-10-16"
  },
  {
   "id": 521,
@@ -6249,7 +6249,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-07-14"
+  "verified_at": "2026-07-16"
  },
  {
   "id": 522,
@@ -6261,7 +6261,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-08-18"
+  "verified_at": "2026-08-20"
  },
  {
   "id": 523,
@@ -6273,7 +6273,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-24"
+  "verified_at": "2026-08-26"
  },
  {
   "id": 524,
@@ -6285,7 +6285,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-08-09"
+  "verified_at": "2026-08-11"
  },
  {
   "id": 525,
@@ -6297,7 +6297,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-04"
+  "verified_at": "2026-08-06"
  },
  {
   "id": 526,
@@ -6309,7 +6309,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-09-16"
+  "verified_at": "2026-09-18"
  },
  {
   "id": 527,
@@ -6321,7 +6321,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-08-01"
+  "verified_at": "2026-08-03"
  },
  {
   "id": 528,
@@ -6333,7 +6333,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-07-27"
+  "verified_at": "2026-07-29"
  },
  {
   "id": 529,
@@ -6345,7 +6345,7 @@
   "vat_included": false,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-10-05"
+  "verified_at": "2026-10-07"
  },
  {
   "id": 530,
@@ -6357,7 +6357,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-27"
+  "verified_at": "2026-09-29"
  },
  {
   "id": 531,
@@ -6369,7 +6369,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-07-27"
+  "verified_at": "2026-07-29"
  },
  {
   "id": 532,
@@ -6381,7 +6381,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-23"
+  "verified_at": "2026-09-25"
  },
  {
   "id": 533,
@@ -6393,7 +6393,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-30"
+  "verified_at": "2026-08-01"
  },
  {
   "id": 534,
@@ -6405,7 +6405,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-21"
+  "verified_at": "2026-07-23"
  },
  {
   "id": 535,
@@ -6417,7 +6417,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-14"
+  "verified_at": "2026-08-16"
  },
  {
   "id": 536,
@@ -6429,7 +6429,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-07-31"
+  "verified_at": "2026-08-02"
  },
  {
   "id": 537,
@@ -6441,7 +6441,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-07-22"
+  "verified_at": "2026-07-24"
  },
  {
   "id": 538,
@@ -6453,7 +6453,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-08-12"
+  "verified_at": "2026-08-14"
  },
  {
   "id": 539,
@@ -6465,7 +6465,7 @@
   "vat_included": false,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-09-08"
+  "verified_at": "2026-09-10"
  },
  {
   "id": 540,
@@ -6477,7 +6477,7 @@
   "vat_included": false,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-08-03"
+  "verified_at": "2026-08-05"
  },
  {
   "id": 541,
@@ -6489,7 +6489,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-23"
+  "verified_at": "2026-08-25"
  },
  {
   "id": 542,
@@ -6501,7 +6501,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-06-28"
+  "verified_at": "2026-06-30"
  },
  {
   "id": 543,
@@ -6513,7 +6513,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-07-13"
+  "verified_at": "2026-07-15"
  },
  {
   "id": 544,
@@ -6525,7 +6525,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-09-17"
+  "verified_at": "2026-09-19"
  },
  {
   "id": 545,
@@ -6549,7 +6549,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-07"
+  "verified_at": "2026-07-09"
  },
  {
   "id": 547,
@@ -6561,7 +6561,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-06-24"
+  "verified_at": "2026-06-26"
  },
  {
   "id": 548,
@@ -6573,7 +6573,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-28"
+  "verified_at": "2026-07-30"
  },
  {
   "id": 549,
@@ -6585,7 +6585,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-10-13"
+  "verified_at": "2026-10-15"
  },
  {
   "id": 550,
@@ -6597,7 +6597,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-30"
+  "verified_at": "2026-10-02"
  },
  {
   "id": 551,
@@ -6609,7 +6609,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-04"
+  "verified_at": "2026-08-06"
  },
  {
   "id": 552,
@@ -6621,7 +6621,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-20"
+  "verified_at": "2026-08-22"
  },
  {
   "id": 553,
@@ -6633,7 +6633,7 @@
   "vat_included": true,
   "conditions_ko": "마취 크림 포함",
   "conditions_en": "Numbing cream included",
-  "verified_at": "2026-08-09"
+  "verified_at": "2026-08-11"
  },
  {
   "id": 554,
@@ -6645,7 +6645,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-09-18"
+  "verified_at": "2026-09-20"
  },
  {
   "id": 555,
@@ -6669,7 +6669,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-09-05"
+  "verified_at": "2026-09-07"
  },
  {
   "id": 557,
@@ -6705,7 +6705,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-17"
+  "verified_at": "2026-07-19"
  },
  {
   "id": 560,
@@ -6717,7 +6717,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-10-01"
+  "verified_at": "2026-10-03"
  },
  {
   "id": 561,
@@ -6729,7 +6729,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-17"
+  "verified_at": "2026-09-19"
  },
  {
   "id": 562,
@@ -6753,7 +6753,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-08"
  },
  {
   "id": 564,
@@ -6765,7 +6765,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-21"
+  "verified_at": "2026-07-23"
  },
  {
   "id": 565,
@@ -6777,7 +6777,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-08-16"
+  "verified_at": "2026-08-18"
  },
  {
   "id": 566,
@@ -6789,7 +6789,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-05"
+  "verified_at": "2026-09-07"
  },
  {
   "id": 567,
@@ -6801,7 +6801,7 @@
   "vat_included": true,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-07-08"
+  "verified_at": "2026-07-10"
  },
  {
   "id": 568,
@@ -6813,7 +6813,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-09-14"
+  "verified_at": "2026-09-16"
  },
  {
   "id": 569,
@@ -6825,7 +6825,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-08-02"
+  "verified_at": "2026-08-04"
  },
  {
   "id": 570,
@@ -6837,7 +6837,7 @@
   "vat_included": true,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-09-23"
+  "verified_at": "2026-09-25"
  },
  {
   "id": 571,
@@ -6849,7 +6849,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-23"
+  "verified_at": "2026-07-25"
  },
  {
   "id": 572,
@@ -6861,7 +6861,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-10-01"
+  "verified_at": "2026-10-03"
  },
  {
   "id": 573,
@@ -6873,7 +6873,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-01"
+  "verified_at": "2026-10-03"
  },
  {
   "id": 574,
@@ -6885,7 +6885,7 @@
   "vat_included": false,
   "conditions_ko": "마취 크림 포함",
   "conditions_en": "Numbing cream included",
-  "verified_at": "2026-07-30"
+  "verified_at": "2026-08-01"
  },
  {
   "id": 575,
@@ -6897,7 +6897,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-08-04"
+  "verified_at": "2026-08-06"
  },
  {
   "id": 576,
@@ -6909,7 +6909,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-16"
+  "verified_at": "2026-08-18"
  },
  {
   "id": 577,
@@ -6921,7 +6921,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-10-15"
+  "verified_at": "2026-10-17"
  },
  {
   "id": 578,
@@ -6933,7 +6933,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-26"
+  "verified_at": "2026-07-28"
  },
  {
   "id": 579,
@@ -6945,7 +6945,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-08-24"
+  "verified_at": "2026-08-26"
  },
  {
   "id": 580,
@@ -6957,7 +6957,7 @@
   "vat_included": false,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-08-30"
+  "verified_at": "2026-09-01"
  },
  {
   "id": 581,
@@ -6969,7 +6969,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-11"
+  "verified_at": "2026-07-13"
  },
  {
   "id": 582,
@@ -6981,7 +6981,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-30"
+  "verified_at": "2026-09-01"
  },
  {
   "id": 583,
@@ -6993,7 +6993,7 @@
   "vat_included": true,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-09-12"
+  "verified_at": "2026-09-14"
  },
  {
   "id": 584,
@@ -7005,7 +7005,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-10-08"
+  "verified_at": "2026-10-10"
  },
  {
   "id": 585,
@@ -7017,7 +7017,7 @@
   "vat_included": false,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-08-28"
+  "verified_at": "2026-08-30"
  },
  {
   "id": 586,
@@ -7029,7 +7029,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-17"
+  "verified_at": "2026-09-19"
  },
  {
   "id": 587,
@@ -7041,7 +7041,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-08"
+  "verified_at": "2026-10-10"
  },
  {
   "id": 588,
@@ -7053,7 +7053,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-09-29"
+  "verified_at": "2026-10-01"
  },
  {
   "id": 589,
@@ -7065,7 +7065,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-06-30"
+  "verified_at": "2026-07-02"
  },
  {
   "id": 590,
@@ -7077,7 +7077,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-23"
+  "verified_at": "2026-08-25"
  },
  {
   "id": 591,
@@ -7101,7 +7101,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-22"
+  "verified_at": "2026-09-24"
  },
  {
   "id": 593,
@@ -7113,7 +7113,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-07-31"
+  "verified_at": "2026-08-02"
  },
  {
   "id": 594,
@@ -7125,7 +7125,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-15"
+  "verified_at": "2026-10-17"
  },
  {
   "id": 595,
@@ -7137,7 +7137,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-10-13"
+  "verified_at": "2026-10-15"
  },
  {
   "id": 596,
@@ -7149,7 +7149,7 @@
   "vat_included": false,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-08-04"
+  "verified_at": "2026-08-06"
  },
  {
   "id": 597,
@@ -7161,7 +7161,7 @@
   "vat_included": false,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-09-01"
+  "verified_at": "2026-09-03"
  },
  {
   "id": 598,
@@ -7185,7 +7185,7 @@
   "vat_included": true,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-09-23"
+  "verified_at": "2026-09-25"
  },
  {
   "id": 600,
@@ -7197,7 +7197,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-23"
+  "verified_at": "2026-07-25"
  },
  {
   "id": 601,
@@ -7209,7 +7209,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-08-02"
+  "verified_at": "2026-08-04"
  },
  {
   "id": 602,
@@ -7221,7 +7221,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-02"
+  "verified_at": "2026-08-04"
  },
  {
   "id": 603,
@@ -7233,7 +7233,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-10-04"
+  "verified_at": "2026-10-06"
  },
  {
   "id": 604,
@@ -7245,7 +7245,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-07-30"
+  "verified_at": "2026-08-01"
  },
  {
   "id": 605,
@@ -7257,7 +7257,7 @@
   "vat_included": true,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-10-19"
+  "verified_at": "2026-10-21"
  },
  {
   "id": 606,
@@ -7281,7 +7281,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-10-15"
+  "verified_at": "2026-10-17"
  },
  {
   "id": 608,
@@ -7293,7 +7293,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-11"
+  "verified_at": "2026-07-13"
  },
  {
   "id": 609,
@@ -7305,7 +7305,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-08-08"
+  "verified_at": "2026-08-10"
  },
  {
   "id": 610,
@@ -7317,7 +7317,7 @@
   "vat_included": false,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-09-07"
+  "verified_at": "2026-09-09"
  },
  {
   "id": 611,
@@ -7329,7 +7329,7 @@
   "vat_included": true,
   "conditions_ko": "마취 크림 포함",
   "conditions_en": "Numbing cream included",
-  "verified_at": "2026-08-07"
+  "verified_at": "2026-08-09"
  },
  {
   "id": 612,
@@ -7341,7 +7341,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-07-21"
+  "verified_at": "2026-07-23"
  },
  {
   "id": 613,
@@ -7353,7 +7353,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-11"
+  "verified_at": "2026-09-13"
  },
  {
   "id": 614,
@@ -7377,7 +7377,7 @@
   "vat_included": true,
   "conditions_ko": "마취 크림 포함",
   "conditions_en": "Numbing cream included",
-  "verified_at": "2026-08-19"
+  "verified_at": "2026-08-21"
  },
  {
   "id": 616,
@@ -7389,7 +7389,7 @@
   "vat_included": false,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-07-19"
+  "verified_at": "2026-07-21"
  },
  {
   "id": 617,
@@ -7413,7 +7413,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-10-17"
+  "verified_at": "2026-10-19"
  },
  {
   "id": 619,
@@ -7425,7 +7425,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-10-04"
+  "verified_at": "2026-10-06"
  },
  {
   "id": 620,
@@ -7437,7 +7437,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-08-15"
+  "verified_at": "2026-08-17"
  },
  {
   "id": 621,
@@ -7449,7 +7449,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-09"
+  "verified_at": "2026-07-11"
  },
  {
   "id": 622,
@@ -7473,7 +7473,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-08"
+  "verified_at": "2026-10-10"
  },
  {
   "id": 624,
@@ -7485,7 +7485,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-08-23"
+  "verified_at": "2026-08-25"
  },
  {
   "id": 625,
@@ -7497,7 +7497,7 @@
   "vat_included": true,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-08-12"
+  "verified_at": "2026-08-14"
  },
  {
   "id": 626,
@@ -7509,7 +7509,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-07-21"
+  "verified_at": "2026-07-23"
  },
  {
   "id": 627,
@@ -7521,7 +7521,7 @@
   "vat_included": false,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-06-24"
+  "verified_at": "2026-06-26"
  },
  {
   "id": 628,
@@ -7545,7 +7545,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-07"
+  "verified_at": "2026-08-09"
  },
  {
   "id": 630,
@@ -7557,7 +7557,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-07-28"
+  "verified_at": "2026-07-30"
  },
  {
   "id": 631,
@@ -7569,7 +7569,7 @@
   "vat_included": true,
   "conditions_ko": "마취 크림 포함",
   "conditions_en": "Numbing cream included",
-  "verified_at": "2026-08-19"
+  "verified_at": "2026-08-21"
  },
  {
   "id": 632,
@@ -7581,7 +7581,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-08"
+  "verified_at": "2026-08-10"
  },
  {
   "id": 633,
@@ -7593,7 +7593,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-10-10"
+  "verified_at": "2026-10-12"
  },
  {
   "id": 634,
@@ -7605,7 +7605,7 @@
   "vat_included": true,
   "conditions_ko": "마취 크림 포함",
   "conditions_en": "Numbing cream included",
-  "verified_at": "2026-10-11"
+  "verified_at": "2026-10-13"
  },
  {
   "id": 635,
@@ -7617,7 +7617,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-08"
+  "verified_at": "2026-09-10"
  },
  {
   "id": 636,
@@ -7629,7 +7629,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-30"
+  "verified_at": "2026-08-01"
  },
  {
   "id": 637,
@@ -7641,7 +7641,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-09-12"
+  "verified_at": "2026-09-14"
  },
  {
   "id": 638,
@@ -7653,7 +7653,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-11"
+  "verified_at": "2026-09-13"
  },
  {
   "id": 639,
@@ -7665,7 +7665,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-08-06"
+  "verified_at": "2026-08-08"
  },
  {
   "id": 640,
@@ -7677,7 +7677,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-10-19"
+  "verified_at": "2026-10-21"
  },
  {
   "id": 641,
@@ -7689,7 +7689,7 @@
   "vat_included": false,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-08-29"
+  "verified_at": "2026-08-31"
  },
  {
   "id": 642,
@@ -7701,7 +7701,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-31"
+  "verified_at": "2026-09-02"
  },
  {
   "id": 643,
@@ -7713,7 +7713,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-01"
+  "verified_at": "2026-10-03"
  },
  {
   "id": 644,
@@ -7737,7 +7737,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-08-31"
+  "verified_at": "2026-09-02"
  },
  {
   "id": 646,
@@ -7749,7 +7749,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-07-18"
+  "verified_at": "2026-07-20"
  },
  {
   "id": 647,
@@ -7773,7 +7773,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-10-01"
+  "verified_at": "2026-10-03"
  },
  {
   "id": 649,
@@ -7785,7 +7785,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-27"
+  "verified_at": "2026-07-29"
  },
  {
   "id": 650,
@@ -7797,7 +7797,7 @@
   "vat_included": false,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-06-26"
+  "verified_at": "2026-06-28"
  },
  {
   "id": 651,
@@ -7809,7 +7809,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-18"
+  "verified_at": "2026-07-20"
  },
  {
   "id": 652,
@@ -7833,7 +7833,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-10-12"
+  "verified_at": "2026-10-14"
  },
  {
   "id": 654,
@@ -7845,7 +7845,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-10-09"
+  "verified_at": "2026-10-11"
  },
  {
   "id": 655,
@@ -7857,7 +7857,7 @@
   "vat_included": true,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-09-14"
+  "verified_at": "2026-09-16"
  },
  {
   "id": 656,
@@ -7869,7 +7869,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-02"
+  "verified_at": "2026-09-04"
  },
  {
   "id": 657,
@@ -7881,7 +7881,7 @@
   "vat_included": false,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-08-13"
+  "verified_at": "2026-08-15"
  },
  {
   "id": 658,
@@ -7893,7 +7893,7 @@
   "vat_included": false,
   "conditions_ko": "부가세 10% 별도",
   "conditions_en": "VAT (10%) not included",
-  "verified_at": "2026-07-04"
+  "verified_at": "2026-07-06"
  },
  {
   "id": 659,
@@ -7905,7 +7905,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-07-04"
+  "verified_at": "2026-07-06"
  },
  {
   "id": 660,
@@ -7917,7 +7917,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-28"
+  "verified_at": "2026-09-30"
  },
  {
   "id": 661,
@@ -7929,7 +7929,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-01"
+  "verified_at": "2026-09-03"
  },
  {
   "id": 662,
@@ -7941,7 +7941,7 @@
   "vat_included": true,
   "conditions_ko": "이벤트 가격, 재시술 시 정상가 적용",
   "conditions_en": "Promotional price; regular price for repeat treatments",
-  "verified_at": "2026-10-18"
+  "verified_at": "2026-10-20"
  },
  {
   "id": 663,
@@ -7953,7 +7953,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-30"
+  "verified_at": "2026-08-01"
  },
  {
   "id": 664,
@@ -7965,7 +7965,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-15"
+  "verified_at": "2026-09-17"
  },
  {
   "id": 665,
@@ -7977,7 +7977,7 @@
   "vat_included": true,
   "conditions_ko": "사후 관리 1회 포함",
   "conditions_en": "Includes one follow-up care visit",
-  "verified_at": "2026-09-25"
+  "verified_at": "2026-09-27"
  },
  {
   "id": 666,
@@ -8001,7 +8001,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-09-17"
+  "verified_at": "2026-09-19"
  },
  {
   "id": 668,
@@ -8013,7 +8013,7 @@
   "vat_included": true,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-07-30"
+  "verified_at": "2026-08-01"
  },
  {
   "id": 669,
@@ -8025,7 +8025,7 @@
   "vat_included": false,
   "conditions_ko": "상담 후 최종 금액 확정",
   "conditions_en": "Final price confirmed after consultation",
-  "verified_at": "2026-08-08"
+  "verified_at": "2026-08-10"
  },
  {
   "id": 670,
@@ -8049,7 +8049,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-12"
+  "verified_at": "2026-07-14"
  },
  {
   "id": 672,
@@ -8073,7 +8073,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-10-06"
+  "verified_at": "2026-10-08"
  },
  {
   "id": 674,
@@ -8085,7 +8085,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-20"
+  "verified_at": "2026-07-22"
  },
  {
   "id": 675,
@@ -8097,7 +8097,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-09-30"
+  "verified_at": "2026-10-02"
  },
  {
   "id": 676,
@@ -8109,7 +8109,7 @@
   "vat_included": true,
   "conditions_ko": "첫 방문 고객 한정",
   "conditions_en": "First visit only",
-  "verified_at": "2026-06-26"
+  "verified_at": "2026-06-28"
  },
  {
   "id": 677,
@@ -8121,7 +8121,7 @@
   "vat_included": true,
   "conditions_ko": null,
   "conditions_en": null,
-  "verified_at": "2026-07-12"
+  "verified_at": "2026-07-14"
  },
  {
   "id": 678,
@@ -8133,6 +8133,6 @@
   "vat_included": false,
   "conditions_ko": "평일 오전 예약 시 적용",
   "conditions_en": "Weekday morning bookings only",
-  "verified_at": "2026-08-19"
+  "verified_at": "2026-08-21"
  }
 ]

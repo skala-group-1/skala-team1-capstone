@@ -4,7 +4,7 @@
 All clinic / doctor / user names are FICTIONAL. Nothing here is medical advice.
 
 Usage:
-    python3 generate.py --base-date 2026-10-20 --seed 42 --out out/
+    python3 generate.py --base-date 2026-10-22 --seed 42 --out out/
 
 Outputs:
     out/<table>.json        one JSON array per table

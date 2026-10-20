@@ -424,6 +424,7 @@ const ko: typeof en = {
       pick: '상담을 골라 주세요',
       pickBody: '문의함에서 요청을 고르면 요약 카드와 대화가 열려요.',
       autoTranslate: '{lang} ↔ 한국어 자동 번역 · {time} 연결',
+      sameLanguage: '{lang} 상담 · 번역 없이 그대로 전달 · {time} 연결',
       showOriginal: '원문 함께 보기',
       accept: '상담 수락',
       close: '상담 종료',
@@ -433,6 +434,7 @@ const ko: typeof en = {
       flags: { MEDICAL_QUESTION: '의료 질문 · 원장 확인 필요', NUMBER_MISMATCH: '숫자 확인 필요' },
       sentIn: '{lang}로 번역되어 전송됨',
       placeholder: '한국어로 입력하면 {lang}로 번역돼요',
+      placeholderSame: '메시지를 입력하세요',
       acceptFirst: '상담을 수락하면 답할 수 있어요',
       hint: '고객에게는 {lang}로 번역돼 전달돼요',
       keys: 'Enter 전송 · Shift+Enter 줄바꿈',
@@ -450,6 +452,7 @@ const ko: typeof en = {
       customerLang: '고객 언어',
       closeNote: '상담을 종료하면 고객 대화창은 다시 AI가 답해요',
       notice: '상담 중에는 고객 화면의 AI 답변이 멈추고, 이 화면의 답변만 고객 언어로 번역돼 전달돼요.',
+      noticeSame: '상담 중에는 고객 화면의 AI 답변이 멈추고, 이 화면의 답변이 그대로 전달돼요.',
     },
     ops: {
       failedTitle: '실패한 AI 작업',

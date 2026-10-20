@@ -54,11 +54,15 @@ const groups = computed(() =>
 )
 const waitMin = (c: Consultation) => Math.max(1, Math.round((now.value - new Date(c.createdAt).getTime()) / 60000))
 const langName = (l: string) => t(`domain.langName.${l}`)
+// D-43: 한국어 고객은 번역 없이 그대로 전달 → 번역 안내·원문 보기를 숨긴다
+const sameLang = computed(() => current.value?.customer.locale === 'ko')
+const untranslated = (m: ChatMessage) => m.translatedLang === m.originalLang
 const flagged = computed(() => store.messages.filter((m) => m.senderRole === 'CUSTOMER' && m.flags.length))
 
 function statusLine(m: ChatMessage) {
   if (m.translationStatus === 'PENDING') return t('chat.human.translating')
   if (m.translationStatus === 'FAILED') return t('chat.human.failed')
+  if (untranslated(m)) return ''
   return t('staff.console.sentIn', { lang: langName(current.value?.customer.locale ?? 'en') })
 }
 function toggle(id: number) {
@@ -200,9 +204,9 @@ onBeforeUnmount(() => store.close())
               <span class="t-body-16-sb">{{ current.customer.name }}</span>
               <AppBadge tag>{{ t(`domain.lang.${current.customer.locale}`) }}</AppBadge>
             </p>
-            <p class="t-caption-12 muted">{{ t('staff.console.autoTranslate', { lang: langName(current.customer.locale), time: fmtTime(current.createdAt) }) }}</p>
+            <p class="t-caption-12 muted">{{ t(sameLang ? 'staff.console.sameLanguage' : 'staff.console.autoTranslate', { lang: langName(current.customer.locale), time: fmtTime(current.createdAt) }) }}</p>
           </div>
-          <label class="switch t-caption-13">
+          <label v-if="!sameLang" class="switch t-caption-13">
             {{ t('staff.console.showOriginal') }}
             <input v-model="showAllOriginal" type="checkbox" role="switch" />
             <span class="track" aria-hidden="true" />
@@ -219,7 +223,7 @@ onBeforeUnmount(() => store.close())
               <button v-if="m.translationStatus === 'FAILED'" type="button" class="status status--failed t-caption-12-sb" @click="store.retryTranslation(m)">
                 <AppIcon name="alert-triangle" :size="14" />{{ statusLine(m) }}
               </button>
-              <span v-else class="status t-caption-11"><AppIcon name="languages" :size="14" />{{ statusLine(m) }}</span>
+              <span v-else-if="statusLine(m)" class="status t-caption-11"><AppIcon name="languages" :size="14" />{{ statusLine(m) }}</span>
             </ChatBubble>
             <ChatBubble
               v-else
@@ -229,11 +233,11 @@ onBeforeUnmount(() => store.close())
               :text="m.translationStatus === 'DONE' ? (m.translatedText ?? m.originalText) : m.originalText"
             >
               <p v-if="m.translationStatus === 'PENDING'" class="status t-caption-11">{{ t('chat.human.translating') }}</p>
-              <p v-if="showAllOriginal || shown.has(m.id)" class="original t-caption-12">{{ t('staff.console.original') }} · {{ m.originalText }}</p>
+              <p v-if="(showAllOriginal || shown.has(m.id)) && !untranslated(m)" class="original t-caption-12">{{ t('staff.console.original') }} · {{ m.originalText }}</p>
               <div class="flags">
                 <AppBadge v-if="m.flags.includes('MEDICAL_QUESTION')" tone="warning" icon="alert-triangle">{{ t('staff.console.flags.MEDICAL_QUESTION') }}</AppBadge>
                 <AppBadge v-if="m.flags.includes('NUMBER_MISMATCH')" tone="warning" icon="alert-triangle">{{ t('staff.console.flags.NUMBER_MISMATCH') }}</AppBadge>
-                <button v-if="!showAllOriginal" type="button" class="link t-caption-12-sb" @click="toggle(m.id)">
+                <button v-if="!showAllOriginal && !untranslated(m)" type="button" class="link t-caption-12-sb" @click="toggle(m.id)">
                   {{ shown.has(m.id) ? t('chat.human.hideOriginal') : t('staff.console.seeOriginal') }}
                 </button>
               </div>
@@ -246,7 +250,7 @@ onBeforeUnmount(() => store.close())
             rows="1"
             class="t-body-15"
             :disabled="current.status !== 'ACTIVE'"
-            :placeholder="current.status === 'ACTIVE' ? t('staff.console.placeholder', { lang: langName(current.customer.locale) }) : t('staff.console.acceptFirst')"
+            :placeholder="current.status !== 'ACTIVE' ? t('staff.console.acceptFirst') : sameLang ? t('staff.console.placeholderSame') : t('staff.console.placeholder', { lang: langName(current.customer.locale) })"
             @keydown="onKey"
           />
           <button type="submit" class="send" :class="{ 'send--on': input.trim() }" :disabled="!input.trim() || current.status !== 'ACTIVE'" :aria-label="t('chat.send')">
@@ -254,7 +258,7 @@ onBeforeUnmount(() => store.close())
           </button>
         </form>
         <p class="chat__hint t-caption-12">
-          <span><AppIcon name="languages" :size="14" /> {{ t('staff.console.hint', { lang: langName(current.customer.locale) }) }}</span>
+          <span v-if="!sameLang"><AppIcon name="languages" :size="14" /> {{ t('staff.console.hint', { lang: langName(current.customer.locale) }) }}</span>
           <span>{{ t('staff.console.keys') }}</span>
         </p>
       </template>
@@ -298,7 +302,7 @@ onBeforeUnmount(() => store.close())
         </dl>
         <p class="t-caption-12 muted">{{ t('staff.console.closeNote') }}</p>
       </section>
-      <p class="notice t-caption-13"><AppIcon name="info" :size="16" />{{ t('staff.console.notice') }}</p>
+      <p class="notice t-caption-13"><AppIcon name="info" :size="16" />{{ t(sameLang ? 'staff.console.noticeSame' : 'staff.console.notice') }}</p>
     </aside>
   </div>
 </template>

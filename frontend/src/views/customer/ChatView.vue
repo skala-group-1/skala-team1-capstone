@@ -99,9 +99,12 @@ const pendingQuestions = computed(() => {
   return card?.questions ?? []
 })
 const isMine = (m: ChatMessage) => m.senderRole === 'CUSTOMER'
+// D-43: 한국어 고객은 번역 없이 그대로 전달 → 번역 안내·원문 보기를 숨긴다
+const untranslated = (m: ChatMessage) => m.translatedLang === m.originalLang
 function myStatus(m: ChatMessage) {
   if (m.translationStatus === 'PENDING') return t('chat.human.translating')
   if (m.translationStatus === 'FAILED') return t('chat.human.failed')
+  if (untranslated(m)) return ''
   return m.translatedLang ? t('chat.human.sentIn', { lang: t(`domain.langName.${m.translatedLang}`) }) : ''
 }
 function toggleOriginal(id: number) {
@@ -429,13 +432,13 @@ watch(
             >
               <AppIcon name="alert-triangle" :size="14" />{{ myStatus(m) }}
             </button>
-            <span v-else class="status t-caption-11">
+            <span v-else-if="myStatus(m)" class="status t-caption-11">
               <AppIcon v-if="m.translationStatus === 'DONE'" name="languages" :size="14" />{{ myStatus(m) }}
             </span>
           </ChatBubble>
           <ChatBubble v-else sender="counselor" :name="t('chat.counselor')" :text="m.translatedText ?? m.originalText">
-            <p v-if="shownOriginal.has(m.id)" class="original t-caption-12">{{ m.originalText }}</p>
-            <button type="button" class="status t-caption-11" @click="toggleOriginal(m.id)">
+            <p v-if="shownOriginal.has(m.id) && !untranslated(m)" class="original t-caption-12">{{ m.originalText }}</p>
+            <button v-if="!untranslated(m)" type="button" class="status t-caption-11" @click="toggleOriginal(m.id)">
               <AppIcon name="languages" :size="14" />
               {{ shownOriginal.has(m.id) ? t('chat.human.hideOriginal') : t('chat.human.autoTranslated') }}
             </button>

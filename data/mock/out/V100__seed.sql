@@ -69,7 +69,8 @@ INSERT INTO app.users (id, email, password_hash, name, birth_date, gender, natio
 (10, 'admin.h2@demo.local', '{bcrypt}PLACEHOLDER', '송준예', '1984-06-22', 'F', 'KR', 'ko', 'HOSPITAL_ADMIN', 2, '2026-10-02T16:00:00+09:00'),
 (11, 'counselor.h3@demo.local', '{bcrypt}PLACEHOLDER', '임연지', '1993-05-13', 'F', 'KR', 'ko', 'COUNSELOR', 3, '2026-07-25T18:30:00+09:00'),
 (12, 'admin.h3@demo.local', '{bcrypt}PLACEHOLDER', '윤진하', '1985-07-23', 'M', 'KR', 'ko', 'HOSPITAL_ADMIN', 3, '2026-08-20T21:30:00+09:00'),
-(13, 'operator@demo.local', '{bcrypt}PLACEHOLDER', '운영자', '1989-05-05', 'X', 'KR', 'ko', 'OPERATOR', NULL, '2026-08-24T15:00:00+09:00');
+(13, 'operator@demo.local', '{bcrypt}PLACEHOLDER', '운영자', '1989-05-05', 'X', 'KR', 'ko', 'OPERATOR', NULL, '2026-08-24T15:00:00+09:00'),
+(14, 'customer.ko1@demo.local', '{bcrypt}PLACEHOLDER', '김서연', '1997-07-14', 'F', 'KR', 'ko', 'CUSTOMER', NULL, '2026-09-22T14:00:00+09:00');
 
 INSERT INTO app.procedures (code, category, name_ko, name_en, name_zh, name_ja, synonyms, duration_min, downtime_days, description_ko, description_en) VALUES
 ('JAW_BOTOX', 'SKIN', '사각턱 보톡스', 'Jaw (Masseter) Botox', '瘦脸针', 'エラボトックス', ARRAY['사각턱 보톡스','턱보톡스','masseter botox','jaw botox','瘦脸针','エラボトックス']::text[], 15, 0, '저작근에 보툴리눔 톡신을 주입해 턱선을 갸름하게 보이도록 돕는 시술입니다.', 'Botulinum toxin injected into the masseter muscles to help slim the appearance of the lower face.'),

@@ -45,7 +45,7 @@ def pk(rows, key="id"):
 
 def validate_data(d, meta):
     base = dt.date.fromisoformat(meta["base_date"])
-    expected = {"users": 13, "hospitals": 50, "procedures": 18, "reservations": 20, "consultations": 2,
+    expected = {"users": 14, "hospitals": 50, "procedures": 18, "reservations": 20, "consultations": 2,
                 "chat_messages": 6}
     for t, n in expected.items():
         check(len(d[t]) == n, "%s: expected %d rows, got %d" % (t, n, len(d[t])))
@@ -91,7 +91,7 @@ def validate_data(d, meta):
 
     # users
     roles = Counter(u["role"] for u in d["users"])
-    check(roles == Counter(CUSTOMER=6, COUNSELOR=3, HOSPITAL_ADMIN=3, OPERATOR=1), "user roles %s" % dict(roles))
+    check(roles == Counter(CUSTOMER=7, COUNSELOR=3, HOSPITAL_ADMIN=3, OPERATOR=1), "user roles %s" % dict(roles))
     for u in d["users"]:
         check(u["hospital_id"] is None or u["hospital_id"] in H, "user %d hospital FK" % u["id"])
         check((u["role"] in ("COUNSELOR", "HOSPITAL_ADMIN")) == (u["hospital_id"] is not None),

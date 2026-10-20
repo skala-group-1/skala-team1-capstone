@@ -54,6 +54,11 @@ public class CatalogService {
 	static final double DEFAULT_LNG = 126.9780;
 
 	private static final List<String> WEEKDAYS = List.of("mon", "tue", "wed", "thu", "fri", "sat", "sun");
+	/** 의사 직함: mock 에는 한국어 3종만 있음 → 응답 언어로 바꿔 준다 (ko·모르는 값은 그대로) */
+	private static final Map<String, Map<String, String>> DOCTOR_TITLES = Map.of(
+			"대표원장", Map.of("en", "Chief Director", "zh", "代表院长", "ja", "代表院長"),
+			"원장", Map.of("en", "Director", "zh", "院长", "ja", "院長"),
+			"부원장", Map.of("en", "Associate Director", "zh", "副院长", "ja", "副院長"));
 
 	private final JdbcClient jdbc;
 	private final ObjectMapper objectMapper;
@@ -334,10 +339,17 @@ public class CatalogService {
 		return spec.query((rs, i) -> new Doctor(
 				rs.getLong("id"),
 				"ko".equals(locale) || rs.getString("name_en") == null ? rs.getString("name_ko") : rs.getString("name_en"),
-				rs.getString("title"),
+				doctorTitle(rs.getString("title"), locale),
 				strings(rs, "specialties"),
 				strings(rs, "languages"),
 				(Integer) rs.getObject("career_years"))).list();
+	}
+
+	static String doctorTitle(String titleKo, String locale) {
+		if (titleKo == null) {
+			return null;
+		}
+		return DOCTOR_TITLES.getOrDefault(titleKo, Map.of()).getOrDefault(locale, titleKo);
 	}
 
 	public List<PriceOption> prices(long hospitalId, String procedureCode, String locale) {

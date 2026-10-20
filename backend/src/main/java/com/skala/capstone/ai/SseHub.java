@@ -61,19 +61,24 @@ public class SseHub {
 	 * 새 연결. 버퍼에서 lastEventId 이후 이벤트를 다시 보내고,
 	 * stillRunning=false(작업이 대기·종료 상태)면 마지막 이벤트까지 보낸 뒤 닫는다.
 	 * 버퍼가 비어 있고 작업이 이미 끝났으면 fallback(DB 값으로 만든 종료 이벤트)을 보낸다.
+	 * <p>
+	 * 승인 후 재개된 작업은 버퍼 중간에 이미 끝난 구간(… → APPROVAL_REQUIRED)이 남아 있다.
+	 * 이 구간을 다시 보내면 브라우저가 승인 카드를 또 띄우고 스트림을 닫으므로,
+	 * 이미 지나간 종료 이벤트(작업이 다시 실행 중이거나, 뒤에 이벤트가 더 있는 것)까지는 Last-Event-ID 가 없어도 건너뛴다.
 	 */
 	public SseEmitter subscribe(UUID taskId, int lastEventId, boolean stillRunning, Event fallback) {
 		SseEmitter emitter = new SseEmitter(EMITTER_TIMEOUT_MS);
 		Stream s = streams.computeIfAbsent(taskId, k -> new Stream());
 		synchronized (s) {
-			List<Event> replay = s.buffer.stream().filter(e -> e.seq() > lastEventId).toList();
+			int from = Math.max(lastEventId, finishedSegmentEnd(s.buffer, stillRunning));
+			List<Event> replay = s.buffer.stream().filter(e -> e.seq() > from).toList();
 			for (Event e : replay) {
 				if (!send(emitter, e)) {
 					return emitter;
 				}
 			}
 			if (!stillRunning) {
-				if (replay.isEmpty() && fallback != null && fallback.seq() > lastEventId) {
+				if (replay.isEmpty() && fallback != null && fallback.seq() > from) {
 					send(emitter, fallback);
 				}
 				emitter.complete();
@@ -106,6 +111,21 @@ public class SseHub {
 		Instant cutoff = Instant.now().minusSeconds(600);
 		streams.entrySet().removeIf(en -> en.getValue().emitters.isEmpty()
 				&& en.getValue().lastActivity.isBefore(cutoff));
+	}
+
+	/**
+	 * 이미 끝난 앞 구간의 마지막 seq (없으면 0).
+	 * 작업이 다시 실행 중이면 버퍼의 종료 이벤트는 모두 지나간 것, 아니면 맨 끝(현재 상태)을 뺀 나머지만.
+	 */
+	private static int finishedSegmentEnd(List<Event> buffer, boolean stillRunning) {
+		int end = 0;
+		int last = stillRunning ? buffer.size() : buffer.size() - 1;
+		for (int i = 0; i < last; i++) {
+			if (TERMINAL.contains(buffer.get(i).event())) {
+				end = buffer.get(i).seq();
+			}
+		}
+		return end;
 	}
 
 	private static boolean send(SseEmitter emitter, Event e) {

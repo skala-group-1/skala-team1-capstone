@@ -60,3 +60,7 @@ class AgentState(TypedDict, total=False):
     # --- 골격에서 추가 (「AI Agent 설계」에 없음, 확정 시 문서 반영) ---
     verify_passed: bool | None        # verify 노드 결과. 라우팅용
     parent_conversation_id: str | None  # D-20 병원 대화창의 부모 대화
+
+    # 병원 서브에이전트 내부 상태. 외부 DTO/큐 계약에는 포함하지 않는다.
+    hospital_context: dict             # hospital_id 및 MCP에서 읽은 기본정보·의사·가격
+    hospital_booking: dict             # 사용자가 선택한 procedure_code, date, time

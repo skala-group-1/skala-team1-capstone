@@ -1,19 +1,24 @@
 <script setup lang="ts">
-// 「화면 목록」 C2 로그인 — 골격 중 유일하게 실제 동작하는 화면 (MSW 또는 backend 로 로그인 → 역할 홈 이동)
-// TODO(fe): 디자인 적용, 검증 오류 표시, 데모 계정 빠른 선택(로컬 데모용)
+// 「화면 목록」 C2 로그인 (Figma 1:5834, 401 상태 04 ③ 2:10919) → 역할 홈 또는 ?redirect= 경로
+// 비밀번호 찾기는 API 가 없어 넣지 않음
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import { toApiError } from '@/api'
+import TopAppBar from '@/components/ui/TopAppBar.vue'
+import TextField from '@/components/ui/TextField.vue'
+import AppButton from '@/components/ui/AppButton.vue'
+import AppIcon from '@/components/ui/AppIcon.vue'
 
 const auth = useAuthStore()
 const router = useRouter()
 const route = useRoute()
 const { t } = useI18n()
 
-const email = ref('customer.zh1@demo.local')
-const password = ref('Passw0rd!')
+// 로컬 데모용으로 개발 모드에서만 데모 계정을 채워 둔다 (계정 목록은 루트 README)
+const email = ref(import.meta.env.DEV ? 'customer.zh1@demo.local' : '')
+const password = ref(import.meta.env.DEV ? 'Passw0rd!' : '')
 const errorMessage = ref<string | null>(null)
 const submitting = ref(false)
 
@@ -21,11 +26,12 @@ async function submit() {
   submitting.value = true
   errorMessage.value = null
   try {
-    await auth.login({ email: email.value, password: password.value })
+    await auth.login({ email: email.value.trim(), password: password.value })
     const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : null
     await router.replace(redirect ?? auth.home)
   } catch (e) {
-    errorMessage.value = toApiError(e)?.message ?? t('auth.loginFailed')
+    const err = toApiError(e)
+    errorMessage.value = err?.code === 'INVALID_CREDENTIALS' || !err ? t('auth.loginFailed') : err.message
   } finally {
     submitting.value = false
   }
@@ -33,14 +39,41 @@ async function submit() {
 </script>
 
 <template>
-  <section>
-    <h1>C2 · {{ t('auth.login') }}</h1>
-    <form @submit.prevent="submit">
-      <label>{{ t('auth.email') }} <input v-model="email" type="email" autocomplete="username" required /></label>
-      <label>{{ t('auth.password') }} <input v-model="password" type="password" autocomplete="current-password" required /></label>
-      <button type="submit" :disabled="submitting">{{ t('auth.login') }}</button>
+  <div class="page">
+    <TopAppBar :title="t('auth.login')" back="/onboarding" />
+    <form class="content" novalidate @submit.prevent="submit">
+      <div class="title">
+        <h1 class="t-title-22">{{ t('auth.loginTitle') }}</h1>
+        <p class="t-body-14 sub">{{ t('auth.loginBody') }}</p>
+      </div>
+      <TextField v-model="email" :label="t('auth.email')" type="email" autocomplete="username" :invalid="!!errorMessage" required />
+      <TextField
+        v-model="password"
+        :label="t('auth.password')"
+        type="password"
+        autocomplete="current-password"
+        :error="errorMessage"
+        required
+      >
+        <template #error-icon><AppIcon name="alert-triangle" :size="14" /></template>
+      </TextField>
+      <AppButton type="submit" size="l" block :loading="submitting" :disabled="!email || !password">
+        {{ t('auth.login') }}
+      </AppButton>
+      <p class="links t-caption-13">
+        <RouterLink to="/signup" class="brand">{{ t('auth.signup') }}</RouterLink>
+      </p>
+      <p class="foot t-caption-12">{{ t('auth.loginFoot') }}</p>
     </form>
-    <p v-if="errorMessage" role="alert">{{ errorMessage }}</p>
-    <RouterLink to="/signup">{{ t('auth.signup') }}</RouterLink>
-  </section>
+  </div>
 </template>
+
+<style scoped>
+.page { display: flex; flex-direction: column; min-height: 100dvh; }
+.content { display: flex; flex: 1; flex-direction: column; gap: var(--space-20); padding: var(--space-24) var(--space-16); }
+.title { display: flex; flex-direction: column; gap: var(--space-6); }
+.sub { color: var(--text-secondary); }
+.links { text-align: center; }
+.brand { color: var(--text-brand); }
+.foot { margin-top: auto; color: var(--text-tertiary); }
+</style>

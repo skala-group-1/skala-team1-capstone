@@ -6,6 +6,11 @@
 import { defineStore } from 'pinia'
 import { authApi, session } from '@/api'
 import { connectStomp, disconnectStomp } from '@/api/stomp'
+import { useConversationStore } from './conversation'
+import { useConsultationStore } from './consultation'
+import { useNotificationStore } from './notification'
+import { useReservationStore } from './reservation'
+import { useSearchStore } from './search'
 import type { LoginRequest, Locale, Role, SignupRequest, UserSummary } from '@/types/contract'
 
 export const ROLE_HOME: Record<Role, string> = {
@@ -57,20 +62,44 @@ export const useAuthStore = defineStore('auth', {
       }
     },
     setUser(user: UserSummary) {
+      // 고객: 로그인 전 온보딩에서 고른 언어가 있으면 계정 언어보다 우선 → 계정에도 1번 저장하고 지운다.
+      // 화면 언어('locale')는 직원 로그인 때도 ko 로 바뀌므로 쓰지 않는다 (같은 브라우저에서 직원 다음 고객이 로그인하면 고객 언어가 ko 로 바뀌던 문제)
+      const picked = localStorage.getItem('localePicked') as Locale | null
+      localStorage.removeItem('localePicked')
+      if (user.role === 'CUSTOMER' && picked && ['en', 'zh', 'ja', 'ko'].includes(picked) && picked !== user.locale) {
+        user = { ...user, locale: picked }
+        void authApi.updateMe({ locale: picked }).catch(() => undefined)
+      }
+      // 다른 계정으로 바뀌면(로그아웃 없이 다시 로그인) 이전 계정의 상태·구독을 모두 정리한 뒤 새 토큰으로 다시 연결.
+      // STOMP 만 끊으면 남은 상담방 리스너가 재연결 때 이전 계정 상담방을 구독 → ACCESS_DENIED 로 연결이 끊기는 루프
+      if (this.user && this.user.id !== user.id) {
+        const token = session.getToken() // clear() 가 지우므로 새 계정 토큰을 보존
+        this.clear()
+        session.setToken(token)
+      }
       this.user = user
       session.setLocale(user.locale)
-      // TODO(fe): i18n locale 도 user.locale 로 맞추기 (i18n/index.ts setLocale)
       // TODO(fe): STOMP 는 상담·알림 화면에서만 필요하면 지연 연결로 바꿔도 됨. MSW 모드에서는 /ws 가 없어 재연결 로그가 남음
-      if (import.meta.env.VITE_USE_MSW !== 'true') connectStomp()
+      if (import.meta.env.VITE_USE_MSW !== 'true') {
+        connectStomp()
+        // 실시간 알림 (예약 확정·반려, 새 상담 요청, 새 예약 요청)
+        useNotificationStore().listen()
+      }
     },
-    setLocale(locale: Locale) {
+    async setLocale(locale: Locale) {
       session.setLocale(locale)
-      // TODO(fe): 로그인 상태면 PATCH /api/me (P1)
+      if (this.user) this.user = { ...this.user, ...(await authApi.updateMe({ locale })), locale }
     },
     clear() {
       this.user = null
       session.setToken(null)
       void disconnectStomp()
+      // 다음에 로그인한 사용자에게 이전 사용자의 대화·예약·알림이 보이지 않게
+      const conv = useConversationStore()
+      conv.unsubscribe?.()
+      useConsultationStore().close()
+      useNotificationStore().stopListening()
+      for (const s of [conv, useConsultationStore(), useNotificationStore(), useReservationStore(), useSearchStore()]) s.$reset()
     },
   },
 })

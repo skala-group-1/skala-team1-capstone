@@ -8,6 +8,7 @@ import java.util.UUID;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.skala.capstone.reservation.ReservationDtos.HospitalRef;
 
@@ -46,8 +47,12 @@ public final class AiDtos {
 			OffsetDateTime finishedAt) {
 	}
 
-	/** 운영자 화면용: 누구의 작업인지 포함 */
-	public record AiTaskWithUser(long userId, AiTask task) {
+	/** POST /api/ai/tasks 202 응답 (「공통 계약서」 CreateTaskResponse) */
+	public record CreateTaskResponse(UUID taskId) {
+	}
+
+	/** 운영자 화면용: AiTask 필드에 userId 를 더한 평평한 객체 (13-2 OpsAiTask) */
+	public record AiTaskWithUser(long userId, @JsonUnwrapped AiTask task) {
 	}
 
 	// ------------------------------------------------------------------ RabbitMQ

@@ -3,6 +3,7 @@ package com.skala.capstone.consultation;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -36,6 +37,10 @@ import com.skala.capstone.consultation.ConsultationDtos.SummaryTranslated;
 import com.skala.capstone.notification.NotificationService;
 import com.skala.capstone.reservation.ReservationDtos.CustomerRef;
 import com.skala.capstone.reservation.ReservationDtos.HospitalRef;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * 상담사 연결 (02 문서 3-4, 16 명세 7장).
@@ -111,9 +116,12 @@ public class ConsultationService {
 		jdbc.sql("UPDATE app.conversations SET mode = 'HUMAN', consultation_id = :id WHERE id = :c")
 				.param("id", id).param("c", conversationId).update();
 
-		// 상담사가 읽을 한국어 요약 카드 → agent 번역 워커 (실패해도 원본으로 표시)
-		publisher.publishAfterCommit(Queues.SUMMARY_TRANSLATE,
-				new SummaryTranslate(id, summaryCard, user.locale(), "ko"), null);
+		// 상담사가 읽을 한국어 요약 카드 → agent 번역 워커 (실패해도 원본으로 표시).
+		// 한국어 고객(D-43)은 카드가 이미 한국어라 번역하지 않는다 (채팅도 같은 언어면 번역 생략)
+		if (!"ko".equals(user.locale())) {
+			publisher.publishAfterCommit(Queues.SUMMARY_TRANSLATE,
+					new SummaryTranslate(id, summaryCard, user.locale(), "ko"), null);
+		}
 		notifications.notify(notifications.hospitalStaff(hospitalId, Role.COUNSELOR), "CONSULTATION_REQUESTED",
 				Map.of("consultationId", id));
 		AfterCommit.run(() -> audit.log(user, "CONSULTATION_REQUESTED", "consultation:" + id, Map.of()));
@@ -150,7 +158,8 @@ public class ConsultationService {
 		if (n == 0) {
 			throw new ApiException(ErrorCode.CONCURRENT_UPDATE);
 		}
-		notifications.notify(List.of(p.customerId()), "CONSULTATION_ACCEPTED", Map.of("consultationId", id));
+		notifications.notify(List.of(p.customerId()), "CONSULTATION_ACCEPTED",
+				Map.of("consultationId", id, "conversationId", conversationIdOf(id)));
 		pushStatus(id, "ACTIVE", counselor.id());
 		AfterCommit.run(() -> audit.log(counselor, "CONSULTATION_ACCEPTED", "consultation:" + id, Map.of()));
 		return toDto(id, counselor, locale);
@@ -171,7 +180,8 @@ public class ConsultationService {
 		}
 		jdbc.sql("UPDATE app.conversations SET mode = 'HOSPITAL' WHERE consultation_id = :id AND mode = 'HUMAN'")
 				.param("id", id).update();
-		notifications.notify(List.of(p.customerId()), "CONSULTATION_CLOSED", Map.of("consultationId", id));
+		notifications.notify(List.of(p.customerId()), "CONSULTATION_CLOSED",
+				Map.of("consultationId", id, "conversationId", conversationIdOf(id)));
 		pushStatus(id, "CLOSED", p.counselorId());
 		AfterCommit.run(() -> audit.log(counselor, "CONSULTATION_CLOSED", "consultation:" + id, Map.of()));
 		return toDto(id, counselor, locale);
@@ -201,6 +211,74 @@ public class ConsultationService {
 				new StompEvent("CONSULTATION_STATUS", new ConsultationStatus(id, status, counselorId))));
 	}
 
+	/** 알림을 눌렀을 때 고객 화면이 바로 그 대화창(/chat/{conversationId})으로 갈 수 있도록 알림에 같이 싣는다. */
+	private String conversationIdOf(long consultationId) {
+		return jdbc.sql("SELECT conversation_id::text FROM app.consultations WHERE id = :id")
+				.param("id", consultationId).query(String.class).single();
+	}
+
+	/**
+	 * 요약 카드를 「공통 계약서」 SummaryCard 모양으로 맞춘다.
+	 * 정상 경로(business-mcp)는 이미 계약 모양이지만, mock seed 의 카드는 예전 모양(snake_case: procedure_name,
+	 * preferred_dates, concerns, language …)이라 화면이 깨진다. 계약 키가 있으면 그대로 쓰고, 없으면 예전 키에서 옮겨 담는다.
+	 * 나머지 키는 그대로 둔다.
+	 */
+	static JsonNode summaryCard(JsonNode raw, String customerLocale) {
+		ObjectNode card = raw instanceof ObjectNode o ? o.deepCopy() : JsonNodeFactory.instance.objectNode();
+		if (!card.hasNonNull("procedure")) {
+			card.put("procedure", text(card, "procedure_name", text(card, "procedureName", text(card, "procedure_code", ""))));
+		}
+		if (!card.hasNonNull("preferredDates")) {
+			JsonNode dates = card.has("preferred_dates") ? card.get("preferred_dates") : card.get("preferredDates");
+			card.put("preferredDates", joinDistinct(dates));
+		} else if (card.get("preferredDates").isArray()) {
+			card.put("preferredDates", joinDistinct(card.get("preferredDates")));
+		}
+		if (!card.has("stayDays")) {
+			JsonNode stay = card.get("stay_days");
+			if (stay != null && stay.canConvertToInt()) {
+				card.put("stayDays", stay.asInt());
+			} else {
+				card.putNull("stayDays");
+			}
+		}
+		if (!card.has("budget")) {
+			JsonNode budget = card.get("budget_krw");
+			if (budget != null && !budget.isNull()) {
+				card.put("budget", budget.asText());
+			} else {
+				card.putNull("budget");
+			}
+		}
+		if (!card.path("questions").isArray()) {
+			JsonNode concerns = card.get("concerns");
+			card.set("questions", concerns != null && concerns.isArray() ? concerns.deepCopy()
+					: JsonNodeFactory.instance.arrayNode());
+		}
+		if (!card.hasNonNull("customerLocale")) {
+			card.put("customerLocale", text(card, "language", customerLocale));
+		}
+		return card;
+	}
+
+	private static String text(JsonNode node, String field, String fallback) {
+		JsonNode v = node.get(field);
+		return v != null && !v.isNull() && !v.asText().isBlank() ? v.asText() : fallback;
+	}
+
+	/** ["2026-10-23","2026-10-23"] → "2026-10-23" (중복 제거, 순서 유지, " ~ " 로 연결) */
+	private static String joinDistinct(JsonNode dates) {
+		if (dates == null || dates.isNull()) {
+			return "";
+		}
+		if (!dates.isArray()) {
+			return dates.asText();
+		}
+		var seen = new LinkedHashSet<String>();
+		dates.forEach(d -> seen.add(d.asText()));
+		return String.join(" ~ ", seen);
+	}
+
 	private Consultation toDto(long id, CurrentUser viewer, String locale) {
 		return jdbc.sql("""
 				SELECT c.*, c.summary_card::text AS card, c.summary_card_ko::text AS card_ko,
@@ -220,7 +298,7 @@ public class ConsultationService {
 						rs.getString("nationality"), rs.getString("customer_locale") != null
 								? rs.getString("customer_locale") : rs.getString("user_locale")),
 				(Long) rs.getObject("counselor_id"), rs.getObject("conversation_id", UUID.class),
-				json.read(staff && cardKo != null ? cardKo : card),
+				summaryCard(json.read(staff && cardKo != null ? cardKo : card), rs.getString("customer_locale")),
 				Times.kst(rs.getObject("created_at", OffsetDateTime.class)),
 				Times.kst(rs.getObject("closed_at", OffsetDateTime.class)));
 	}

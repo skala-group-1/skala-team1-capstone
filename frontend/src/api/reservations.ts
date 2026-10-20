@@ -13,8 +13,11 @@ export const reservationApi = {
       .post<Reservation>('/reservations', body, { headers: { 'Idempotency-Key': idempotencyKey } })
       .then((r) => r.data),
   mine: () => http.get<Reservation[]>('/reservations/me').then((r) => r.data),
+  get: (id: number) => http.get<Reservation>(`/reservations/${id}`).then((r) => r.data),
   cancel: (id: number) => http.post<Reservation>(`/reservations/${id}/cancel`).then((r) => r.data),
   /** 반려 시 제안된 대안 슬롯으로 새 PENDING */
-  acceptAlternative: (id: number, slotId: Slot['id']) =>
-    http.post<Reservation>(`/reservations/${id}/accept-alternative`, { slotId }).then((r) => r.data),
+  acceptAlternative: (id: number, slotId: Slot['id'], idempotencyKey: string = newIdempotencyKey()) =>
+    http
+      .post<Reservation>(`/reservations/${id}/accept-alternative`, { slotId }, { headers: { 'Idempotency-Key': idempotencyKey } })
+      .then((r) => r.data),
 }

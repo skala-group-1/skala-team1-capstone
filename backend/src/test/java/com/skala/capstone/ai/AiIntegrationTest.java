@@ -69,9 +69,15 @@ class AiIntegrationTest extends IntegrationTest {
 	void taskFlowRelaysEventsOverSseAndRebuildsHistory() throws Exception {
 		String token = accessToken("customer.zh2@demo.local");
 		String conversationId = newConversation(token);
+		// 202 응답은 계약대로 {taskId} 만 (FE 가 이 값으로 바로 SSE 를 연다)
 		JsonNode task = createTask(token, conversationId, "双眼皮 江南 10/20~10/26");
-		assertThat(task.get("status").asText()).isEqualTo("QUEUED");
-		String taskId = task.get("id").asText();
+		String taskId = task.get("taskId").asText();
+		mvc.perform(get("/api/ai/tasks/{id}", taskId).header(HttpHeaders.AUTHORIZATION, token))
+				.andExpect(jsonPath("$.status").value("QUEUED"));
+		// 운영자 목록은 AiTask 필드 + userId 가 한 객체에 평평하게
+		mvc.perform(get("/api/ops/ai-tasks").header(HttpHeaders.AUTHORIZATION, accessToken("operator@demo.local")))
+				.andExpect(jsonPath("$.items[?(@.id == '" + taskId + "')].userId").exists())
+				.andExpect(jsonPath("$.items[0].task").doesNotExist());
 
 		// 가짜 agent: 요청 수신 확인 (backend 가 토큰에서 꺼낸 사용자 정보 + 대화 정보)
 		JsonNode requested = receiveFrom(Queues.AI_TASK_REQUESTED, b -> taskId.equals(b.path("taskId").asText()));
@@ -122,7 +128,7 @@ class AiIntegrationTest extends IntegrationTest {
 	void approvalPausesAndResumesTheSameTask() throws Exception {
 		String token = accessToken("customer.ja2@demo.local");
 		String conversationId = newConversation(token);
-		String taskId = createTask(token, conversationId, "予約したい").get("id").asText();
+		String taskId = createTask(token, conversationId, "予約したい").get("taskId").asText();
 		receiveFrom(Queues.AI_TASK_REQUESTED, b -> taskId.equals(b.path("taskId").asText()));
 
 		Map<String, Object> pending = new LinkedHashMap<>();
@@ -153,18 +159,28 @@ class AiIntegrationTest extends IntegrationTest {
 				.andExpect(status().isConflict())
 				.andExpect(jsonPath("$.code").value("TASK_NOT_WAITING_APPROVAL"));
 
-		// 재연결(Last-Event-ID=1) 후 이어지는 이벤트 수신
+		// 재연결(Last-Event-ID=1) 후 이어지는 이벤트 수신.
+		// Last-Event-ID 없이 다시 열어도 승인 전 구간(APPROVAL_REQUIRED)은 다시 오지 않아야 한다
 		CompletableFuture<List<String>> sse = openSse(token, taskId, "1");
+		CompletableFuture<List<String>> fresh = openSse(token, taskId, null);
 		Thread.sleep(300);
-		event(taskId, 2, "DONE", Map.of("answer", "予約を申請しました", "sources", List.of()));
+		event(taskId, 2, "STATUS", Map.of("status", "RUNNING"));
+		event(taskId, 3, "DONE", Map.of("answer", "予約を申請しました", "sources", List.of()));
 		assertThat(sse.get(10, TimeUnit.SECONDS)).contains("event:DONE");
+		List<String> freshEvents = fresh.get(10, TimeUnit.SECONDS).stream().filter(l -> l.startsWith("event:")).toList();
+		assertThat(freshEvents).containsExactly("event:STATUS", "event:DONE");
+
+		// 끝난 뒤 처음부터 다시 열어도 승인 카드가 아니라 DONE 으로 끝난다 (새로고침)
+		List<String> afterDone = openSse(token, taskId, null).get(10, TimeUnit.SECONDS).stream()
+				.filter(l -> l.startsWith("event:")).toList();
+		assertThat(afterDone).containsExactly("event:STATUS", "event:DONE");
 	}
 
 	@Test
 	void deadLetterAndHumanModeAndOwnership() throws Exception {
 		String token = accessToken("customer.ja1@demo.local");
 		String conversationId = newConversation(token);
-		String taskId = createTask(token, conversationId, "hello").get("id").asText();
+		String taskId = createTask(token, conversationId, "hello").get("taskId").asText();
 		receiveFrom(Queues.AI_TASK_REQUESTED, b -> taskId.equals(b.path("taskId").asText()));
 
 		// 남의 작업은 볼 수 없음
@@ -184,6 +200,15 @@ class AiIntegrationTest extends IntegrationTest {
 				.content(json(Map.of("conversationId", conversationId, "message", "hi"))))
 				.andExpect(status().isConflict())
 				.andExpect(jsonPath("$.details.from").value("HUMAN"));
+	}
+
+	@Test
+	void streamWithBadTaskIdReturnsJsonError() throws Exception {
+		// SSE 요청(Accept: text/event-stream)이어도 오류는 JSON 바디로 나가야 FE 가 code 를 읽는다
+		mvc.perform(get("/api/ai/tasks/undefined/stream").accept(MediaType.TEXT_EVENT_STREAM)
+				.header(HttpHeaders.AUTHORIZATION, accessToken("customer.en1@demo.local")))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.code").value("VALIDATION_FAILED"));
 	}
 
 	// ------------------------------------------------------------------ helpers

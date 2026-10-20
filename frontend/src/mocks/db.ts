@@ -12,6 +12,7 @@ import usersJson from '@mock/users.json'
 import doctorsJson from '@mock/doctors.json'
 import priceOptionsJson from '@mock/price_options.json'
 import slotsJson from '@mock/slots.json'
+import reviewsJson from '@mock/reviews.json'
 import type {
   AreaCode,
   Doctor,
@@ -21,6 +22,8 @@ import type {
   Locale,
   PriceOption,
   Procedure,
+  Review,
+  ReviewStats,
   ProcedureCategory,
   ProcedureCode,
   Slot,
@@ -95,6 +98,50 @@ export const doctors = doctorsJson as DoctorRow[]
 export const priceOptions = priceOptionsJson as PriceOptionRow[]
 export const slots = slotsJson as SlotRow[]
 
+type ReviewRow = {
+  id: number
+  hospital_id: number
+  procedure_code: string
+  rating: number
+  age_group: string
+  gender: string
+  reviewer_nationality: string | null
+  lang: string
+  content: string
+  created_at: string
+}
+export const reviews = (reviewsJson as ReviewRow[]).sort((a, b) => b.created_at.localeCompare(a.created_at))
+/** app.hospital_review_stats 뷰와 같은 집계 (건수·평균·연령대·성별) */
+const statsCache = new Map<number, ReviewStats>()
+export function reviewStats(hospitalId: number): ReviewStats {
+  let s = statsCache.get(hospitalId)
+  if (!s) {
+    const rows = reviews.filter((r) => r.hospital_id === hospitalId)
+    const count = (key: 'age_group' | 'gender') => rows.reduce<Record<string, number>>((m, r) => ((m[r[key]] = (m[r[key]] ?? 0) + 1), m), {})
+    s = {
+      reviewCount: rows.length,
+      avgRating: rows.length ? Math.round((rows.reduce((a, r) => a + r.rating, 0) / rows.length) * 100) / 100 : null,
+      byAgeGroup: count('age_group'),
+      byGender: count('gender'),
+    }
+    statsCache.set(hospitalId, s)
+  }
+  return s
+}
+export function toReview(r: ReviewRow): Review {
+  return {
+    id: r.id,
+    procedureCode: r.procedure_code as ProcedureCode,
+    rating: r.rating,
+    ageGroup: r.age_group,
+    gender: r.gender as Review['gender'],
+    reviewerNationality: r.reviewer_nationality ?? '',
+    lang: r.lang as Locale,
+    content: r.content,
+    createdAt: r.created_at,
+  }
+}
+
 /** 12-1: 응답은 요청자 locale 로 이미 골라서 name 하나로. 없으면 en → ko */
 export function pickName(row: I18nName, locale: Locale): string {
   const v = locale === 'zh' ? row.name_zh : locale === 'ja' ? row.name_ja : locale === 'ko' ? row.name_ko : row.name_en
@@ -154,7 +201,7 @@ export function toSlot(s: SlotRow): Slot {
 export function toHospitalCard(h: HospitalRow, locale: Locale, procedureCode?: ProcedureCode): HospitalCard {
   const opts = priceOptions.filter((o) => o.hospital_id === h.id && (!procedureCode || o.procedure_code === procedureCode))
   const min = opts.length ? opts.reduce((a, b) => (a.price_krw <= b.price_krw ? a : b)) : null
-  const firstSlot = slots.find((s) => s.hospital_id === h.id && s.status === 'AVAILABLE')
+  const firstSlot = slots.find((s) => s.hospital_id === h.id && s.status === 'AVAILABLE' && new Date(s.start_at).getTime() > Date.now())
   return {
     id: h.id,
     name: pickName(h, locale),
@@ -162,9 +209,8 @@ export function toHospitalCard(h: HospitalRow, locale: Locale, procedureCode?: P
     category: h.category as HospitalCategory,
     minPriceKrw: min ? min.price_krw : null,
     priceVerified: !!min?.verified_at,
-    // TODO(fe): 리뷰 통계는 reviews.json(1MB) 대신 고정값. 필요하면 lazy import 로 집계
-    reviewCount: 0,
-    rating: null,
+    reviewCount: reviewStats(h.id).reviewCount,
+    rating: reviewStats(h.id).avgRating,
     languages: h.supported_languages as Locale[],
     hasInterpreter: h.has_interpreter,
     earliestSlotAt: firstSlot ? firstSlot.start_at : null,
@@ -201,7 +247,6 @@ export function toHospitalDetail(h: HospitalRow, locale: Locale): HospitalDetail
         },
       ]
     }),
-    // TODO(fe): reviews.json 집계 (app.hospital_review_stats 뷰와 같은 규칙)
-    reviewStats: { reviewCount: 0, avgRating: null, byAgeGroup: {}, byGender: {} },
+    reviewStats: reviewStats(h.id),
   }
 }

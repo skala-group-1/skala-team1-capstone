@@ -1,11 +1,10 @@
 /**
  * MSW 핸들러 — backend 없이 화면 흐름을 검증하기 위한 가짜 응답.
- * 구현된 것: 인증(login/refresh/logout/me), 시술 목록, 병원 검색·상세·슬롯, AI 대화·작업 + 가짜 SSE
+ * 인증(login/refresh/logout/me), 시술 목록, 병원 검색·상세·슬롯. 나머지 화면용은 app.ts
  * 경로·바디는 「공통 계약서」·「API·이벤트 명세」와 같다. 실제 backend 로 바꾸려면 .env.local 에서 VITE_USE_MSW=false
  */
-import { delay, http, HttpResponse } from 'msw'
+import { http, HttpResponse } from 'msw'
 import type {
-  CreateTaskRequest,
   ErrorResponse,
   HospitalCard,
   Locale,
@@ -14,7 +13,6 @@ import type {
   Page,
   ProcedureCode,
   SortBy,
-  SseEventName,
 } from '@/types/contract'
 import {
   hospitals,
@@ -75,7 +73,6 @@ export const handlers = [
     refreshUserId = null
     return new HttpResponse(null, { status: 204 })
   }),
-  // TODO(fe): POST /auth/signup mock (EMAIL_DUPLICATED·VALIDATION_FAILED 케이스 포함)
   http.get(`${API}/me`, ({ request }) => {
     const u = currentUser(request)
     return u ? HttpResponse.json(toUserSummary(u)) : error(401, 'UNAUTHENTICATED', 'Login required')
@@ -121,63 +118,13 @@ export const handlers = [
     const from = q.get('dateFrom')
     const to = q.get('dateTo')
     const list = slots
-      .filter((s) => s.hospital_id === Number(params.id) && s.status === 'AVAILABLE')
+      .filter((s) => s.hospital_id === Number(params.id) && s.status === 'AVAILABLE' && new Date(s.start_at).getTime() > Date.now())
       .filter((s) => !from || s.start_at.slice(0, 10) >= from)
       .filter((s) => !to || s.start_at.slice(0, 10) <= to)
       .slice(0, Number(q.get('limit') ?? 100))
       .map(toSlot)
     return HttpResponse.json(list)
   }),
-  // TODO(fe): GET /hospitals/:id/reviews, POST /hospitals/compare, GET /docs/:docId mock
 
-  // ─── AI 상담 (「API·이벤트 명세」 2·3장) ───────────────────────────────
-  http.post(`${API}/ai/conversations`, ({ request }) => {
-    const denied = requireUser(request)
-    if (denied) return denied
-    return HttpResponse.json({
-      id: crypto.randomUUID(),
-      mode: 'MAIN',
-      hospital: null,
-      parentConversationId: null,
-      consultationId: null,
-      conditions: { procedureCode: null, areas: [], dateFrom: null, dateTo: null, budgetMaxKrw: null, consultLanguage: null, sortBy: 'REVIEW_COUNT' },
-      createdAt: new Date().toISOString(),
-      messages: [],
-    })
-  }),
-  http.post(`${API}/ai/tasks`, async ({ request }) => {
-    const denied = requireUser(request)
-    if (denied) return denied
-    await request.json() as CreateTaskRequest
-    return HttpResponse.json({ taskId: crypto.randomUUID() }, { status: 202 })
-  }),
-  /** 가짜 SSE: STATUS → TOKEN×3 → RESULT_CARDS → DONE (fetch-event-source 가 읽는 text/event-stream) */
-  http.get(`${API}/ai/tasks/:id/stream`, ({ request }) => {
-    const locale = localeOf(request)
-    const cards = hospitals.slice(0, 3).map((h) => toHospitalCard(h, locale, 'DOUBLE_EYELID_NONINCISION'))
-    const seq: [SseEventName, unknown][] = [
-      ['STATUS', { status: 'RUNNING' }],
-      ['TOKEN', { text: '조건에 맞는 ' }],
-      ['TOKEN', { text: '병원을 ' }],
-      ['TOKEN', { text: '찾았어요.' }],
-      ['RESULT_CARDS', { cards, relaxOptions: [] }],
-      ['DONE', { answer: '조건에 맞는 병원을 찾았어요.', sources: [] }],
-    ]
-    const encoder = new TextEncoder()
-    const stream = new ReadableStream({
-      async start(controller) {
-        for (let i = 0; i < seq.length; i++) {
-          const [event, data] = seq[i]
-          await delay(300)
-          controller.enqueue(encoder.encode(`id: ${i + 1}\nevent: ${event}\ndata: ${JSON.stringify(data)}\n\n`))
-        }
-        controller.close()
-      },
-    })
-    return new HttpResponse(stream, { headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache' } })
-  }),
-  // TODO(fe): GET /ai/conversations/:id, POST /ai/tasks/:id/approval (+ APPROVAL_REQUIRED 시퀀스), CONVERSATION_OPENED 시나리오
-
-  // TODO(fe): 예약(/reservations*), 알림, 상담(/consultations*, /counselor/*), 병원관리자(/hospital-admin/*) mock
-  //           reservations.json·consultations.json·chat_messages.json 을 위 db.ts 와 같은 방식으로 변환해 사용
+  // AI 대화·작업·SSE, 예약·알림·상담·병원관리자·운영자, 회원가입·리뷰·비교·근거 문서는 app.ts
 ]

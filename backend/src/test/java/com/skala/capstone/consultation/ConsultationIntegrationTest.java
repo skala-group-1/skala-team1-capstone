@@ -79,6 +79,12 @@ class ConsultationIntegrationTest extends IntegrationTest {
 				.andExpect(jsonPath("$[?(@.id == " + id + ")]").exists());
 		mvc.perform(post("/api/counselor/consultations/{id}/accept", id).header(HttpHeaders.AUTHORIZATION, counselor))
 				.andExpect(status().isOk()).andExpect(jsonPath("$.status").value("ACTIVE"));
+		// 고객 알림에 대화창 id 가 있어야 FE 가 /chat/{conversationId} 로 이동시킬 수 있다
+		await(() -> jdbc.sql("""
+				SELECT count(*) FROM app.notifications
+				WHERE type = 'CONSULTATION_ACCEPTED' AND payload->>'consultationId' = :id
+				  AND payload->>'conversationId' = :c
+				""").param("id", String.valueOf(id)).param("c", conversationId).query(Long.class).single() > 0, "accept notification");
 
 		// 상담사가 STOMP 로 상담방 구독
 		BlockingQueue<JsonNode> received = new LinkedBlockingQueue<>();

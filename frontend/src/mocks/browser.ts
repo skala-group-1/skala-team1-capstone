@@ -1,7 +1,9 @@
 import { setupWorker } from 'msw/browser'
 import { handlers } from './handlers'
+import { appHandlers } from './app'
 
-export const worker = setupWorker(...handlers)
+// app 핸들러가 먼저 (같은 경로면 앞의 것이 응답: AI 대화는 시나리오 버전, /me 는 email 포함 버전)
+export const worker = setupWorker(...appHandlers, ...handlers)
 
 /** main.ts 가 dev + VITE_USE_MSW=true 일 때만 호출 */
 export function startMocking() {

@@ -68,11 +68,15 @@ export const useAuthStore = defineStore('auth', {
         user = { ...user, locale: picked }
         void authApi.updateMe({ locale: picked }).catch(() => undefined)
       }
-      // 다른 계정으로 바뀌면(로그아웃 없이 다시 로그인) 이전 계정으로 맺은 STOMP 연결을 끊고 새 토큰으로 다시 연결
-      const switched = !!this.user && this.user.id !== user.id
+      // 다른 계정으로 바뀌면(로그아웃 없이 다시 로그인) 이전 계정의 상태·구독을 모두 정리한 뒤 새 토큰으로 다시 연결.
+      // STOMP 만 끊으면 남은 상담방 리스너가 재연결 때 이전 계정 상담방을 구독 → ACCESS_DENIED 로 연결이 끊기는 루프
+      if (this.user && this.user.id !== user.id) {
+        const token = session.getToken() // clear() 가 지우므로 새 계정 토큰을 보존
+        this.clear()
+        session.setToken(token)
+      }
       this.user = user
       session.setLocale(user.locale)
-      if (switched) void disconnectStomp()
       // TODO(fe): STOMP 는 상담·알림 화면에서만 필요하면 지연 연결로 바꿔도 됨. MSW 모드에서는 /ws 가 없어 재연결 로그가 남음
       if (import.meta.env.VITE_USE_MSW !== 'true') {
         connectStomp()

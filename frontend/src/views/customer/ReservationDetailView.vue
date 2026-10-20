@@ -10,6 +10,7 @@ import { useI18n } from 'vue-i18n'
 import { catalogApi, reservationApi, toApiError } from '@/api'
 import { useReservationStore } from '@/stores/reservation'
 import { useNow } from '@/composables/useNow'
+import { useNotificationRefresh } from '@/composables/useNotificationRefresh'
 import { showToast } from '@/composables/useToast'
 import { fmtDate, fmtDateTime, fmtKrw, fmtTime, mapUrl, remaining, seoulDate } from '@/utils/format'
 import TopAppBar from '@/components/ui/TopAppBar.vue'
@@ -106,6 +107,10 @@ function openHospitalChat() {
   if (r.value) void router.push({ path: '/chat', query: { hospitalId: r.value.hospital.id } })
 }
 onMounted(load)
+// 보고 있는 예약이 승인·반려·만료되면 다시 불러옴
+useNotificationRefresh(['RESERVATION_CONFIRMED', 'RESERVATION_REJECTED', 'RESERVATION_EXPIRED', 'RESERVATION_CANCELLED'], (n) => {
+  if (n.payload.reservationId === Number(route.params.id)) return load()
+})
 </script>
 
 <template>

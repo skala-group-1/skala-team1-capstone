@@ -7,6 +7,7 @@ import { useI18n } from 'vue-i18n'
 import { hospitalAdminApi, toApiError } from '@/api'
 import { useNow } from '@/composables/useNow'
 import { showToast } from '@/composables/useToast'
+import { useNotificationRefresh } from '@/composables/useNotificationRefresh'
 import { fmtDate, fmtDateTime, fmtKrw, remaining, seoulDate } from '@/utils/format'
 import KpiCard from '@/components/staff/KpiCard.vue'
 import ReservationTable from '@/components/staff/ReservationTable.vue'
@@ -92,6 +93,9 @@ function replace(r: Reservation) {
   const i = all.value.findIndex((x) => x.id === r.id)
   if (i >= 0) all.value[i] = { ...all.value[i], ...r }
 }
+// 새 예약 요청·고객 취소·만료가 오면 목록 갱신. 열어 둔 상세(selectedId)는 그대로 유지
+useNotificationRefresh(['RESERVATION_REQUESTED', 'RESERVATION_CANCELLED', 'RESERVATION_EXPIRED'], load)
+
 onMounted(async () => {
   await load()
   if (selected.value) filter.value = effective(selected.value)

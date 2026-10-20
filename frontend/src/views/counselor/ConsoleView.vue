@@ -7,6 +7,7 @@ import { useI18n } from 'vue-i18n'
 import { useConsultationStore } from '@/stores/consultation'
 import { useAuthStore } from '@/stores/auth'
 import { useNow } from '@/composables/useNow'
+import { useNotificationRefresh } from '@/composables/useNotificationRefresh'
 import { showToast } from '@/composables/useToast'
 import { fmtTime } from '@/utils/format'
 import AppIcon from '@/components/ui/AppIcon.vue'
@@ -127,6 +128,8 @@ onMounted(async () => {
   await loadInbox()
   await openSelected()
 })
+// 새 상담 요청이 오면 문의함 갱신 (열어 둔 채팅은 그대로)
+useNotificationRefresh(['CONSULTATION_REQUESTED'], loadInbox)
 watch(selectedId, () => void openSelected())
 watch(
   () => store.messages.length,

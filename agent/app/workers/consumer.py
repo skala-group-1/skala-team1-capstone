@@ -1,4 +1,7 @@
-"""큐 소비 (aio-pika). agent 가 소비하는 큐: ai.task.requested, ai.task.resume, chat.translate, summary.translate.
+"""큐 소비 (aio-pika). agent 가 소비하는 큐: ai.task.requested, ai.task.resume.
+
+chat.translate·summary.translate 는 translator 컨테이너(공용 에이전트 파트)로 이관 — 여기서 소비하면
+메시지를 나눠 먹어 유실된다.
 
 실행: FastAPI lifespan(app/api/main.py)에서 start_consumers() 를 띄운다.
 """
@@ -6,7 +9,7 @@
 import aio_pika
 
 from app.config import get_settings
-from app.workers.messages import AiTaskRequested, AiTaskResume, ChatTranslate, Queue, SummaryTranslate
+from app.workers.messages import AiTaskRequested, AiTaskResume, Queue
 
 
 async def handle_task_requested(msg: AiTaskRequested, trace_id: str) -> None:
@@ -21,22 +24,9 @@ async def handle_task_resume(msg: AiTaskResume, trace_id: str) -> None:
     raise NotImplementedError
 
 
-async def handle_chat_translate(msg: ChatTranslate, trace_id: str) -> None:
-    # TODO(agent): 번역 워커 — prompts/translate_chat.md + 용어집(glossary) 주입, 숫자·날짜·금액 검증 → NUMBER_MISMATCH,
-    #              의료 질문 분류 → MEDICAL_QUESTION, 결과는 chat.translated 로 발행
-    raise NotImplementedError
-
-
-async def handle_summary_translate(msg: SummaryTranslate, trace_id: str) -> None:
-    # TODO(agent): 요약 카드 → ko 번역 후 summary.translated 발행
-    raise NotImplementedError
-
-
 HANDLERS = {
     Queue.AI_TASK_REQUESTED: (AiTaskRequested, handle_task_requested),
     Queue.AI_TASK_RESUME: (AiTaskResume, handle_task_resume),
-    Queue.CHAT_TRANSLATE: (ChatTranslate, handle_chat_translate),
-    Queue.SUMMARY_TRANSLATE: (SummaryTranslate, handle_summary_translate),
 }
 
 

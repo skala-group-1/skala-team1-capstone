@@ -26,6 +26,7 @@ import com.skala.capstone.ai.AiDtos.ApprovalRequest;
 import com.skala.capstone.ai.AiDtos.Conversation;
 import com.skala.capstone.ai.AiDtos.CreateConversationRequest;
 import com.skala.capstone.ai.AiDtos.CreateTaskRequest;
+import com.skala.capstone.ai.AiDtos.CreateTaskResponse;
 import com.skala.capstone.common.security.CurrentUser;
 import com.skala.capstone.common.web.RequestLocale;
 
@@ -71,9 +72,9 @@ public class AiController {
 
 	@Operation(summary = "AI 작업 접수 → 202. 진행 상황은 /stream (SSE)")
 	@PostMapping("/tasks")
-	public ResponseEntity<AiTask> createTask(@AuthenticationPrincipal CurrentUser user,
+	public ResponseEntity<CreateTaskResponse> createTask(@AuthenticationPrincipal CurrentUser user,
 			@Valid @RequestBody CreateTaskRequest req) {
-		return ResponseEntity.accepted().body(tasks.create(user, req));
+		return ResponseEntity.accepted().body(new CreateTaskResponse(tasks.create(user, req).id()));
 	}
 
 	@Operation(summary = "내 작업 이력 (최근 50)")

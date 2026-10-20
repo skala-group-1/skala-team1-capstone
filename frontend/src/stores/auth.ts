@@ -6,6 +6,11 @@
 import { defineStore } from 'pinia'
 import { authApi, session } from '@/api'
 import { connectStomp, disconnectStomp } from '@/api/stomp'
+import { useConversationStore } from './conversation'
+import { useConsultationStore } from './consultation'
+import { useNotificationStore } from './notification'
+import { useReservationStore } from './reservation'
+import { useSearchStore } from './search'
 import type { LoginRequest, Locale, Role, SignupRequest, UserSummary } from '@/types/contract'
 
 export const ROLE_HOME: Record<Role, string> = {
@@ -57,20 +62,30 @@ export const useAuthStore = defineStore('auth', {
       }
     },
     setUser(user: UserSummary) {
+      // 고객: 이 기기에서 고른 언어(온보딩·내 정보, i18n setLocale 이 저장)가 계정 언어보다 우선 → 계정에도 저장
+      const picked = localStorage.getItem('locale') as Locale | null
+      if (user.role === 'CUSTOMER' && picked && ['en', 'zh', 'ja', 'ko'].includes(picked) && picked !== user.locale) {
+        user = { ...user, locale: picked }
+        void authApi.updateMe({ locale: picked }).catch(() => undefined)
+      }
       this.user = user
       session.setLocale(user.locale)
-      // TODO(fe): i18n locale 도 user.locale 로 맞추기 (i18n/index.ts setLocale)
       // TODO(fe): STOMP 는 상담·알림 화면에서만 필요하면 지연 연결로 바꿔도 됨. MSW 모드에서는 /ws 가 없어 재연결 로그가 남음
       if (import.meta.env.VITE_USE_MSW !== 'true') connectStomp()
     },
-    setLocale(locale: Locale) {
+    async setLocale(locale: Locale) {
       session.setLocale(locale)
-      // TODO(fe): 로그인 상태면 PATCH /api/me (P1)
+      if (this.user) this.user = { ...this.user, ...(await authApi.updateMe({ locale })), locale }
     },
     clear() {
       this.user = null
       session.setToken(null)
       void disconnectStomp()
+      // 다음에 로그인한 사용자에게 이전 사용자의 대화·예약·알림이 보이지 않게
+      const conv = useConversationStore()
+      conv.unsubscribe?.()
+      useConsultationStore().close()
+      for (const s of [conv, useConsultationStore(), useNotificationStore(), useReservationStore(), useSearchStore()]) s.$reset()
     },
   },
 })

@@ -14,7 +14,7 @@ export const useNotificationStore = defineStore('notification', {
   },
   actions: {
     async load() {
-      const page = await notificationApi.list()
+      const page = await notificationApi.list({ size: 50 })
       this.items = page.items
     },
     listen() {
@@ -27,6 +27,10 @@ export const useNotificationStore = defineStore('notification', {
       const n = this.items.find((x) => x.id === id)
       if (n) n.readAt = new Date().toISOString()
     },
-    // TODO(fe): type 별 이동 (RESERVATION_* → /reservations, CONSULTATION_* → 상담 화면) + 문구 i18n
+    async readAll() {
+      await notificationApi.readAll()
+      const now = new Date().toISOString()
+      this.items.forEach((n) => (n.readAt ??= now))
+    },
   },
 })

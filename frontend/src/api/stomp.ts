@@ -4,6 +4,7 @@
  * - 토큰 만료 시 refresh 후 재연결
  * - 재연결되면 이전 구독은 서버에서 사라진다 → whenStompConnected 로 등록한 콜백이 연결될 때마다 다시 실행되어 다시 구독한다
  */
+import axios from 'axios'
 import { Client, type IMessage, type StompSubscription } from '@stomp/stompjs'
 import type { ConsultationTopicEvent, Notification, SendChatMessage } from '@/types/contract'
 import { refreshAccessToken } from './http'
@@ -44,6 +45,21 @@ function tokenExpiresSoon(token: string | null): boolean {
   }
 }
 
+/**
+ * refresh 가 401(REFRESH_INVALID, 로그인 만료)로 실패하면 HTTP 쪽과 같이 로그아웃 → auth.clear() 가 STOMP 를 끊는다.
+ * 그냥 넘기면 만료된 토큰으로 3초마다 재연결을 반복한다. 네트워크 오류는 다음 재연결 때 다시 시도
+ */
+async function refreshOrLogout(): Promise<void> {
+  try {
+    await refreshAccessToken()
+  } catch (e) {
+    if (axios.isAxiosError(e) && e.response?.status === 401) {
+      session.setToken(null)
+      session.emitLoggedOut()
+    }
+  }
+}
+
 /** 로그인 후 1회 호출. 이미 연결돼 있으면 그대로 반환 */
 export function connectStomp(): Client {
   if (client?.active) return client
@@ -52,7 +68,7 @@ export function connectStomp(): Client {
     reconnectDelay: 3000,
     // 재연결 때마다 최신 토큰을 싣도록 beforeConnect 에서 갱신. access(30분)가 만료됐으면 먼저 refresh
     beforeConnect: async (c) => {
-      if (tokenExpiresSoon(session.getToken())) await refreshAccessToken().catch(() => undefined)
+      if (tokenExpiresSoon(session.getToken())) await refreshOrLogout()
       c.connectHeaders = { Authorization: `Bearer ${session.getToken() ?? ''}` }
     },
     // disconnectStomp 로 버린 이전 연결이 늦게 보내는 이벤트는 무시 (계정 전환 직후 새 구독을 지우지 않도록)
@@ -65,7 +81,7 @@ export function connectStomp(): Client {
     // backend 는 인증 실패를 ERROR 프레임 message "UNAUTHENTICATED" 로 보낸다 → refresh 해 두면 다음 재연결이 새 토큰으로 붙는다
     onStompError: (frame) => {
       console.warn('[stomp] error', frame.headers.message)
-      if (frame.headers.message?.includes('UNAUTHENTICATED')) void refreshAccessToken().catch(() => undefined)
+      if (frame.headers.message?.includes('UNAUTHENTICATED')) void refreshOrLogout()
     },
   })
   client = c

@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
@@ -113,7 +114,9 @@ public class GlobalExceptionHandler {
 	}
 
 	private ResponseEntity<ErrorResponse> respond(ErrorCode code, Map<String, Object> details, HttpServletRequest request) {
-		return ResponseEntity.status(code.status()).body(errors.build(code, details, request));
+		// Content-Type 을 고정해야 Accept: text/event-stream(SSE) 요청에서도 JSON 오류 바디를 쓸 수 있다
+		return ResponseEntity.status(code.status()).contentType(MediaType.APPLICATION_JSON)
+				.body(errors.build(code, details, request));
 	}
 
 	private void auditAccessDenied(HttpServletRequest request) {

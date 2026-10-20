@@ -69,9 +69,15 @@ class AiIntegrationTest extends IntegrationTest {
 	void taskFlowRelaysEventsOverSseAndRebuildsHistory() throws Exception {
 		String token = accessToken("customer.zh2@demo.local");
 		String conversationId = newConversation(token);
+		// 202 응답은 계약대로 {taskId} 만 (FE 가 이 값으로 바로 SSE 를 연다)
 		JsonNode task = createTask(token, conversationId, "双眼皮 江南 10/20~10/26");
-		assertThat(task.get("status").asText()).isEqualTo("QUEUED");
-		String taskId = task.get("id").asText();
+		String taskId = task.get("taskId").asText();
+		mvc.perform(get("/api/ai/tasks/{id}", taskId).header(HttpHeaders.AUTHORIZATION, token))
+				.andExpect(jsonPath("$.status").value("QUEUED"));
+		// 운영자 목록은 AiTask 필드 + userId 가 한 객체에 평평하게
+		mvc.perform(get("/api/ops/ai-tasks").header(HttpHeaders.AUTHORIZATION, accessToken("operator@demo.local")))
+				.andExpect(jsonPath("$.items[?(@.id == '" + taskId + "')].userId").exists())
+				.andExpect(jsonPath("$.items[0].task").doesNotExist());
 
 		// 가짜 agent: 요청 수신 확인 (backend 가 토큰에서 꺼낸 사용자 정보 + 대화 정보)
 		JsonNode requested = receiveFrom(Queues.AI_TASK_REQUESTED, b -> taskId.equals(b.path("taskId").asText()));
@@ -122,7 +128,7 @@ class AiIntegrationTest extends IntegrationTest {
 	void approvalPausesAndResumesTheSameTask() throws Exception {
 		String token = accessToken("customer.ja2@demo.local");
 		String conversationId = newConversation(token);
-		String taskId = createTask(token, conversationId, "予約したい").get("id").asText();
+		String taskId = createTask(token, conversationId, "予約したい").get("taskId").asText();
 		receiveFrom(Queues.AI_TASK_REQUESTED, b -> taskId.equals(b.path("taskId").asText()));
 
 		Map<String, Object> pending = new LinkedHashMap<>();
@@ -164,7 +170,7 @@ class AiIntegrationTest extends IntegrationTest {
 	void deadLetterAndHumanModeAndOwnership() throws Exception {
 		String token = accessToken("customer.ja1@demo.local");
 		String conversationId = newConversation(token);
-		String taskId = createTask(token, conversationId, "hello").get("id").asText();
+		String taskId = createTask(token, conversationId, "hello").get("taskId").asText();
 		receiveFrom(Queues.AI_TASK_REQUESTED, b -> taskId.equals(b.path("taskId").asText()));
 
 		// 남의 작업은 볼 수 없음
@@ -184,6 +190,15 @@ class AiIntegrationTest extends IntegrationTest {
 				.content(json(Map.of("conversationId", conversationId, "message", "hi"))))
 				.andExpect(status().isConflict())
 				.andExpect(jsonPath("$.details.from").value("HUMAN"));
+	}
+
+	@Test
+	void streamWithBadTaskIdReturnsJsonError() throws Exception {
+		// SSE 요청(Accept: text/event-stream)이어도 오류는 JSON 바디로 나가야 FE 가 code 를 읽는다
+		mvc.perform(get("/api/ai/tasks/undefined/stream").accept(MediaType.TEXT_EVENT_STREAM)
+				.header(HttpHeaders.AUTHORIZATION, accessToken("customer.en1@demo.local")))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.code").value("VALIDATION_FAILED"));
 	}
 
 	// ------------------------------------------------------------------ helpers

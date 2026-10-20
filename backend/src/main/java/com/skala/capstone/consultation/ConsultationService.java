@@ -111,9 +111,12 @@ public class ConsultationService {
 		jdbc.sql("UPDATE app.conversations SET mode = 'HUMAN', consultation_id = :id WHERE id = :c")
 				.param("id", id).param("c", conversationId).update();
 
-		// 상담사가 읽을 한국어 요약 카드 → agent 번역 워커 (실패해도 원본으로 표시)
-		publisher.publishAfterCommit(Queues.SUMMARY_TRANSLATE,
-				new SummaryTranslate(id, summaryCard, user.locale(), "ko"), null);
+		// 상담사가 읽을 한국어 요약 카드 → agent 번역 워커 (실패해도 원본으로 표시).
+		// 한국어 고객(D-43)은 카드가 이미 한국어라 번역하지 않는다 (채팅도 같은 언어면 번역 생략)
+		if (!"ko".equals(user.locale())) {
+			publisher.publishAfterCommit(Queues.SUMMARY_TRANSLATE,
+					new SummaryTranslate(id, summaryCard, user.locale(), "ko"), null);
+		}
 		notifications.notify(notifications.hospitalStaff(hospitalId, Role.COUNSELOR), "CONSULTATION_REQUESTED",
 				Map.of("consultationId", id));
 		AfterCommit.run(() -> audit.log(user, "CONSULTATION_REQUESTED", "consultation:" + id, Map.of()));

@@ -145,9 +145,20 @@ class AuthIntegrationTest extends IntegrationTest {
 	}
 
 	@Test
+	void customerCanSignupInKorean() throws Exception {
+		// D-43: 고객 가입 언어에 ko 허용
+		Map<String, Object> req = Map.of("email", "ko.user@example.com", "password", "Abcdefg1", "name", "김고객",
+				"birthDate", "1995-05-05", "gender", "F", "nationality", "KR", "locale", "ko");
+		mvc.perform(post("/api/auth/signup").contentType(MediaType.APPLICATION_JSON).content(json(req)))
+				.andExpect(status().isCreated())
+				.andExpect(jsonPath("$.role").value("CUSTOMER"))
+				.andExpect(jsonPath("$.locale").value("ko"));
+	}
+
+	@Test
 	void signupValidatesFields() throws Exception {
 		Map<String, Object> req = Map.of("email", "bad", "password", "short", "name", "X",
-				"birthDate", "1999-03-02", "gender", "Q", "nationality", "CN", "locale", "ko");
+				"birthDate", "1999-03-02", "gender", "Q", "nationality", "CN", "locale", "fr");
 		mvc.perform(post("/api/auth/signup").contentType(MediaType.APPLICATION_JSON).content(json(req)))
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.code").value("VALIDATION_FAILED"))

@@ -26,8 +26,8 @@ public final class AuthDtos {
 			@NotNull @Past LocalDate birthDate,
 			@NotNull @Pattern(regexp = "F|M|X") String gender,
 			@NotNull @Pattern(regexp = "[A-Z]{2}", message = "ISO 3166-1 alpha-2") String nationality,
-			// 가입은 고객만 → 고객 언어(en/zh/ja). ko 는 스태프 시드 계정 전용
-			@NotNull @Pattern(regexp = "en|zh|ja") String locale) {
+			// 가입은 고객만. 고객 언어는 en/zh/ja + ko (D-43: 한국어로 쓰는 고객도 허용)
+			@NotNull @Pattern(regexp = "en|zh|ja|ko") String locale) {
 	}
 
 	public record LoginRequest(@NotBlank String email, @NotBlank String password) {

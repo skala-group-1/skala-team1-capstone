@@ -1,0 +1,26 @@
+[project]
+name = "capstone-summarizer"
+version = "0.1.0"
+description = "SKALA team1 capstone - 공용 요약 에이전트 (상담 요청 요약 카드, 내부 HTTP API)"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "langchain-openai>=0.3",
+    "pydantic-settings>=2.4",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "pytest-asyncio>=0.24",
+    "httpx>=0.27",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+asyncio_mode = "auto"

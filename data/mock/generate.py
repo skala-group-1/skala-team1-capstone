@@ -665,6 +665,12 @@ def gen_users(rng, base):
         add("admin.h%d@demo.local" % hid, ko, "198%d-0%d-2%d" % (hid + 2, hid + 4, hid), "M" if hid != 2 else "F",
             "KR", "ko", "HOSPITAL_ADMIN", hid)
     add("operator@demo.local", "운영자", "1989-05-05", "X", "KR", "ko", "OPERATOR", None)
+    # 한국어 고객 (D-43). 맨 뒤에 붙이고 rng 를 쓰지 않아 기존 계정 id·예약·상담 등 나머지 데이터가 그대로 유지된다
+    rows.append({
+        "id": len(rows) + 1, "email": "customer.ko1@demo.local", "password_hash": PASSWORD_PLACEHOLDER,
+        "password": DEMO_PASSWORD, "name": "김서연", "birth_date": "1997-07-14", "gender": "F", "nationality": "KR",
+        "locale": "ko", "role": "CUSTOMER", "hospital_id": None, "created_at": iso(kst(base - dt.timedelta(days=30), 14, 0)),
+    })
     return rows
 
 

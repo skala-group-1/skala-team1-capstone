@@ -87,6 +87,7 @@ data/mock/
 | 11 | counselor.h3@demo.local | COUNSELOR | ko | 3 |
 | 12 | admin.h3@demo.local | HOSPITAL_ADMIN | ko | 3 |
 | 13 | operator@demo.local | OPERATOR | ko | - |
+| 14 | customer.ko1@demo.local | CUSTOMER | ko / KR | - (한국어 고객, D-43. 예약·상담 데이터 없음) |
 
 **비밀번호 해시 주의:** 표준 라이브러리만으로는 BCrypt를 만들 수 없어서 `password_hash`에는 `{bcrypt}PLACEHOLDER`가 들어갑니다.
 백엔드 시더가 기동 시 `{bcrypt}PLACEHOLDER`인 행을 찾아 `Passw0rd!`를 BCrypt로 다시 해시해야 로그인됩니다. 평문은 `users.json`의 `password` 필드에만 있고 SQL에는 들어가지 않습니다.

@@ -43,7 +43,7 @@ docker compose exec postgres psql -U capstone -d capstone -c "select count(*) fr
 
 | 역할 | 계정 |
 | --- | --- |
-| 고객 | `customer.en1` `customer.en2` `customer.zh1` `customer.zh2` `customer.ja1` `customer.ja2` @demo.local |
+| 고객 | `customer.en1` `customer.en2` `customer.zh1` `customer.zh2` `customer.ja1` `customer.ja2` `customer.ko1`(한국어) @demo.local |
 | 상담사 (병원 1~3) | `counselor.h1` `counselor.h2` `counselor.h3` @demo.local |
 | 병원관리자 (병원 1~3) | `admin.h1` `admin.h2` `admin.h3` @demo.local |
 | 운영자 | `operator@demo.local` |

@@ -180,5 +180,19 @@
   "role": "OPERATOR",
   "hospital_id": null,
   "created_at": "2026-08-24T15:00:00+09:00"
+ },
+ {
+  "id": 14,
+  "email": "customer.ko1@demo.local",
+  "password_hash": "{bcrypt}PLACEHOLDER",
+  "password": "Passw0rd!",
+  "name": "김서연",
+  "birth_date": "1997-07-14",
+  "gender": "F",
+  "nationality": "KR",
+  "locale": "ko",
+  "role": "CUSTOMER",
+  "hospital_id": null,
+  "created_at": "2026-09-22T14:00:00+09:00"
  }
 ]

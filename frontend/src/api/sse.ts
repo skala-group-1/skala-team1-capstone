@@ -21,10 +21,13 @@ export interface StreamHandlers {
 class FatalSseError extends Error {}
 class RefreshedError extends Error {}
 
-/** 반환값을 호출하면 구독 해제 */
-export function streamTask(taskId: Uuid, handlers: StreamHandlers): () => void {
+/**
+ * 반환값을 호출하면 구독 해제.
+ * fromSeq: 마지막으로 받은 seq. 승인 후 같은 작업을 다시 열 때 넘기면 그 이후 이벤트만 받는다 (Last-Event-ID)
+ */
+export function streamTask(taskId: Uuid, handlers: StreamHandlers, fromSeq: number | null = null): () => void {
   const ctrl = new AbortController()
-  let lastSeq: string | undefined
+  let lastSeq: string | undefined = fromSeq != null ? String(fromSeq) : undefined
   let refreshedOnce = false
 
   const headers = (): Record<string, string> => {

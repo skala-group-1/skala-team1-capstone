@@ -32,6 +32,8 @@ export const useConversationStore = defineStore('conversation', {
 
     // 진행 중인 작업
     taskId: null as Uuid | null,
+    /** 현재 작업에서 마지막으로 받은 SSE seq (승인 후 재연결 때 Last-Event-ID 로 보냄) */
+    lastSeq: null as number | null,
     streaming: false,
     /** TOKEN 누적 */
     draft: '',
@@ -117,23 +119,32 @@ export const useConversationStore = defineStore('conversation', {
       await aiApi.approve(this.taskId, { approved, editedArgs, reason })
       this.approvedAction = approved ? (this.pendingAction?.action ?? null) : null
       this.pendingAction = null
-      this.subscribe(this.taskId)
+      // 이미 받은 이벤트(승인 카드까지)는 다시 받지 않도록 마지막 seq 이후부터
+      this.subscribe(this.taskId, this.lastSeq)
     },
-    subscribe(taskId: Uuid) {
+    subscribe(taskId: Uuid, fromSeq: number | null = null) {
       this.unsubscribe?.()
+      if (taskId !== this.taskId) this.lastSeq = null
       this.taskId = taskId
       this.streaming = true
       this.draft = ''
       this.error = null
-      this.unsubscribe = streamTask(taskId, {
-        onEvent: (e) => this.applyEvent(e),
-        onError: () => {
-          this.error = { code: 'AI_UNAVAILABLE', message: '', traceId: '' }
+      this.unsubscribe = streamTask(
+        taskId,
+        {
+          onEvent: (e) => {
+            if (e.seq != null) this.lastSeq = e.seq
+            this.applyEvent(e)
+          },
+          onError: () => {
+            this.error = { code: 'AI_UNAVAILABLE', message: '', traceId: '' }
+          },
+          onClose: () => {
+            this.streaming = false
+          },
         },
-        onClose: () => {
-          this.streaming = false
-        },
-      })
+        fromSeq,
+      )
     },
     /** SSE reducer — 「공통 계약서」 6장 이벤트별 처리 */
     applyEvent(e: SseEvent) {

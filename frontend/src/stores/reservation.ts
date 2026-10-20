@@ -39,13 +39,14 @@ export const useReservationStore = defineStore('reservation', {
       this.replace(r)
     },
     async acceptAlternative(id: number, slotId: number) {
-      const r = await reservationApi.acceptAlternative(id, slotId)
+      const r = await reservationApi.acceptAlternative(id, slotId, this.idempotencyKey)
       this.mine.unshift(r)
+      return r
     },
     replace(r: Reservation) {
       const i = this.mine.findIndex((x) => x.id === r.id)
       if (i >= 0) this.mine[i] = r
     },
-    // TODO(fe): 홀드 남은 시간 카운트다운(holdExpiresAt), 알림(RESERVATION_*) 수신 시 loadMine()
+
   },
 })

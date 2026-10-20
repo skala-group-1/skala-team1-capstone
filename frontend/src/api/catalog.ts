@@ -35,6 +35,7 @@ export const catalogApi = {
     http.get<Page<Review>>(`/hospitals/${id}/reviews`, { params: q }).then((r) => r.data),
   /** 최대 3곳 */
   compare: (body: CompareRequest) => http.post<CompareResponse>('/hospitals/compare', body).then((r) => r.data),
-  /** 근거 문서 원문 (C4-1 바텀시트). TODO(fe): 응답 형식은 BE-17 구현 시 확정 (「MCP 설계」 doc:// Resource 메타 포함) */
-  doc: (docId: string) => http.get<unknown>(`/docs/${encodeURIComponent(docId)}`).then((r) => r.data),
+  /** 근거 문서 원문 (C4-1). 응답은 13-2 제안 형식 {uri, docId, title, section, body, meta} — AGENT-16 에서 확정 */
+  doc: (docId: string, section?: string) =>
+    http.get<unknown>(`/docs/${encodeURIComponent(docId)}`, { params: { section } }).then((r) => r.data),
 }

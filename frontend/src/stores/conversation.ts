@@ -46,6 +46,11 @@ export const useConversationStore = defineStore('conversation', {
     /** CONVERSATION_OPENED 수신 시 화면이 이 값을 보고 /chat/:id 로 이동 */
     openedConversation: null as { conversationId: Uuid; hospitalId: number } | null,
     unsubscribe: null as (() => void) | null,
+    /** 재시도용 마지막 입력 (Edge ② 응답 실패 → 같은 message 로 다시 POST) */
+    lastInput: null as { message: string | null; action: TaskAction | null } | null,
+    /** 승인한 변경 작업 (DONE 후 예약 요청 완료 카드 표시용) */
+    approvedAction: null as PendingAction['action'] | null,
+    parentConversationId: null as Uuid | null,
   }),
   actions: {
     /** 새 메인 대화 또는 병원 대화(hospitalId) 생성 */
@@ -57,25 +62,60 @@ export const useConversationStore = defineStore('conversation', {
       this.hospital = conv.hospital
       this.consultationId = conv.consultationId
       this.conditions = conv.conditions
-      this.messages = conv.messages
+      this.messages = conv.messages ?? []
+      this.parentConversationId = conv.parentConversationId
       return conv
     },
     /** 기존 대화 불러오기 (/chat/:conversationId 진입) */
     async load(conversationId: Uuid) {
-      // TODO(fe): GET /api/ai/conversations/{id} → state 채우기. 진행 중 작업이 있으면 GET /api/ai/tasks/{id} 후 stream 재연결
-      void conversationId
+      const conv = await aiApi.conversation(conversationId)
+      this.unsubscribe?.()
+      this.$reset()
+      this.conversationId = conv.id
+      this.mode = conv.mode
+      this.hospital = conv.hospital
+      this.consultationId = conv.consultationId
+      this.conditions = conv.conditions
+      this.messages = conv.messages ?? []
+      this.parentConversationId = conv.parentConversationId
+      return conv
+    },
+    /** 같은 대화로 돌아올 때: 화면 상태(결과 카드·승인 대기)는 두고 모드만 서버 기준으로 맞춤 (자리 비운 사이 상담 종료 등) */
+    async refresh(conversationId: Uuid) {
+      const conv = await aiApi.conversation(conversationId)
+      this.mode = conv.mode
+      this.consultationId = conv.consultationId
+      this.hospital = conv.hospital
     },
     /** 메시지 전송 또는 버튼 action(SELECT_HOSPITAL·RELAX·SET_SORT·SAVE_PROFILE) */
-    async send(message: string | null, action: TaskAction | null = null) {
+    async send(message: string | null, action: TaskAction | null = null, echo = true) {
       if (!this.conversationId) throw new Error('conversation not opened')
-      if (message) this.messages.push({ role: 'user', text: message, sources: [], cards: [], createdAt: new Date().toISOString() })
-      const { taskId } = await aiApi.createTask({ conversationId: this.conversationId, message, action })
-      this.subscribe(taskId)
+      if (message && echo) this.messages.push({ role: 'user', text: message, sources: [], cards: [], createdAt: new Date().toISOString() })
+      this.lastInput = { message, action }
+      this.error = null
+      this.cards = []
+      this.relaxOptions = []
+      this.tripPlan = null
+      this.memoryProposal = null
+      this.streaming = true
+      try {
+        const { taskId } = await aiApi.createTask({ conversationId: this.conversationId, message, action })
+        this.subscribe(taskId)
+      } catch (e) {
+        this.streaming = false
+        const err = e as { response?: { data?: SseEventMap['FAILED'] } }
+        this.error = err.response?.data ?? { code: 'AI_UNAVAILABLE', message: '', traceId: '' }
+      }
+    },
+    /** Edge ② 다시 시도: 같은 입력을 다시 보냄 (사용자 말풍선은 다시 추가하지 않음) */
+    retry() {
+      if (this.lastInput) void this.send(this.lastInput.message, this.lastInput.action, false)
     },
     /** 승인 카드 (C4-2 / C4-3): 확인·수정·취소 → 같은 taskId 스트림 계속 */
     async approve(approved: boolean, editedArgs: Record<string, unknown> | null = null, reason: string | null = null) {
       if (!this.taskId) return
       await aiApi.approve(this.taskId, { approved, editedArgs, reason })
+      this.approvedAction = approved ? (this.pendingAction?.action ?? null) : null
       this.pendingAction = null
       this.subscribe(this.taskId)
     },
@@ -88,7 +128,7 @@ export const useConversationStore = defineStore('conversation', {
       this.unsubscribe = streamTask(taskId, {
         onEvent: (e) => this.applyEvent(e),
         onError: () => {
-          // TODO(fe): 네트워크 오류 표시 + 재시도 버튼 (FAILED 이벤트와 구분)
+          this.error = { code: 'AI_UNAVAILABLE', message: '', traceId: '' }
         },
         onClose: () => {
           this.streaming = false
@@ -99,7 +139,7 @@ export const useConversationStore = defineStore('conversation', {
     applyEvent(e: SseEvent) {
       switch (e.event) {
         case 'STATUS':
-          // 타이핑 표시는 streaming 으로 충분. TODO(fe): QUEUED 가 길면 "대기 중" 문구
+          // 타이핑 표시는 streaming 으로 충분
           break
         case 'TOKEN':
           this.draft += e.data.text
@@ -122,19 +162,19 @@ export const useConversationStore = defineStore('conversation', {
           this.openedConversation = e.data
           break
         case 'MODE_CHANGED':
+          // HUMAN 이면 ChatView 가 consultation 스토어로 STOMP 구독 (상담 중 AI 입력 대신 상담 메시지)
           this.mode = e.data.mode
           this.consultationId = e.data.consultationId
-          // TODO(fe): HUMAN 이면 consultation 스토어로 STOMP 구독 시작, 상담 중에는 AI 입력 대신 상담 메시지 전송
           break
         case 'APPROVAL_REQUIRED':
+          // 종료 이벤트라 DONE 이 안 온다 → 앞서 받은 TOKEN 을 말풍선으로 남긴다
+          if (this.draft) this.pushAssistant('', [])
           this.pendingAction = e.data
           break
         case 'TRIP_PLAN':
-          // TODO(fe): 일정 카드(타임라인) 컴포넌트 (「AI Agent 설계」 9-2)
           this.tripPlan = e.data
           break
         case 'MEMORY_PROPOSAL':
-          // TODO(fe): "다음에도 기억할까요?" 칩 → send(null, {type:'SAVE_PROFILE', fields})
           this.memoryProposal = e.data
           break
         case 'VERIFY':
@@ -145,6 +185,8 @@ export const useConversationStore = defineStore('conversation', {
           break
         case 'FAILED':
           this.error = e.data
+          this.draft = ''
+          this.activeTools = []
           break
       }
     },

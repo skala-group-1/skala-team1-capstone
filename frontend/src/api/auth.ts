@@ -1,5 +1,5 @@
 // 「인증·인가 설계」 1장 API (backend PR #1 에 구현됨: AuthController, MeController)
-import type { LoginRequest, LoginResponse, SignupRequest, UserSummary } from '@/types/contract'
+import type { Locale, LoginRequest, LoginResponse, SignupRequest, UserSummary } from '@/types/contract'
 import { http, refreshAccessToken } from './http'
 
 export const authApi = {
@@ -12,5 +12,6 @@ export const authApi = {
   /** 204, 쿠키 삭제 */
   logout: () => http.post<void>('/auth/logout').then(() => undefined),
   me: () => http.get<UserSummary>('/me').then((r) => r.data),
-  // TODO(fe): PATCH /api/me (locale 변경) — P1, backend 구현 후 추가
+  /** 언어 변경 (고객 en/zh/ja, 스태프 ko/en). 토큰 locale 은 다음 refresh 부터 반영 */
+  updateMe: (body: { locale: Locale }) => http.patch<UserSummary>('/me', body).then((r) => r.data),
 }

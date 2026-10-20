@@ -31,6 +31,28 @@ export function connectStomp(): Client {
   return client
 }
 
+/** 연결된 뒤 cb 실행 (이미 연결돼 있으면 바로). 반환값으로 대기 취소 */
+export function whenStompConnected(cb: () => void): () => void {
+  const c = connectStomp()
+  if (c.connected) {
+    cb()
+    return () => undefined
+  }
+  const prev = c.onConnect
+  let cancelled = false
+  c.onConnect = (frame) => {
+    prev?.(frame)
+    if (!cancelled) cb()
+  }
+  return () => {
+    cancelled = true
+  }
+}
+
+export function isStompConnected(): boolean {
+  return !!client?.connected
+}
+
 export function disconnectStomp(): Promise<void> {
   const c = client
   client = null

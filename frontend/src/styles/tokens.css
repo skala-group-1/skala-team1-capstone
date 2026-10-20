@@ -1,0 +1,154 @@
+/*
+ * 디자인 토큰 — Figma "01 Design System" 변수·텍스트 스타일 그대로.
+ * 색 이름은 Figma 시맨틱 변수(brand/primary → --brand-primary). 원시 팔레트는 시맨틱이 참조하는 것만 둔다.
+ * 다크 모드는 디자인에 없음 (Light 모드 하나).
+ */
+:root {
+  /* brand */
+  --brand-primary: #db1a82;
+  --brand-primary-pressed: #bf0f6e;
+  --brand-subtle: #fff1f7;
+  --brand-subtle-strong: #ffe3f0;
+  --brand-border: #ffc6e1;
+  --brand-text: #bf0f6e;
+
+  /* background · surface · border */
+  --bg-default: #ffffff;
+  --bg-subtle: #f8f8fa;
+  --bg-muted: #f1f2f4;
+  --bg-inverse: #1a1b1f;
+  --surface-card: #ffffff;
+  --surface-sheet: #ffffff;
+  --border-default: #e4e5e9;
+  --border-strong: #cdcfd5;
+  --border-focus: #db1a82;
+
+  /* text · icon */
+  --text-primary: #1a1b1f;
+  --text-secondary: #5c5f67;
+  --text-tertiary: #7c7f88;
+  --text-disabled: #a3a6ae;
+  --text-inverse: #ffffff;
+  --text-brand: #bf0f6e;
+  --icon-default: #43454c;
+  --icon-subtle: #a3a6ae;
+
+  /* status */
+  --status-success: #0f7a3f;
+  --status-success-bg: #e8f7ee;
+  --status-warning: #a35f00;
+  --status-warning-bg: #fff4e0;
+  --status-danger: #b21f2c;
+  --status-danger-bg: #ffecee;
+  --status-danger-solid: #e02d3c;
+  --status-info: #1f52b0;
+  --status-info-bg: #ebf2ff;
+  --status-neutral: #5c5f67;
+  --status-neutral-bg: #f1f2f4;
+
+  /* chat */
+  --chat-user-bubble: #db1a82;
+  --chat-user-text: #ffffff;
+  --chat-ai-bubble: #f1f2f4;
+  --chat-ai-accent: #db1a82;
+  --chat-agent-bubble: #f1f2f4;
+  --chat-agent-accent: #7a4fe0;
+  --chat-counselor-bubble: #ebf2ff;
+  --chat-counselor-accent: #2f6fe4;
+  --chat-system-text: #7c7f88;
+  --rating-star: #e08a00;
+
+  /* dimension */
+  --space-2: 2px;
+  --space-4: 4px;
+  --space-6: 6px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-40: 40px;
+  --space-48: 48px;
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 999px;
+
+  /* layout (04 FE 구현 ① 레이아웃 셸) */
+  --app-width: 390px;
+  --app-bar-h: 56px;
+  --tab-bar-h: 64px;
+  --staff-top-h: 56px;
+  --staff-nav-w: 232px;
+
+  --font-sans: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, 'Apple SD Gothic Neo',
+    'Noto Sans KR', 'PingFang SC', 'Hiragino Sans', sans-serif;
+  --shadow-sheet: 0 -4px 24px rgb(0 0 0 / 12%);
+  --shadow-toast: 0 4px 16px rgb(0 0 0 / 16%);
+  --shadow-dialog: 0 12px 40px rgb(0 0 0 / 16%);
+}
+
+/* 텍스트 스타일 (Figma Text Styles 13개) */
+.t-display-28 { font: 700 28px/36px var(--font-sans); letter-spacing: -0.5px; }
+.t-title-22 { font: 700 22px/30px var(--font-sans); letter-spacing: -0.3px; }
+.t-title-20 { font: 700 20px/28px var(--font-sans); letter-spacing: -0.3px; }
+.t-title-18 { font: 600 18px/26px var(--font-sans); letter-spacing: -0.2px; }
+.t-body-16 { font: 400 16px/24px var(--font-sans); }
+.t-body-16-sb { font: 600 16px/24px var(--font-sans); }
+.t-body-15 { font: 400 15px/22px var(--font-sans); }
+.t-body-14 { font: 400 14px/20px var(--font-sans); }
+.t-body-14-sb { font: 600 14px/20px var(--font-sans); }
+.t-caption-13 { font: 500 13px/18px var(--font-sans); }
+.t-caption-12 { font: 400 12px/16px var(--font-sans); }
+.t-caption-12-sb { font: 600 12px/16px var(--font-sans); }
+.t-caption-11 { font: 500 11px/14px var(--font-sans); }
+
+/* 기본 */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+body {
+  font: 400 15px/22px var(--font-sans);
+  color: var(--text-primary);
+  background: var(--bg-subtle);
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4, p {
+  margin: 0;
+}
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+button {
+  cursor: pointer;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

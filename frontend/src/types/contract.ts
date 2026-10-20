@@ -144,8 +144,8 @@ export interface SignupRequest {
   gender: Gender
   /** ISO 3166-1 alpha-2 (CN, JP, US …) */
   nationality: string
-  /** 가입은 고객만 → en/zh/ja */
-  locale: Exclude<Locale, 'ko'>
+  /** 가입은 고객만. en/zh/ja + ko (FE 추가, 공통 계약서 반영 필요) */
+  locale: Locale
 }
 
 // ─── 5. DTO: 탐색·병원 ───────────────────────────────────────
@@ -307,6 +307,8 @@ export interface Reservation {
   alternatives: Slot[]
   /** 스태프 조회 시에만 */
   customer?: MaskedCustomer
+  /** 고객 메모 (13-1 §12 추가 필드) */
+  note: string | null
   createdAt: IsoDateTime
   decidedAt: IsoDateTime | null
 }
@@ -400,7 +402,24 @@ export interface AiTask {
   pendingAction: PendingAction | null
   error: { code: ErrorCode; message: string } | null
   createdAt: IsoDateTime
+  /** 13-1 §12 추가 */
+  message?: string | null
+  finishedAt?: IsoDateTime | null
 }
+
+/** 운영자 (13-2): GET /api/ops/audit-logs 항목 */
+export interface AuditLog {
+  id: number
+  traceId: Uuid
+  actorId: number | null
+  actorRole: Role | null
+  action: string
+  target: string
+  detail: Record<string, unknown>
+  createdAt: IsoDateTime
+}
+/** 운영자 (13-2): GET /api/ops/ai-tasks 항목 = AiTask + userId */
+export type OpsAiTask = AiTask & { userId: number }
 
 export interface ApprovalRequest {
   approved: boolean
@@ -513,13 +532,10 @@ export type SseEvent = { [K in SseEventName]: { event: K; data: SseEventMap[K]; 
 /** 스트림이 끝나는 이벤트 (12-7: 마지막은 반드시 이 셋 중 하나) */
 export const TERMINAL_SSE_EVENTS: readonly SseEventName[] = ['DONE', 'FAILED', 'APPROVAL_REQUIRED']
 
-// ─── 「API·이벤트 명세」 4장: STOMP 이벤트 ───────────────────────────────
-// TODO(fe): STOMP 프레임 바디 형식(type 필드 이름 등)은 07·12 에 확정돼 있지 않다. backend BE-16 구현에 맞춰 확정할 것
+// ─── STOMP 이벤트 (13-2 "상담·채팅": 토픽 본문 {type, data}) ───────────────
 export type ConsultationTopicEvent =
-  | { type: 'MESSAGE_CREATED'; message: ChatMessage }
-  | { type: 'MESSAGE_TRANSLATED'; message: ChatMessage }
-  | { type: 'TRANSLATION_FAILED'; messageId: number }
-  | { type: 'CONSULTATION_STATUS'; status: ConsultationStatus }
+  | { type: 'MESSAGE_CREATED' | 'MESSAGE_TRANSLATED' | 'TRANSLATION_FAILED'; data: ChatMessage }
+  | { type: 'CONSULTATION_STATUS'; data: { consultationId: number; status: ConsultationStatus; counselorId: number | null } }
 export interface SendChatMessage {
   text: string
   clientMsgId: Uuid

@@ -5,6 +5,7 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { hospitalAdminApi } from '@/api'
 import { useNow } from '@/composables/useNow'
+import { useNotificationRefresh } from '@/composables/useNotificationRefresh'
 import { fmtDate, remaining, seoulDate } from '@/utils/format'
 import KpiCard from '@/components/staff/KpiCard.vue'
 import ReservationTable from '@/components/staff/ReservationTable.vue'
@@ -38,6 +39,8 @@ async function load() {
   }
 }
 onMounted(load)
+// 새 예약 요청·취소·만료가 오면 KPI·최근 요청 갱신
+useNotificationRefresh(['RESERVATION_REQUESTED', 'RESERVATION_CANCELLED', 'RESERVATION_EXPIRED'], load)
 </script>
 
 <template>

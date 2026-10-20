@@ -8,6 +8,7 @@ import { useSearchStore } from '@/stores/search'
 import { useReservationStore } from '@/stores/reservation'
 import { useNotificationStore } from '@/stores/notification'
 import { useNow } from '@/composables/useNow'
+import { useNotificationRefresh } from '@/composables/useNotificationRefresh'
 import { fmtDateTime, remaining } from '@/utils/format'
 import AppIcon from '@/components/ui/AppIcon.vue'
 import AppBadge, { RESERVATION_TONE } from '@/components/ui/AppBadge.vue'
@@ -38,6 +39,9 @@ function startChat() {
   const q = ask.value.trim()
   void router.push(q ? { path: '/chat', query: { q } } : '/chat')
 }
+
+// 병원이 승인·반려하거나 만료되면 '내 예약' 카드 갱신
+useNotificationRefresh(['RESERVATION_CONFIRMED', 'RESERVATION_REJECTED', 'RESERVATION_EXPIRED', 'RESERVATION_CANCELLED'], () => reservations.loadMine())
 
 onMounted(() => {
   void search.loadProcedures().catch(() => undefined)

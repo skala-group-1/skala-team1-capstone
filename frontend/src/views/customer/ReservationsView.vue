@@ -7,6 +7,7 @@ import { useI18n } from 'vue-i18n'
 import { useReservationStore } from '@/stores/reservation'
 import { useNow } from '@/composables/useNow'
 import { showToast } from '@/composables/useToast'
+import { useNotificationRefresh } from '@/composables/useNotificationRefresh'
 import { fmtDateTime, remaining } from '@/utils/format'
 import TopAppBar from '@/components/ui/TopAppBar.vue'
 import AppIcon from '@/components/ui/AppIcon.vue'
@@ -45,6 +46,9 @@ async function load() {
     loading.value = false
   }
 }
+// 병원이 승인·반려하거나 만료되면 목록 갱신 (로딩 표시 없이)
+useNotificationRefresh(['RESERVATION_CONFIRMED', 'RESERVATION_REJECTED', 'RESERVATION_EXPIRED', 'RESERVATION_CANCELLED'], () => store.loadMine())
+
 async function cancel(r: Reservation) {
   await store.cancel(r.id)
   showToast(t('chat.requested.cancelled'))

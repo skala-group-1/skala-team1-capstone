@@ -9,6 +9,8 @@ export const useNotificationStore = defineStore('notification', {
     items: [] as Notification[],
     sub: null as StompSubscription | null,
     stopWait: null as (() => void) | null,
+    /** 마지막으로 실시간 수신한 알림 — 화면이 보고 있는 목록을 다시 불러오는 신호 (useNotificationRefresh) */
+    latest: null as Notification | null,
   }),
   getters: {
     unread: (s) => s.items.filter((n) => !n.readAt).length,
@@ -24,7 +26,9 @@ export const useNotificationStore = defineStore('notification', {
       this.stopWait = whenStompConnected(
         () => {
           this.sub = subscribeNotifications((n) => {
-            if (!this.items.some((x) => x.id === n.id)) this.items.unshift(n)
+            if (this.items.some((x) => x.id === n.id)) return
+            this.items.unshift(n)
+            this.latest = n
           })
           // 끊겨 있던 동안 온 알림은 목록을 다시 받아 채운다
           void this.load().catch(() => undefined)

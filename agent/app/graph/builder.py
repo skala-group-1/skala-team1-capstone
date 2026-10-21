@@ -8,6 +8,7 @@ from langgraph.graph import END, START, StateGraph
 from app.graph import routing
 from app.graph.state import AgentState
 from app.nodes.respond import respond
+from concierge.nodes import execute_action as action_module
 from concierge.nodes.approval import approval
 from concierge.nodes.execute_action import execute_action
 from concierge.nodes.hospital_agent import hospital_agent
@@ -25,13 +26,20 @@ from coordinator.nodes.tools import planner_tools
 from coordinator.nodes.verify import verify
 
 
+async def execute_approved_action(state: AgentState) -> dict:
+    # Fail closed while a checkout still has the scaffold mutation node.
+    if not getattr(action_module, "EXECUTE_ACTION_READY", False):
+        raise NotImplementedError("Approved action execution is not connected")
+    return await execute_action(state)
+
+
 def build_hospital_subgraph() -> StateGraph:
     g = StateGraph(AgentState)
     g.add_node("load_hospital_context", load_hospital_context)
     g.add_node("hospital_agent", hospital_agent)
     g.add_node("hospital_tools", hospital_tools)
     g.add_node("approval", approval)
-    g.add_node("execute_action", execute_action)
+    g.add_node("execute_action", execute_approved_action)
 
     g.add_edge(START, "load_hospital_context")
     g.add_edge("load_hospital_context", "hospital_agent")
@@ -40,8 +48,8 @@ def build_hospital_subgraph() -> StateGraph:
     g.add_edge("hospital_tools", "hospital_agent")
     g.add_conditional_edges("approval", routing.route_after_approval,
                             {"execute_action": "execute_action", "hospital_agent": "hospital_agent"})
-    # TODO(agent): request_consultation 성공 시 mode=HUMAN 이면 바로 END (「AI Agent 설계」 4장 X → H → 나감)
-    g.add_edge("execute_action", "hospital_agent")
+    g.add_conditional_edges("execute_action", routing.route_after_execute,
+                            {"hospital_agent": "hospital_agent", "end": END})
     return g
 
 

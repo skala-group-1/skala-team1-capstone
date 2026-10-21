@@ -58,3 +58,7 @@ def route_after_approval(state: AgentState) -> str:
     # approval 노드가 승인 결과를 pending_action["approved"] 에 기록
     action = state.get("pending_action") or {}
     return "execute_action" if action.get("approved") else "hospital_agent"
+
+
+def route_after_execute(state: AgentState) -> str:
+    return "end" if state.get("mode") == "HUMAN" else "hospital_agent"

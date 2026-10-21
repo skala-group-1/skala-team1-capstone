@@ -5,6 +5,8 @@
 
 from enum import StrEnum
 
+from pydantic.alias_generators import to_camel
+
 
 class SseEvent(StrEnum):
     STATUS = "STATUS"
@@ -25,8 +27,44 @@ class SseEvent(StrEnum):
 
 TERMINAL_EVENTS = frozenset({SseEvent.DONE, SseEvent.FAILED, SseEvent.APPROVAL_REQUIRED})
 
-# TODO(agent): 그래프 실행(astream_events) → SseEvent 변환기
-#   on_chat_model_stream → TOKEN, on_tool_start/end → TOOL_START/END(label 은 사용자 locale),
-#   노드 결과(conditions·candidates·trip_plans·memory_proposal) → CONDITIONS/RESULT_CARDS/TRIP_PLAN/MEMORY_PROPOSAL,
-#   __interrupt__ → APPROVAL_REQUIRED, 정상 종료 → DONE {answer, sources}
-# TODO(agent): seq 는 작업별 1부터 증가 (backend 가 SSE id 로 사용, Last-Event-ID 재전송)
+
+def camel(value):
+    """Translate internal/MCP field names at the SSE boundary."""
+    if isinstance(value, dict):
+        return {to_camel(k): camel(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [camel(v) for v in value]
+    return value
+
+
+def state_events(update, state):
+    """Only emit fields a node actually updated; never replay stale turn data."""
+    if "conditions" in update or "missing" in update:
+        yield SseEvent.CONDITIONS, {
+            "conditions": camel(state.get("conditions") or {}),
+            "missing": [to_camel(k) for k in state.get("missing") or []],
+        }
+    if "candidates" in update or "relax_options" in update:
+        yield SseEvent.RESULT_CARDS, {
+            "cards": camel(state.get("candidates") or []),
+            "relaxOptions": camel(state.get("relax_options") or []),
+        }
+    if update.get("opened_conversation"):
+        opened = update["opened_conversation"]
+        yield SseEvent.CONVERSATION_OPENED, {
+            "conversationId": opened["conversation_id"], "hospitalId": opened["hospital_id"],
+        }
+    if update.get("mode") == "HUMAN" and state.get("consultation_id"):
+        yield SseEvent.MODE_CHANGED, {"mode": "HUMAN", "consultationId": state["consultation_id"]}
+    if "trip_plans" in update:
+        conditions = state.get("conditions") or {}
+        yield SseEvent.TRIP_PLAN, {
+            "arrivalDate": conditions.get("date_from"), "departureDate": conditions.get("date_to"),
+            "plans": camel(update["trip_plans"]), "summary": state.get("trip_summary") or "",
+        }
+    if update.get("memory_proposal"):
+        yield SseEvent.MEMORY_PROPOSAL, camel(update["memory_proposal"])
+    if update.get("verify_passed") is not None:
+        yield SseEvent.VERIFY, {
+            "passed": update["verify_passed"], "attempts": state.get("verify_attempts", 0),
+        }

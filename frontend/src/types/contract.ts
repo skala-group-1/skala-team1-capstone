@@ -551,7 +551,7 @@ export interface SseEventMap {
     cards: HospitalCard[]
     relaxOptions: { option: RelaxOption; label: string; expectedCount: number }[]
   }
-  CONVERSATION_OPENED: { conversationId: Uuid; hospitalId: number }
+  CONVERSATION_OPENED: { conversationId: Uuid; hospitalId: number; summary?: string | null }
   MODE_CHANGED: { mode: ConversationMode; consultationId: number | null }
   APPROVAL_REQUIRED: PendingAction
   TRIP_PLAN: { arrivalDate: IsoDate; departureDate: IsoDate; plans: TripPlan[]; summary: string }

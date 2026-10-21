@@ -52,7 +52,7 @@ export const useConversationStore = defineStore('conversation', {
     memoryProposal: null as { fields: AiProfile; message: string } | null,
     error: null as SseEventMap['FAILED'] | null,
     /** CONVERSATION_OPENED 수신 시 화면이 이 값을 보고 /chat/:id 로 이동 */
-    openedConversation: null as { conversationId: Uuid; hospitalId: number } | null,
+    openedConversation: null as SseEventMap['CONVERSATION_OPENED'] | null,
     unsubscribe: null as (() => void) | null,
     /** 재시도용 마지막 입력 (Edge ② 응답 실패 → 같은 message 로 다시 POST) */
     lastInput: null as { message: string | null; action: TaskAction | null } | null,

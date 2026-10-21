@@ -26,7 +26,7 @@ import ApprovalCard from '@/components/chat/ApprovalCard.vue'
 import ConsultSummaryCard from '@/components/chat/ConsultSummaryCard.vue'
 import EvidenceSheet from '@/components/chat/EvidenceSheet.vue'
 import TripPlanCard from '@/components/chat/TripPlanCard.vue'
-import type { ChatMessage, Conditions, Locale, Reservation, Source } from '@/types/contract'
+import type { ChatMessage, Conditions, ConversationMessage, Locale, Reservation, Source } from '@/types/contract'
 
 const route = useRoute()
 const router = useRouter()
@@ -81,6 +81,18 @@ const conditionChips = computed(() => {
 })
 
 // ─── 메시지 ───
+// AI 메시지 사이에 상담 블록(m 없음)을 상담 요청 시각 위치에 끼워 넣는다 → 종료 후 AI 대화는 상담 아래로
+const timeline = computed(() => {
+  const rows: { m?: ConversationMessage; i: number }[] = conv.messages.map((m, i) => ({ m, i }))
+  const c = consult.current
+  if (c && c.id === conv.consultationId) {
+    // 로컬은 Z, 서버는 +09:00 이라 문자열 비교 대신 Date.parse
+    const at = Date.parse(c.createdAt)
+    const k = conv.messages.findIndex((m) => Date.parse(m.createdAt) > at)
+    rows.splice(k < 0 ? rows.length : k, 0, { i: -1 })
+  }
+  return rows
+})
 const lastCardsIndex = computed(() => conv.messages.map((m) => m.cards.length > 0).lastIndexOf(true))
 const showTyping = computed(() => conv.streaming && !conv.draft && !conv.pendingAction)
 const pending = computed(() => conv.pendingAction)
@@ -318,8 +330,50 @@ watch(
         {{ isHospital ? t('chat.helloAgent', { hospital: conv.hospital?.name ?? '' }) : t('chat.helloAi') }}
       </p>
 
-      <template v-for="(m, i) in conv.messages" :key="i">
-        <ChatBubble v-if="m.role === 'user'" sender="me" :text="m.text" :time="fmtTime(m.createdAt)" />
+      <template v-for="{ m, i } in timeline" :key="i">
+        <!-- 상담원 대기 · 통역 채팅 · 종료 후 기록 (상담 요청 시각 자리) -->
+        <template v-if="!m">
+          <template v-if="consult.current">
+            <ConsultSummaryCard collapsible :rows="consultRows" :questions="consult.current.summaryCard.questions" />
+            <ChatBubble sender="system" :text="t('chat.human.requestedAt', { time: fmtTime(consult.current.createdAt) })" />
+            <section v-if="consultStatus === 'WAITING'" class="waiting">
+              <span class="waiting__icon"><AppIcon name="headphones" /></span>
+              <p class="t-body-16-sb">{{ t('chat.human.waitingTitle') }}</p>
+              <p class="t-body-14 secondary">{{ t('chat.human.waitingBody') }}</p>
+            </section>
+            <template v-for="cm in consult.messages" :key="cm.clientMsgId ?? cm.id">
+              <ChatBubble v-if="cm.senderRole === 'SYSTEM'" sender="system" :text="cm.translatedText ?? cm.originalText" />
+              <ChatBubble
+                v-else-if="isMine(cm)"
+                sender="me"
+                :text="cm.originalText"
+                :time="fmtTime(cm.createdAt)"
+                :failed="cm.translationStatus === 'FAILED'"
+              >
+                <button
+                  v-if="cm.translationStatus === 'FAILED'"
+                  type="button"
+                  class="status status--failed t-caption-12-sb"
+                  @click="consult.retryTranslation(cm)"
+                >
+                  <AppIcon name="alert-triangle" :size="14" />{{ myStatus(cm) }}
+                </button>
+                <span v-else-if="myStatus(cm)" class="status t-caption-11">
+                  <AppIcon v-if="cm.translationStatus === 'DONE'" name="languages" :size="14" />{{ myStatus(cm) }}
+                </span>
+              </ChatBubble>
+              <ChatBubble v-else sender="counselor" :name="t('chat.counselor')" :text="cm.translatedText ?? cm.originalText">
+                <p v-if="shownOriginal.has(cm.id) && !untranslated(cm)" class="original t-caption-12">{{ cm.originalText }}</p>
+                <button v-if="!untranslated(cm)" type="button" class="status t-caption-11" @click="toggleOriginal(cm.id)">
+                  <AppIcon name="languages" :size="14" />
+                  {{ shownOriginal.has(cm.id) ? t('chat.human.hideOriginal') : t('chat.human.autoTranslated') }}
+                </button>
+              </ChatBubble>
+            </template>
+            <p v-if="consultStatus === 'WAITING'" class="t-caption-12 muted center">{{ t('chat.human.waitingNote') }}</p>
+          </template>
+        </template>
+        <ChatBubble v-else-if="m.role === 'user'" sender="me" :text="m.text" :time="fmtTime(m.createdAt)" />
         <ChatBubble v-else-if="m.role === 'system'" sender="system" :text="m.text" />
         <ChatBubble v-else-if="m.role === 'counselor'" sender="counselor" :name="t('chat.counselor')" :text="m.text" />
         <div v-else class="group">
@@ -422,46 +476,6 @@ watch(
       <!-- Edge ② 응답 실패 -->
       <ChatBubble v-if="conv.error" sender="error" :text="t('chat.failed')" @retry="conv.retry()" />
 
-      <!-- 상담원 대기 · 통역 채팅 · 종료 후 기록 -->
-      <template v-if="consult.current && consult.current.id === conv.consultationId">
-        <ConsultSummaryCard collapsible :rows="consultRows" :questions="consult.current.summaryCard.questions" />
-        <ChatBubble sender="system" :text="t('chat.human.requestedAt', { time: fmtTime(consult.current.createdAt) })" />
-        <section v-if="consultStatus === 'WAITING'" class="waiting">
-          <span class="waiting__icon"><AppIcon name="headphones" /></span>
-          <p class="t-body-16-sb">{{ t('chat.human.waitingTitle') }}</p>
-          <p class="t-body-14 secondary">{{ t('chat.human.waitingBody') }}</p>
-        </section>
-        <template v-for="m in consult.messages" :key="m.clientMsgId ?? m.id">
-          <ChatBubble v-if="m.senderRole === 'SYSTEM'" sender="system" :text="m.translatedText ?? m.originalText" />
-          <ChatBubble
-            v-else-if="isMine(m)"
-            sender="me"
-            :text="m.originalText"
-            :time="fmtTime(m.createdAt)"
-            :failed="m.translationStatus === 'FAILED'"
-          >
-            <button
-              v-if="m.translationStatus === 'FAILED'"
-              type="button"
-              class="status status--failed t-caption-12-sb"
-              @click="consult.retryTranslation(m)"
-            >
-              <AppIcon name="alert-triangle" :size="14" />{{ myStatus(m) }}
-            </button>
-            <span v-else-if="myStatus(m)" class="status t-caption-11">
-              <AppIcon v-if="m.translationStatus === 'DONE'" name="languages" :size="14" />{{ myStatus(m) }}
-            </span>
-          </ChatBubble>
-          <ChatBubble v-else sender="counselor" :name="t('chat.counselor')" :text="m.translatedText ?? m.originalText">
-            <p v-if="shownOriginal.has(m.id) && !untranslated(m)" class="original t-caption-12">{{ m.originalText }}</p>
-            <button v-if="!untranslated(m)" type="button" class="status t-caption-11" @click="toggleOriginal(m.id)">
-              <AppIcon name="languages" :size="14" />
-              {{ shownOriginal.has(m.id) ? t('chat.human.hideOriginal') : t('chat.human.autoTranslated') }}
-            </button>
-          </ChatBubble>
-        </template>
-        <p v-if="consultStatus === 'WAITING'" class="t-caption-12 muted center">{{ t('chat.human.waitingNote') }}</p>
-      </template>
     </div>
 
     <!-- 하단: C4-3 동의 dock / 병원 대화 빠른 버튼 + 입력창 -->

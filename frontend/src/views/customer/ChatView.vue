@@ -174,7 +174,7 @@ async function enter() {
       if (conv.conversationId !== id) await conv.load(id)
       else {
         await conv.refresh(id)
-        if (conv.mode === 'HUMAN' && conv.consultationId) await consult.open(conv.consultationId)
+        if (conv.consultationId) await consult.open(conv.consultationId)
       }
     } else {
       const hospitalId = route.query.hospitalId ? Number(route.query.hospitalId) : null
@@ -213,15 +213,15 @@ watch(
 watch(
   () => consult.current?.status,
   (s) => {
-    if (s === 'CLOSED' && conv.mode === 'HUMAN') conv.mode = 'HOSPITAL'
+    if (s === 'CLOSED' && consult.current?.id === conv.consultationId && conv.mode === 'HUMAN') conv.mode = 'HOSPITAL'
   },
 )
-// HUMAN 모드 → 상담 STOMP 구독
+// 종료된 상담도 ID로 다시 불러와 요약·통역 기록을 유지한다.
 watch(
-  () => [conv.mode, conv.consultationId] as const,
-  ([mode, cid]) => {
-    if (mode === 'HUMAN' && cid && consult.current?.id !== cid) void consult.open(cid).catch(() => undefined)
-    if (mode !== 'HUMAN') consult.close()
+  () => conv.consultationId,
+  (cid) => {
+    if (cid && consult.current?.id !== cid) void consult.open(cid).catch(() => undefined)
+    if (!cid) consult.close()
   },
   { immediate: true },
 )
@@ -400,8 +400,8 @@ watch(
       <!-- Edge ② 응답 실패 -->
       <ChatBubble v-if="conv.error" sender="error" :text="t('chat.failed')" @retry="conv.retry()" />
 
-      <!-- HUMAN: 상담원 대기 · 연결됨 (통역 채팅) -->
-      <template v-if="isHuman && consult.current">
+      <!-- 상담원 대기 · 통역 채팅 · 종료 후 기록 -->
+      <template v-if="consult.current && consult.current.id === conv.consultationId">
         <ConsultSummaryCard collapsible :rows="consultRows" :questions="consult.current.summaryCard.questions" />
         <ChatBubble sender="system" :text="t('chat.human.requestedAt', { time: fmtTime(consult.current.createdAt) })" />
         <section v-if="consultStatus === 'WAITING'" class="waiting">

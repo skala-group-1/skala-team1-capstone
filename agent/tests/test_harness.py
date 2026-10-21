@@ -1,14 +1,25 @@
+from pathlib import Path
+
 from app.harness.instructions import PROMPTS_DIR, load_prompt
 from app.harness.loop import MAX_SAME_TOOL_CALLS, MAX_TURNS, check_limits
 
-PROMPTS = ("system_base", "guard_input", "extract_conditions", "ask_clarify", "rag_answer",
-           "hospital_agent", "summarize_handoff", "translate_chat")
+PROMPTS = {
+    PROMPTS_DIR: ("system_base", "summarize_handoff", "translate_chat"),
+    Path(__file__).resolve().parents[2] / "coordinator/prompts": (
+        "guard_input", "extract_conditions", "ask_clarify", "rag_answer"),
+    Path(__file__).resolve().parents[2] / "concierge/prompts": ("hospital_agent",),
+}
 
 
 def test_all_prompt_files_exist_with_version():
-    for name in PROMPTS:
-        assert (PROMPTS_DIR / f"{name}.md").exists()
-        assert "version:" in load_prompt(name)
+    for directory, names in PROMPTS.items():
+        for name in names:
+            assert "version:" in load_prompt(name, directory=directory)
+
+
+def test_coordinator_prompt_loads_from_role_directory():
+    directory = Path(__file__).resolve().parents[2] / "coordinator/prompts"
+    assert load_prompt("coordinator", directory=directory).strip()
 
 
 def test_loop_limits():

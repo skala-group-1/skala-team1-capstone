@@ -1,6 +1,6 @@
-"""Main coordinator and manual demo; shared graph/State/hospital code untouched.
+"""Hospital discovery coordinator and manual demo.
 
-Interactive: python -m app.nodes.planner_agent --locale en
+From agent/: PYTHONPATH=.. uv run python -m coordinator.nodes.planner_agent --locale en
 Real LLM + existing mock Business MCP; no RAG, bookings or hospital connection.
 """
 import asyncio
@@ -12,7 +12,7 @@ from langgraph.graph import END, START, StateGraph
 
 from app.graph.state import AgentState
 from app.harness.instructions import load_prompt
-from app.nodes.coordinator_tools import make_coordinator_tools
+from coordinator.nodes.coordinator_tools import make_coordinator_tools
 
 
 def build_coordinator(model, *, business_loader=None, initial_state=None):
@@ -21,7 +21,7 @@ def build_coordinator(model, *, business_loader=None, initial_state=None):
     tools, results = make_coordinator_tools(business_loader, initial_state=source)
     bound = model.bind_tools(tools, parallel_tool_calls=False)
     tool_map = {t.name: t for t in tools}
-    prompt = load_prompt("coordinator")
+    prompt = load_prompt("coordinator", directory=Path(__file__).resolve().parents[1] / "prompts")
     seen = set()
     calls = 0
 
@@ -114,7 +114,7 @@ async def chat_with_mock_hospitals(locale="en", *, read=input, write=print, runn
     from app.config import get_settings
     from langchain_mcp_adapters.client import MultiServerMCPClient
 
-    root = Path(__file__).resolve().parents[3]
+    root = Path(__file__).resolve().parents[2]
     interpreter = root / "mcp/.venv/bin/python"
     if runner is None and not get_settings().openai_api_key:
         write("OPENAI_API_KEY가 없습니다. 저장소 루트 .env를 확인하세요.")

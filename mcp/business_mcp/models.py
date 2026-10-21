@@ -142,7 +142,7 @@ class TripPlan(_Model):
     recovery_end_date: str | None = None
     buffer_days: int | None = None
     feasible: bool
-    reason: Literal["OK", "RECOVERY_AFTER_DEPARTURE", "NO_SLOT_BEFORE_DEPARTURE"]
+    reason: Literal["OK", "RECOVERY_AFTER_DEPARTURE", "NO_SLOT_BEFORE_DEPARTURE", "PROCEDURE_NOT_OFFERED"]
 
 
 class TripPlanResult(_Model):

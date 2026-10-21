@@ -10,6 +10,8 @@ from typing import Any
 
 from fastmcp.exceptions import ToolError
 
+from mcp_common.casing import keys_to_snake
+
 
 def unknown_procedure(text: str, known_codes: list[str]) -> ToolError:
     return ToolError(
@@ -46,7 +48,7 @@ def from_backend_error(status: int, body: dict[str, Any] | None) -> ToolError:
     if status == 404:
         return not_found(details.get("resource", "Resource"), "", "Use an id from previous tool results.")
     if code == "SLOT_UNAVAILABLE":
-        return slot_unavailable(details.get("slotId", 0), details.get("alternatives", []))
+        return slot_unavailable(details.get("slotId", 0), keys_to_snake(details.get("alternatives", [])))
     if code == "UNKNOWN_PROCEDURE":
         return unknown_procedure(details.get("text", ""), [c.get("code", "") for c in details.get("candidates", [])])
     if status >= 500:

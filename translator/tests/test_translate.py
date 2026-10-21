@@ -79,3 +79,21 @@ async def test_summary_count_mismatch_raises_for_retry(fake_llm):
     msg = SummaryTranslate(consultation_id=5, summary_card=CARD, from_="zh", to="ko")
     with pytest.raises(ValueError):
         await translate_summary(msg)
+
+
+async def test_summary_localizes_month_names_without_changing_card_facts(fake_llm):
+    card = {**CARD, "procedure": "Non-incisional double eyelid surgery",
+            "preferredDates": "October 22 to October 28, 2026", "budget": "KRW 2,000,000",
+            "questions": [], "customerLocale": "en"}
+    llm = fake_llm(SummaryTranslation(translations=[
+        "비절개 쌍꺼풀 수술", "2026년 10월 22일부터 10월 28일까지", "KRW 2,000,000"]))
+    out = await translate_summary(SummaryTranslate(
+        consultation_id=5, summary_card=card, from_="en", to="ko"))
+    assert out.summary_card_ko["preferredDates"] == "2026년 10월 22일부터 10월 28일까지"
+    assert out.summary_card_ko["budget"] == card["budget"]
+    assert out.summary_card_ko["stayDays"] == 7
+    assert out.summary_card_ko["customerLocale"] == "en"
+    assert card["preferredDates"] == "October 22 to October 28, 2026"
+    assert "Localize month names" in llm.calls[0]
+    assert "preserving year, month and day" in llm.calls[0]
+    assert "Keep every number, date and amount exactly as written" not in llm.calls[0]

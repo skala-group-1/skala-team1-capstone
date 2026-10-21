@@ -264,7 +264,7 @@ async def test_new_checkpoint_keeps_returned_human_mode_and_consultation():
 
 
 @pytest.mark.parametrize("pending", [False, True])
-async def test_reopening_child_preserves_entire_checkpoint_and_interrupt(pending):
+async def test_reopening_child_refreshes_summary_but_preserves_history_and_interrupt(pending):
     worker, publisher = opening_worker(pending=pending)
     await worker.graph.aupdate_state(CHILD_CONFIG, {
         "conditions": {"procedure_code": "SAVED"}, "summary": "Saved summary",
@@ -277,7 +277,14 @@ async def test_reopening_child_preserves_entire_checkpoint_and_interrupt(pending
         assert saved.values["pending_action"] and saved.tasks[0].interrupts
     await worker.handle(selection_request())
     await worker.handle(selection_request(task="select-again"))
-    assert await worker.graph.aget_state(CHILD_CONFIG) == saved
+    reopened = await worker.graph.aget_state(CHILD_CONFIG)
+    if pending:
+        assert reopened == saved
+    else:
+        assert reopened.values["summary"] == "Selected from search results"
+        assert reopened.values["messages"] == saved.values["messages"]
+        assert reopened.values["conditions"] == saved.values["conditions"]
+        assert not reopened.next
     assert len([e for e in events(publisher) if e.event == "CONVERSATION_OPENED"]) == 2
 
 

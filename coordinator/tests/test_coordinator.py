@@ -11,14 +11,20 @@ from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 from langchain_core.tools import tool
 
 from coordinator.nodes.coordinator_tools import make_coordinator_tools, load_business_tools
-from coordinator.nodes.planner_agent import run_coordinator, chat_with_mock_hospitals
+from coordinator.nodes.planner_agent import ReplyReview, run_coordinator, chat_with_mock_hospitals
 
 
 class ScriptedModel:
-    def __init__(self, *replies):
+    def __init__(self, *replies, review="reply"):
         self.replies = iter(replies)
         self.history = []
         self.bindings = []
+        self.reviewer = AsyncMock()
+        self.reviewer.ainvoke.return_value = ReplyReview(route=review)
+
+    def with_structured_output(self, schema):
+        assert schema is ReplyReview
+        return self.reviewer
 
     def bind_tools(self, tools, **kwargs):
         self.bindings.append(kwargs)
@@ -76,7 +82,8 @@ async def test_tool_a_round_trip_is_unavailable_not_invented_evidence():
     model = ScriptedModel(call("procedure_consultation", {"question": "Explain pico toning"}),
                           AIMessage(content="External search is not connected."))
     result = await run_coordinator({"messages": [HumanMessage("Explain pico toning")]}, model)
-    assert result["draft"] == "Unable to complete this request. Please try again later."
+    assert "verified sources" in result["draft"]
+    assert len(model.history) == 1
 
 
 @pytest.mark.asyncio
@@ -165,12 +172,19 @@ async def test_localized_summary_and_invalid_selection(locale, title):
 
 @pytest.mark.asyncio
 async def test_repeated_tool_call_is_blocked():
-    args = {"question": "Explain"}
-    model = ScriptedModel(call("procedure_consultation", args),
-                          call("procedure_consultation", args, "two"), AIMessage(content="Stopped"))
-    result = await run_coordinator({"messages": [HumanMessage("Explain")]}, model)
+    @tool
+    async def business_normalize_procedure(text: str):
+        """Return a known procedure without selecting it."""
+        return {"candidates": [{"code": "JAW_BOTOX", "name": text, "score": 1}]}
+
+    args = {"operation": "normalize", "arguments": {"text": "Jaw botox"}}
+    model = ScriptedModel(call("hospital_lookup", args),
+                          call("hospital_lookup", args, "two"), AIMessage(content="Stopped"))
+    result = await run_coordinator({"messages": [HumanMessage("Jaw botox")]}, model,
+                                  business_loader=AsyncMock(return_value=[business_normalize_procedure]))
     assert result["candidates"] == []
     assert "Stopped" not in result["draft"]
+    assert len(model.history) == 2
 
 
 @pytest.mark.asyncio
@@ -416,18 +430,15 @@ async def test_no_preference_stays_explicit_after_search_without_null_mcp_argume
 
 
 @pytest.mark.asyncio
-async def test_skipped_collection_recovers_filters_and_discards_medical_prose():
-    model = ScriptedModel(AIMessage("埋线恢复快 GANGNAM budget_max_krw"),
-        call("collect_conditions", {"fields": {"areas": ["GANGNAM", "MYEONGDONG"],
-             "date_from": "2026-10-20", "date_to": "2026-10-27"}}),
-        AIMessage("埋线恢复快"))
-    result = await run_coordinator({"user": {"locale": "zh"}, "messages": [HumanMessage(
-        "10월 20일부터 일주일 강남이나 명동") ]}, model)
-    assert any(b.get("tool_choice") == "collect_conditions" for b in model.bindings)
-    assert result["conditions"]["areas"] == ["GANGNAM", "MYEONGDONG"]
-    assert result["conditions"]["date_to"] == "2026-10-27"
-    assert result["missing"]
-    assert not any(term in result["draft"] for term in ("恢复", "GANGNAM", "budget_max_krw"))
+async def test_concern_response_does_not_force_search_filters():
+    loader = AsyncMock()
+    response = "주름이 신경 쓰이시는군요. 어느 부위가 가장 고민이세요?"
+    model = ScriptedModel(AIMessage(response))
+    result = await run_coordinator({"user": {"locale": "ko"}, "messages": [HumanMessage(
+        "주름 개선이 고민이야")]}, model, business_loader=loader)
+    assert result == {"draft": response}
+    assert not any(b.get("tool_choice") for b in model.bindings)
+    loader.assert_not_awaited()
 
 
 @pytest.mark.asyncio
@@ -479,11 +490,14 @@ async def test_raw_procedure_is_normalized_and_required_search_uses_retained_fil
 
 
 @pytest.mark.asyncio
-async def test_collection_refusal_cannot_become_user_facing_claim():
-    result = await run_coordinator({"user": {"locale": "zh"}}, ScriptedModel(
-        AIMessage("恢复快"), AIMessage("恢复快")))
-    assert result["draft"] == "暂时无法完成请求，请稍后重试。"
-    assert result["candidates"] == []
+async def test_medical_prose_requires_sources_and_preserves_prior_search():
+    model = ScriptedModel(AIMessage("恢复快"), review="procedure_consultation")
+    result = await run_coordinator({"user": {"locale": "zh"},
+        "conditions": {"areas": []}, "candidates": [{"id": 17}],
+        "messages": [HumanMessage("효과와 위험을 알려줘")]}, model)
+    assert "经过核实" in result["draft"] and "恢复快" not in result["draft"]
+    assert set(result) == {"draft"}
+    model.reviewer.ainvoke.assert_awaited_once()
 
 
 @pytest.mark.asyncio

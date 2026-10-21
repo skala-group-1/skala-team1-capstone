@@ -279,6 +279,7 @@ const zh: typeof en = {
   chat: {
     list: { title: '对话', open: '对话列表', hospitals: '医院对话 {n}', noConditions: '尚未整理条件' },
     aiTitle: 'Yeoshin AI',
+    newConversation: '开始新对话',
     agentName: '{hospital} · AI 向导',
     mode: { ai: 'AI 咨询', agent: '医院助手', waiting: '等待咨询师', human: '已连接咨询师' },
     cards: { browse: '医院搜索结果' },

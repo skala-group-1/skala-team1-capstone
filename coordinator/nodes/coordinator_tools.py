@@ -59,10 +59,10 @@ def prepare_handoff_summary(state, hospital_id, candidates, conditions):
     locale = (state.get("user") or {}).get("locale") or "en"
     labels = {
         "en": ("Handoff draft — not sent", "Selected hospital", "Saved language", "Search conditions",
-               "User statements (unverified, original language)", "Not confirmed", "Hours and availability need confirmation. No conversation or booking created."),
-        "zh": ("交接摘要草稿——尚未发送", "所选医院", "设置语言", "搜索条件", "用户陈述（未核实，原文）", "未确认", "营业时间和预约时段仍需确认；未创建对话或预约。"),
-        "ja": ("引き継ぎ用下書き・未送信", "選択した病院", "設定言語", "検索条件", "利用者の発言（未確認・原文）", "未確認", "営業時間と予約枠は確認が必要です。会話や予約は作成していません。"),
-        "ko": ("인계 요약 초안 — 미전송", "선택 병원", "설정 언어", "검색 조건", "사용자 발언 (미검증 원문)", "미확인", "영업시간·예약 가능 여부 추가 확인 필요. 대화·예약 생성 안 함."),
+               "User statements (oldest first, unverified, original language)", "Not confirmed", "Hours and availability need confirmation. No conversation or booking created."),
+        "zh": ("交接摘要草稿——尚未发送", "所选医院", "设置语言", "搜索条件", "用户陈述（从早到晚，未核实，原文）", "未确认", "营业时间和预约时段仍需确认；未创建对话或预约。"),
+        "ja": ("引き継ぎ用下書き・未送信", "選択した病院", "設定言語", "検索条件", "利用者の発言（古い順・未確認・原文）", "未確認", "営業時間と予約枠は確認が必要です。会話や予約は作成していません。"),
+        "ko": ("인계 요약 초안 — 미전송", "선택 병원", "설정 언어", "검색 조건", "사용자 발언 (오래된 순서, 미검증 원문)", "미확인", "영업시간·예약 가능 여부 추가 확인 필요. 대화·예약 생성 안 함."),
     }
     title, selected, language, filters, statements, unknown, caveat = labels.get(locale, labels["en"])
     quotes = [str(m.content) for m in state.get("messages", []) if isinstance(m, HumanMessage)]
@@ -156,7 +156,10 @@ def make_coordinator_tools(business_loader=None, *, initial_state=None):
         args = arguments.model_dump(mode="json", exclude_unset=True)
         if operation == "normalize":
             # Both intake and normalization accept a procedure phrase; MCP calls it text.
-            args = {"text": args.get("text") or args.get("procedure_code")}
+            text = args.get("text") or args.get("procedure_code")
+            # Resolve common wording, never a specific surgical method or procedure code.
+            aliases = {"쌍수": "쌍꺼풀", "쌍꺼풀 수술": "쌍꺼풀", "쌍꺼풀수술": "쌍꺼풀"}
+            args = {"text": aliases.get(text.strip(), text) if isinstance(text, str) else text}
         if operation == "prepare_handoff":
             results.update({"summary": None, "selected_hospital_id": None})
             prepared = prepare_handoff_summary(source, args.get("hospital_id"),
@@ -203,6 +206,10 @@ def make_coordinator_tools(business_loader=None, *, initial_state=None):
             if len(candidates) > 1 and len([c for c in candidates if c.get("score") == 1]) != 1:
                 # Only a new user turn may resolve an ambiguous procedure choice.
                 results["ambiguity"] = candidates
+                conditions = dict(results.get("conditions", source.get("conditions") or {}))
+                conditions.pop("procedure_code", None)
+                results.update({"conditions": conditions, "missing": ["procedure_code"],
+                                "hospitals": [], "summary": None, "selected_hospital_id": None})
         else:
             results["evidence"] = operation
         if operation == "hours":

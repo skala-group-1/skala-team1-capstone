@@ -279,6 +279,7 @@ export default {
   chat: {
     list: { title: 'Chats', open: 'All chats', hospitals: 'Clinic chats {n}', noConditions: 'No conditions yet' },
     aiTitle: 'Yeoshin AI',
+    newConversation: 'Start a new chat',
     agentName: '{hospital} · AI guide',
     mode: { ai: 'AI chat', agent: 'Clinic agent', waiting: 'Waiting for counselor', human: 'Counselor connected' },
     cards: { browse: 'Hospital search results' },

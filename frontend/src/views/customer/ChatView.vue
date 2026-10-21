@@ -47,6 +47,7 @@ const consent = ref(false)
 const approving = ref(false)
 const requested = ref<Reservation | null>(null)
 const shownOriginal = ref(new Set<number>())
+const startingConversation = ref(false)
 
 // ─── 모드 ───
 const isHospital = computed(() => conv.mode !== 'MAIN')
@@ -150,9 +151,26 @@ async function approve(editedArgs: Record<string, unknown> | null = null) {
 async function reject() {
   await conv.approve(false, null, null)
 }
-function compareCards(cards: { id: number }[]) {
-  search.compareIds = cards.slice(0, 3).map((c) => c.id)
-  void router.push({ path: '/compare', query: { ids: search.compareIds.join(','), procedure: conv.conditions?.procedureCode ?? undefined } })
+async function compareCards(cards: { id: number; name: string }[]) {
+  if (conv.streaming || !cards.length) return
+  const names = cards.slice(0, 3).map((c) => c.name).join(', ')
+  await conv.send(t('compare.askAiMessage', { names, procedure: procedureName(conv.conditions?.procedureCode ?? null) }))
+}
+async function newConversation() {
+  if (conv.streaming || startingConversation.value) return
+  startingConversation.value = true
+  try {
+    const created = await conv.open()
+    input.value = ''
+    evidence.value = null
+    requested.value = null
+    search.compareIds = []
+    await router.push(`/chat/${created.id}`)
+  } catch {
+    showToast(t('common.error'))
+  } finally {
+    startingConversation.value = false
+  }
 }
 async function cancelRequested() {
   if (!requested.value) return
@@ -264,6 +282,10 @@ watch(
         <AppBadge :tone="modeBadge.tone" :icon="modeBadge.icon">{{ modeBadge.label }}</AppBadge>
       </template>
       <template #right>
+        <button v-if="!isHospital" type="button" class="icon-btn" :aria-label="t('chat.newConversation')"
+          :title="t('chat.newConversation')" :disabled="conv.streaming || startingConversation" @click="newConversation">
+          <AppIcon name="plus" />
+        </button>
         <RouterLink to="/chats" class="icon-btn" :aria-label="t('chat.list.open')"><AppIcon name="message-circle" /></RouterLink>
         <button type="button" class="icon-btn" :aria-label="t('chat.info.title')" @click="infoOpen = true">
           <AppIcon name="info" />
@@ -323,7 +345,7 @@ watch(
               @chat="(id) => conv.send(null, { type: 'SELECT_HOSPITAL', hospitalId: id })"
             />
             <div v-if="i === lastCardsIndex" class="inset row-actions">
-              <AppButton variant="outline" size="s" @click="compareCards(m.cards)">
+              <AppButton variant="outline" size="s" :disabled="conv.streaming" @click="compareCards(m.cards)">
                 {{ t('chat.compareN', { n: Math.min(3, m.cards.length) }) }}
               </AppButton>
               <AppButton variant="ghost" size="s" @click="inputEl?.focus()">{{ t('chat.changeConditions') }}</AppButton>

@@ -162,7 +162,7 @@ export const useConversationStore = defineStore('conversation', {
           this.activeTools = this.activeTools.filter((t) => t.tool !== e.data.tool)
           break
         case 'CONDITIONS':
-          this.conditions = e.data.conditions
+          this.conditions = { ...e.data.conditions, areas: e.data.conditions.areas ?? [] }
           this.missing = e.data.missing
           break
         case 'RESULT_CARDS':

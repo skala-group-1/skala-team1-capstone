@@ -1,9 +1,29 @@
 """Main-only wrappers over existing Business MCP. No RAG or business writes."""
 import json
+from datetime import date
 from typing import Literal
 
 from langchain_core.messages import HumanMessage
 from langchain_core.tools import tool
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+
+class ConditionPatch(BaseModel):
+    """Only supplied fields replace saved conditions; explicit null clears a filter."""
+    model_config = ConfigDict(extra="forbid")
+    procedure_code: str | None = None
+    areas: list[Literal["GANGNAM", "SINSA", "APGUJEONG", "CHEONGDAM", "MYEONGDONG", "HONGDAE", "JAMSIL"]] | None = None
+    date_from: date | None = None
+    date_to: date | None = None
+    budget_max_krw: int | None = Field(default=None, ge=0, strict=True)
+    consult_language: Literal["en", "zh", "ja", "ko"] | None = None
+    sort_by: Literal["REVIEW_COUNT", "RATING", "PRICE", "DISTANCE"] | None = None
+
+    @model_validator(mode="after")
+    def ordered_dates(self):
+        if self.date_from and self.date_to and self.date_to < self.date_from:
+            raise ValueError("Departure must not precede arrival")
+        return self
 
 
 async def load_business_tools():
@@ -49,6 +69,33 @@ def make_coordinator_tools(business_loader=None, *, initial_state=None):
     loaded = None
     results = {}
 
+    def collect(fields):
+        action = source.get("action") or {}
+        if action.get("type") == "SET_SORT":
+            fields = {**fields, "sort_by": action.get("sortBy")}
+        saved = results.get("conditions", source.get("conditions") or {})
+        conditions = ConditionPatch.model_validate({**saved, **fields}).model_dump(mode="json", exclude_unset=True)
+        if conditions != saved:
+            results.update({"hospitals": [], "summary": None, "selected_hospital_id": None})
+        results["conditions"] = conditions
+        missing = [k for k in ("procedure_code", "date_from", "sort_by") if not conditions.get(k)]
+        if not source.get("optional_conditions_asked"):
+            missing += [k for k in ("budget_max_krw", "consult_language") if k not in conditions]
+        if any(k in missing for k in ("budget_max_krw", "consult_language")):
+            results["optional_conditions_asked"] = True
+        results["missing"] = missing
+        return {"status": "needs_input" if missing else "ready", "conditions": conditions, "missing": missing}
+
+    @tool
+    async def collect_conditions(fields: ConditionPatch):
+        """Save only explicitly supplied Conditions, before asking or searching.
+
+        Normalize procedure names first. Omitted fields retain previous values;
+        explicit null means no preference. Ask all returned missing fields in one
+        question. Budget and consultation language are asked only once.
+        """
+        return collect(fields.model_dump(mode="json", exclude_unset=True))
+
     @tool
     async def procedure_consultation(question: str):
         """Tool A: general procedure information requires external evidence.
@@ -59,7 +106,7 @@ def make_coordinator_tools(business_loader=None, *, initial_state=None):
                 "External evidence search is not connected. Do not provide medical facts or benefit examples."}
 
     @tool
-    async def hospital_lookup(operation: Literal["normalize", "search", "reservations", "hours", "slots", "prepare_handoff"], arguments: dict):
+    async def hospital_lookup(operation: Literal["normalize", "search", "reservations", "hours", "slots", "compare", "prepare_handoff"], arguments: dict):
         """Tool B: reuse Business MCP. Use existing snake_case schemas only.
 
         normalize takes text. search requires procedure_code, date_from and user-
@@ -68,7 +115,8 @@ def make_coordinator_tools(business_loader=None, *, initial_state=None):
         hours takes hospital_id. slots takes hospital_id, procedure_code, date_from,
         date_to. reservations takes optional status. prepare_handoff takes only
         hospital_id explicitly chosen from the displayed list; it creates an unsent
-        brief only. No booking or hospital conversation is created.
+        brief only. compare takes hospital_ids (1–3 displayed IDs) and uses the saved procedure.
+        No booking or hospital conversation is created.
         """
         nonlocal loaded
         args = dict(arguments)
@@ -82,15 +130,29 @@ def make_coordinator_tools(business_loader=None, *, initial_state=None):
             return prepared
         if operation == "search":
             results.update({"hospitals": [], "summary": None, "selected_hospital_id": None})
-            missing = [k for k in ("procedure_code", "date_from", "sort_by") if not args.get(k)]
-            if missing:
-                return {"status": "needs_input", "missing": missing}
+            if "language" in args:
+                args["consult_language"] = args.pop("language")
+            collected = collect(args)
+            if collected["missing"]:
+                return collected
+            args = {("language" if k == "consult_language" else k): v
+                    for k, v in collected["conditions"].items() if v is not None}
             args["limit"] = 5
+        if operation == "compare":
+            ids = args.get("hospital_ids", [])
+            candidates = results.get("hospitals", source.get("candidates") or [])
+            if not isinstance(ids, list) or not 1 <= len(ids) <= 3 or any(
+                    type(i) is not int or i not in [h["id"] for h in candidates] for i in ids):
+                return {"status": "invalid_selection"}
+            procedure = results.get("conditions", source.get("conditions") or {}).get("procedure_code")
+            if not procedure:
+                return {"status": "needs_input", "missing": ["procedure_code"]}
+            args = {"hospital_ids": ids, "procedure_code": procedure}
         if loaded is None:
             loaded = {t.name: t for t in await loader()}
         names = {"normalize": "business_normalize_procedure", "search": "business_search_hospitals",
                  "reservations": "business_get_my_reservations", "hours": "business_get_hospital_detail",
-                 "slots": "business_get_available_slots"}
+                 "slots": "business_get_available_slots", "compare": "business_compare_hospitals"}
         target = loaded.get(names[operation])
         if target is None:
             return {"status": "unavailable", "message": "Required Business MCP tool unavailable."}
@@ -100,7 +162,6 @@ def make_coordinator_tools(business_loader=None, *, initial_state=None):
         if operation == "search":
             result["hospitals"] = result.get("hospitals", [])[:5]
             results["hospitals"] = result["hospitals"]
-            results["conditions"] = {("consult_language" if k == "language" else k): v for k, v in args.items() if k != "limit"}
         return result
 
-    return [procedure_consultation, hospital_lookup], results
+    return [procedure_consultation, hospital_lookup, collect_conditions], results

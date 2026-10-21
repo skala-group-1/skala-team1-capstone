@@ -5,7 +5,9 @@ Real LLM + existing mock Business MCP; no RAG, bookings or hospital connection.
 """
 import asyncio
 import json
+from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
 from langgraph.graph import END, START, StateGraph
@@ -29,7 +31,10 @@ def build_coordinator(model, *, business_loader=None, initial_state=None):
         # This also allows standalone graph callers to supply the initial State.
         source.update(state)
         context = {"locale": (state.get("user") or {}).get("locale") or "en",
+                   "action": source.get("action"),
                    "conditions": results.get("conditions", state.get("conditions", {})),
+                   "optional_conditions_asked": source.get("optional_conditions_asked", False),
+                   "today": datetime.now(ZoneInfo("Asia/Seoul")).date().isoformat(),
                    "candidates": results.get("hospitals", state.get("candidates", []))}
         reply = await bound.ainvoke([
             SystemMessage(content=prompt),
@@ -79,6 +84,18 @@ def unavailable(state, reason):
 
 async def run_coordinator(state, model=None, *, business_loader=None):
     """Return a State update. Caller owns message history and merges updates."""
+    state = dict(state)
+    action = state.get("action") or {}
+    if action.get("type") == "SET_SORT":
+        from coordinator.nodes.coordinator_tools import ConditionPatch
+        try:
+            patch = ConditionPatch(sort_by=action.get("sortBy"))
+            if patch.sort_by is None:
+                raise ValueError("Missing sort")
+        except ValueError:
+            return unavailable(state, "INVALID_SORT")
+        state["conditions"] = {**(state.get("conditions") or {}), "sort_by": patch.sort_by}
+        state.update({"candidates": [], "summary": None, "selected_hospital_id": None})
     if model is None:
         from app.config import get_settings
         from langchain_openai import ChatOpenAI
@@ -96,11 +113,16 @@ async def run_coordinator(state, model=None, *, business_loader=None):
     except Exception as error:
         return unavailable(state, type(error).__name__)
     update = {"draft": output["messages"][-1].content}
+    if action.get("type") == "SET_SORT":
+        update.update({k: state[k] for k in ("conditions", "candidates", "summary", "selected_hospital_id")})
     if "hospitals" in results:
         update["candidates"] = results["hospitals"]
-    for field in ("conditions", "summary", "selected_hospital_id"):
+    for field in ("conditions", "missing", "optional_conditions_asked", "summary", "selected_hospital_id"):
         if field in results:
             update[field] = results[field]
+    if update.get("missing"):
+        from coordinator.nodes.ask_clarify import ask_clarify
+        update.update(ask_clarify({**state, **update}))
     return update
 
 

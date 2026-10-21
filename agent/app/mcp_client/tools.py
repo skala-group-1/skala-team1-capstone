@@ -14,6 +14,7 @@ PLANNER_TOOLS = (
 # 「AI Agent 설계」 4장: 병원 서브그래프 조회 도구 (hospital_id 는 state 에서 강제 주입)
 HOSPITAL_READ_TOOLS = (
     "business_get_hospital_detail",
+    "business_get_hospital_reviews",
     "business_list_doctors",
     "business_get_price_options",
     "business_get_available_slots",

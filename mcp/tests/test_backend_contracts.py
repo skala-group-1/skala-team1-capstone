@@ -114,6 +114,37 @@ async def test_reservation_preserves_backend_procedure_code_without_guessing(bac
 
 
 PARENT_ID = "98b7eac5-0577-43c8-8601-4dfad34e6804"
+
+
+async def test_reviews_use_existing_pagination_and_language_contract(backend_response):
+    backend_response.update(status=200, body={"items": [{
+        "id": 41, "procedureCode": "JAW_BOTOX", "rating": 4, "lang": "ja",
+        "content": "説明が丁寧でした。", "createdAt": "2026-10-20T12:00:00+09:00",
+        "userId": 999,
+    }], "page": 1, "size": 2, "total": 9})
+    async with Client(server.mcp) as client:
+        result = await client.call_tool("get_hospital_reviews", {
+            "hospital_id": 7, "lang": "ja", "page": 1, "size": 2,
+        })
+    data = result.structured_content
+    assert data["items"][0]["procedure_code"] == "JAW_BOTOX"
+    assert data["items"][0]["content"] == "説明が丁寧でした。"
+    assert "user_id" not in data["items"][0]
+    assert (data["page"], data["size"], data["total"]) == (1, 2, 9)
+    request, = backend_response["requests"]
+    assert request.url.path == "/internal/hospitals/7/reviews"
+    assert request.url.params["lang"] == "ja"
+    assert request.url.params["page"] == "1"
+
+
+@pytest.mark.parametrize("args", [{"hospital_id": 0}, {"hospital_id": 1, "page": -1},
+                                  {"hospital_id": 1, "size": 11}])
+async def test_review_bounds_rejected_before_backend(backend_response, args):
+    async with Client(server.mcp) as client:
+        with pytest.raises(ToolError):
+            await client.call_tool("get_hospital_reviews", args)
+    assert not backend_response["requests"]
+
 OPEN_ARGS = {"hospital_id": 1, "parent_conversation_id": PARENT_ID}
 
 

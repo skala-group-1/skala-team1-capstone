@@ -83,6 +83,14 @@ class StubBackendClient:
             raise errors.not_found("Hospital", hospital_id, "Use an id from business_search_hospitals results.")
         return h
 
+    async def get_hospital_reviews(self, ctx, hospital_id, lang, page, size):
+        self._hospital(hospital_id)
+        reviews = [r for r in self.reviews if r["hospital_id"] == hospital_id
+                   and (lang is None or r["lang"] == lang)]
+        reviews.sort(key=lambda r: (r["created_at"], r["id"]), reverse=True)
+        return {"items": reviews[page * size:(page + 1) * size],
+                "page": page, "size": size, "total": len(reviews)}
+
     def _check_procedure(self, code: str | None) -> None:
         if code and code not in self.procedures:
             raise errors.unknown_procedure(code, sorted(self.procedures))

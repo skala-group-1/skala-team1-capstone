@@ -325,6 +325,10 @@ async def test_new_cancellation_request_after_booking_approval_is_available(monk
 
 
 @pytest.mark.parametrize("draft,rewritten", [
+    ("Review #9 (2026-10-07): ULTHERAPY, 5/5.",
+     "Review #9 (2026-10-07): Ultherapy, 5/5."),
+    ("Review #123 (2026-10-20): JAW_BOTOX, 4/5. Read 3 of 77 reviews.",
+     "Review #123 (2026-10-20): jaw Botox, 4/5. Read 3 of 77 reviews."),
     ("Your reservation is PENDING for 2026-10-22 at 10:30, 1,900,000 KRW including VAT.",
      "Your reservation is awaiting hospital approval for 2026-10-22 at 10:30, 1,900,000 KRW including VAT."),
     ("Please choose a slot_id from the available appointments.",

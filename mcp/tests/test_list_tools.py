@@ -10,7 +10,7 @@ from rag_mcp.server import mcp as rag
 
 BUSINESS_READ = {
     "normalize_procedure", "search_hospitals", "get_hospital_detail", "list_doctors", "get_price_options",
-    "get_available_slots", "compare_hospitals", "get_my_reservations", "plan_trip",
+    "get_available_slots", "compare_hospitals", "get_my_reservations", "plan_trip", "get_hospital_reviews",
 }
 BUSINESS_WRITE = {"create_reservation_request", "cancel_reservation", "request_consultation"}
 BUSINESS_NAVIGATION = {"open_hospital_conversation"}
@@ -21,7 +21,7 @@ async def test_business_tools_snapshot():
     async with Client(business) as c:
         tools = {t.name: t for t in await c.list_tools()}
     assert set(tools) == BUSINESS_READ | BUSINESS_WRITE | BUSINESS_NAVIGATION
-    assert len(tools) == 13
+    assert len(tools) == 14
     for name, tool in tools.items():
         assert tool.description and len(tool.description) > 40, f"{name}: description 부족"
         assert tool.annotations is not None, f"{name}: annotations 없음"

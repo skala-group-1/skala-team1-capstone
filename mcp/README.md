@@ -6,6 +6,11 @@
 
 FastMCP 서버 2개 (「MCP 설계」). agent 는 두 서버를 한 Client 에 붙여 도구명 접두어 `business_`, `rag_` 로 쓴다.
 
+병원 리뷰: `get_hospital_reviews(hospital_id, lang=None, page=0, size=5)`는
+`GET /internal/hospitals/{id}/reviews`를 호출합니다. 공개 리뷰 API와 같은 백엔드
+서비스를 사용하며 최신순 `items/page/size/total`을 반환합니다. MCP의 `size`는 1~10이고,
+반환 항목은 리뷰 ID·시술 코드·평점·원문 언어·본문·작성일입니다. 사용자 ID는 전달하지 않습니다.
+
 > **지금 상태: 골격.** 도구 이름·시그니처·description·힌트·오류 규칙은 확정본(「MCP 설계」) 기준으로 작성했고,
 > 실제 로직은 `# TODO(mcp):` / `# TODO(rag):` 주석이 달린 곳을 채우면 된다.
 > stub 모드는 `data/mock` 데이터를 실제로 돌려주므로 agent 담당은 지금 바로 붙여서 개발할 수 있다.

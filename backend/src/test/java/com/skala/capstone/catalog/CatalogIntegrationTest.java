@@ -171,6 +171,22 @@ class CatalogIntegrationTest extends IntegrationTest {
 	}
 
 	@Test
+	void internalReviewsMatchPublicReviewsAndRequireServiceAuthentication() throws Exception {
+		JsonNode expected = body(mvc.perform(get("/api/hospitals/1/reviews")
+				.header(HttpHeaders.AUTHORIZATION, zhCustomer).param("lang", "zh").param("size", "3"))
+				.andExpect(status().isOk()).andReturn());
+		JsonNode actual = body(mvc.perform(get("/internal/hospitals/1/reviews")
+				.header("X-Service-Token", app.serviceToken()).header("X-Acting-User-Id", "3")
+				.param("lang", "zh").param("size", "3"))
+				.andExpect(status().isOk()).andReturn());
+		assertThat(actual).isEqualTo(expected);
+		mvc.perform(get("/internal/hospitals/1/reviews")).andExpect(status().isUnauthorized());
+		mvc.perform(get("/internal/hospitals/1/reviews")
+				.header("X-Service-Token", app.serviceToken()).header("X-Acting-User-Id", "3")
+				.param("size", "51")).andExpect(status().isBadRequest());
+	}
+
+	@Test
 	void compareKeepsRequestedOrder() throws Exception {
 		JsonNode res = body(mvc.perform(post("/api/hospitals/compare").header(HttpHeaders.AUTHORIZATION, zhCustomer)
 				.contentType(MediaType.APPLICATION_JSON)

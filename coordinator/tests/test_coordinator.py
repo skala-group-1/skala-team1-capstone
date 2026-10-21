@@ -80,29 +80,57 @@ async def test_tool_a_round_trip_is_unavailable_not_invented_evidence():
 
 
 @pytest.mark.asyncio
-async def test_missing_sort_prevents_lookup():
+@pytest.mark.parametrize("areas", [["GANGNAM"], []])
+@pytest.mark.parametrize("previously_asked", [False, True])
+async def test_search_without_optional_filters_returns_cards(areas, previously_asked):
+    @tool
+    async def business_search_hospitals(procedure_code: str, areas: list[str], date_from: str,
+                                       sort_by: str, limit: int):
+        """Search with only required conditions and the default sort."""
+        assert (procedure_code, date_from, sort_by, limit) == (
+            "JAW_BOTOX", "2026-10-22", "REVIEW_COUNT", 5)
+        return {"hospitals": [{"id": 1, "name": "Test clinic"}], "total": 1}
+
+    loader = AsyncMock(return_value=[business_search_hospitals])
+    result = await run_coordinator({"conditions": {"procedure_code": "JAW_BOTOX"},
+        "optional_conditions_asked": previously_asked, "user": {"locale": "zh"}},
+        ScriptedModel(call("collect_conditions", {"fields": {
+            "areas": areas, "date_from": "2026-10-22"}})), business_loader=loader)
+    assert result["missing"] == []
+    assert result["candidates"] == [{"id": 1, "name": "Test clinic"}]
+    assert result["conditions"] == {"procedure_code": "JAW_BOTOX", "areas": areas,
+                                    "date_from": "2026-10-22", "sort_by": "REVIEW_COUNT"}
+    assert "1家" in result["draft"]
+    assert "Test clinic" not in result["draft"]
+    loader.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("missing", ["areas", "procedure_code", "date_from"])
+async def test_only_missing_required_search_field_blocks_lookup(missing):
     loader = AsyncMock()
-    tools, _ = make_coordinator_tools(loader, initial_state={"conditions": {"procedure_code": "JAW_BOTOX"}})
-    response = await tools[1].ainvoke({"operation": "search", "arguments": {
-        "procedure_code": "JAW_BOTOX", "date_from": "2026-10-22"}})
+    conditions = {"procedure_code": "JAW_BOTOX", "areas": ["GANGNAM"], "date_from": "2026-10-22"}
+    conditions.pop(missing)
+    tools, _ = make_coordinator_tools(loader, initial_state={"conditions": conditions})
+    response = await tools[1].ainvoke({"operation": "search", "arguments": {}})
     assert response["status"] == "needs_input"
-    assert response["missing"] == ["sort_by", "budget_max_krw", "consult_language"]
+    assert response["missing"] == [missing]
     loader.assert_not_awaited()
 
 
 @pytest.mark.asyncio
 async def test_search_caps_at_five_and_round_trip_summary_without_connection():
     @tool
-    async def business_search_hospitals(procedure_code: str, date_from: str, sort_by: str, limit: int):
+    async def business_search_hospitals(procedure_code: str, areas: list[str], date_from: str, sort_by: str, limit: int):
         """Existing MCP search boundary."""
         assert limit == 5
         return {"hospitals": [{"id": n, "name": f"Clinic {n}"} for n in range(1, 9)], "total": 8}
 
     loader = AsyncMock(return_value=[business_search_hospitals])
     state = {"conditions": {"procedure_code": "JAW_BOTOX"}, "optional_conditions_asked": True, "user": {"locale": "en"}, "messages": [HumanMessage(
-        "Jaw botox October 22, 2026. Sort by price. Not surgery.")]}
+        "Jaw botox in Gangnam October 22, 2026. Sort by price. Not surgery.")]}
     model = ScriptedModel(call("hospital_lookup", {"operation": "search", "arguments": {
-        "procedure_code": "JAW_BOTOX", "date_from": "2026-10-22", "sort_by": "PRICE"}}),
+        "procedure_code": "JAW_BOTOX", "areas": ["GANGNAM"], "date_from": "2026-10-22", "sort_by": "PRICE"}}),
         AIMessage(content="Five matching clinics."))
     first = await run_coordinator(state, model, business_loader=loader)
     assert len(first["candidates"]) == 5
@@ -206,10 +234,10 @@ async def test_mock_mcp_list_and_summary():
     async def loader():
         return await client.get_tools(server_name="business")
 
-    state = {"optional_conditions_asked": True, "user": {"locale": "en"}, "messages": [HumanMessage("Jaw botox October 22–24, sorted by price.")]}
+    state = {"optional_conditions_asked": True, "user": {"locale": "en"}, "messages": [HumanMessage("Jaw botox in Seoul October 22–24, sorted by price.")]}
     tools, results = make_coordinator_tools(loader, initial_state=state)
     found = await tools[1].ainvoke({"operation": "search", "arguments": {"procedure_code": "JAW_BOTOX",
-        "date_from": "2026-10-22", "date_to": "2026-10-24", "sort_by": "PRICE"}})
+        "areas": [], "date_from": "2026-10-22", "date_to": "2026-10-24", "sort_by": "PRICE"}})
     assert 0 < len(found["hospitals"]) <= 5
     for h in found["hospitals"]:
         print(h["id"], h["name"], h.get("min_price_krw"))
@@ -235,6 +263,8 @@ async def test_two_turn_conditions_search_and_selection():
     first_fields = {"procedure_code": "DOUBLE_EYELID_NONINCISION", "areas": ["GANGNAM", "MYEONGDONG"],
                     "date_from": "2026-10-20", "date_to": "2026-10-26", "sort_by": "REVIEW_COUNT"}
 
+    searches = []
+
     @tool
     async def business_normalize_procedure(text: str):
         """Normalization boundary."""
@@ -243,11 +273,13 @@ async def test_two_turn_conditions_search_and_selection():
 
     @tool
     async def business_search_hospitals(procedure_code: str, areas: list[str], date_from: str,
-                                       date_to: str, sort_by: str, budget_max_krw: int, language: str, limit: int):
+                                       date_to: str, sort_by: str, limit: int, budget_max_krw: int | None = None,
+                                       language: str | None = None):
         """Search boundary checks every retained filter."""
         assert {"procedure_code": procedure_code, "areas": areas, "date_from": date_from,
                 "date_to": date_to, "sort_by": sort_by} == first_fields
-        assert (budget_max_krw, language, limit) == (2000000, "zh", 5)
+        assert limit == 5
+        searches.append((budget_max_krw, language))
         return {"hospitals": [{"id": 17, "name": "Test hospital", "min_price_krw": 1500000}], "total": 1}
 
     loader = AsyncMock(return_value=[business_normalize_procedure, business_search_hospitals])
@@ -256,9 +288,9 @@ async def test_two_turn_conditions_search_and_selection():
         call("hospital_lookup", {"operation": "normalize", "arguments": {"text": "매몰 쌍꺼풀"}}),
         call("collect_conditions", {"fields": first_fields}, "collect"), AIMessage(content="Question")), business_loader=loader)
     assert first["conditions"] == first_fields
-    assert first["missing"] == ["budget_max_krw", "consult_language"]
-    assert first["optional_conditions_asked"] is True
-    assert "최대 예산" in first["draft"] and "상담 언어" in first["draft"]
+    assert first["missing"] == []
+    assert first["candidates"][0]["id"] == 17
+    assert searches == [(None, None)]
     state.update(first)
     state["messages"] += [AIMessage(first["draft"]), HumanMessage("200만원 이하 중국어상담")]
     second = await run_coordinator(state, ScriptedModel(
@@ -267,6 +299,7 @@ async def test_two_turn_conditions_search_and_selection():
         AIMessage(content="Test hospital")), business_loader=loader)
     assert second["missing"] == []
     assert second["candidates"][0]["id"] == 17
+    assert searches == [(None, None), (2000000, "zh")]
     state.update(second)
     state["action"] = {"type": "SELECT_HOSPITAL", "hospitalId": 17}
     state.update(guard_input(state))
@@ -277,31 +310,35 @@ async def test_two_turn_conditions_search_and_selection():
 
 
 @pytest.mark.asyncio
-async def test_optional_question_is_not_repeated_or_bypassed_within_turn():
-    conditions = {"procedure_code": "JAW_BOTOX", "date_from": "2026-10-22", "sort_by": "PRICE"}
-    loader = AsyncMock(return_value=[])
-    tools, results = make_coordinator_tools(loader, initial_state={"conditions": {"procedure_code": "JAW_BOTOX"}})
-    first = await tools[2].ainvoke({"fields": conditions})
-    second = await tools[1].ainvoke({"operation": "search", "arguments": {}})
-    assert first["missing"] == second["missing"] == ["budget_max_krw", "consult_language"]
+async def test_optional_filters_are_retained_then_explicitly_cleared():
+    conditions = {"procedure_code": "JAW_BOTOX", "areas": ["GANGNAM"],
+                  "date_from": "2026-10-22", "sort_by": "PRICE",
+                  "budget_max_krw": 2000000, "consult_language": "zh"}
+    loader = AsyncMock()
+    tools, results = make_coordinator_tools(loader, initial_state={"conditions": conditions})
+    unchanged = await tools[2].ainvoke({"fields": {}})
+    assert unchanged["missing"] == []
+    assert unchanged["conditions"] == conditions
+    cleared = await tools[2].ainvoke({"fields": {
+        "budget_max_krw": None, "consult_language": None, "sort_by": None}})
+    assert cleared["missing"] == []
+    assert results["conditions"] == {**conditions, "budget_max_krw": None,
+                                     "consult_language": None, "sort_by": "REVIEW_COUNT"}
     loader.assert_not_awaited()
-    tools, _ = make_coordinator_tools(loader, initial_state=results)
-    next_turn = await tools[2].ainvoke({"fields": {}})
-    assert next_turn["missing"] == []
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("mode", ["empty", "error", "missing_tool"])
 async def test_search_zero_or_failure_clears_stale_cards_without_relaxing(mode):
     @tool
-    async def business_search_hospitals(procedure_code: str, date_from: str, sort_by: str, limit: int):
+    async def business_search_hospitals(procedure_code: str, areas: list[str], date_from: str, sort_by: str, limit: int):
         """Search boundary."""
         if mode == "error":
             raise RuntimeError("Bearer SECRET")
         return {"hospitals": [], "total": 0}
 
     loader = AsyncMock(return_value=[] if mode == "missing_tool" else [business_search_hospitals])
-    conditions = {"procedure_code": "JAW_BOTOX", "date_from": "2026-10-22", "sort_by": "PRICE"}
+    conditions = {"procedure_code": "JAW_BOTOX", "areas": ["GANGNAM"], "date_from": "2026-10-22", "sort_by": "PRICE"}
     model = ScriptedModel(call("hospital_lookup", {"operation": "search", "arguments": {}}), AIMessage(content="No matches / unavailable"))
     result = await run_coordinator({"optional_conditions_asked": True, "conditions": conditions,
                                    "candidates": [{"id": 99}], "selected_hospital_id": 99, "summary": "old"},
@@ -361,18 +398,21 @@ def test_invalid_conditions_rejected(fields):
 @pytest.mark.asyncio
 async def test_no_preference_stays_explicit_after_search_without_null_mcp_arguments():
     @tool
-    async def business_search_hospitals(procedure_code: str, date_from: str, sort_by: str, limit: int):
+    async def business_search_hospitals(procedure_code: str, areas: list[str], date_from: str, sort_by: str, limit: int):
         """No optional arguments needed when the user has no preference."""
         return {"hospitals": [], "total": 0}
 
     loader = AsyncMock(return_value=[business_search_hospitals])
     fields = {"procedure_code": "JAW_BOTOX", "date_from": "2026-10-22", "sort_by": "PRICE",
-              "areas": None, "budget_max_krw": None, "consult_language": None}
+              "areas": [], "budget_max_krw": None, "consult_language": None}
     tools, result = make_coordinator_tools(loader, initial_state={"conditions": {"procedure_code": "JAW_BOTOX"}})
     await tools[1].ainvoke({"operation": "search", "arguments": fields})
     assert result["conditions"] == fields
     tools, _ = make_coordinator_tools(loader, initial_state=result)
     assert (await tools[2].ainvoke({"fields": {}}))["missing"] == []
+    cleared_location = await tools[2].ainvoke({"fields": {"areas": None}})
+    assert cleared_location["missing"] == ["areas"]
+    loader.assert_awaited_once()
 
 
 @pytest.mark.asyncio
@@ -432,7 +472,9 @@ async def test_raw_procedure_is_normalized_and_required_search_uses_retained_fil
                        "date_to": "2026-10-27", "sort_by": "REVIEW_COUNT"}}, model, business_loader=loader)
     assert result["conditions"]["procedure_code"] == "DOUBLE_EYELID_NONINCISION"
     assert result["candidates"][0]["id"] == 17
-    assert "测试医院" in result["draft"] and "1,500,000 KRW" in result["draft"]
+    assert "1家" in result["draft"] and "评论数" in result["draft"]
+    assert result["candidates"][0]["min_price_krw"] == 1500000
+    assert "测试医院" not in result["draft"] and "1,500,000" not in result["draft"]
     assert not any(term in result["draft"] for term in ("painless", "invented", "REVIEW_COUNT", "GANGNAM"))
 
 
@@ -522,3 +564,16 @@ async def test_model_cannot_resolve_ambiguous_procedure_without_new_user_turn():
     assert "procedure_code" not in results["conditions"]
     assert results["conditions"]["budget_max_krw"] == 2000000
     assert len(response["normalization"]["candidates"]) == 2
+
+
+@pytest.mark.parametrize("locale,count,sort", [
+    ("ko", "2곳", "리뷰 수"), ("en", "2 matching hospitals", "review count"),
+    ("zh", "2家", "评论数"), ("ja", "2件", "口コミ数"),
+])
+def test_search_reply_summarizes_cards_without_duplicate_details(locale, count, sort):
+    from coordinator.nodes.planner_agent import search_reply
+    results = {"hospitals": [{"id": 1, "name": "Clinic A", "min_price_krw": 860000},
+                             {"id": 2, "name": "Clinic B"}], "conditions": {"sort_by": "REVIEW_COUNT"}}
+    reply = search_reply({"user": {"locale": locale}}, results)
+    assert count in reply and sort in reply
+    assert all(detail not in reply for detail in ("Clinic A", "Clinic B", "860000", "860,000"))

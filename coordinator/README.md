@@ -6,14 +6,18 @@
 정규화 실패에도 지역·일정·예산·상담언어는 보존합니다. `extract_conditions`는 이 루프로 진입하게 하고,
 실제 누락 질문은 `ask_clarify`가 로그인 언어로 묶어서 만듭니다.
 
-- 첫 턴의 시술·지역·입출국일·사용자가 선택한 정렬을 보존합니다. 예산과 상담 언어는
-  한 번만 함께 묻고, 다음 턴에는 응답한 필드만 덮어씁니다. 명시적인 null은 상관없음입니다.
+- [최신 AI 기획](https://app.notion.com/p/AI-3ff5c6f2c23d80d4a269f3cb9f195d55)에 따라
+  지역·시술·날짜만 있으면 즉시 검색합니다. 예산·상담 언어·정렬은 선택 조건이며,
+  정렬 미지정 시 기존 MCP 기본값인 `REVIEW_COUNT`를 적용합니다.
+  서울 전체를 명시하면 `areas: []`, 지역 미입력/null이면 지역을 질문합니다.
+  다음 턴에는 입력한 필드만 덮어쓰고, 명시적인 null은 해당 필터를 해제합니다.
 - 시술 정규화·검색·비교는 기존 MCP 도구를 호출합니다. 검색은 최대 5개,
   비교는 표시된 병원 중 1~3개이며 가격·시간·미확인 값은 도구 응답을 따릅니다.
 - `SET_SORT`는 기존 조건을 유지하고 선택한 정렬을 적용합니다. 조건 변경·0건·검색 실패는
   이전 목록과 선택을 지웁니다. 자동 조건 완화·병원 추천은 하지 않습니다.
 - 조건 수집을 생략한 모델 응답은 한 번 재요청하고, 필요한 조회 근거가 없거나 오류가 나면
-  안전한 현지화 답변으로 끝냅니다. 검색 답변은 반환된 병원명·가격·리뷰 수만 표시합니다.
+  안전한 현지화 답변으로 끝냅니다. 검색 답변은 표시할 병원 수·정렬 기준만 안내하며, 병원별 정보는 구조화된 카드로 전달합니다.
+  CLI에서는 카드 데이터를 별도로 출력합니다.
 - `SELECT_HOSPITAL`은 현재 목록의 실제 ID를 검사한 뒤 승인된 기존 MCP 도구로 병원 대화를
   열고, 실제 UUID·병원 일치·HOSPITAL/HUMAN 모드를 확인합니다. 부모 MAIN은 유지합니다.
   자연어 선택은 여전히 미전송 인계 초안만 준비합니다.
@@ -34,14 +38,15 @@ RUN_MOCK_MCP=1 uv run --frozen pytest -c pyproject.toml ../coordinator/tests -q
 PYTHONPATH=.. uv run --frozen python -m coordinator.nodes.planner_agent --locale ko
 ```
 
-기본 테스트는 ScriptedModel과 조회 spy로 두 턴 조건 유지, 한 번의 선택필터 질문,
+기본 테스트는 ScriptedModel과 조회 spy로 필수 조건만으로 검색, 누락 조건 질문,
+선택 조건의 유지·변경·해제와 두 턴 조건 유지,
 검색·비교·정렬·선택·0건·도구 실패를 검증합니다. 자연어 해석의 실제 LLM 품질이나
 실제 DB 연동 성공을 뜻하지 않습니다. opt-in 테스트는 stdio MCP 프로토콜과
 mock 검색·비교를 검증하며 실제 backend/DB를 사용하지 않습니다.
 
 ## 공유 연결과 남은 범위
 
-Task 4의 AgentState는 `optional_conditions_asked: bool`을 보존하며,
+AgentState의 기존 `optional_conditions_asked` 값은 검색 여부에 사용하지 않습니다.
 worker는 `action` 원본 camelCase, `conversation_id`, `task_id`를 전달합니다.
 `conditions`·`missing`·`candidates`는 기존 snake_case state이고 SSE 변환은 worker 담당입니다.
 

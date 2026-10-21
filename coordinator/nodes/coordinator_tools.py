@@ -12,7 +12,7 @@ class ConditionPatch(BaseModel):
     """Only supplied fields replace saved conditions; explicit null clears a filter."""
     model_config = ConfigDict(extra="forbid")
     procedure_code: str | None = Field(default=None, description="User-chosen procedure name or code; verified via normalization before saving. Omit if unchanged.")
-    areas: list[Literal["GANGNAM", "SINSA", "APGUJEONG", "CHEONGDAM", "MYEONGDONG", "HONGDAE", "JAMSIL"]] | None = None
+    areas: list[Literal["GANGNAM", "SINSA", "APGUJEONG", "CHEONGDAM", "MYEONGDONG", "HONGDAE", "JAMSIL"]] | None = Field(default=None, description="Explicit Seoul districts. Use [] for explicitly requested Seoul-wide search. Omit if no location was given; null clears the location. Never map unsupported places to Seoul.")
     date_from: date | None = None
     date_to: date | None = None
     budget_max_krw: int | None = Field(default=None, ge=0, strict=True, description="Explicit maximum budget in KRW. Omit when unmentioned; null only for explicit no preference.")
@@ -86,6 +86,7 @@ def make_coordinator_tools(business_loader=None, *, initial_state=None):
         procedure = fields.pop("procedure_code", saved.get("procedure_code"))
         # Persist independent filters even if normalization subsequently fails.
         conditions = ConditionPatch.model_validate({**saved, **fields}).model_dump(mode="json", exclude_unset=True)
+        conditions["sort_by"] = conditions.get("sort_by") or "REVIEW_COUNT"
         if conditions != saved:
             results.update({"hospitals": [], "summary": None, "selected_hospital_id": None})
         results["conditions"] = conditions
@@ -103,11 +104,10 @@ def make_coordinator_tools(business_loader=None, *, initial_state=None):
             elif procedure is None:
                 conditions["procedure_code"] = None
             results.update({"hospitals": [], "summary": None, "selected_hospital_id": None})
-        missing = [k for k in ("procedure_code", "date_from", "sort_by") if not conditions.get(k)]
-        if not source.get("optional_conditions_asked"):
-            missing += [k for k in ("budget_max_krw", "consult_language") if k not in conditions]
-        if any(k in missing for k in ("budget_max_krw", "consult_language")):
-            results["optional_conditions_asked"] = True
+        missing = [k for k in ("procedure_code", "date_from") if not conditions.get(k)]
+        # [] means explicit Seoul-wide search; missing/null means location unknown.
+        if conditions.get("areas") is None:
+            missing.append("areas")
         results["missing"] = missing
         response = {"status": "needs_input" if missing else "ready", "conditions": conditions, "missing": missing}
         if procedure and not conditions.get("procedure_code"):
@@ -123,8 +123,9 @@ def make_coordinator_tools(business_loader=None, *, initial_state=None):
 
         Supply the user's procedure phrase or a normalized code; it is verified
         through Business MCP before saving. Omitted fields retain previous values;
-        explicit null means no preference. Ask all returned missing fields in one
-        question. Budget and consultation language are asked only once.
+        explicit null clears a filter. Ask only returned missing required fields.
+        Location, procedure and date are required. Budget, consultation language
+        and sorting are optional; search immediately when required fields are ready.
         """
         return await collect(fields.model_dump(mode="json", exclude_unset=True))
 
@@ -141,9 +142,10 @@ def make_coordinator_tools(business_loader=None, *, initial_state=None):
     async def hospital_lookup(operation: Literal["normalize", "search", "reservations", "hours", "slots", "compare", "prepare_handoff"], arguments: LookupArguments):
         """Tool B: reuse Business MCP. Use existing snake_case schemas only.
 
-        normalize takes text. search requires procedure_code, date_from and user-
-        selected sort_by (PRICE/REVIEW_COUNT/RATING/DISTANCE); optional date_to,
-        areas, budget_max_krw, language. Maximum five. No pagination. Never relax.
+        normalize takes text. search requires procedure_code, date_from and areas
+        ([] for explicit Seoul-wide search). Optional date_to, budget_max_krw,
+        language and sort_by; omitted sort defaults to REVIEW_COUNT. Maximum five.
+        No pagination. Never relax explicitly supplied filters.
         hours takes hospital_id. slots takes hospital_id, procedure_code, date_from,
         date_to. reservations takes optional status. prepare_handoff takes only
         hospital_id explicitly chosen from the displayed list; it creates an unsent

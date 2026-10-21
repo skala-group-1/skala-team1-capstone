@@ -37,14 +37,14 @@ def test_missing_conditions_goes_to_ask_clarify(config, monkeypatch):
     assert r["messages"][-1].content == "Which procedure and dates?"
 
 
-def test_full_conditions_goes_through_planner_and_verify(graph, config, monkeypatch):
-    from app.config import get_settings
+def test_full_conditions_goes_through_planner_and_verify(config, monkeypatch):
+    from app.graph import builder
 
-    # Exercise the offline fallback even when the developer has a real API key.
-    monkeypatch.setattr(get_settings(), "openai_api_key", "")
+    monkeypatch.setattr(builder, "planner_agent", lambda state: {"draft": "Hospital facts checked."})
+    graph = builder.compile_graph(MemorySaver(), InMemoryStore())
     r = graph.invoke({"messages": [HumanMessage("jaw botox")],
                       "conditions": {"procedure_code": "JAW_BOTOX", "date_from": "2026-10-20"}}, config)
-    assert "planner_agent" in r["messages"][-1].content
+    assert r["messages"][-1].content == "Hospital facts checked."
     assert r["verify_attempts"] == 0 and r["draft"] is None
 
 

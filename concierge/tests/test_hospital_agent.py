@@ -31,6 +31,14 @@ def state():
 
 
 def model_setup(monkeypatch, responses):
+    async def reads(name, args):
+        return {
+            "business_list_doctors": {"doctors": [{"id": 11, "name": "Test doctor"}]},
+            "business_get_price_options": {"options": []},
+            "business_get_available_slots": {"slots": [{"id": 12, "doctor_id": 11,
+                "start_at": "2026-10-22T10:00:00+09:00", "status": "AVAILABLE"}]},
+        }[name]
+    monkeypatch.setattr("concierge.nodes.actions.lookup", AsyncMock(side_effect=reads))
     class Model:
         def bind_tools(self, tools, **kwargs):
             return self

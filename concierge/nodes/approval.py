@@ -1,38 +1,46 @@
-"""approval — 변경 도구 실행 전 고객 승인 (HITL interrupt)
-
-- 입력 → 출력: 변경 도구 tool_call → interrupt(PendingAction) → resume {approved, editedArgs, reason}
-- LLM/도구: 없음
-- 근거: 「AI Agent 설계」 4장(승인 카드·재개), 「공통 계약서」 PendingAction·ApprovalRequest, SSE APPROVAL_REQUIRED, D-10
-"""
+"""Only an explicit interrupt decision can authorize a prepared mutation."""
 
 from langchain_core.messages import AIMessage, ToolMessage
 from langgraph.types import interrupt
 
 from app.graph.state import AgentState
-from app.mcp_client.tools import DESTRUCTIVE_TOOLS, PENDING_ACTION_BY_TOOL
+from concierge.nodes.actions import EDITABLE, HANDOFF, validate_args
+from concierge.nodes.load_hospital_context import selected_hospital
 
 
 def approval(state: AgentState) -> dict:
+    pending = state.get("pending_action") or {}
     last = state["messages"][-1]
-    assert isinstance(last, AIMessage)
-    call = next(c for c in last.tool_calls if c["name"] in DESTRUCTIVE_TOOLS)
-
-    # TODO(agent): display 는 사람이 읽는 형태로 (병원명·일시·시술·가격 옵션·전달될 정보), 사용자 locale
-    # TODO(agent): 상담 요청은 니즈 요약 카드 + 개인정보 제공 동의 문구, editable=["note"] 등
-    pending = {
-        "action": PENDING_ACTION_BY_TOOL[call["name"]],
-        "display": {"title": call["name"], "rows": [{"label": k, "value": str(v)} for k, v in call["args"].items()],
-                    "notice": ""},
-        "args": call["args"],
-        "editable": ["note"],
-    }
-    decision = interrupt(pending)  # backend 가 ai.task.resume 으로 ApprovalRequest 를 넘겨줌
-
-    approved = bool(decision.get("approved"))
-    args = {**call["args"], **(decision.get("editedArgs") or {})}
-    result = {"pending_action": {**pending, "tool": call["name"], "tool_call_id": call["id"], "args": args,
-                                 "approved": approved}}
+    if not isinstance(last, AIMessage) or len(last.tool_calls) != 1:
+        raise ValueError("Expected one prepared action")
+    call = last.tool_calls[0]
+    if pending.get("tool") != call["name"] or pending.get("tool_call_id") != call["id"]:
+        raise ValueError("Action has not been prepared")
+    hospital_id = selected_hospital(state)
+    if pending["hospital_id"] != hospital_id:
+        raise ValueError("Selected hospital changed during approval")
+    validate_args(pending["tool"], pending["args"], hospital_id)
+    decision = interrupt({k: pending[k] for k in ("action", "display", "args", "editable")})
+    error = None
+    args = dict(pending["args"])
+    approved = isinstance(decision, dict) and decision.get("approved") is True
+    if approved:
+        edits = decision.get("editedArgs")
+        edits = {} if edits is None else edits
+        if not isinstance(edits, dict) or set(edits) - set(EDITABLE[pending["tool"]]):
+            error = "Approval edits contain fields that are not editable; request a new approval."
+        else:
+            args.update(edits)
+            try:
+                validate_args(pending["tool"], args, hospital_id)
+            except ValueError as exc:
+                error = str(exc)
+        approved = error is None
+    if approved and pending["tool"] == HANDOFF:
+        args["consent"] = True
     if not approved:
-        # 거절·수정 → hospital_agent 로 돌아감. tool_call 에 대응하는 ToolMessage 가 있어야 다음 LLM 호출이 깨지지 않음
-        result["messages"] = [ToolMessage(content=f"User rejected: {decision.get('reason')}", tool_call_id=call["id"])]
-    return result
+        return {"pending_action": None, "messages": [ToolMessage(
+            content=error or "User rejected this action. Do not retry without a new user request.",
+            tool_call_id=call["id"], status="error" if error else "success",
+            additional_kwargs={"approval_completed": True})]}
+    return {"pending_action": {**pending, "args": args, "approved": True}}

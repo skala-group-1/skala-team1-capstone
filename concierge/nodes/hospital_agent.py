@@ -1,13 +1,8 @@
-"""Hospital-scoped tool-calling agent; mutations remain proposals for approval.
-
-The summary-agent contract is pending, so consultation/cancellation tools are not
-bound in this first implementation. No external agent protocol is guessed here.
-"""
+"""Hospital-scoped tool-calling agent; mutations remain proposals for approval."""
 
 import json
 import logging
 import time as monotonic_time
-import uuid
 from datetime import date, datetime, time
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -20,11 +15,11 @@ from app.graph.state import AgentState
 from app.harness.instructions import load_prompt
 from app.harness.loop import MAX_TURNS
 from app.mcp_client.client import get_tools
-from app.mcp_client.tools import HOSPITAL_READ_TOOLS
+from app.mcp_client.tools import DESTRUCTIVE_TOOLS, HOSPITAL_READ_TOOLS
+from concierge.nodes.actions import BOOK, prepare_action
 from concierge.nodes.load_hospital_context import selected_hospital, tool_data
 from concierge.nodes.hospital_reply import message_text, patient_reply
 
-BOOK = "business_create_reservation_request"
 logger = logging.getLogger(__name__)
 COLLECT = "record_booking_preferences"
 PREFERENCES_TOOL = {
@@ -96,6 +91,16 @@ def _validate_booking(args, booking, messages, hospital_id):
     raise ValueError("Look up available slots again and use a slot matching the chosen date/time/procedure")
 
 
+def _action_finished(messages):
+    # Resume messages have no approval ID: a task may reach only one approval.
+    for message in reversed(messages):
+        if isinstance(message, HumanMessage):
+            return False
+        if isinstance(message, ToolMessage) and message.additional_kwargs.get("approval_completed"):
+            return True
+    return False
+
+
 async def hospital_agent(state: AgentState) -> dict:
     if state.get("mode") == "HUMAN":
         return {}
@@ -103,11 +108,12 @@ async def hospital_agent(state: AgentState) -> dict:
     context = state.get("hospital_context") or {}
     if context.get("hospital_id") != hospital_id:
         raise ValueError("Load the selected hospital context before running the agent")
-    tools = await get_tools((*HOSPITAL_READ_TOOLS, BOOK))
+    messages = list(state.get("messages") or [])
+    names = HOSPITAL_READ_TOOLS if _action_finished(messages) else (*HOSPITAL_READ_TOOLS, *DESTRUCTIVE_TOOLS)
+    tools = [tool for tool in await get_tools(names) if tool.name in names]
     allowed = {tool.name for tool in tools}
     plain_model = _model()
     model = plain_model.bind_tools([*tools, PREFERENCES_TOOL], parallel_tool_calls=False)
-    messages = list(state.get("messages") or [])
     added = []
     booking = dict(state.get("hospital_booking") or {})
     loop = dict(state.get("loop") or {})
@@ -160,8 +166,11 @@ async def hospital_agent(state: AgentState) -> dict:
                     args["hospital_id"] = hospital_id
                 if call["name"] == BOOK:
                     _validate_booking(args, booking, messages, hospital_id)
-                    args["idempotency_key"] = str(uuid.uuid4())
                 call["args"] = args
+                if call["name"] in DESTRUCTIVE_TOOLS:
+                    pending = await prepare_action({**state, "hospital_booking": booking, "messages": messages}, call)
+                    call["args"] = pending["args"]
+                    base["pending_action"] = pending
                 response = response.model_copy(update={"tool_calls": [call]})
                 return {**base, "messages": [*added, response], "draft": None}
         except (ValueError, TypeError, KeyError) as exc:

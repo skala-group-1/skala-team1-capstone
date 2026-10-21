@@ -1,7 +1,7 @@
 # concierge — 선택 병원 상담 에이전트
 
 사용자가 선택한 병원의 정보·FAQ를 조회하고 예약 의사를 수집해 승인 카드를 준비합니다.
-예약·취소·상담사 연결이 이 역할의 범위이며, 실제 변경 실행은 아직 연결 전입니다.
+예약·취소·상담사 연결은 사용자 승인 후 기존 MCP 경로로 실행합니다.
 
 - `nodes/hospital_agent.py`: 병원 범위 LLM 도구 루프
 - `nodes/load_hospital_context.py`, `nodes/tools.py`: 선택 병원 컨텍스트와 병원 ID 강제 주입
@@ -22,5 +22,41 @@ uv run --frozen pytest -c pyproject.toml ../concierge/tests -q
 PYTHONPATH=.. uv run --frozen python -m app.cli --mode HOSPITAL --hospital-id 1
 ```
 
-CLI 대화에는 LLM 키와 MCP 실행 환경이 필요합니다. 웹 채팅의 예약 승인 후에는
-실제 예약을 저장하지 않고 미접수를 알리는 `FAILED` 이벤트를 보내는 기존 동작을 유지합니다.
+CLI 대화에는 LLM 키와 MCP 실행 환경이 필요합니다. 웹 승인 재개와 HUMAN 전환은
+공통 런타임의 승인 처리 및 이벤트 연결을 함께 적용해야 합니다.
+
+
+## 승인 후 변경 실행
+
+`hospital_agent`는 예약·취소·상담을 실행하지 않고 `pending_action`을 준비합니다.
+예약은 선택 병원의 의사·가격·슬롯을 MCP로 재확인하고, 취소는 본인 예약 조회에서
+선택 병원 일치를 확인합니다. `approval`의 LangGraph interrupt 승인 전에는 변경
+도구를 호출하지 않습니다. 수정 허용 필드는 예약 `note`, 취소 `reason`뿐입니다.
+병원·슬롯·가격·요약 변경은 새 제안과 승인이 필요합니다.
+한 사용자 메시지에서는 승인 카드를 한 번만 처리합니다. 승인·거절·실행 오류 이후에는
+변경 도구를 모델에 제공하지 않으며, 새로운 사용자 메시지에서만 다시 허용합니다.
+승인 ID 없는 현재 resume 계약에서 중복 승인으로 다음 변경이 실행되는 것을 막습니다.
+
+상담은 `SUMMARIZER_URL`의 `POST /summarize`에 고객 발화와 확인된 조건을 보내고
+응답 카드를 먼저 표시합니다. 이 카드 확인과 병원 공유 동의를 함께 승인한 경우만
+MCP 상담 요청을 실행합니다. 현재 summarizer/MCP 계약의 지원 언어는 en/zh/ja이며,
+지원하지 않는 언어 또는 요약 오류는 인계 성공으로 처리하지 않습니다.
+성공 결과의 상담 ID와 `mode=HUMAN`은 공통 그래프·worker가 종료 및 MODE_CHANGED로 연결합니다.
+
+예약·상담 idempotency key는 conversation/task/tool-call에 묶어서 생성하고 승인
+체크포인트에 보존합니다. MCP 취소 계약에는 idempotency key 인자가 없으므로 추가하지
+않습니다. 정상 worker 중복 배달 방지는 공통 런타임 책임이며, 취소 도중 프로세스가
+중단된 경우 backend 결과를 재조회해야 합니다. 오류 결과는 성공으로 표시하지 않고,
+슬롯 충돌은 새 슬롯 조회 → 고객 선택 → 새 승인으로 처리합니다.
+
+검증 (외부 서비스·업무 DB 변경 없음):
+
+```sh
+cd agent
+uv run pytest ../concierge/tests/test_approved_actions.py ../concierge/tests/test_hospital_agent.py -q
+uv run pytest -q
+```
+
+`test_approved_actions.py`는 mock MCP와 실제 LangGraph interrupt/resume으로 승인 전
+0회·승인 후 1회·거절 0회, 인자 변조 차단, 중복 키, 오류·요약 실패·동의 검증을 확인합니다.
+실제 업무 DB 예약/취소/상담 검증은 별도 승인된 데이터 범위에서 수행해야 합니다.

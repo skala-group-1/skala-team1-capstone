@@ -80,7 +80,12 @@ async def test_main_action_and_all_contract_state_events():
             "candidates": [{"id": 1, "min_price_krw": 100000}],
             "relax_options": [{"option": "DATE_PLUS_MINUS_1", "label": "Dates", "expected_count": 4}],
             "trip_plans": [{"hospital_id": 1, "buffer_days": 2}], "trip_summary": "Available dates",
-            "opened_conversation": {"conversation_id": "new-thread", "hospital_id": 1},
+            "selected_hospital_id": 1,
+            "opened_conversation": {
+                "conversation_id": "c6d49de7-d0ab-4c99-a0d7-ec0880ac4995", "hospital_id": 1,
+                "mode": "HOSPITAL", "parent_conversation_id": "thread",
+                "consultation_id": None, "conditions": {},
+            },
             "memory_proposal": {"fields": {"preferred_areas": ["GANGNAM"]}, "message": "Save?"},
             "verify_passed": True, "verify_attempts": 0,
             "citations": [{"doc_id": "faq", "title": "Title", "section": "visit", "uri": "doc://faq/sections/visit", "snippet": "Text"}],
@@ -93,7 +98,9 @@ async def test_main_action_and_all_contract_state_events():
     assert output["RESULT_CARDS"]["cards"][0]["minPriceKrw"] == 100000
     assert output["TRIP_PLAN"]["arrivalDate"] == "2026-10-22"
     assert output["TRIP_PLAN"]["plans"][0]["bufferDays"] == 2
-    assert output["CONVERSATION_OPENED"] == {"conversationId": "new-thread", "hospitalId": 1}
+    assert output["CONVERSATION_OPENED"] == {
+        "conversationId": "c6d49de7-d0ab-4c99-a0d7-ec0880ac4995", "hospitalId": 1,
+    }
     assert output["MEMORY_PROPOSAL"]["fields"]["preferredAreas"] == ["GANGNAM"]
     assert output["VERIFY"] == {"passed": True, "attempts": 0}
     assert output["DONE"]["sources"][0]["docId"] == "faq"

@@ -50,7 +50,10 @@ def state_events(update, state):
             "relaxOptions": camel(state.get("relax_options") or []),
         }
     if update.get("opened_conversation"):
-        yield SseEvent.CONVERSATION_OPENED, camel(update["opened_conversation"])
+        opened = update["opened_conversation"]
+        yield SseEvent.CONVERSATION_OPENED, {
+            "conversationId": opened["conversation_id"], "hospitalId": opened["hospital_id"],
+        }
     if update.get("mode") == "HUMAN" and state.get("consultation_id"):
         yield SseEvent.MODE_CHANGED, {"mode": "HUMAN", "consultationId": state["consultation_id"]}
     if "trip_plans" in update:

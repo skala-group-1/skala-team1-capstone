@@ -69,7 +69,7 @@ class AgentState(TypedDict, total=False):
     task_id: str
     conversation_id: str
     action: dict | None
-    opened_conversation: dict | None   # conversation_id, hospital_id
+    opened_conversation: dict | None   # child id/hospital, mode, parent, consultation_id, conditions
     consultation_id: int | None
     relax_options: list[dict]
     trip_summary: str

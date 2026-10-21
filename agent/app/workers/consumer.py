@@ -4,6 +4,7 @@ import asyncio
 import json
 import logging
 from datetime import datetime
+from uuid import UUID
 from zoneinfo import ZoneInfo
 
 import aio_pika
@@ -61,6 +62,46 @@ class HospitalWorker:
             "code": "AI_UNAVAILABLE", "message": UNAVAILABLE[msg.user.locale],
             "traceId": trace_id or msg.task_id,
         }, trace_id)
+
+    async def _initialize_child(self, msg, opened, state):
+        conversation_id = opened["conversation_id"]
+        hospital_id = opened["hospital_id"]
+        if (not isinstance(conversation_id, str) or str(UUID(conversation_id)) != conversation_id
+                or conversation_id == msg.conversation_id):
+            raise ValueError("Invalid child conversation")
+        if (type(hospital_id) is not int or hospital_id <= 0
+                or hospital_id != state.get("selected_hospital_id")
+                or opened["mode"] not in ("HOSPITAL", "HUMAN")):
+            raise ValueError("Invalid child hospital/mode")
+        action = getattr(msg, "action", None) or {}
+        if action.get("type") == "SELECT_HOSPITAL" and hospital_id != action.get("hospitalId"):
+            raise ValueError("Child selection mismatch")
+        if opened.get("user_id", msg.user.id) != msg.user.id:
+            raise ValueError("Child owner mismatch")
+        config = {"configurable": {"thread_id": conversation_id}}
+        snapshot = await self.graph.aget_state(config)
+        if snapshot.config["configurable"].get("checkpoint_id"):
+            existing = snapshot.values
+            if ((existing.get("user") or {}).get("user_id") != msg.user.id
+                    or existing.get("selected_hospital_id") != hospital_id
+                    or existing.get("conversation_id", conversation_id) != conversation_id
+                    or existing.get("mode") not in ("HOSPITAL", "HUMAN")):
+                raise ValueError("Child checkpoint identity mismatch")
+            return
+        conditions = opened["conditions"]
+        if conditions is not None and not isinstance(conditions, dict):
+            raise ValueError("Invalid child conditions")
+        if not conditions and opened["parent_conversation_id"] == msg.conversation_id:
+            conditions = state.get("conditions")
+        # The terminal node seeds state without scheduling a turn or running a model.
+        await self.graph.aupdate_state(config, {
+            "conversation_id": conversation_id,
+            "user": {"user_id": msg.user.id, "role": msg.user.role, "locale": msg.user.locale},
+            "mode": opened["mode"], "selected_hospital_id": hospital_id,
+            "parent_conversation_id": opened["parent_conversation_id"],
+            "consultation_id": opened["consultation_id"],
+            "conditions": conditions or {}, "summary": state.get("summary"),
+        }, as_node="respond")
 
     async def handle(self, msg, trace_id=""):
         async with self.lock:
@@ -170,6 +211,8 @@ class HospitalWorker:
                 if not isinstance(update, dict):
                     continue
                 state.update(update)
+                if update.get("opened_conversation"):
+                    await self._initialize_child(msg, update["opened_conversation"], state)
                 outgoing = [(event, data, None) for event, data in state_events(update, state)]
                 for message in update.get("messages") or []:
                     if isinstance(message, AIMessage):

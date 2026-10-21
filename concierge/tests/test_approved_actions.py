@@ -202,6 +202,88 @@ async def test_no_consultation_without_consent(monkeypatch):
     mutation.assert_not_awaited()
 
 
+@pytest.mark.parametrize("approved", [True, False])
+async def test_korean_review_form_then_explicit_handoff(monkeypatch, approved):
+    def unexpected_http(**kwargs):
+        pytest.fail("Korean review card must not call the separate summarizer")
+    monkeypatch.setattr(actions.httpx, "AsyncClient", unexpected_http)
+    s = state()
+    s["user"]["locale"] = "ko"
+    s["messages"] = [HumanMessage(content="턱 보톡스 상담사 연결 폼을 보여주세요."),
+                     AIMessage(content="확인되지 않은 가격 999원")]
+    c = call(actions.HANDOFF, {})
+    pending = await actions.prepare_action(s, c)
+    card = pending["args"]["summary_card"]
+    assert card["customer_locale"] == "ko"
+    assert card["procedure"] == "사각턱 보톡스"
+    assert card["preferred_dates"] == "2026-10-22"
+    assert card["budget"] is None
+    assert card["questions"] == [s["messages"][0].content]
+    s["pending_action"] = pending
+    s["messages"].append(AIMessage(content="", tool_calls=[{**c, "args": pending["args"]}]))
+    mutation = AsyncMock(return_value={"id": 701, "status": "WAITING"})
+    monkeypatch.setattr(execution, "lookup", mutation)
+    g, config = graph(), {"configurable": {"thread_id": f"ko-handoff-{approved}"}}
+    result = await g.ainvoke(s, config)
+    assert result["__interrupt__"][0].value["action"] == "REQUEST_CONSULTATION"
+    assert result["__interrupt__"][0].value["args"]["summaryCard"]["customerLocale"] == "ko"
+    mutation.assert_not_awaited()
+    result = await g.ainvoke(Command(resume={"approved": approved}), config)
+    assert mutation.await_count == int(approved)
+    assert result["mode"] == ("HUMAN" if approved else "HOSPITAL")
+    if approved:
+        assert result["consultation_id"] == 701
+        assert mutation.call_args.args[1]["consent"] is True
+
+
+async def test_korean_review_leaves_unknown_choices_empty():
+    s = state()
+    s["user"]["locale"] = "ko"
+    s["hospital_booking"] = {}
+    s["conditions"] = {"date_from": "2026-10-22", "date_to": "2026-10-26"}
+    card = await actions.summarize(s)
+    assert card["procedure"] == "확인 필요"
+    assert card["preferred_dates"] is None
+    assert card["stay_days"] is None
+
+
+@pytest.mark.parametrize("message", ["상담 요약 폼과 연결 확인 버튼을 보여주세요.",
+                                     "I want to talk to a counselor", "Please connect me to a counselor"])
+async def test_explicit_form_request_cannot_be_replaced_with_chat_text(monkeypatch, message):
+    hospital = importlib.import_module("concierge.nodes.hospital_agent")
+    monkeypatch.setattr(hospital, "get_tools", AsyncMock(return_value=[SimpleNamespace(name=actions.HANDOFF)]))
+    monkeypatch.setattr(hospital, "_model", lambda: pytest.fail("Explicit form request needs no model"))
+    s = state()
+    s["user"]["locale"] = "ko"
+    s["hospital_context"]["hospital_id"] = 7
+    s["messages"] = [HumanMessage(content=message)]
+    result = await hospital.hospital_agent(s)
+    assert result["pending_action"]["action"] == "REQUEST_CONSULTATION"
+    assert result["pending_action"]["args"]["consent"] is False
+    assert isinstance(result["pending_action"]["args"]["summary_card"]["procedure"], str)
+    assert result["messages"][0].tool_calls[0]["name"] == actions.HANDOFF
+    assert result["draft"] is None
+
+
+@pytest.mark.parametrize("message", ["I don't want to talk to a counselor", "What does a counselor do?",
+                                     "상담 요약 폼을 보여주지 마세요", "상담사 연결 취소해줘"])
+def test_counselor_mentions_and_rejections_do_not_open_form(message):
+    hospital = importlib.import_module("concierge.nodes.hospital_agent")
+    assert not hospital.requests_counselor_form(message)
+
+
+async def test_english_handoff_without_chosen_procedure_uses_explicit_unknown(monkeypatch):
+    client = httpx.AsyncClient(transport=httpx.MockTransport(lambda request: httpx.Response(
+        200, json={"summaryCard": {"procedure": None, "customerLocale": "en"}})))
+    monkeypatch.setattr(actions.httpx, "AsyncClient", lambda **kw: client)
+    monkeypatch.setattr(actions, "get_settings", lambda: SimpleNamespace(summarizer_url="http://summary"))
+    s = state()
+    s["user"]["locale"] = "en"
+    card = await actions.summarize(s)
+    assert card["procedure"] == "Needs confirmation"
+    assert card["customer_locale"] == "en"
+
+
 async def test_summary_failure_never_proposes_handoff(monkeypatch):
     monkeypatch.setattr(actions, "summarize", AsyncMock(side_effect=RuntimeError("unavailable")))
     with pytest.raises(RuntimeError):
@@ -275,7 +357,7 @@ async def test_cancellation_cannot_report_a_different_reservation(monkeypatch):
 
 
 @pytest.mark.parametrize("body,status", [({"summaryCard": {"procedure": "invented", "customerLocale": "en"}}, 200),
-                                        ({"summaryCard": {"procedure": None, "customerLocale": "ja"}}, 200),
+                                        ({"summaryCard": {"procedure": 123, "customerLocale": "ja"}}, 200),
                                         ({}, 503)])
 async def test_summary_http_failure_or_invalid_card_is_not_approved(monkeypatch, body, status):
     monkeypatch.setattr(actions, "get_settings", lambda: SimpleNamespace(summarizer_url="http://summary"))

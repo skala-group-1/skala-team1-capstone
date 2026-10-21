@@ -2,7 +2,9 @@
 
 import json
 import logging
+import re
 import time as monotonic_time
+from uuid import uuid4
 from datetime import date, datetime, time
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -16,7 +18,7 @@ from app.harness.instructions import load_prompt
 from app.harness.loop import MAX_TURNS
 from app.mcp_client.client import get_tools
 from app.mcp_client.tools import DESTRUCTIVE_TOOLS, HOSPITAL_READ_TOOLS
-from concierge.nodes.actions import BOOK, prepare_action
+from concierge.nodes.actions import BOOK, HANDOFF, prepare_action
 from concierge.nodes.load_hospital_context import selected_hospital, tool_data
 from concierge.nodes.hospital_reply import message_text, patient_reply
 
@@ -30,6 +32,11 @@ PREFERENCES_TOOL = {
         "date": {"type": ["string", "null"], "description": "YYYY-MM-DD"},
         "time": {"type": ["string", "null"], "description": "HH:MM, Asia/Seoul"},
     }, "additionalProperties": False},
+}
+HANDOFF_PROPOSAL_TOOL = {
+    "name": HANDOFF,
+    "description": "Display the consultation summary review form and connection-confirmation button. Call when the patient asks for a counselor or summary form, BEFORE asking for consent. This call only prepares a local approval card: it does NOT contact the hospital or submit a consultation. The application supplies the summary, hospital and conversation. Only the patient's later approval submits the request. Supports Korean, English, Chinese and Japanese.",
+    "parameters": {"type": "object", "properties": {}, "additionalProperties": False},
 }
 
 
@@ -109,6 +116,18 @@ def _action_finished(messages):
     return False
 
 
+def requests_counselor_form(text: str) -> bool:
+    text = text.strip().lower().replace("’", "'")
+    if re.search(r"\b(?:don't|do not|not now|cancel|never mind)\b|(?:연결|상담).*(?:싫|취소|않|말아)|(?:보여|띄워|열어)\s*(?:주지|주지는|주진|주실 필요|말)", text):
+        return False
+    return bool(
+        re.search(r"상담[^\n.!?]*(?:폼|카드)[^\n.!?]*(?:보여|띄워|열어)", text)
+        or re.search(r"상담(?:사|원)[^\n.!?]*(?:연결해|연결해\s*주|이야기하고 싶|대화하고 싶)", text)
+        or re.search(r"\b(?:i (?:want|would like|need) to|i'd like to|can i|could i|let me)\s+(?:talk|speak|chat)\s+(?:to|with)\s+(?:a |the |your |human )*(?:counselor|counsellor|advisor|agent)\b", text)
+        or re.search(r"^(?:please )?connect me (?:to|with) (?:a |the |your |human )*(?:counselor|counsellor|advisor|agent)\b", text)
+    )
+
+
 async def hospital_agent(state: AgentState) -> dict:
     if state.get("mode") == "HUMAN":
         return {}
@@ -127,6 +146,17 @@ async def hospital_agent(state: AgentState) -> dict:
     names = HOSPITAL_READ_TOOLS if _action_finished(messages) else (*HOSPITAL_READ_TOOLS, *DESTRUCTIVE_TOOLS)
     tools = [tool for tool in await get_tools(names) if tool.name in names]
     allowed = {tool.name for tool in tools}
+    # An explicit request to open the review UI is not a mutation. Do not let
+    # the model replace the real approval form with a prose imitation.
+    latest = messages[-1] if messages else None
+    if (HANDOFF in allowed and isinstance(latest, HumanMessage)
+            and isinstance(latest.content, str)
+            and requests_counselor_form(latest.content)):
+        call = {"name": HANDOFF, "args": {}, "id": "handoff-" + str(uuid4())}
+        pending = await prepare_action(state, call)
+        call["args"] = pending["args"]
+        return {"pending_action": pending, "draft": None,
+                "messages": [AIMessage(content="", tool_calls=[call])]}
     plain_model = _model()
     added = []
     booking = dict(state.get("hospital_booking") or {})
@@ -148,6 +178,8 @@ async def hospital_agent(state: AgentState) -> dict:
         # Do not let the model skip recording choices or the current-turn slot lookup.
         booking_ready = bool(_matching_booking_slots(booking, messages, hospital_id))
         available_tools = [tool for tool in tools if tool.name != BOOK or booking_ready]
+        available_tools = [HANDOFF_PROPOSAL_TOOL if tool.name == HANDOFF else tool
+                           for tool in available_tools]
         model = plain_model.bind_tools([*available_tools, PREFERENCES_TOOL], parallel_tool_calls=False)
         started = monotonic_time.monotonic()
         response = await model.ainvoke([

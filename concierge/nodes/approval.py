@@ -2,9 +2,10 @@
 
 from langchain_core.messages import AIMessage, ToolMessage
 from langgraph.types import interrupt
+from pydantic.alias_generators import to_camel
 
 from app.graph.state import AgentState
-from concierge.nodes.actions import EDITABLE, HANDOFF, validate_args
+from concierge.nodes.actions import EDITABLE, HANDOFF, SummaryCard, validate_args
 from concierge.nodes.load_hospital_context import selected_hospital
 
 
@@ -28,7 +29,13 @@ def approval(state: AgentState) -> dict:
     if pending["hospital_id"] != hospital_id:
         raise ValueError("Selected hospital changed during approval")
     validate_args(pending["tool"], pending["args"], hospital_id)
-    decision = interrupt({k: pending[k] for k in ("action", "display", "args", "editable")})
+    display_payload = {k: pending[k] for k in ("action", "display", "args", "editable")}
+    if pending["tool"] == HANDOFF:
+        # UI DTO is camelCase; keep the approved MCP arguments in snake_case.
+        display_payload["args"] = {to_camel(k): v for k, v in pending["args"].items()}
+        display_payload["args"]["summaryCard"] = SummaryCard.model_validate(
+            pending["args"]["summary_card"]).model_dump(by_alias=True)
+    decision = interrupt(display_payload)
     error = None
     args = dict(pending["args"])
     approved = isinstance(decision, dict) and decision.get("approved") is True

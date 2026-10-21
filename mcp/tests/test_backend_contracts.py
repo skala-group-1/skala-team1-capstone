@@ -53,6 +53,25 @@ async def test_trip_plan_preserves_procedure_not_offered(backend_response):
     assert plan["feasible"] is False and plan["slot"] is None
 
 
+@pytest.mark.parametrize("locale", ["ko", "en", "zh", "ja"])
+async def test_consultation_preserves_supported_customer_locale(backend_response, locale):
+    backend_response.update(status=200, body={"id": 701, "status": "WAITING"})
+    async with Client(server.mcp) as client:
+        result = await client.call_tool("request_consultation", {
+            "hospital_id": 1, "conversation_id": "98b7eac5-0577-43c8-8601-4dfad34e6804",
+            "summary_card": {"procedure": "턱 보톡스", "customer_locale": locale,
+                             "questions": ["가격을 알고 싶습니다."]},
+            "consent": True, "idempotency_key": "test-consultation-no-write",
+        })
+    assert result.structured_content["status"] == "WAITING"
+    request, = backend_response["requests"]
+    body = json.loads(request.content)
+    assert request.url.path == "/internal/consultations"
+    assert body["summaryCard"]["customerLocale"] == locale
+    assert body["summaryCard"]["questions"] == ["가격을 알고 싶습니다."]
+    assert body["consent"] is True
+
+
 async def test_slot_conflict_preserves_backend_alternative(backend_response):
     backend_response.update(status=409, body={
         "code": "SLOT_UNAVAILABLE", "message": "Slot unavailable", "traceId": "test-trace",

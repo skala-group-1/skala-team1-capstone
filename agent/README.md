@@ -4,6 +4,9 @@ AI 상담 에이전트(메인 그래프 + 병원 서브그래프), Harness, 큐 
 병원 서브에이전트는 LLM·MCP 조회와 웹 채팅 큐에 연결되어 있습니다. 메인 AI와 번역 워커,
 실제 예약 변경 실행은 아직 골격입니다. 남은 작업은 `# TODO(agent):`로 표시합니다.
 
+병원 선택 전 노드·프롬프트·테스트는 [`coordinator/`](../coordinator/README.md)에서 관리합니다.
+공통 실행 환경은 이 폴더에 두며, 로컬 실행은 `PYTHONPATH=..`로 저장소 루트의 역할 패키지를 읽습니다.
+
 - 설계 기준: Notion 「AI Agent 설계」(그래프·State), 「Harness 명세」, 「공통 계약서」(큐 메시지·SSE), 「MCP 설계」(도구 이름)
 - 남은 일 찾기: `rg -n "TODO\\(agent\\)" app prompts`
 
@@ -34,7 +37,7 @@ USE_STUB=true MCP_HOST=127.0.0.1 uv run --frozen python -m rag_mcp.server
 cd agent
 USE_FAKE_TOOLS=false BUSINESS_MCP_URL=http://127.0.0.1:9101/mcp \
   RAG_MCP_URL=http://127.0.0.1:9102/mcp \
-  uv run --frozen uvicorn app.api.main:app --host 127.0.0.1 --port 8000
+  PYTHONPATH=.. uv run --frozen uvicorn app.api.main:app --host 127.0.0.1 --port 8000
 ```
 
 ```bash
@@ -61,10 +64,10 @@ VITE_USE_MSW=false npm run dev
 cd agent
 uv sync                                   # Python 3.12 가상환경 + 의존성
 uv run pytest                             # 단위·그래프 테스트 (MCP·DB·큐 없이 실행)
-uv run python -m app.cli --thread t1      # CLI 대화 (MAIN 모드)
-uv run python -m app.cli --thread h1 --mode HOSPITAL --hospital-id 1   # 기본 fake 모드 병원 대화 (LLM 키 필요)
-uv run python -m app.cli --conditions '{"procedure_code":"JAW_BOTOX","date_from":"2026-10-20"}'  # planner 경로
-uv run uvicorn app.api.main:app --port 8000   # 큐 워커 + GET /health (RabbitMQ 필요)
+PYTHONPATH=.. uv run python -m app.cli --thread t1      # CLI 대화 (MAIN 모드)
+PYTHONPATH=.. uv run python -m app.cli --thread h1 --mode HOSPITAL --hospital-id 1   # 기본 fake 모드 병원 대화 (LLM 키 필요)
+PYTHONPATH=.. uv run python -m app.cli --conditions '{"procedure_code":"JAW_BOTOX","date_from":"2026-10-20"}'  # planner 경로
+PYTHONPATH=.. uv run uvicorn app.api.main:app --port 8000   # 큐 워커 + GET /health (RabbitMQ 필요)
 ```
 
 환경변수는 저장소 루트 `.env`를 읽습니다 (`app/config.py`, 「공통 계약서」 9장). 주요 값:

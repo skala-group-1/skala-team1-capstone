@@ -1,7 +1,7 @@
 [project]
 name = "capstone-agent"
 version = "0.1.0"
-description = "SKALA team1 capstone - LangGraph agent, harness, translation worker"
+description = "SKALA team1 capstone - shared LangGraph runtime for coordinator and concierge"
 requires-python = ">=3.12,<3.14"
 dependencies = [
     "fastapi>=0.115",
@@ -25,6 +25,6 @@ dev = [
 package = false
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
-pythonpath = ["."]
+testpaths = ["tests", "../coordinator/tests"]
+pythonpath = [".", ".."]
 asyncio_mode = "auto"

@@ -1,6 +1,6 @@
 """그래프 조립. 노드 연결은 「AI Agent 설계」 9-1(메인 v2)·4장(병원 서브그래프) 그림 그대로.
 
-노드 로직은 nodes/ 에, 분기 조건은 graph/routing.py 에 둔다.
+노드 로직은 역할별 패키지에, 공통 분기 조건은 graph/routing.py 에 둔다.
 """
 
 from langgraph.graph import END, START, StateGraph
@@ -8,20 +8,20 @@ from langgraph.graph import END, START, StateGraph
 from app.graph import routing
 from app.graph.state import AgentState
 from app.nodes.approval import approval
-from app.nodes.ask_clarify import ask_clarify
+from coordinator.nodes.ask_clarify import ask_clarify
 from app.nodes.execute_action import execute_action
-from app.nodes.extract_conditions import extract_conditions
-from app.nodes.guard_input import guard_input
-from app.nodes.guard_reply import guard_reply
+from coordinator.nodes.extract_conditions import extract_conditions
+from coordinator.nodes.guard_input import guard_input
+from coordinator.nodes.guard_reply import guard_reply
 from app.nodes.hospital_agent import hospital_agent
 from app.nodes.load_hospital_context import load_hospital_context
-from app.nodes.load_memory import load_memory
-from app.nodes.memory_propose import memory_propose
-from app.nodes.open_hospital_conversation import open_hospital_conversation
-from app.nodes.planner_agent import planner_agent
+from coordinator.nodes.load_memory import load_memory
+from coordinator.nodes.memory_propose import memory_propose
+from coordinator.nodes.open_hospital_conversation import open_hospital_conversation
+from coordinator.nodes.planner_agent import planner_agent
 from app.nodes.respond import respond
 from app.nodes.tools import hospital_tools, planner_tools
-from app.nodes.verify import verify
+from coordinator.nodes.verify import verify
 
 
 def build_hospital_subgraph() -> StateGraph:

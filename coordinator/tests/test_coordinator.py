@@ -8,8 +8,8 @@ import pytest
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 from langchain_core.tools import tool
 
-from app.nodes.coordinator_tools import make_coordinator_tools, load_business_tools
-from app.nodes.planner_agent import run_coordinator, chat_with_mock_hospitals
+from coordinator.nodes.coordinator_tools import make_coordinator_tools, load_business_tools
+from coordinator.nodes.planner_agent import run_coordinator, chat_with_mock_hospitals
 
 
 class ScriptedModel:

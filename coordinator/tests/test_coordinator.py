@@ -1,5 +1,7 @@
 """Coordinator offline graphs plus opt-in existing mock MCP integration."""
 import json
+import asyncio
+import importlib
 import os
 from pathlib import Path
 from unittest.mock import AsyncMock
@@ -30,6 +32,30 @@ class ScriptedModel:
 
 def call(name, args, identifier="one"):
     return AIMessage(content="", tool_calls=[{"name": name, "args": args, "id": identifier}])
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("node,runner", [("planner_agent", "run_coordinator"),
+                                        ("open_hospital_conversation", "run_open_hospital_conversation")])
+async def test_production_nodes_reuse_worker_event_loop(monkeypatch, node, runner):
+    from app.graph.state import AgentState
+    from langgraph.graph import END, START, StateGraph
+
+    module = importlib.import_module(f"coordinator.nodes.{node}")
+    worker_loop = asyncio.get_running_loop()
+
+    async def execute(state):
+        assert asyncio.get_running_loop() is worker_loop
+        return {"draft": "Ready"}
+
+    monkeypatch.setattr(module, runner, execute)
+    graph = StateGraph(AgentState)
+    graph.add_node(node, getattr(module, node))
+    graph.add_edge(START, node)
+    graph.add_edge(node, END)
+    compiled = graph.compile()
+    for _ in range(2):
+        assert (await compiled.ainvoke({"messages": []}))["draft"] == "Ready"
 
 
 @pytest.mark.asyncio

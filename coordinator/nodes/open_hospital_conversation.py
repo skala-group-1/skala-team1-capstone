@@ -46,6 +46,6 @@ async def run_open_hospital_conversation(state: AgentState, *, business_loader=N
     return {**update, "draft": messages.get(locale, messages["en"])}
 
 
-def open_hospital_conversation(state: AgentState) -> dict:
-    """Preserve the existing sync node API; async graph runs it in a worker."""
-    return asyncio.run(run_open_hospital_conversation(state))
+async def open_hospital_conversation(state: AgentState) -> dict:
+    """Keep MCP calls on the worker's event loop."""
+    return await run_open_hospital_conversation(state)

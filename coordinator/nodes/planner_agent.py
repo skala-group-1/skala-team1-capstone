@@ -104,7 +104,8 @@ def build_coordinator(model, *, business_loader=None, initial_state=None):
     graph.add_edge(START, "main")
     graph.add_conditional_edges("main", route, {"tools": "tools", END: END})
     graph.add_edge("tools", "main")
-    return graph.compile(), results
+    # Only the outer conversation graph persists state between user turns.
+    return graph.compile(checkpointer=False), results
 
 
 def unavailable(state, reason):
@@ -202,9 +203,9 @@ def search_reply(state, results):
     return "\n".join([*lines, ending])
 
 
-def planner_agent(state: AgentState) -> dict:
-    """Keep existing sync node API; async LangGraph executes it in a worker."""
-    return asyncio.run(run_coordinator(state))
+async def planner_agent(state: AgentState) -> dict:
+    """Reuse the worker loop for model clients and graph execution."""
+    return await run_coordinator(state)
 
 
 async def chat_with_mock_hospitals(locale="en", *, read=input, write=print, runner=None):

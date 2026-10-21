@@ -26,7 +26,10 @@ import ApprovalCard from '@/components/chat/ApprovalCard.vue'
 import ConsultSummaryCard from '@/components/chat/ConsultSummaryCard.vue'
 import EvidenceSheet from '@/components/chat/EvidenceSheet.vue'
 import TripPlanCard from '@/components/chat/TripPlanCard.vue'
-import type { ChatMessage, Conditions, ConversationMessage, Locale, Reservation, Source } from '@/types/contract'
+import TopicCarousel from '@/components/chat/TopicCarousel.vue'
+import ProcedureInfoCard from '@/components/chat/ProcedureInfoCard.vue'
+import { SKIN_CONCERNS } from '@/types/contract'
+import type { ChatMessage, Conditions, ConsultTopic, ConversationMessage, Locale, ProcedureInfo, Reservation, SkinConcern, Source } from '@/types/contract'
 
 const route = useRoute()
 const router = useRouter()
@@ -125,6 +128,49 @@ function toggleOriginal(id: number) {
   if (s.has(id)) s.delete(id)
   else s.add(id)
   shownOriginal.value = s
+}
+
+// ─── C4-T 상담 주제 · 피부 고민 ───
+const pickingTopic = ref(false)
+const showTopics = computed(() => !isHospital.value && !conv.streaming && (pickingTopic.value || (!conv.topic && !conv.messages.length)))
+const topicLabel = (topic: ConsultTopic) => t(`chat.topic.items.${topic}`)
+const QUICK: { key: string; topic?: ConsultTopic; to?: string }[] = [
+  { key: 'procedures', topic: 'SKIN_CONCERN' },
+  { key: 'hospitals', topic: 'HOSPITAL_SEARCH' },
+  { key: 'reservations', to: '/reservations' },
+  { key: 'faq' },
+  { key: 'list', to: '/chats' },
+]
+function quickReply(q: (typeof QUICK)[number]) {
+  if (q.to) void router.push(q.to)
+  else if (q.topic) pickTopic(q.topic)
+  else void conv.send(t(`chat.quick.${q.key}`))
+}
+function pickTopic(topic: ConsultTopic) {
+  pickingTopic.value = false
+  addingConcern.value = false
+  const label = topicLabel(topic)
+  // 시작 안내 pill 은 화면에만 (서버 기록 X — 새로고침 후엔 사용자 말풍선·주제 바로 남음)
+  conv.messages.push({ role: 'system', text: t('chat.topic.started', { topic: label }), sources: [], cards: [], createdAt: new Date().toISOString() })
+  void conv.send(label, { type: 'SELECT_TOPIC', topic })
+}
+const concerns = ref<SkinConcern[]>([])
+const addingConcern = ref(false)
+const lastProcIndex = computed(() => conv.messages.map((m) => !!m.procedures?.length).lastIndexOf(true))
+const showConcerns = computed(
+  () => conv.topic === 'SKIN_CONCERN' && !conv.streaming && !pickingTopic.value && (addingConcern.value || lastProcIndex.value < 0),
+)
+function toggleConcern(c: SkinConcern) {
+  concerns.value = concerns.value.includes(c) ? concerns.value.filter((x) => x !== c) : [...concerns.value, c]
+}
+function submitConcerns() {
+  const list = SKIN_CONCERNS.filter((c) => concerns.value.includes(c))
+  concerns.value = []
+  addingConcern.value = false
+  void conv.send(list.map((c) => t(`chat.concern.items.${c}`)).join(', '), { type: 'FIND_BY_CONCERNS', concerns: list })
+}
+function findHospitals(procs: ProcedureInfo[]) {
+  void conv.send(t('chat.concern.findText', { names: procs.map((p) => p.name).join(', ') }))
 }
 
 // ─── 입력 ───
@@ -275,7 +321,8 @@ function nearBottom() {
   return !el || el.scrollHeight - el.scrollTop - el.clientHeight < 80
 }
 watch(
-  () => [conv.messages.length, conv.draft, conv.pendingAction, conv.cards.length, consult.messages.length, conv.error, requested.value] as const,
+  () =>
+    [conv.messages.length, conv.draft, conv.pendingAction, conv.cards.length, consult.messages.length, conv.error, requested.value, showTopics.value, showConcerns.value] as const,
   async () => {
     const stick = nearBottom()
     await nextTick()
@@ -307,6 +354,16 @@ watch(
 
     <AppBanner v-if="isHuman && consult.current && !consult.connected" type="reconnecting">{{ t('chat.reconnecting') }}</AppBanner>
 
+    <!-- C4-T 상담 주제 바 -->
+    <div v-if="!isHospital && conv.topic" class="topic-bar">
+      <AppIcon name="sparkles" :size="16" />
+      <span class="t-caption-12 secondary">{{ t('chat.topic.label') }}</span>
+      <strong class="topic-bar__name t-caption-13">{{ topicLabel(conv.topic) }}</strong>
+      <button type="button" class="topic-bar__change t-caption-12" @click="pickingTopic = true">
+        {{ t('chat.topic.change') }}<AppIcon name="chevron-right" :size="14" />
+      </button>
+    </div>
+
     <div v-if="!isHospital && conditionChips.length" class="conditions" role="list" :aria-label="t('chat.cond.label')">
       <AppChip v-for="c in conditionChips" :key="c.key" type="condition" :label="c.label" role="listitem" @click="editCondition(c.label)">
         {{ c.value }}
@@ -326,8 +383,10 @@ watch(
         </div>
       </section>
 
-      <p v-if="!conv.messages.length && !conv.streaming" class="hello t-body-14">
-        {{ isHospital ? t('chat.helloAgent', { hospital: conv.hospital?.name ?? '' }) : t('chat.helloAi') }}
+      <!-- C4-T 첫 진입: 환영 말풍선 (주제 카드는 아래) -->
+      <ChatBubble v-if="!isHospital && !conv.messages.length" sender="ai" :name="t('chat.aiTitle')" :text="t('chat.welcome')" />
+      <p v-else-if="!conv.messages.length && !conv.streaming" class="hello t-body-14">
+        {{ t('chat.helloAgent', { hospital: conv.hospital?.name ?? '' }) }}
       </p>
 
       <template v-for="{ m, i } in timeline" :key="i">
@@ -405,6 +464,17 @@ watch(
               <AppButton variant="ghost" size="s" @click="inputEl?.focus()">{{ t('chat.changeConditions') }}</AppButton>
             </div>
           </template>
+          <!-- C4-T 고민 관련 시술 정보 -->
+          <template v-if="m.procedures?.length">
+            <div class="inset procs">
+              <ProcedureInfoCard v-for="p in m.procedures" :key="p.procedureCode" :info="p" />
+            </div>
+            <p class="inset t-caption-12 muted">{{ t('chat.concern.disclaimer') }}</p>
+            <div v-if="i === lastProcIndex && !conv.streaming && !showConcerns" class="inset chips">
+              <AppChip @click="findHospitals(m.procedures)">{{ t('chat.concern.find', m.procedures.length) }}</AppChip>
+              <AppChip @click="addingConcern = true">{{ t('chat.concern.more') }}</AppChip>
+            </div>
+          </template>
         </div>
       </template>
 
@@ -414,6 +484,18 @@ watch(
       <div v-if="conv.activeTools.length" class="inset progress">
         <AppChip v-for="tool in conv.activeTools" :key="tool.tool" type="progress">{{ tool.label }}</AppChip>
       </div>
+
+      <!-- C4-T 피부 고민 선택 (여러 개) -->
+      <section v-if="showConcerns" class="inset concerns">
+        <div class="chips">
+          <AppChip v-for="c in SKIN_CONCERNS" :key="c" :selected="concerns.includes(c)" @click="toggleConcern(c)">
+            {{ t(`chat.concern.items.${c}`) }}
+          </AppChip>
+        </div>
+        <AppButton size="s" :disabled="!concerns.length" @click="submitConcerns">{{ t('chat.concern.done', { n: concerns.length }) }}</AppButton>
+        <p class="t-caption-12 muted">{{ t('chat.concern.note') }}</p>
+      </section>
+      <TopicCarousel v-if="showTopics" @pick="pickTopic" />
 
       <!-- Edge ① 0건 → AI 가 정한 완화안 (D-35: 탭하면 문구를 message 로) -->
       <div v-if="conv.relaxOptions.length && !conv.streaming" class="inset relax">
@@ -478,6 +560,10 @@ watch(
 
     </div>
 
+    <div v-if="showTopics && !conv.messages.length" class="quick-replies">
+      <AppChip v-for="q in QUICK" :key="q.key" @click="quickReply(q)">{{ t(`chat.quick.${q.key}`) }}</AppChip>
+    </div>
+
     <!-- 하단: C4-3 동의 dock / 병원 대화 빠른 버튼 + 입력창 -->
     <footer v-if="pending?.action === 'REQUEST_CONSULTATION'" class="dock dock--consent">
       <label class="consent">
@@ -530,6 +616,23 @@ watch(
   border-bottom: 1px solid var(--border-default);
   scrollbar-width: none;
 }
+.topic-bar {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-6);
+  padding: 10px var(--space-16);
+  border-bottom: 1px solid var(--border-default);
+  background: var(--brand-subtle);
+  color: var(--icon-default);
+}
+.topic-bar__name { flex: 1; min-width: 0; overflow: hidden; color: var(--brand-text); text-overflow: ellipsis; white-space: nowrap; }
+.topic-bar__change { display: inline-flex; align-items: center; gap: var(--space-2); padding: 0; border: 0; background: none; color: var(--text-secondary); }
+.quick-replies { display: flex; flex: none; gap: var(--space-8); padding: var(--space-8) var(--space-16) var(--space-4); overflow-x: auto; background: var(--surface-card); scrollbar-width: none; }
+.quick-replies::-webkit-scrollbar { display: none; }
+.procs { display: flex; flex-direction: column; gap: var(--space-8); }
+.chips { display: flex; flex-wrap: wrap; gap: var(--space-8); }
+.concerns { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-16); }
 .messages { display: flex; flex: 1; flex-direction: column; gap: var(--space-16); padding: var(--space-16); overflow-y: auto; }
 .messages > :first-child { margin-top: auto; }
 .messages { scrollbar-width: none; }

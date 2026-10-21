@@ -50,7 +50,7 @@ type HospitalRow = I18nName & {
   description_zh: string | null
   description_ja: string | null
 }
-type ProcedureRow = I18nName & { code: string; category: string; duration_min: number; downtime_days: number }
+type ProcedureRow = I18nName & { code: string; category: string; duration_min: number; downtime_days: number; description_ko: string; description_en: string }
 type UserRow = {
   id: number
   email: string

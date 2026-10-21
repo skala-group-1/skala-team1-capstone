@@ -7,10 +7,12 @@ import { aiApi, streamTask } from '@/api'
 import type {
   AiProfile,
   Conditions,
+  ConsultTopic,
   ConversationMessage,
   ConversationMode,
   HospitalCard,
   PendingAction,
+  ProcedureInfo,
   SseEvent,
   SseEventMap,
   Source,
@@ -29,6 +31,8 @@ export const useConversationStore = defineStore('conversation', {
     /** 조건 칩 바 (상단 고정) */
     conditions: null as Conditions | null,
     missing: [] as string[],
+    /** C4-T 상담 주제 바 */
+    topic: null as ConsultTopic | null,
 
     // 진행 중인 작업
     taskId: null as Uuid | null,
@@ -40,6 +44,8 @@ export const useConversationStore = defineStore('conversation', {
     /** 진행 칩 ("병원 검색 중…") */
     activeTools: [] as { tool: string; label: string }[],
     cards: [] as HospitalCard[],
+    /** C4-T 고민 관련 시술 정보 카드 (PROCEDURE_INFO) */
+    procedures: [] as ProcedureInfo[],
     relaxOptions: [] as SseEventMap['RESULT_CARDS']['relaxOptions'],
     pendingAction: null as PendingAction | null,
     tripPlan: null as SseEventMap['TRIP_PLAN'] | null,
@@ -65,6 +71,7 @@ export const useConversationStore = defineStore('conversation', {
       this.hospital = conv.hospital
       this.consultationId = conv.consultationId
       this.conditions = conv.conditions
+      this.topic = conv.topic ?? null
       this.messages = conv.messages ?? []
       this.parentConversationId = conv.parentConversationId
       await this.restoreActiveTask()
@@ -80,6 +87,7 @@ export const useConversationStore = defineStore('conversation', {
       this.hospital = conv.hospital
       this.consultationId = conv.consultationId
       this.conditions = conv.conditions
+      this.topic = conv.topic ?? null
       this.messages = conv.messages ?? []
       this.parentConversationId = conv.parentConversationId
       await this.restoreActiveTask()
@@ -110,14 +118,16 @@ export const useConversationStore = defineStore('conversation', {
         return false
       }
     },
-    /** 메시지 전송 또는 버튼 action(SELECT_HOSPITAL·RELAX·SET_SORT·SAVE_PROFILE) */
+    /** 메시지 전송 또는 버튼 action(SELECT_HOSPITAL·RELAX·SET_SORT·SAVE_PROFILE·SELECT_TOPIC·FIND_BY_CONCERNS) */
     async send(message: string | null, action: TaskAction | null = null, echo = true) {
       if (!this.conversationId) throw new Error('conversation not opened')
       if (this.pendingAction || this.streaming) return
       if (message && echo) this.messages.push({ role: 'user', text: message, sources: [], cards: [], createdAt: new Date().toISOString() })
       this.lastInput = { message, action }
+      if (action?.type === 'SELECT_TOPIC') this.topic = action.topic
       this.error = null
       this.cards = []
+      this.procedures = []
       this.relaxOptions = []
       this.tripPlan = null
       this.memoryProposal = null
@@ -211,6 +221,9 @@ export const useConversationStore = defineStore('conversation', {
           if (this.draft) this.pushAssistant('', [])
           this.pendingAction = e.data
           break
+        case 'PROCEDURE_INFO':
+          this.procedures = e.data.procedures
+          break
         case 'TRIP_PLAN':
           this.tripPlan = e.data
           break
@@ -231,7 +244,7 @@ export const useConversationStore = defineStore('conversation', {
       }
     },
     pushAssistant(text: string, sources: Source[]) {
-      this.messages.push({ role: 'assistant', text: text || this.draft, sources, cards: this.cards, createdAt: new Date().toISOString() })
+      this.messages.push({ role: 'assistant', text: text || this.draft, sources, cards: this.cards, procedures: this.procedures, createdAt: new Date().toISOString() })
       this.draft = ''
       this.activeTools = []
     },

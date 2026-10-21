@@ -14,6 +14,7 @@ import type {
   AuditLog,
   ChatMessage,
   Consultation,
+  ConsultTopic,
   Conversation,
   ConversationMessage,
   ErrorResponse,
@@ -24,8 +25,10 @@ import type {
   OpsAiTask,
   PendingAction,
   ProcedureCode,
+  ProcedureInfo,
   Reservation,
   ReservationStatus,
+  SkinConcern,
   SseEventName,
   SummaryCard,
 } from '@/types/contract'
@@ -136,6 +139,7 @@ type ConvRow = {
   consultation_id: number | null
   created_at: string
   conditions?: Conversation['conditions']
+  topic?: ConsultTopic | null
   messages?: ConversationMessage[]
 }
 const convRows: ConvRow[] = (conversationsJson as unknown as ConvRow[]).map((c) => ({ ...c, messages: [] }))
@@ -280,6 +284,7 @@ function toConversation(c: ConvRow, locale: Locale, withMessages = true): Conver
     parentConversationId: c.parent_conversation_id,
     consultationId: c.consultation_id,
     conditions: c.conditions ?? emptyConditions(),
+    topic: c.topic ?? null,
     createdAt: c.created_at,
     messages: withMessages ? (c.messages ?? []) : (null as unknown as ConversationMessage[]),
   }
@@ -301,6 +306,9 @@ const TXT = {
   handoff: { en: 'A counselor will join shortly. The AI pauses until then.', ko: '상담원 연결을 요청했어요. 상담원이 들어올 때까지 AI 답변은 멈춰요.', zh: '已请求连接咨询师，在咨询师加入前 AI 将暂停回答。', ja: '相談員への接続をリクエストしました。相談員が入室するまでAIは回答を止めます。' },
   cancelled: { en: 'Okay, I did not send it.', ko: '알겠어요. 요청하지 않았어요.', zh: '好的，没有提交。', ja: 'わかりました。リクエストしていません。' },
   opened: { en: 'Opening a chat with this clinic.', ko: '이 병원과의 대화창을 열었어요.', zh: '已打开与这家医院的对话。', ja: 'この病院とのチャットを開きました。' },
+  askConcern: { en: 'What skin concerns do you have? Pick all that apply.\nI will share info on related procedures.', ko: '어떤 피부 고민이 있으세요? 해당하는 걸 모두 골라주세요.\n고른 고민과 관련된 시술 정보를 알려드려요.', zh: '您有哪些皮肤困扰？请选择所有符合的项。\n我会介绍相关项目的信息。', ja: 'どんな肌の悩みがありますか？当てはまるものをすべて選んでください。\n関連する施術の情報をお伝えします。' },
+  topic: { en: 'Sure. Tell me what you would like to know.', ko: '좋아요. 궁금한 점을 말씀해 주세요.', zh: '好的，请告诉我您想了解的内容。', ja: 'わかりました。知りたいことを教えてください。' },
+  procs: { en: 'Here are {n} related procedures.\nTimes and prices are based on registered clinic info.', ko: '관련 시술 {n}가지예요.\n시간·가격은 등록된 병원 정보 기준이에요.', zh: '相关项目共 {n} 个。\n时间·价格以医院登记的信息为准。', ja: '関連する施術は{n}つです。\n時間・価格は登録された病院情報に基づきます。' },
   saved: { en: 'Saved. I will use it next time.', ko: '기억해 둘게요. 다음 상담부터 반영할게요.', zh: '已保存，下次咨询会使用。', ja: '保存しました。次回から反映します。' },
 }
 const SOURCES = [
@@ -313,7 +321,45 @@ const PROC_WORDS: [ProcedureCode, RegExp][] = [
   ['RHINOPLASTY', /코|rhino|nose|隆鼻|鼻/i],
   ['JAW_BOTOX', /보톡스|botox|瘦脸|ボトックス/i],
   ['ULTHERAPY', /울쎄라|ulthera|リフト|超声刀/i],
+  ['PICO_TONING', /피코|pico|皮秒|ピコ/i],
+  ['REJURAN', /리쥬란|rejuran|丽珠兰|リジュラン/i],
 ]
+// ponytail: 고민→시술 매핑은 mock 전용 하드코딩. 실제는 backend procedure_concerns 테이블 (docs/api/c4t-topic-concern.md)
+const CONCERN_PROCS: Record<SkinConcern, ProcedureCode[]> = {
+  PIGMENTATION: ['PICO_TONING'],
+  PORES: ['REJURAN'],
+  ACNE_SCAR: ['REJURAN'],
+  WRINKLE_FIRMNESS: ['ULTHERAPY', 'THERMAGE', 'FOREHEAD_BOTOX'],
+  TONE_TEXTURE: ['PICO_TONING', 'REJURAN'],
+  REDNESS: ['PICO_TONING'],
+  FACE_CONTOUR: ['SHURINK', 'JAW_BOTOX'],
+}
+const CONCERN_WORDS: [SkinConcern, RegExp][] = [
+  ['PIGMENTATION', /기미|잡티|melasma|spot|色斑|シミ/i],
+  ['PORES', /모공|pore|毛孔|毛穴/i],
+  ['ACNE_SCAR', /여드름|흉터|acne|scar|痘|ニキビ/i],
+  ['WRINKLE_FIRMNESS', /주름|탄력|wrinkle|firm|皱纹|シワ/i],
+  ['TONE_TEXTURE', /피부톤|피부결|tone|texture|肤色|キメ/i],
+  ['REDNESS', /홍조|redness|泛红|赤み/i],
+  ['FACE_CONTOUR', /얼굴 ?라인|face ?line|轮廓|フェイスライン/i],
+]
+function procedureInfos(concerns: SkinConcern[], loc: Locale): ProcedureInfo[] {
+  const codes = [...new Set(concerns.flatMap((c) => CONCERN_PROCS[c]))]
+  return codes.map((code) => {
+    const p = procedures.find((x) => x.code === code)!
+    const prices = priceOptions.filter((o) => o.procedure_code === code).map((o) => o.price_krw)
+    return {
+      procedureCode: code,
+      name: pickName(p, loc),
+      description: loc === 'ko' ? p.description_ko : p.description_en,
+      concerns: concerns.filter((c) => CONCERN_PROCS[c].includes(code)),
+      durationMin: p.duration_min,
+      downtimeDays: p.downtime_days,
+      minPriceKrw: prices.length ? Math.min(...prices) : null,
+      maxPriceKrw: prices.length ? Math.max(...prices) : null,
+    }
+  })
+}
 
 function sse(events: [SseEventName, unknown][]) {
   const encoder = new TextEncoder()
@@ -334,7 +380,7 @@ function record(conv: ConvRow, text: string) {
   conv.messages!.push({ role: 'assistant', text, sources: [], cards: [], createdAt: nowIso() })
 }
 function done(conv: ConvRow, answer: string, extra: Partial<ConversationMessage> = {}): [SseEventName, unknown] {
-  conv.messages!.push({ role: 'assistant', text: answer, sources: extra.sources ?? [], cards: extra.cards ?? [], createdAt: nowIso() })
+  conv.messages!.push({ role: 'assistant', text: answer, sources: extra.sources ?? [], cards: extra.cards ?? [], procedures: extra.procedures, createdAt: nowIso() })
   return ['DONE', { answer, sources: extra.sources ?? [] }]
 }
 
@@ -343,7 +389,7 @@ function aiStream(task: TaskRow, request: Request) {
   const user = users.find((u) => u.id === task.userId)!
   const conv = convRows.find((c) => c.id === task.conversationId)!
   const text = task.message ?? ''
-  const action = task.action as { type: string; hospitalId?: number; fields?: unknown } | null
+  const action = task.action as { type: string; hospitalId?: number; fields?: unknown; topic?: ConsultTopic; concerns?: SkinConcern[] } | null
   const ev: [SseEventName, unknown][] = [['STATUS', { status: 'RUNNING' }]]
 
   // 승인 후 재개
@@ -410,6 +456,19 @@ function aiStream(task: TaskRow, request: Request) {
     return sse([...ev, ...tokens(L(loc, TXT.opened)), ['CONVERSATION_OPENED', { conversationId: child.id, hospitalId: action.hospitalId }], done(conv, L(loc, TXT.opened))])
   }
   if (action?.type === 'SAVE_PROFILE') return sse([...ev, ...tokens(L(loc, TXT.saved)), done(conv, L(loc, TXT.saved))])
+  // C4-T 상담 주제 선택 · 피부 고민 → 관련 시술 정보
+  if (action?.type === 'SELECT_TOPIC') {
+    conv.topic = action.topic!
+    const answer = L(loc, action.topic === 'SKIN_CONCERN' ? TXT.askConcern : TXT.topic)
+    return sse([...ev, ...tokens(answer), done(conv, answer)])
+  }
+  const concerns = action?.type === 'FIND_BY_CONCERNS' ? action.concerns! : conv.topic === 'SKIN_CONCERN' ? CONCERN_WORDS.filter(([, re]) => re.test(text)).map(([c]) => c) : []
+  if (concerns.length) {
+    const procs = procedureInfos(concerns, loc)
+    const answer = L(loc, TXT.procs).replace('{n}', String(procs.length))
+    ev.push(['TOOL_START', { tool: 'business_find_procedures_by_concern', label: '…' }], ['TOOL_END', { tool: 'business_find_procedures_by_concern', ok: true }])
+    return sse([...ev, ['PROCEDURE_INFO', { procedures: procs }], ...tokens(answer), done(conv, answer, { procedures: procs })])
+  }
   if (/실패|fail|失败|失敗/i.test(text)) {
     Object.assign(task, { status: 'FAILED', error: { code: 'AI_UNAVAILABLE', message: 'agent unavailable (mock)' }, finishedAt: nowIso() })
     return sse([...ev, ['FAILED', { code: 'AI_UNAVAILABLE', message: 'agent unavailable', traceId: task.id }]])

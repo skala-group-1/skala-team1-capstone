@@ -24,21 +24,36 @@ AI 요약을 넘겨받은 실제 상담사와 통역 채팅하고 예약을 요�
 | `scripts/` | 장애 시연·stub 스크립트 | |
 | `docs/` | 평가 증빙(평가 결과, 스크린샷, harness.md) | |
 
-## 빠른 시작 (현재: 인프라 + backend)
+## 빠른 시작 (전체 서비스)
 
 ```bash
-cp .env.example .env            # OPENAI_API_KEY 등 입력
-docker compose up -d --build    # postgres(pgvector) + rabbitmq + backend
+cp .env.example .env            # 기존 .env가 있으면 덮어쓰지 말고 새 항목만 추가
+# OPENAI_API_KEY, 서비스 토큰과 DB 연결 URL의 비밀번호 설정
+docker compose up -d            # 처음에는 이미지 빌드, DB 권한 준비와 문서 색인도 실행
+docker compose ps -a
 docker compose exec postgres psql -U capstone -d capstone -c "select count(*) from app.hospitals;"   # 50
 ```
 
+- 상시 서비스 9개: frontend·backend·agent·business-mcp·rag-mcp·translator·summarizer·postgres·rabbitmq.
+  `db-access`와 `rag-index`는 일회성 작업이므로 `Exited (0)`이 정상입니다. 나머지는 `healthy`를 확인합니다.
+- 접속: http://localhost (frontend), http://localhost:8080/swagger-ui (backend).
+- 첫 색인과 실제 AI 질의에는 OpenAI API가 사용됩니다. 변경 없는 문서는 재색인 시 임베딩 호출을 생략합니다.
+- `.env`의 `DATABASE_URL`은 `agent`, `RAG_DATABASE_URL`은 `rag_ro`, `RAG_INDEX_DATABASE_URL`은
+  `rag_indexer` 계정을 사용합니다. Docker 호스트명은 `postgres`, DB명은 `POSTGRES_DB`와 맞춥니다.
+  비밀번호의 URL 특수문자는 인코딩합니다. `db-access`는 기존 계정 비밀번호를 변경하지 않으며,
+  기존 DB를 재사용한다면 해당 계정의 실제 비밀번호를 설정해야 합니다.
+- 소스를 수정한 뒤에는 `docker compose up -d --build`로 이미지를 갱신합니다.
+- 기동 성공과 기능 완성은 별도입니다. 현재 agent 웹 워커는 HOSPITAL 대화만 처리하며 MAIN 탐색,
+  승인 후 실제 예약 저장과 상담사 인계 연결은 후속 작업입니다.
 - **DB 스키마·mock 데이터는 Flyway가 적재**합니다 (V1 schema → V2.. → V100 seed). `postgres`만 띄우면 DB가 비어 있습니다.
   - backend를 같이 띄우면 자동 적재: `docker compose up -d postgres rabbitmq backend`
   - **backend 없이 DB만 채우기** (agent·MCP·RAG 담당): `docker compose up -d postgres rabbitmq && docker compose run --rm db-seed`
     - 데모 계정 비밀번호는 backend 기동 시에만 채워지므로, 로그인이 필요하면 backend를 띄우세요 (`/internal` 호출은 로그인 불필요)
-- Swagger: http://localhost:8080/swagger-ui (로그인 응답의 `accessToken`을 Authorize에 입력)
-- RabbitMQ 관리 콘솔: http://localhost:15672 (guest/guest)
-- DB 재적재 / mock 재생성 후: `docker compose down -v && docker compose up -d --build` (seed 파일이 바뀌면 Flyway 체크섬이 달라져 기존 볼륨으로는 기동 실패)
+- 내부 포트를 로컬 개발에 사용할 때만 `docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d`.
+  DB 5432, RabbitMQ 5672·15672, agent 8000, MCP 9101·9102, translator 8001, summarizer 8002가
+  `127.0.0.1`에 열립니다. RabbitMQ 관리 콘솔은 http://localhost:15672 입니다.
+- 일반 재기동에는 볼륨을 유지합니다. mock 재생성으로 Flyway 체크섬이 바뀌었다면 데이터를 보존할지
+  먼저 결정합니다. `docker compose down -v`는 기존 DB 전체를 삭제하므로 초기화할 때만 사용합니다.
 - mock 데이터 설명: [`data/mock/README.md`](data/mock/README.md), backend 개발: [`backend/README.md`](backend/README.md)
 
 ## 데모 계정

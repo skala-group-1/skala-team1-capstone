@@ -114,5 +114,10 @@ export const useConsultationStore = defineStore('consultation', {
     async finish(id: number) {
       this.current = await counselorApi.close(id)
     },
+    /** 고객 종료: 응답의 CLOSED 상태로 바꾸면 ChatView 가 병원 대화(AI)로 되돌린다 */
+    async endByCustomer() {
+      if (!this.current) return
+      this.current = await consultationApi.close(this.current.id)
+    },
   },
 })

@@ -811,6 +811,16 @@ export const appHandlers = [
     notify([c.user_id], 'CONSULTATION_CLOSED', { consultationId: c.id })
     return HttpResponse.json(toConsultation(c, true))
   }),
+  http.post(`${API}/consultations/:id/close`, ({ request, params }) => {
+    const u = auth(request)
+    const c = consRows.find((x) => x.id === Number(params.id))
+    if (!u || !c || u.role !== 'CUSTOMER' || c.user_id !== u.id) return error(403, 'ACCESS_DENIED', 'Access denied')
+    if (c.status !== 'WAITING' && c.status !== 'ACTIVE') return error(409, 'INVALID_STATE_TRANSITION', 'Invalid state transition')
+    c.status = 'CLOSED'
+    const conv = convRows.find((x) => x.id === c.conversation_id)
+    if (conv) conv.mode = 'HOSPITAL'
+    return HttpResponse.json(toConsultation(c, false))
+  }),
 
   // 병원관리자
   http.get(`${API}/hospital-admin/dashboard`, ({ request }) => {

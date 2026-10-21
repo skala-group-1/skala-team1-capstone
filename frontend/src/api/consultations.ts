@@ -8,6 +8,8 @@ export const consultationApi = {
   messages: (id: number) => http.get<ChatMessage[]>(`/consultations/${id}/messages`).then((r) => r.data),
   retryTranslation: (id: number, msgId: number) =>
     http.post<void>(`/consultations/${id}/messages/${msgId}/retry-translation`).then(() => undefined),
+  /** 고객이 직접 종료 (WAITING 이면 요청 취소) → CLOSED, 대화 mode AI 복귀 */
+  close: (id: number) => http.post<Consultation>(`/consultations/${id}/close`).then((r) => r.data),
 }
 
 export const counselorApi = {

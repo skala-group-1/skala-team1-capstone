@@ -37,7 +37,7 @@ export const useAuthStore = defineStore('auth', {
       session.onLoggedOut(() => this.clear())
       try {
         const res = await authApi.refresh()
-        this.setUser(res.user)
+        this.setUser(await this.applyPickedLocale(res.user))
       } catch {
         this.clear()
       } finally {
@@ -47,8 +47,9 @@ export const useAuthStore = defineStore('auth', {
     async login(body: LoginRequest) {
       const res = await authApi.login(body)
       session.setToken(res.accessToken)
-      this.setUser(res.user)
-      return res.user
+      const user = await this.applyPickedLocale(res.user)
+      this.setUser(user)
+      return user
     },
     async signup(body: SignupRequest) {
       // TODO(fe): 가입 후 자동 로그인할지 /login 으로 보낼지 결정 (「인증·인가 설계」에 명시 없음)
@@ -61,15 +62,24 @@ export const useAuthStore = defineStore('auth', {
         this.clear()
       }
     },
-    setUser(user: UserSummary) {
-      // 고객: 로그인 전 온보딩에서 고른 언어가 있으면 계정 언어보다 우선 → 계정에도 1번 저장하고 지운다.
-      // 화면 언어('locale')는 직원 로그인 때도 ko 로 바뀌므로 쓰지 않는다 (같은 브라우저에서 직원 다음 고객이 로그인하면 고객 언어가 ko 로 바뀌던 문제)
+    /**
+     * 고객: 로그인 전 온보딩에서 고른 언어가 있으면 계정 언어보다 우선 → 계정에 1번 저장하고 지운다.
+     * 화면 언어('locale')는 직원 로그인 때도 ko 로 바뀌므로 쓰지 않는다 (같은 브라우저에서 직원 다음 고객이 로그인하면 고객 언어가 ko 로 바뀌던 문제).
+     * backend 응답 언어(병원·시술 이름 등)는 토큰 locale 로 정해지므로, 저장 후 화면이 데이터를 불러오기 전에 새 토큰을 받는다
+     */
+    async applyPickedLocale(user: UserSummary): Promise<UserSummary> {
       const picked = localStorage.getItem('localePicked') as Locale | null
       localStorage.removeItem('localePicked')
-      if (user.role === 'CUSTOMER' && picked && ['en', 'zh', 'ja', 'ko'].includes(picked) && picked !== user.locale) {
-        user = { ...user, locale: picked }
-        void authApi.updateMe({ locale: picked }).catch(() => undefined)
+      if (user.role !== 'CUSTOMER' || !picked || !['en', 'zh', 'ja', 'ko'].includes(picked) || picked === user.locale) return user
+      try {
+        await authApi.updateMe({ locale: picked })
+        await authApi.refresh()
+        return { ...user, locale: picked }
+      } catch {
+        return user
       }
+    },
+    setUser(user: UserSummary) {
       // 다른 계정으로 바뀌면(로그아웃 없이 다시 로그인) 이전 계정의 상태·구독을 모두 정리한 뒤 새 토큰으로 다시 연결.
       // STOMP 만 끊으면 남은 상담방 리스너가 재연결 때 이전 계정 상담방을 구독 → ACCESS_DENIED 로 연결이 끊기는 루프
       if (this.user && this.user.id !== user.id) {
@@ -86,9 +96,17 @@ export const useAuthStore = defineStore('auth', {
         useNotificationStore().listen()
       }
     },
+    /** 내 정보에서 언어 변경 → 계정 저장 → 새 토큰(새 locale) → 언어가 들어간 캐시 비우기 (다음 화면 진입 때 새 언어로 다시 받음) */
     async setLocale(locale: Locale) {
       session.setLocale(locale)
-      if (this.user) this.user = { ...this.user, ...(await authApi.updateMe({ locale })), locale }
+      if (!this.user) return
+      const me = await authApi.updateMe({ locale })
+      // 토큰에 예전 locale 이 남아 있으면 backend 가 예전 언어로 응답한다 → 바로 갱신 (실패해도 다음 refresh 때 반영)
+      await authApi.refresh().catch(() => undefined)
+      this.user = { ...this.user, ...me, locale }
+      const search = useSearchStore()
+      search.procedures = []
+      search.results = []
     },
     clear() {
       this.user = null

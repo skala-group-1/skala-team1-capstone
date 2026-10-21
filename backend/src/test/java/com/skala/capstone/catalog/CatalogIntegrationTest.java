@@ -119,12 +119,28 @@ class CatalogIntegrationTest extends IntegrationTest {
 		assertThat(d.get("name").asText()).isEqualTo("道淡松整形皮肤科诊所");
 		assertThat(d.get("nameKo").asText()).isNotBlank();
 		assertThat(d.get("doctors").size()).isGreaterThan(0);
+		assertThat(d.at("/doctors/0/title").asText()).isEqualTo("代表院长");
 		assertThat(d.get("procedures").size()).isGreaterThan(0);
 		assertThat(d.at("/procedures/0/options/0/priceKrw").asInt()).isPositive();
 		assertThat(d.at("/reviewStats/reviewCount").asLong()).isPositive();
 		List<String> days = new ArrayList<>();
 		d.get("openHours").fieldNames().forEachRemaining(days::add);
 		assertThat(days).containsExactly("mon", "tue", "wed", "thu", "fri", "sat", "sun");
+	}
+
+	@Test
+	void doctorTitlesFollowResponseLanguage() throws Exception {
+		JsonNode en = body(mvc.perform(get("/api/hospitals/1")
+				.header(HttpHeaders.AUTHORIZATION, accessToken("customer.en1@demo.local"))).andExpect(status().isOk()).andReturn())
+				.get("doctors");
+		JsonNode ko = body(mvc.perform(get("/api/hospitals/1")
+				.header(HttpHeaders.AUTHORIZATION, accessToken("counselor.h1@demo.local"))).andExpect(status().isOk()).andReturn())
+				.get("doctors");
+		assertThat(en.get(0).get("title").asText()).isEqualTo("Chief Director");
+		assertThat(ko.get(0).get("title").asText()).isEqualTo("대표원장");
+		for (JsonNode doctor : en) {
+			assertThat(doctor.get("title").asText()).isIn("Chief Director", "Director", "Associate Director");
+		}
 	}
 
 	@Test

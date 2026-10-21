@@ -279,6 +279,7 @@ const ja: typeof en = {
   chat: {
     list: { title: 'チャット', open: 'チャット一覧', hospitals: '病院チャット {n}', noConditions: '条件はまだありません' },
     aiTitle: 'Yeoshin AI',
+    newConversation: '新しいチャットを始める',
     agentName: '{hospital} · AI案内',
     mode: { ai: 'AI相談', agent: '病院エージェント', waiting: '相談員を待機中', human: '相談員と接続中' },
     cards: { browse: '病院の検索結果' },

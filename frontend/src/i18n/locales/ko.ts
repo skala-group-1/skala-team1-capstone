@@ -280,6 +280,7 @@ const ko: typeof en = {
   chat: {
     list: { title: '대화', open: '대화 목록', hospitals: '병원 대화 {n}', noConditions: '정리된 조건 없음' },
     aiTitle: '여신 AI',
+    newConversation: '새 대화 시작',
     agentName: '{hospital} · AI 안내',
     mode: { ai: 'AI 상담', agent: '병원 에이전트', waiting: '상담사 대기 중', human: '상담원 연결됨' },
     cards: { browse: '병원 검색 결과' },

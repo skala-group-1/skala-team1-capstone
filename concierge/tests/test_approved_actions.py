@@ -283,3 +283,50 @@ async def test_summary_http_failure_or_invalid_card_is_not_approved(monkeypatch,
     monkeypatch.setattr(actions.httpx, "AsyncClient", lambda **kw: client)
     with pytest.raises((ValueError, httpx.HTTPStatusError)):
         await actions.prepare_action(state(), call(actions.HANDOFF, {}))
+
+
+@pytest.mark.parametrize("approved", [True, False])
+async def test_duplicate_resume_cannot_approve_a_second_mutation_in_same_task(monkeypatch, approved):
+    from langchain_core.tools import StructuredTool
+    hospital = importlib.import_module("concierge.nodes.hospital_agent")
+    s = await prepared(monkeypatch)
+    s["hospital_context"]["hospital_id"] = 7
+    mutation = AsyncMock(return_value={"id": 30, "status": "PENDING"})
+    monkeypatch.setattr(execution, "lookup", mutation)
+    async def book(hospital_id: int):
+        raise AssertionError("Only execute_action may mutate")
+    tool = StructuredTool.from_function(coroutine=book, name=actions.BOOK, description="test")
+    loader = AsyncMock(return_value=[tool])
+    monkeypatch.setattr(hospital, "get_tools", loader)
+    model = AsyncMock()
+    bound_names = []
+    def bind(tools, **kwargs):
+        bound_names.extend(t.name for t in tools if hasattr(t, "name"))
+        return model
+    model.bind_tools = bind
+    model.ainvoke.side_effect = [
+        AIMessage(content="", tool_calls=[{**call(), "id": "unrequested-second-mutation"}]),
+        AIMessage(content="Please send a new request for another action."),
+    ]
+    monkeypatch.setattr(hospital, "_model", lambda: model)
+    builder = StateGraph(State)
+    builder.add_node("approval", approval)
+    async def execute(s: State):
+        return await execute_action(s)
+    builder.add_node("execute", execute)
+    builder.add_node("hospital", hospital.hospital_agent)
+    builder.add_edge(START, "approval")
+    builder.add_conditional_edges("approval", lambda s: "execute" if s.get("pending_action") else "hospital")
+    builder.add_edge("execute", "hospital")
+    builder.add_edge("hospital", END)
+    g = builder.compile(checkpointer=MemorySaver())
+    config = {"configurable": {"thread_id": "single-approval"}}
+    await g.ainvoke(s, config)
+    result = await g.ainvoke(Command(resume={"approved": approved}), config)
+    assert not result.get("__interrupt__")
+    assert actions.BOOK not in bound_names
+    assert actions.BOOK not in loader.call_args.args[0]
+    assert mutation.await_count == (1 if approved else 0)
+    await g.ainvoke(Command(resume={"approved": True}), config)
+    assert mutation.await_count == (1 if approved else 0)
+    assert not hospital._action_finished([*result["messages"], HumanMessage(content="New action please")])

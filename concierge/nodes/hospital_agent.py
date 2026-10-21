@@ -91,6 +91,16 @@ def _validate_booking(args, booking, messages, hospital_id):
     raise ValueError("Look up available slots again and use a slot matching the chosen date/time/procedure")
 
 
+def _action_finished(messages):
+    # Resume messages have no approval ID: a task may reach only one approval.
+    for message in reversed(messages):
+        if isinstance(message, HumanMessage):
+            return False
+        if isinstance(message, ToolMessage) and message.additional_kwargs.get("approval_completed"):
+            return True
+    return False
+
+
 async def hospital_agent(state: AgentState) -> dict:
     if state.get("mode") == "HUMAN":
         return {}
@@ -98,11 +108,12 @@ async def hospital_agent(state: AgentState) -> dict:
     context = state.get("hospital_context") or {}
     if context.get("hospital_id") != hospital_id:
         raise ValueError("Load the selected hospital context before running the agent")
-    tools = await get_tools((*HOSPITAL_READ_TOOLS, *DESTRUCTIVE_TOOLS))
+    messages = list(state.get("messages") or [])
+    names = HOSPITAL_READ_TOOLS if _action_finished(messages) else (*HOSPITAL_READ_TOOLS, *DESTRUCTIVE_TOOLS)
+    tools = [tool for tool in await get_tools(names) if tool.name in names]
     allowed = {tool.name for tool in tools}
     plain_model = _model()
     model = plain_model.bind_tools([*tools, PREFERENCES_TOOL], parallel_tool_calls=False)
-    messages = list(state.get("messages") or [])
     added = []
     booking = dict(state.get("hospital_booking") or {})
     loop = dict(state.get("loop") or {})

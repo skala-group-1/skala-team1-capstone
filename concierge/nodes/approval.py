@@ -41,5 +41,6 @@ def approval(state: AgentState) -> dict:
     if not approved:
         return {"pending_action": None, "messages": [ToolMessage(
             content=error or "User rejected this action. Do not retry without a new user request.",
-            tool_call_id=call["id"], status="error" if error else "success") ]}
+            tool_call_id=call["id"], status="error" if error else "success",
+            additional_kwargs={"approval_completed": True})]}
     return {"pending_action": {**pending, "args": args, "approved": True}}

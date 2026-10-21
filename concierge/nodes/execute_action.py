@@ -53,5 +53,6 @@ async def execute_action(state: AgentState) -> dict:
         detail = str(exc) if isinstance(exc, ToolException) else "The action result could not be confirmed."
         content = detail + " Do not claim success or automatically retry. For a slot conflict, look up fresh alternatives and ask the user to choose, then obtain new approval."
         status = "error"
-    update["messages"] = [ToolMessage(content=content, tool_call_id=action["tool_call_id"], status=status)]
+    update["messages"] = [ToolMessage(content=content, tool_call_id=action["tool_call_id"], status=status,
+                                      additional_kwargs={"approval_completed": True})]
     return update

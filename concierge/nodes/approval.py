@@ -8,6 +8,14 @@ from concierge.nodes.actions import EDITABLE, HANDOFF, validate_args
 from concierge.nodes.load_hospital_context import selected_hospital
 
 
+REJECTION_REPLY = {
+    "en": "You declined this action. No changes were made.",
+    "ko": "요청을 거절했습니다. 변경된 사항은 없습니다.",
+    "zh": "您已拒绝此操作，未进行任何更改。",
+    "ja": "この操作を承認しませんでした。変更は行われていません。",
+}
+
+
 def approval(state: AgentState) -> dict:
     pending = state.get("pending_action") or {}
     last = state["messages"][-1]
@@ -39,7 +47,9 @@ def approval(state: AgentState) -> dict:
     if approved and pending["tool"] == HANDOFF:
         args["consent"] = True
     if not approved:
-        return {"pending_action": None, "messages": [ToolMessage(
+        locale = (state.get("user") or {}).get("locale", "en")
+        return {"pending_action": None, "draft": None if error else REJECTION_REPLY.get(locale, REJECTION_REPLY["en"]),
+                "messages": [ToolMessage(
             content=error or "User rejected this action. Do not retry without a new user request.",
             tool_call_id=call["id"], status="error" if error else "success",
             additional_kwargs={"approval_completed": True})]}

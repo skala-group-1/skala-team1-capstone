@@ -112,6 +112,13 @@ def _action_finished(messages):
 async def hospital_agent(state: AgentState) -> dict:
     if state.get("mode") == "HUMAN":
         return {}
+    messages = state.get("messages") or []
+    if (messages and isinstance(messages[-1], ToolMessage)
+            and messages[-1].status == "success"
+            and messages[-1].additional_kwargs.get("approval_completed")
+            and state.get("draft")):
+        # Verified mutation results already have a localized, factual confirmation.
+        return {"draft": state["draft"]}
     hospital_id = selected_hospital(state)
     context = state.get("hospital_context") or {}
     if context.get("hospital_id") != hospital_id:

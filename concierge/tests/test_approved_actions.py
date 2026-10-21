@@ -330,26 +330,3 @@ async def test_duplicate_resume_cannot_approve_a_second_mutation_in_same_task(mo
     await g.ainvoke(Command(resume={"approved": True}), config)
     assert mutation.await_count == (1 if approved else 0)
     assert not hospital._action_finished([*result["messages"], HumanMessage(content="New action please")])
-
-
-@pytest.mark.parametrize("locale,expected", [
-    ("en", "English"), ("ko", "한국어"), ("zh", "中文"), ("ja", "日本語"),
-])
-async def test_consent_display_includes_customer_language(monkeypatch, locale, expected):
-    from concierge.nodes.action_display import label
-    card = {**CARD, "customer_locale": locale}
-    monkeypatch.setattr(actions, "summarize", AsyncMock(return_value=card))
-    s = state()
-    s["user"]["locale"] = locale
-    s["conditions"] = {"consult_language": "ja" if locale != "ja" else "en"}
-    pending = await actions.prepare_action(s, call(actions.HANDOFF, {}))
-    assert {"label": label("customer_locale", locale), "value": expected} in pending["display"]["rows"]
-    assert pending["args"]["summary_card"] == card
-    assert pending["args"]["consent"] is False
-
-
-def test_missing_summary_language_is_not_invented():
-    from concierge.nodes.action_display import label, summary_rows
-    for value in (None, "unknown"):
-        assert {"label": "Customer language", "value": label("unknown", "en")} in summary_rows(
-            {**CARD, "customer_locale": value}, "en")

@@ -47,6 +47,10 @@ class BackendClient(Protocol):
 
     async def plan_trip(self, ctx: CallContext, body: dict[str, Any]) -> dict[str, Any]: ...
 
+    async def open_hospital_conversation(
+        self, ctx: CallContext, hospital_id: int, parent_conversation_id: str,
+    ) -> dict[str, Any]: ...
+
     async def create_reservation(self, ctx: CallContext, body: dict[str, Any], idempotency_key: str) -> dict: ...
 
     async def cancel_reservation(self, ctx: CallContext, reservation_id: int, reason: str | None) -> dict: ...
@@ -139,6 +143,11 @@ class HttpBackendClient:
     async def plan_trip(self, ctx, body):
         # TODO(mcp): backend BE-14 (POST /internal/trip-plans) 구현 후 연결 확인
         return await self._request("POST", "/trip-plans", ctx, json=body)
+
+    async def open_hospital_conversation(self, ctx, hospital_id, parent_conversation_id):
+        return await self._request("POST", "/conversations", ctx, json={
+            "hospital_id": hospital_id, "parent_conversation_id": parent_conversation_id,
+        })
 
     # --- 변경 (agent 승인 interrupt 를 거친 뒤에만 호출됨) --------------------
     async def create_reservation(self, ctx, body, idempotency_key):

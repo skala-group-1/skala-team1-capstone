@@ -47,7 +47,7 @@ npx @modelcontextprotocol/inspector       # Inspector 에서 위 URL 로 접속�
 - 호출자 정보는 LLM 인자가 아니라 MCP 요청 헤더로: `X-Acting-User-Id`, `X-Trace-Id`, (선택) `X-Locale`.
   business-mcp 가 그대로 backend `/internal/**` 헤더로 넘긴다. (헤더를 사용자별로 싣는 방식은 TODO — agent 담당과 합의)
 
-## 도구 (12 + 2)
+## 도구 (13 + 2)
 
 | 서버 | 도구 | 힌트 | backend / 데이터 |
 | --- | --- | --- | --- |
@@ -60,6 +60,7 @@ npx @modelcontextprotocol/inspector       # Inspector 에서 위 URL 로 접속�
 | business | `compare_hospitals` | readOnly | `POST /internal/hospitals/compare` (`procedureCode`) |
 | business | `get_my_reservations` | readOnly | `GET /internal/reservations/mine` (「공통 계약서」 기준, 「MCP 설계」와 다름) |
 | business | `plan_trip` | readOnly | `POST /internal/trip-plans` |
+| business | `open_hospital_conversation` | readOnly=false·destructive=false·idempotent=true·openWorld=false | `POST /internal/conversations` |
 | business | `create_reservation_request` | destructive·idempotent | `POST /internal/reservations` + `Idempotency-Key` |
 | business | `cancel_reservation` | destructive·idempotent | `POST /internal/reservations/{id}/cancel` |
 | business | `request_consultation` | destructive·idempotent | `POST /internal/consultations` |
@@ -67,7 +68,16 @@ npx @modelcontextprotocol/inspector       # Inspector 에서 위 URL 로 접속�
 | rag | `search_hospital_docs` | readOnly | 병원 FAQ |
 | rag | Resource `doc://{doc_id}`, `doc://{doc_id}/sections/{section}` | — | 원문 / 섹션 원문 |
 
-변경 도구는 agent 가 **승인 interrupt 후에만** 호출한다 (「AI Agent 설계」 4장). 도구를 추가·삭제하면 `tests/test_list_tools.py` 스냅샷과 agent 담당에게 공유.
+예약·취소·상담 도구는 agent 가 **승인 interrupt 후에만** 호출한다 (「AI Agent 설계」 4장). 도구를 추가·삭제하면 `tests/test_list_tools.py` 스냅샷과 agent 담당에게 공유.
+
+`open_hospital_conversation(hospital_id, parent_conversation_id)`는 사용자가 검색 결과의 병원을
+명시적으로 선택한 뒤 호출한다. 양의 정수 병원 ID와 현재 MAIN 대화 UUID가 필수이며 별도 승인 interrupt는 없다.
+기존 호출 컨텍스트의 사용자·trace·locale을 전달하고, backend가 부모 소유권·병원 존재를 검증한다.
+동일 사용자·병원의 HOSPITAL/HUMAN 대화는 재사용하며 신규 대화는 부모 조건을 복사한다.
+응답은 기존 Conversation DTO의 `id`, `mode`, `hospital`, `parent_conversation_id`, `consultation_id`,
+`conditions`, `created_at`, `messages`이며 중첩 필드도 기존 snake_case 변환을 따른다.
+agent는 성공 응답의 실제 `id`로만 `CONVERSATION_OPENED`를 발행한다. 오류 시 성공 이벤트를 만들지 않는다.
+stub은 사용자·병원별 메모리 재사용만 흉내 내며 부모 소유권·조건 복사는 실제 backend로 검증한다.
 
 ## 구조
 
@@ -75,7 +85,7 @@ npx @modelcontextprotocol/inspector       # Inspector 에서 위 URL 로 접속�
 mcp/
 ├─ mcp_common/        casing(camel↔snake), paths(mock 위치), run(transport 선택)
 ├─ business_mcp/
-│  ├─ server.py       도구 12개 (시그니처·docstring·힌트)
+│  ├─ server.py       도구 13개 (시그니처·docstring·힌트)
 │  ├─ models.py       출력 Pydantic 모델 (「공통 계약서」 DTO 의 snake_case 판)
 │  ├─ context.py      acting user·trace id 헤더 읽기
 │  ├─ backend_client.py  BackendClient 인터페이스 + HttpBackendClient(3s, 1회 재시도)

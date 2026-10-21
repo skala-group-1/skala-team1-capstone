@@ -156,6 +156,25 @@ class HospitalRef(_Model):
     name: str
 
 
+class ConversationMessage(_Model):
+    role: str
+    text: str
+    sources: Any = None
+    cards: Any = None
+    created_at: str
+
+
+class Conversation(_Model):
+    id: str
+    mode: Literal["MAIN", "HOSPITAL", "HUMAN"]
+    hospital: HospitalRef | None
+    parent_conversation_id: str | None
+    consultation_id: int | None
+    conditions: dict[str, Any] | None
+    created_at: str
+    messages: list[ConversationMessage] | None
+
+
 class Reservation(_Model):
     id: int
     status: ReservationStatus

@@ -1,6 +1,4 @@
-# 2단계: 인프라(postgres + pgvector, rabbitmq) + backend
-# 나머지 파트 서비스(frontend, agent, business-mcp, rag-mcp)는 개발되는 대로 추가
-# 공개 포트 원칙: 최종본에서는 frontend(80), backend(8080)만 공개. 아래 포트 노출은 개발 편의용.
+# 공개 포트는 frontend(80), backend(8080). 내부 포트는 docker-compose.dev.yml로 노출한다.
 services:
   postgres:
     image: pgvector/pgvector:pg16
@@ -8,8 +6,6 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-capstone}
       POSTGRES_USER: ${POSTGRES_USER:-capstone}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-capstone}
-    ports:
-      - "5432:5432"
     volumes:
       # 스키마·mock 데이터 적재는 backend 기동 시 Flyway 가 한다 (V1 schema → V2.. → V100 seed)
       - pgdata:/var/lib/postgresql/data
@@ -24,9 +20,6 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-guest}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-guest}
-    ports:
-      - "5672:5672"
-      - "15672:15672"
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 10s
@@ -74,10 +67,135 @@ services:
       AGENT_BASE_URL: http://agent:8000
     ports:
       - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/v3/api-docs"]
+      interval: 10s
+      timeout: 5s
+      start_period: 60s
+      retries: 20
     depends_on:
       postgres:
         condition: service_healthy
       rabbitmq:
+        condition: service_healthy
+
+  # Flyway 이후 전용 계정·권한을 준비한다. 기존 데이터와 계정 비밀번호는 덮어쓰지 않는다.
+  db-access:
+    build:
+      context: .
+      dockerfile: mcp/Dockerfile
+    command: ["python", "/infra/init_db.py"]
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-capstone}
+      POSTGRES_USER: ${POSTGRES_USER:-capstone}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-capstone}
+      DATABASE_URL: ${DATABASE_URL:?Set agent DATABASE_URL in .env}
+      RAG_DATABASE_URL: ${RAG_DATABASE_URL:?Set RAG_DATABASE_URL in .env}
+      RAG_INDEX_DATABASE_URL: ${RAG_INDEX_DATABASE_URL:?Set RAG_INDEX_DATABASE_URL in .env}
+    volumes:
+      - ./infra/init_db.py:/infra/init_db.py:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  business-mcp:
+    build:
+      context: .
+      dockerfile: mcp/Dockerfile
+    command: ["python", "-m", "business_mcp.server"]
+    environment:
+      USE_STUB: "false"
+      BACKEND_INTERNAL_URL: http://backend:8080/internal
+      SERVICE_TOKEN: ${SERVICE_TOKEN:-change-me-internal-service-token}
+    volumes:
+      - ./infra/check_mcp.py:/infra/check_mcp.py:ro
+    healthcheck:
+      test: ["CMD", "python", "/infra/check_mcp.py", "http://localhost:9101/mcp"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  # 최초·재기동 모두 같은 절차. 변경 없는 문서는 재임베딩하지 않는다.
+  rag-index:
+    build:
+      context: .
+      dockerfile: mcp/Dockerfile
+    command: ["python", "-m", "rag_mcp.indexer"]
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY:?Set OPENAI_API_KEY in .env}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-text-embedding-3-small}
+      RAG_INDEX_DATABASE_URL: ${RAG_INDEX_DATABASE_URL:?Set RAG_INDEX_DATABASE_URL in .env}
+    depends_on:
+      db-access:
+        condition: service_completed_successfully
+
+  rag-mcp:
+    build:
+      context: .
+      dockerfile: mcp/Dockerfile
+    command: ["python", "-m", "rag_mcp.server"]
+    environment:
+      USE_STUB: "false"
+      OPENAI_API_KEY: ${OPENAI_API_KEY:?Set OPENAI_API_KEY in .env}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-text-embedding-3-small}
+      RAG_DATABASE_URL: ${RAG_DATABASE_URL:?Set RAG_DATABASE_URL in .env}
+    volumes:
+      - ./infra/check_mcp.py:/infra/check_mcp.py:ro
+    healthcheck:
+      test: ["CMD", "python", "/infra/check_mcp.py", "http://localhost:9102/mcp"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+    depends_on:
+      rag-index:
+        condition: service_completed_successfully
+
+  agent:
+    build:
+      context: .
+      dockerfile: agent/Dockerfile
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY:?Set OPENAI_API_KEY in .env}
+      LLM_PRIMARY_MODEL: ${LLM_PRIMARY_MODEL:-gpt-5-nano}
+      LLM_FAST_MODEL: ${LLM_FAST_MODEL:-gpt-5-nano}
+      LLM_FALLBACK_MODEL: ${LLM_FALLBACK_MODEL:-gpt-5-nano}
+      DATABASE_URL: ${DATABASE_URL:?Set agent DATABASE_URL in .env}
+      RABBITMQ_URL: amqp://${RABBITMQ_DEFAULT_USER:-guest}:${RABBITMQ_DEFAULT_PASS:-guest}@rabbitmq:5672/
+      USE_FAKE_TOOLS: "false"
+      BUSINESS_MCP_URL: http://business-mcp:9101/mcp
+      RAG_MCP_URL: http://rag-mcp:9102/mcp
+      SUMMARIZER_URL: http://summarizer:8002
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    depends_on:
+      business-mcp:
+        condition: service_healthy
+      rag-mcp:
+        condition: service_healthy
+      summarizer:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "80:80"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    depends_on:
+      agent:
+        condition: service_healthy
+      translator:
         condition: service_healthy
 
   # 공용 에이전트: 통역 채팅·요약 카드 번역 워커 (chat.translate/summary.translate 소비)
@@ -89,9 +207,6 @@ services:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       LLM_FAST_MODEL: ${LLM_FAST_MODEL:-gpt-5-nano}
       RABBITMQ_URL: amqp://${RABBITMQ_DEFAULT_USER:-guest}:${RABBITMQ_DEFAULT_PASS:-guest}@rabbitmq:5672/
-    # 내부 전용 — 포트 비공개. 개발 편의로 열려면 주석 해제:
-    # ports:
-    #   - "8001:8001"
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health')"]
       interval: 10s
@@ -101,7 +216,7 @@ services:
       rabbitmq:
         condition: service_healthy
       backend:
-        condition: service_started   # 큐 선언 주체가 backend 라서
+        condition: service_healthy   # 큐 선언 주체가 backend 라서
 
   # 공용 에이전트: 상담 요청 요약 카드 (POST /summarize — agent 그래프 노드가 동기 호출)
   summarizer:
@@ -111,9 +226,6 @@ services:
     environment:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       LLM_FAST_MODEL: ${LLM_FAST_MODEL:-gpt-5-nano}
-    # 내부 전용 — 포트 비공개. 개발 편의로 열려면 주석 해제:
-    # ports:
-    #   - "8002:8002"
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8002/health')"]
       interval: 10s

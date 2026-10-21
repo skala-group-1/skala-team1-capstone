@@ -1,0 +1,16 @@
+# docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+services:
+  postgres:
+    ports: ["127.0.0.1:5432:5432"]
+  rabbitmq:
+    ports: ["127.0.0.1:5672:5672", "127.0.0.1:15672:15672"]
+  agent:
+    ports: ["127.0.0.1:8000:8000"]
+  business-mcp:
+    ports: ["127.0.0.1:9101:9101"]
+  rag-mcp:
+    ports: ["127.0.0.1:9102:9102"]
+  translator:
+    ports: ["127.0.0.1:8001:8001"]
+  summarizer:
+    ports: ["127.0.0.1:8002:8002"]

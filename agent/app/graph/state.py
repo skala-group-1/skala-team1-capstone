@@ -64,3 +64,13 @@ class AgentState(TypedDict, total=False):
     # 병원 서브에이전트 내부 상태. 외부 DTO/큐 계약에는 포함하지 않는다.
     hospital_context: dict             # hospital_id 및 MCP에서 읽은 기본정보·의사·가격
     hospital_booking: dict             # 사용자가 선택한 procedure_code, date, time
+
+    # Queue/task context and UI event outputs (internal only).
+    task_id: str
+    conversation_id: str
+    action: dict | None
+    opened_conversation: dict | None   # conversation_id, hospital_id
+    consultation_id: int | None
+    relax_options: list[dict]
+    trip_summary: str
+    optional_conditions_asked: bool

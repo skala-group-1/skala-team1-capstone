@@ -13,7 +13,7 @@ from langgraph.types import interrupt
 
 from app.api.main import compile_hospital_chat
 from app.graph.state import AgentState
-from app.workers.consumer import BOOKING_UNAVAILABLE, HospitalWorker
+from app.workers.consumer import HospitalWorker
 from app.workers.messages import AiTaskRequested, AiTaskResume
 
 
@@ -62,7 +62,7 @@ async def test_backend_metadata_and_followup_stay_in_same_hospital():
     await worker.handle(request(task="t3", thread="c2", hospital=2), "trace")
     replies = [e for e in events(publisher) if e.event == "DONE"]
     assert [e.data["answer"] for e in replies] == ["1:1", "1:2", "2:1"]
-    assert [e.seq for e in events(publisher)] == [1, 2, 1, 2, 1, 2]
+    assert [e.seq for e in events(publisher)] == [1, 2, 3, 1, 2, 3, 1, 2, 3]
     state = await worker.graph.aget_state({"configurable": {"thread_id": "c1"}})
     assert state.values["user"] == {"user_id": 3, "role": "CUSTOMER", "locale": "ko"}
     assert events(publisher)[0].at.utcoffset().total_seconds() == 9 * 3600
@@ -70,7 +70,6 @@ async def test_backend_metadata_and_followup_stay_in_same_hospital():
 
 @pytest.mark.parametrize("changes", [
     {"conversation": None},
-    {"conversation": {"mode": "MAIN"}},
     {"conversation": {"mode": "HUMAN", "hospitalId": 1}},
     {"conversation": {"mode": "HOSPITAL"}},
     {"message": None},
@@ -89,7 +88,7 @@ async def test_same_thread_cannot_change_hospital_or_user():
     await worker.handle(request())
     await worker.handle(request(task="t2", hospital=2))
     await worker.handle(request(task="t3", user={"id": 4, "role": "CUSTOMER", "locale": "ko"}))
-    assert [e.event for e in events(publisher)] == ["STATUS", "DONE", "FAILED", "FAILED"]
+    assert [e.event for e in events(publisher)] == ["STATUS", "TOKEN", "DONE", "FAILED", "FAILED"]
 
 
 async def test_duplicate_task_replays_done_without_running_graph_again():
@@ -98,11 +97,11 @@ async def test_duplicate_task_replays_done_without_running_graph_again():
     await worker.handle(request())
     await worker.handle(request())
     assert node.await_count == 1
-    assert [e.seq for e in events(publisher)] == [1, 2, 2]
+    assert [e.seq for e in events(publisher)] == [1, 2, 3, 3]
 
 
 @pytest.mark.parametrize("approved", [False, True])
-async def test_interrupt_resume_preserves_seq_and_never_runs_fake_mutation(approved):
+async def test_interrupt_resume_preserves_seq_and_decision(approved):
     decisions = []
 
     def node(state):
@@ -116,12 +115,10 @@ async def test_interrupt_resume_preserves_seq_and_never_runs_fake_mutation(appro
     worker = HospitalWorker(worker.graph, worker.store, publisher)
     await worker.handle(resume(approved))
     emitted = events(publisher)
-    assert [e.seq for e in emitted] == [1, 2, 3, 4]
+    assert [e.seq for e in emitted] == [1, 2, 3, 4, 5]
     assert emitted[1].event == "APPROVAL_REQUIRED"
-    assert decisions[0]["approved"] is False
-    assert emitted[-1].event == ("FAILED" if approved else "DONE")
-    if approved:
-        assert emitted[-1].data["message"] == BOOKING_UNAVAILABLE["ko"]
+    assert decisions[0]["approved"] is approved
+    assert emitted[-1].event == "DONE"
     state = await worker.graph.aget_state({"configurable": {"thread_id": "c1"}})
     assert not state.next
 

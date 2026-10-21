@@ -51,6 +51,7 @@ class Settings(BaseSettings):
     business_mcp_url: str = "http://business-mcp:9101/mcp"
     rag_mcp_url: str = "http://rag-mcp:9102/mcp"
     mcp_project_dir: Path = REPO_ROOT / "mcp"
+    summarizer_url: str = "http://summarizer:8002"
 
     # 서버
     agent_port: int = 8000

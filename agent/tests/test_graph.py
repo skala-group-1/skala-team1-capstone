@@ -26,10 +26,15 @@ def test_mermaid_contains_all_nodes():
     assert all(n in hospital for n in HOSPITAL_NODES)
 
 
-def test_missing_conditions_goes_to_ask_clarify(graph, config):
+def test_missing_conditions_goes_to_ask_clarify(config, monkeypatch):
+    from app.graph import builder
+
+    monkeypatch.setattr(builder, "extract_conditions", lambda state: {"missing": ["procedure_code", "date_from"]})
+    monkeypatch.setattr(builder, "ask_clarify", lambda state: {"draft": "Which procedure and dates?"})
+    graph = builder.compile_graph(MemorySaver(), InMemoryStore())
     r = graph.invoke({"messages": [HumanMessage("hi")]}, config)
     assert r["missing"] == ["procedure_code", "date_from"]
-    assert "ask_clarify" in r["messages"][-1].content
+    assert r["messages"][-1].content == "Which procedure and dates?"
 
 
 def test_full_conditions_goes_through_planner_and_verify(graph, config, monkeypatch):
@@ -68,8 +73,14 @@ def booking_graph(monkeypatch):
     async def detail(hospital_id: int):
         return {"id": hospital_id, "name": "Test hospital"}
 
+    async def doctors(hospital_id: int):
+        return {"doctors": [{"id": 11, "name": "Test doctor"}]}
+
+    async def prices(hospital_id: int, procedure_code: str):
+        return {"options": []}
+
     async def slots(hospital_id: int, procedure_code: str, date_from: str, date_to: str):
-        return {"slots": [{"id": 12, "start_at": "2026-10-22T10:00:00+09:00", "status": "AVAILABLE"}]}
+        return {"slots": [{"id": 12, "start_at": "2026-10-22T10:00:00+09:00", "status": "AVAILABLE", "doctor_id": 11}]}
 
     async def booking(hospital_id: int, slot_id: int, procedure_code: str):
         raise AssertionError("Mutation must only execute through the approval boundary")
@@ -77,7 +88,8 @@ def booking_graph(monkeypatch):
     tools = [
         StructuredTool.from_function(coroutine=fn, name=name, description="Test MCP boundary")
         for name, fn in (
-            ("business_get_hospital_detail", detail), ("business_list_doctors", detail),
+            ("business_get_hospital_detail", detail), ("business_list_doctors", doctors),
+            ("business_get_price_options", prices),
             ("business_get_available_slots", slots), (hospital.BOOK, booking),
         )
     ]
@@ -87,6 +99,9 @@ def booking_graph(monkeypatch):
 
     for module in (hospital, context, client):
         monkeypatch.setattr(module, "get_tools", get_tools)
+    # Task 6 adds action preparation; keep this fixture usable before/after integration.
+    if importlib.util.find_spec("concierge.nodes.actions"):
+        monkeypatch.setattr(importlib.import_module("concierge.nodes.actions"), "get_tools", get_tools)
 
     def call(name, args, id):
         return AIMessage(content="", tool_calls=[{"name": name, "args": args, "id": id}])
@@ -112,6 +127,7 @@ def booking_graph(monkeypatch):
 
     execute = AsyncMock(side_effect=mutation)
     monkeypatch.setattr(builder, "execute_action", execute)
+    monkeypatch.setattr(builder.action_module, "EXECUTE_ACTION_READY", True, raising=False)
     return compile_graph(MemorySaver(), InMemoryStore()), execute
 
 

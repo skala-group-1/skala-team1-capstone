@@ -9,7 +9,7 @@ from fastapi import FastAPI
 from langgraph.graph import END, START, StateGraph
 
 from app.config import get_settings
-from app.graph.builder import build_hospital_subgraph
+from app.graph.builder import build_hospital_subgraph, compile_graph
 from app.graph.state import AgentState
 from app.harness.memory import open_checkpointer_and_store
 from app.nodes.respond import respond
@@ -30,7 +30,7 @@ def compile_hospital_chat(checkpointer, store):
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     async with open_checkpointer_and_store() as (checkpointer, store):
-        app.state.graph = compile_hospital_chat(checkpointer, store)
+        app.state.graph = compile_graph(checkpointer, store)
         connection = await start_consumers(app.state.graph, store)
         try:
             yield

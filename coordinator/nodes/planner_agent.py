@@ -26,8 +26,10 @@ def build_coordinator(model, *, business_loader=None, initial_state=None):
     prompt = load_prompt("coordinator", directory=Path(__file__).resolve().parents[1] / "prompts")
     seen = set()
     calls = 0
+    first = True
 
     async def main(state):
+        nonlocal first
         # This also allows standalone graph callers to supply the initial State.
         source.update(state)
         context = {"locale": (state.get("user") or {}).get("locale") or "en",
@@ -36,9 +38,39 @@ def build_coordinator(model, *, business_loader=None, initial_state=None):
                    "optional_conditions_asked": source.get("optional_conditions_asked", False),
                    "today": datetime.now(ZoneInfo("Asia/Seoul")).date().isoformat(),
                    "candidates": results.get("hospitals", state.get("candidates", []))}
-        reply = await bound.ainvoke([
+        messages = [
             SystemMessage(content=prompt),
-            SystemMessage(content=json.dumps(context, ensure_ascii=False)), *state.get("messages", [])])
+            SystemMessage(content=json.dumps(context, ensure_ascii=False)), *state.get("messages", [])]
+        if (results.get("failed") or results.get("ambiguity")) and "conditions" in results:
+            return {"messages": [AIMessage(content="")]}
+        if results.get("evidence") == "search":
+            return {"messages": [AIMessage(content="")]}
+        if (results.get("conditions") and not results.get("missing") and not results.get("evidence")
+                and results["conditions"] != (state.get("conditions") or {})):
+            return {"messages": [AIMessage(content="", tool_calls=[{"name": "hospital_lookup",
+                "args": {"operation": "search", "arguments": {}}, "id": "required-search"}])]}
+        if first:
+            first = False
+            intake = model.bind_tools([tool_map["collect_conditions"]], parallel_tool_calls=False, tool_choice="collect_conditions")
+            reply = await intake.ainvoke([SystemMessage(content=
+                "First save all explicit conditions from the user, including a newly mentioned procedure. "
+                "procedure_code may be the user's exact phrase: the tool normalizes it. "
+                "Omit unchanged and unmentioned fields; never replace prior filters with null. "
+                "Consultation language is ONLY an explicitly requested language, never the message language or locale. "
+                "Convert areas to the tool enums and relative dates using today. Keep both arrival and departure. "
+                "Only user-selected sort; no default. Null only for explicit no preference."), *messages[1:]])
+        else:
+            reply = await bound.ainvoke(messages)
+        if not reply.tool_calls and "conditions" not in results and not results.get("evidence"):
+            # One bounded recovery: prose is not proof that intake happened.
+            collector = model.bind_tools(tools, parallel_tool_calls=False, tool_choice="collect_conditions")
+            reply = await collector.ainvoke(messages + [SystemMessage(content=
+                "Save all explicit user conditions now with collect_conditions, even if incomplete. "
+                "Use the user's procedure phrase when no verified code exists. Do not answer in prose.")])
+        if (not reply.tool_calls and "conditions" in results and not results.get("missing")
+                and not results.get("evidence") and not results.get("failed")):
+            reply = AIMessage(content="", tool_calls=[{"name": "hospital_lookup",
+                "args": {"operation": "search", "arguments": {}}, "id": "required-search"}])
         return {"messages": [reply]}
 
     async def execute(state):
@@ -58,6 +90,8 @@ def build_coordinator(model, *, business_loader=None, initial_state=None):
                     # Never stringify provider errors: they can contain credentials.
                     result = {"status": "unavailable", "error_type": type(error).__name__,
                               "message": "Lookup failed; do not invent results."}
+            if result.get("status") not in (None, "ready", "needs_input", "summary_ready"):
+                results["failed"] = True
             messages.append(ToolMessage(content=json.dumps(result, ensure_ascii=False), tool_call_id=call["id"]))
         return {"messages": messages}
 
@@ -78,7 +112,7 @@ def unavailable(state, reason):
     text = {"en": "Unable to complete this request. Please try again later.",
             "zh": "暂时无法完成请求，请稍后重试。", "ja": "処理できませんでした。後ほど再度お試しください。",
             "ko": "요청을 처리하지 못했습니다. 잠시 후 다시 시도해 주세요."}
-    return {"draft": f"[planner_agent: {reason}] " + text.get(locale, text["en"]),
+    return {"draft": text.get(locale, text["en"]),
             "candidates": [], "summary": None, "selected_hospital_id": None}
 
 
@@ -105,17 +139,21 @@ async def run_coordinator(state, model=None, *, business_loader=None):
             return unavailable(state, "API_KEY_MISSING")
         if any(c.isspace() for c in key):
             return unavailable(state, "API_KEY_WHITESPACE")
-        options = {}
-        if settings.llm_reasoning_effort:
-            options["reasoning_effort"] = settings.llm_reasoning_effort
-        model = ChatOpenAI(model=settings.llm_primary_model, api_key=key, timeout=30, max_retries=1, **options)
+        model = ChatOpenAI(model=settings.llm_primary_model, api_key=key, timeout=30, max_retries=1)
     # Copy State so internal ToolMessages never leak into caller-owned history.
     graph, results = build_coordinator(model, business_loader=business_loader, initial_state=dict(state))
     try:
         output = await asyncio.wait_for(graph.ainvoke(state, {"recursion_limit": 20}), 120)
-    except Exception as error:
-        return unavailable(state, type(error).__name__)
-    update = {"draft": output["messages"][-1].content}
+    except Exception:
+        results["failed"] = True
+        output = {"messages": [AIMessage(content="")]}
+    update = unavailable(state, "NO_EVIDENCE")
+    if results.get("evidence") and not results.get("failed"):
+        update = {"draft": output["messages"][-1].content}
+    if results.get("evidence") == "search" and not results.get("failed"):
+        update["draft"] = search_reply(state, results)
+    if results.get("summary") and not results.get("failed"):
+        update["draft"] = results["summary"]
     if action.get("type") == "SET_SORT":
         update.update({k: state[k] for k in ("conditions", "candidates", "summary", "selected_hospital_id")})
     if "hospitals" in results:
@@ -123,10 +161,45 @@ async def run_coordinator(state, model=None, *, business_loader=None):
     for field in ("conditions", "missing", "optional_conditions_asked", "summary", "selected_hospital_id"):
         if field in results:
             update[field] = results[field]
-    if update.get("missing"):
+    if update.get("missing") and not results.get("failed"):
         from coordinator.nodes.ask_clarify import ask_clarify
         update.update(ask_clarify({**state, **update}))
+        if "procedure_code" in update["missing"]:
+            choices = results.get("ambiguity") or results.get("normalization", {}).get("candidates", [])
+            names = [c["name"] for c in choices if c.get("name")]
+            if names:
+                update["draft"] += "\n" + " / ".join(names)
+    if results.get("failed"):
+        update.update(unavailable(state, "LOOKUP_FAILED"))
     return update
+
+
+def search_reply(state, results):
+    """Render only returned search facts; model prose cannot add medical claims."""
+    locale = (state.get("user") or {}).get("locale", "en")
+    labels = {
+        "en": ("Matching hospitals", "Starting at", "reviews", "Please select hospitals to compare.",
+               "No matches. Which filter would you like to change?", "Needs confirmation",
+               ("review count", "rating", "price", "distance")),
+        "zh": ("符合条件的医院", "起价", "条评论", "请选择要比较的医院。",
+               "没有符合条件的医院。您想调整哪个条件？", "待确认", ("评论数", "评分", "价格", "距离")),
+        "ja": ("条件に合う病院", "料金", "件の口コミ", "比較する病院を選んでください。",
+               "条件に合う病院はありません。どの条件を変更しますか？", "要確認", ("口コミ数", "評価", "価格", "距離")),
+        "ko": ("조건에 맞는 병원", "시작 가격", "개 리뷰", "비교할 병원을 선택해 주세요.",
+               "조건에 맞는 병원이 없습니다. 어떤 조건을 바꾸시겠어요?", "확인 필요", ("리뷰 수", "평점", "가격", "거리")),
+    }
+    title, price, reviews, ending, empty, unknown, sorts = labels.get(locale, labels["en"])
+    hospitals = results.get("hospitals", [])
+    if not hospitals:
+        return empty
+    sort = dict(zip(("REVIEW_COUNT", "RATING", "PRICE", "DISTANCE"), sorts))
+    lines = [f"{title} · {sort.get(results['conditions'].get('sort_by'), unknown)}"]
+    for index, hospital in enumerate(hospitals, 1):
+        amount = hospital.get("min_price_krw")
+        amount = f"{amount:,} KRW" if type(amount) is int else unknown
+        lines.append(f"{index}. {hospital.get('name') or unknown} · {price} {amount} · "
+                     f"{hospital.get('review_count', unknown)} {reviews}")
+    return "\n".join([*lines, ending])
 
 
 def planner_agent(state: AgentState) -> dict:

@@ -11,12 +11,12 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 class ConditionPatch(BaseModel):
     """Only supplied fields replace saved conditions; explicit null clears a filter."""
     model_config = ConfigDict(extra="forbid")
-    procedure_code: str | None = None
+    procedure_code: str | None = Field(default=None, description="User-chosen procedure name or code; verified via normalization before saving. Omit if unchanged.")
     areas: list[Literal["GANGNAM", "SINSA", "APGUJEONG", "CHEONGDAM", "MYEONGDONG", "HONGDAE", "JAMSIL"]] | None = None
     date_from: date | None = None
     date_to: date | None = None
-    budget_max_krw: int | None = Field(default=None, ge=0, strict=True)
-    consult_language: Literal["en", "zh", "ja", "ko"] | None = None
+    budget_max_krw: int | None = Field(default=None, ge=0, strict=True, description="Explicit maximum budget in KRW. Omit when unmentioned; null only for explicit no preference.")
+    consult_language: Literal["en", "zh", "ja", "ko"] | None = Field(default=None, description="Explicitly requested consultation language: Chinese/중국어=zh, Japanese/일본어=ja, English/영어=en, Korean/한국어=ko. NEVER infer from the language of the message or login locale; omit unless requested.")
     sort_by: Literal["REVIEW_COUNT", "RATING", "PRICE", "DISTANCE"] | None = None
 
     @model_validator(mode="after")
@@ -24,6 +24,15 @@ class ConditionPatch(BaseModel):
         if self.date_from and self.date_to and self.date_to < self.date_from:
             raise ValueError("Departure must not precede arrival")
         return self
+
+
+class LookupArguments(ConditionPatch):
+    """Existing Business MCP arguments, visible to the model instead of an opaque dict."""
+    text: str | None = None
+    language: Literal["en", "zh", "ja", "ko"] | None = None
+    hospital_id: int | None = None
+    hospital_ids: list[int] | None = None
+    status: str | None = None
 
 
 async def load_business_tools():
@@ -69,32 +78,55 @@ def make_coordinator_tools(business_loader=None, *, initial_state=None):
     loaded = None
     results = {}
 
-    def collect(fields):
+    async def collect(fields):
         action = source.get("action") or {}
         if action.get("type") == "SET_SORT":
             fields = {**fields, "sort_by": action.get("sortBy")}
         saved = results.get("conditions", source.get("conditions") or {})
+        procedure = fields.pop("procedure_code", saved.get("procedure_code"))
+        # Persist independent filters even if normalization subsequently fails.
         conditions = ConditionPatch.model_validate({**saved, **fields}).model_dump(mode="json", exclude_unset=True)
         if conditions != saved:
             results.update({"hospitals": [], "summary": None, "selected_hospital_id": None})
         results["conditions"] = conditions
+        if procedure != saved.get("procedure_code"):
+            conditions.pop("procedure_code", None)
+            if procedure is not None and not results.get("ambiguity"):
+                normalized = results.get("normalization", {}).get("candidates", [])
+                exact = [c for c in normalized if c.get("score") == 1 and c.get("code") == procedure]
+                if len(exact) != 1:
+                    normalized = (await hospital_lookup.ainvoke({"operation": "normalize",
+                                                               "arguments": {"text": procedure}})).get("candidates", [])
+                    exact = [c for c in normalized if c.get("score") == 1]
+                if len(exact) == 1 and not results.get("ambiguity"):
+                    conditions["procedure_code"] = exact[0]["code"]
+            elif procedure is None:
+                conditions["procedure_code"] = None
+            results.update({"hospitals": [], "summary": None, "selected_hospital_id": None})
         missing = [k for k in ("procedure_code", "date_from", "sort_by") if not conditions.get(k)]
         if not source.get("optional_conditions_asked"):
             missing += [k for k in ("budget_max_krw", "consult_language") if k not in conditions]
         if any(k in missing for k in ("budget_max_krw", "consult_language")):
             results["optional_conditions_asked"] = True
         results["missing"] = missing
-        return {"status": "needs_input" if missing else "ready", "conditions": conditions, "missing": missing}
+        response = {"status": "needs_input" if missing else "ready", "conditions": conditions, "missing": missing}
+        if procedure and not conditions.get("procedure_code"):
+            response["normalization"] = {"candidates": results["ambiguity"]} if results.get("ambiguity") else results.get("normalization", {})
+            response["message"] = ("Procedure not resolved. If no candidates matched the phrase, call "
+                "hospital_lookup normalize with a concise synonym or translated name, then collect its verified code. "
+                "If multiple candidates match, ask the user; never choose for them.")
+        return response
 
     @tool
     async def collect_conditions(fields: ConditionPatch):
         """Save only explicitly supplied Conditions, before asking or searching.
 
-        Normalize procedure names first. Omitted fields retain previous values;
+        Supply the user's procedure phrase or a normalized code; it is verified
+        through Business MCP before saving. Omitted fields retain previous values;
         explicit null means no preference. Ask all returned missing fields in one
         question. Budget and consultation language are asked only once.
         """
-        return collect(fields.model_dump(mode="json", exclude_unset=True))
+        return await collect(fields.model_dump(mode="json", exclude_unset=True))
 
     @tool
     async def procedure_consultation(question: str):
@@ -106,7 +138,7 @@ def make_coordinator_tools(business_loader=None, *, initial_state=None):
                 "External evidence search is not connected. Do not provide medical facts or benefit examples."}
 
     @tool
-    async def hospital_lookup(operation: Literal["normalize", "search", "reservations", "hours", "slots", "compare", "prepare_handoff"], arguments: dict):
+    async def hospital_lookup(operation: Literal["normalize", "search", "reservations", "hours", "slots", "compare", "prepare_handoff"], arguments: LookupArguments):
         """Tool B: reuse Business MCP. Use existing snake_case schemas only.
 
         normalize takes text. search requires procedure_code, date_from and user-
@@ -119,20 +151,24 @@ def make_coordinator_tools(business_loader=None, *, initial_state=None):
         No booking or hospital conversation is created.
         """
         nonlocal loaded
-        args = dict(arguments)
+        args = arguments.model_dump(mode="json", exclude_unset=True)
+        if operation == "normalize":
+            # Both intake and normalization accept a procedure phrase; MCP calls it text.
+            args = {"text": args.get("text") or args.get("procedure_code")}
         if operation == "prepare_handoff":
             results.update({"summary": None, "selected_hospital_id": None})
             prepared = prepare_handoff_summary(source, args.get("hospital_id"),
                 results.get("hospitals", source.get("candidates", [])),
                 results.get("conditions", source.get("conditions", {})))
             if prepared["status"] == "summary_ready":
+                results["evidence"] = operation
                 results.update({k: prepared[k] for k in ("summary", "selected_hospital_id")})
             return prepared
         if operation == "search":
             results.update({"hospitals": [], "summary": None, "selected_hospital_id": None})
             if "language" in args:
                 args["consult_language"] = args.pop("language")
-            collected = collect(args)
+            collected = await collect(args)
             if collected["missing"]:
                 return collected
             args = {("language" if k == "consult_language" else k): v
@@ -155,8 +191,18 @@ def make_coordinator_tools(business_loader=None, *, initial_state=None):
                  "slots": "business_get_available_slots", "compare": "business_compare_hospitals"}
         target = loaded.get(names[operation])
         if target is None:
-            return {"status": "unavailable", "message": "Required Business MCP tool unavailable."}
+            raise ValueError("Required Business MCP tool unavailable")
         result = decode_result(await target.ainvoke(args))
+        if result.get("status") in ("unavailable", "error") or result.get("isError"):
+            raise ValueError("Business lookup failed")
+        if operation == "normalize":
+            results["normalization"] = result
+            candidates = result.get("candidates", [])
+            if len(candidates) > 1 and len([c for c in candidates if c.get("score") == 1]) != 1:
+                # Only a new user turn may resolve an ambiguous procedure choice.
+                results["ambiguity"] = candidates
+        else:
+            results["evidence"] = operation
         if operation == "hours":
             return {k: result[k] for k in ("id", "name", "open_hours", "verified_at") if k in result}
         if operation == "search":

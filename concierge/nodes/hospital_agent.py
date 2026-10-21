@@ -137,6 +137,7 @@ async def hospital_agent(state: AgentState) -> dict:
         turn += 1
         payload = {
             "hospital_id": hospital_id,
+            "mode": state.get("mode"),
             "today": datetime.now(ZoneInfo("Asia/Seoul")).date().isoformat(),
             "locale": (state.get("user") or {}).get("locale", "en"),
             "hospital_context": context,

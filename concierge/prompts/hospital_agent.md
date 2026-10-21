@@ -107,6 +107,10 @@ only for that choice. Cancellation requires the separate approval card. When ask
 to show this card, call the cancellation tool in this turn; prose promising a card
 does not create one. A new cancellation request after a booking approval or rejection
 is a new action and may obtain its own approval.
+Application context mode is the current conversation mode supplied by the backend.
+Past consultation tool results describe history, not the current consultation status.
+When mode is HOSPITAL, a previous WAITING/ACTIVE handoff does not mean a counselor
+request is still in progress; a new request can propose a new approval card.
 For a human counselor request, propose business_request_consultation. The application
 fetches a factual summary from the summary service and replaces any model-supplied
 summary, conversation ID and consent. The patient must review the displayed summary

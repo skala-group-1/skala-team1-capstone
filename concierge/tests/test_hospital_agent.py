@@ -338,3 +338,22 @@ async def test_reply_edit_only_replaces_existing_slot_question(draft, rewritten)
     assert "Only if the draft already asks the patient" in instructions
     assert "Never add a question or ask the patient to choose again after an action." in instructions
     assert "same order and notation" in instructions
+
+
+async def test_new_handoff_after_return_uses_current_mode_not_historical_status(monkeypatch, state):
+    from concierge.nodes.actions import HANDOFF
+    state["messages"] += [
+        call(HANDOFF, {"hospital_id": 7}, id="old-handoff"),
+        ToolMessage(content='{"id": 5, "status": "WAITING"}', tool_call_id="old-handoff",
+                    additional_kwargs={"approval_completed": True}),
+        HumanMessage("I want to talk to a counselor."),
+    ]
+    model = model_setup(monkeypatch, [call(HANDOFF, {"hospital_id": 7}, id="new-handoff")])
+    monkeypatch.setattr(agent, "get_tools", AsyncMock(return_value=[fake_tool(HANDOFF)]))
+    proposal = {"args": {"hospital_id": 7}, "approved": False}
+    monkeypatch.setattr(agent, "prepare_action", AsyncMock(return_value=proposal))
+    result = await agent.hospital_agent(state)
+    context_message = model.ainvoke.call_args.args[0][1].content
+    assert '"mode": "HOSPITAL"' in context_message
+    assert HANDOFF in model.bound_tool_names[0]
+    assert result["pending_action"] == proposal

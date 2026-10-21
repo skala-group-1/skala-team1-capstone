@@ -1,5 +1,6 @@
 """Real LangGraph streams with deterministic model/tools; no live LLM or DB claims."""
 
+from datetime import datetime, timedelta, timezone
 from unittest.mock import AsyncMock
 
 import pytest
@@ -179,6 +180,96 @@ async def test_pending_thread_is_not_overwritten_by_new_task():
     snapshot = await worker.graph.aget_state({"configurable": {"thread_id": "thread"}})
     assert snapshot.values["task_id"] == "t"
     assert snapshot.next
+
+
+async def test_closed_consultation_returns_to_hospital_and_survives_worker_restart():
+    async def answer(state):
+        assert state["mode"] == "HOSPITAL"
+        assert state["selected_hospital_id"] == 41
+        assert state["consultation_id"] == 701
+        return {"messages": [AIMessage(content="Clinic information")]}
+
+    node = AsyncMock(side_effect=answer)
+    worker, publisher = worker_for([("answer", node)])
+    config = {"configurable": {"thread_id": "thread"}}
+    await worker.graph.aupdate_state(config, {
+        "mode": "HUMAN", "user": {"user_id": 1}, "selected_hospital_id": 41,
+        "consultation_id": 701, "messages": [AIMessage(content="Counselor connected", id="history")],
+    }, as_node="answer")
+
+    msg = request(conversation={"mode": "HOSPITAL", "hospitalId": 41}, requestedAt=datetime.now(timezone.utc))
+    await worker.handle(msg)
+    worker = HospitalWorker(worker.graph, worker.store, publisher)
+    await worker.handle(msg)
+    await worker.handle(request(task="followup", conversation={"mode": "HOSPITAL", "hospitalId": 41}))
+
+    assert node.await_count == 2
+    assert [e.event for e in events(publisher)] == ["STATUS", "TOKEN", "DONE", "DONE", "STATUS", "TOKEN", "DONE"]
+    snapshot = await worker.graph.aget_state(config)
+    assert snapshot.values["mode"] == "HOSPITAL"
+    assert snapshot.values["messages"][0].id == "history"
+
+
+@pytest.mark.parametrize("saved_mode,requested_mode,owner,hospital", [
+    ("MAIN", "HOSPITAL", 1, 41),
+    ("HOSPITAL", "MAIN", 1, 41),
+    ("HUMAN", "MAIN", 1, 41),
+    ("HUMAN", "HUMAN", 1, 41),
+    ("HUMAN", "HOSPITAL", 2, 41),
+    ("HUMAN", "HOSPITAL", None, 41),
+    ("HUMAN", "HOSPITAL", 1, 42),
+    ("HUMAN", "HOSPITAL", 1, None),
+])
+async def test_mode_return_rejects_other_transitions_and_unmatched_identity(saved_mode, requested_mode, owner, hospital):
+    node = AsyncMock()
+    worker, publisher = worker_for([("answer", node)])
+    config = {"configurable": {"thread_id": "thread"}}
+    await worker.graph.aupdate_state(config, {
+        "mode": saved_mode, "user": {"user_id": owner}, "selected_hospital_id": hospital,
+    }, as_node="answer")
+
+    await worker.handle(request(conversation={"mode": requested_mode, "hospitalId": 41},
+                                requestedAt=datetime.now(timezone.utc)))
+
+    node.assert_not_awaited()
+    assert [e.event for e in events(publisher)] == ["FAILED"]
+    assert (await worker.graph.aget_state(config)).values["mode"] == saved_mode
+
+
+@pytest.mark.parametrize("age_seconds", [0, 1])
+async def test_hospital_task_queued_before_handoff_cannot_resume_ai(age_seconds):
+    node = AsyncMock()
+    worker, publisher = worker_for([("answer", node)])
+    config = {"configurable": {"thread_id": "thread"}}
+    await worker.graph.aupdate_state(config, {
+        "mode": "HUMAN", "user": {"user_id": 1}, "selected_hospital_id": 41,
+    }, as_node="answer")
+    snapshot = await worker.graph.aget_state(config)
+    requested_at = datetime.fromisoformat(snapshot.created_at) - timedelta(seconds=age_seconds)
+
+    await worker.handle(request(conversation={"mode": "HOSPITAL", "hospitalId": 41}, requestedAt=requested_at))
+
+    node.assert_not_awaited()
+    assert [e.event for e in events(publisher)] == ["FAILED"]
+    assert await worker.graph.aget_state(config) == snapshot
+
+
+@pytest.mark.parametrize("checkpoint_time", [None, "invalid", "2026-10-21T10:00:00"])
+async def test_return_fails_closed_when_checkpoint_timestamp_is_unusable(checkpoint_time):
+    node = AsyncMock()
+    worker, publisher = worker_for([("answer", node)])
+    config = {"configurable": {"thread_id": "thread"}}
+    await worker.graph.aupdate_state(config, {
+        "mode": "HUMAN", "user": {"user_id": 1}, "selected_hospital_id": 41,
+    }, as_node="answer")
+    snapshot = await worker.graph.aget_state(config)
+    worker.graph.aget_state = AsyncMock(return_value=snapshot._replace(created_at=checkpoint_time))
+
+    await worker.handle(request(conversation={"mode": "HOSPITAL", "hospitalId": 41},
+                                requestedAt=datetime.now(timezone.utc)))
+
+    node.assert_not_awaited()
+    assert [e.event for e in events(publisher)] == ["FAILED"]
 
 
 async def test_tool_start_end_payloads():

@@ -151,9 +151,14 @@ class HospitalWorker:
                         raise ValueError("Unsupported hospital action")
                     if snapshot.next:
                         raise ValueError("Conversation is waiting for an earlier task")
-                    if snapshot.values.get("mode", conv.mode) != conv.mode:
-                        raise ValueError("Conversation mode mismatch")
                     selected = snapshot.values.get("selected_hospital_id")
+                    # Backend rejects HUMAN tasks; older queued HOSPITAL tasks must stay rejected.
+                    returning = (snapshot.values.get("mode") == "HUMAN" and conv.mode == "HOSPITAL"
+                                 and owner == msg.user.id and selected == conv.hospital_id
+                                 and snapshot.created_at is not None
+                                 and msg.requested_at > datetime.fromisoformat(snapshot.created_at))
+                    if snapshot.values.get("mode", conv.mode) != conv.mode and not returning:
+                        raise ValueError("Conversation mode mismatch")
                     if conv.mode == "HOSPITAL" and selected is not None and selected != conv.hospital_id:
                         raise ValueError("Conversation hospital mismatch")
                     payload = {

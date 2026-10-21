@@ -102,6 +102,22 @@ class SlotList(_Model):
     slots: list[Slot]
 
 
+class Review(_Model):
+    id: int
+    procedure_code: str | None = None
+    rating: int
+    lang: str
+    content: str
+    created_at: str
+
+
+class ReviewPage(_Model):
+    items: list[Review]
+    page: int
+    size: int
+    total: int
+
+
 class HospitalDetail(_Model):
     id: int
     name: str

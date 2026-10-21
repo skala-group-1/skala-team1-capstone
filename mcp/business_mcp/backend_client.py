@@ -32,6 +32,9 @@ class BackendClient(Protocol):
 
     async def get_hospital_detail(self, ctx: CallContext, hospital_id: int) -> dict[str, Any]: ...
 
+    async def get_hospital_reviews(self, ctx: CallContext, hospital_id: int,
+                                   lang: str | None, page: int, size: int) -> dict[str, Any]: ...
+
     async def list_doctors(self, ctx: CallContext, hospital_id: int, procedure_code: str | None) -> list[dict]: ...
 
     async def get_price_options(self, ctx: CallContext, hospital_id: int, procedure_code: str) -> list[dict]: ...
@@ -116,6 +119,10 @@ class HttpBackendClient:
 
     async def get_hospital_detail(self, ctx, hospital_id):
         return await self._request("GET", f"/hospitals/{hospital_id}", ctx, params={"lite": "true"})
+
+    async def get_hospital_reviews(self, ctx, hospital_id, lang, page, size):
+        return await self._request("GET", f"/hospitals/{hospital_id}/reviews", ctx,
+                                   params={"lang": lang, "page": page, "size": size})
 
     async def list_doctors(self, ctx, hospital_id, procedure_code):
         return await self._request(

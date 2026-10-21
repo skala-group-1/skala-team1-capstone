@@ -26,6 +26,10 @@ import com.skala.capstone.catalog.CatalogDtos.NormalizeResponse;
 import com.skala.capstone.catalog.CatalogDtos.PriceOption;
 import com.skala.capstone.catalog.CatalogDtos.SearchResult;
 import com.skala.capstone.catalog.CatalogDtos.Slot;
+import com.skala.capstone.catalog.CatalogDtos.Review;
+import com.skala.capstone.common.web.PageResponse;
+import com.skala.capstone.common.error.ApiException;
+import com.skala.capstone.common.error.ErrorCode;
 import com.skala.capstone.common.web.RequestLocale;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -82,6 +86,18 @@ public class InternalCatalogController {
 	public List<Doctor> doctors(@PathVariable long id, @RequestParam(required = false) String procedureCode,
 			@RequestParam(required = false) String locale, HttpServletRequest request) {
 		return catalog.doctors(id, procedureCode, RequestLocale.resolve(locale, request));
+	}
+
+	@Operation(summary = "선택 병원 리뷰 조회 (최신순, lang 필터)")
+	@GetMapping("/hospitals/{id}/reviews")
+	public PageResponse<Review> reviews(@PathVariable long id,
+			@RequestParam(required = false) String lang,
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "20") int size) {
+		if (page < 0 || size < 1 || size > 50) {
+			throw new ApiException(ErrorCode.VALIDATION_FAILED);
+		}
+		return catalog.reviews(id, lang, page, size);
 	}
 
 	@GetMapping("/hospitals/{id}/prices")

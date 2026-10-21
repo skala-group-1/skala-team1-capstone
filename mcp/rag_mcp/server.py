@@ -47,8 +47,11 @@ async def search_procedure_docs(
     procedure_code: Annotated[str | None, Field(description="Limit to one procedure, e.g. JAW_BOTOX")] = None,
     doc_type: Annotated[DocType | None, Field(description="GUIDE, PREP, AFTERCARE, FAQ or TRAVEL")] = None,
     top_k: Annotated[int, Field(ge=1, le=10)] = 5,
+    hospital_id: Annotated[int | None, Field(
+        gt=0, description="Selected conversation hospital. Search only this hospital plus common (NULL) documents; omit for common only.",
+    )] = None,
 ) -> SearchResult:
-    """Search general procedure guides and travel/aftercare documents.
+    """Search procedure guides and travel/aftercare documents for a hospital plus common documents.
 
     Use for questions about how a procedure works, recovery and downtime, risks, preparation and aftercare.
     Output chunks: chunk_id, doc_id, title, section, text (<= 800 chars), score, uri (doc://...).
@@ -56,16 +59,18 @@ async def search_procedure_docs(
     General information only, never a personal medical judgment.
     """
     # TODO(rag): 다국어 질의 → 다국어 임베딩 검색 (「AI Agent 설계」 6장). stub 은 영어 키워드만 잘 맞음
-    return _to_result(store.search(query, procedure_code=procedure_code, doc_type=doc_type, top_k=top_k))
+    return _to_result(store.search(query, procedure_code=procedure_code, doc_type=doc_type,
+                                   hospital_id=hospital_id, top_k=top_k))
 
 
 @mcp.tool(annotations=READ_ONLY)
 async def search_hospital_docs(
-    hospital_id: int,
+    hospital_id: Annotated[int, Field(gt=0)],
     query: str,
     top_k: Annotated[int, Field(ge=1, le=10)] = 3,
 ) -> SearchResult:
-    """Search one hospital's FAQ / visitor notes (location, languages, payment, interpreter, visit flow).
+    """Search the selected hospital's FAQ, precautions and visitor notes plus common (NULL) documents.
+    Excludes every other hospital before ranking and limiting results.
     Same output format as search_procedure_docs.
     """
     # TODO(rag): 병원 대화창에서는 hospital_id 를 agent state 에서 강제 주입 (「AI Agent 설계」 4장)

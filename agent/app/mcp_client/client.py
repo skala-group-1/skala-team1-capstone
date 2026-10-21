@@ -7,6 +7,9 @@ D-31: 가짜 도구를 agent 안에 따로 만들지 않는다.
 서버 이름 "business"/"rag" + tool_name_prefix=True → 도구명 business_search_hospitals, rag_search_procedure_docs ...
 """
 
+from contextlib import contextmanager
+from contextvars import ContextVar
+
 from langchain_core.tools import BaseTool
 from langchain_mcp_adapters.client import MultiServerMCPClient
 
@@ -14,6 +17,28 @@ from app.config import get_settings
 
 _client: MultiServerMCPClient | None = None
 _tools: list[BaseTool] | None = None
+_request_headers: ContextVar[dict | None] = ContextVar("mcp_request_headers", default=None)
+
+
+@contextmanager
+def mcp_request_context(user_id: int, locale: str, trace_id: str):
+    """Trusted backend identity, never model-generated tool arguments."""
+    token = _request_headers.set({
+        "X-Acting-User-Id": str(user_id), "X-Locale": locale, "X-Trace-Id": trace_id,
+    })
+    try:
+        yield
+    finally:
+        _request_headers.reset(token)
+
+
+async def inject_request_headers(request, handler):
+    if request.server_name != "business" or get_settings().use_fake_tools:
+        return await handler(request)
+    headers = _request_headers.get()
+    if headers is None:
+        raise ValueError("Business MCP requires a trusted request identity")
+    return await handler(request.override(headers={**(request.headers or {}), **headers}))
 
 
 def _connections() -> dict:
@@ -35,10 +60,11 @@ def _connections() -> dict:
 
 
 def get_client() -> MultiServerMCPClient:
-    # TODO(agent): tool_interceptors 로 x-acting-user-id·x-trace-id 헤더 주입 (「MCP 설계」 1장: LLM 인자에 노출 금지)
     global _client
     if _client is None:
-        _client = MultiServerMCPClient(_connections(), tool_name_prefix=True)
+        _client = MultiServerMCPClient(
+            _connections(), tool_name_prefix=True, tool_interceptors=[inject_request_headers],
+        )
     return _client
 
 

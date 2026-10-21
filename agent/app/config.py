@@ -23,6 +23,9 @@ class Settings(BaseSettings):
     # LLM (D-18: 우선 gpt-5-nano, .env로 교체)
     openai_api_key: str = ""
     llm_primary_model: str = "gpt-5-nano"
+    # Current gpt-5-nano hospital chat favors latency. Set an empty env value
+    # to omit this parameter when selecting a model without reasoning support.
+    llm_reasoning_effort: str | None = "low"
     llm_fast_model: str = "gpt-5-nano"
     llm_fallback_model: str = "gpt-5-nano"
     embedding_model: str = "text-embedding-3-small"

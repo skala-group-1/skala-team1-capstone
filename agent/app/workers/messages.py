@@ -40,13 +40,20 @@ class TaskUser(CamelModel):
     locale: Literal["en", "zh", "ja", "ko"]
 
 
+class TaskConversation(CamelModel):
+    mode: Literal["MAIN", "HOSPITAL", "HUMAN"]
+    hospital_id: int | None = Field(default=None, gt=0)
+    parent_conversation_id: str | None = None
+
+
 class AiTaskRequested(CamelModel):
     task_id: str
     conversation_id: str
     user: TaskUser
-    message: str
+    message: str | None
     action: dict[str, Any] | None = None    # {"type":"SELECT_HOSPITAL","hospitalId":1} 등 (「공통 계약서」 CreateTaskRequest)
     requested_at: datetime
+    conversation: TaskConversation | None = None
 
 
 class AiTaskResume(CamelModel):
@@ -54,7 +61,7 @@ class AiTaskResume(CamelModel):
     conversation_id: str
     user: TaskUser
     approved: bool
-    edited_args: dict[str, Any] = Field(default_factory=dict)
+    edited_args: dict[str, Any] | None = None
     reason: str | None = None
 
 

@@ -1,5 +1,9 @@
 # mcp/ — business-mcp · rag-mcp
 
+> **RAG MVP 추가:** 실제 pgvector 적재·검색 및 병원+공통 범위 필터가 구현되었습니다.
+> 설치·실행·검증은 [RAG MVP 안내](rag_mcp/README.md)를 참고하세요.
+> 아래 초기 골격 설명 중 PgVectorStore/indexer TODO는 해당 구현으로 대체되었습니다.
+
 FastMCP 서버 2개 (「MCP 설계」). agent 는 두 서버를 한 Client 에 붙여 도구명 접두어 `business_`, `rag_` 로 쓴다.
 
 > **지금 상태: 골격.** 도구 이름·시그니처·description·힌트·오류 규칙은 확정본(「MCP 설계」) 기준으로 작성했고,

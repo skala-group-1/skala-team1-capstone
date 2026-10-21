@@ -1,0 +1,5 @@
+# Run with the root compose file. Keep the local RAG DB off the host PostgreSQL port.
+services:
+  postgres:
+    ports: !override
+      - "127.0.0.1:${RAG_POSTGRES_PORT:-15434}:5432"

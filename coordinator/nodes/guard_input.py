@@ -10,11 +10,9 @@ from app.graph.state import AgentState
 
 
 def guard_input(state: AgentState) -> dict:
-    # TODO(agent): LLM structured output 으로 {intent, guard_flags} 분류 (저비용 모델)
-    # TODO(agent): INJECTION 감지 시 감사 로그 (「Harness 명세」 Guardrails)
-    # TODO(agent): 카드 버튼 action(SELECT_HOSPITAL 등)이 들어오면 LLM 없이 intent 결정 (「공통 계약서」 CreateTaskRequest.action)
-    # 골격: 이미 state 에 값이 있으면 유지(테스트·CLI 용), 없으면 SEARCH
-    return {
-        "intent": state.get("intent") or "SEARCH",
-        "guard_flags": state.get("guard_flags") or [],
-    }
+    action = state.get("action") or {}
+    if action.get("type") == "SELECT_HOSPITAL":
+        return {"intent": "SELECT", "guard_flags": [],
+                "selected_hospital_id": action.get("hospitalId")}
+    # A previous SELECT must not route a later ordinary message back to selection.
+    return {"intent": "SEARCH", "guard_flags": state.get("guard_flags") or []}

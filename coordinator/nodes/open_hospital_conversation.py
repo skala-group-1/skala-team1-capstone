@@ -1,18 +1,51 @@
-"""open_hospital_conversation — 병원 선택 시 새 대화창(새 thread_id) 생성
-
-- 입력 → 출력: selected_hospital_id, conditions, summary → SSE CONVERSATION_OPENED {conversationId, hospitalId}
-- LLM/도구: backend POST /internal/conversations (세션 생성이라 승인 불필요)
-- 프롬프트: 없음 (요약이 필요하면 summarize_handoff.md 재사용 검토)
-- 근거: 「AI Agent 설계」 1장, D-20
-"""
+"""Open a selected hospital through the contracted MCP tool; parent stays MAIN."""
+import asyncio
+from uuid import UUID
 
 from app.graph.state import AgentState
+from coordinator.nodes.coordinator_tools import decode_result, load_business_tools, prepare_handoff_summary
 
 
-def open_hospital_conversation(state: AgentState) -> dict:
-    # TODO(agent): hospital_id 결정 (action.hospitalId 또는 "2번 병원" 발화 → candidates[1])
-    # TODO(agent): POST /internal/conversations {hospitalId, parentConversationId} 호출
-    #   ※ 「공통 계약서」 8장은 business-mcp 가 호출한다고 적혀 있지만 「MCP 설계」 도구 12개에 해당 도구가 없음 → MCP 도구 추가 or agent 직접 호출 결정 필요
-    # TODO(agent): 새 thread 초기 state = conditions + summary + parent_conversation_id, mode=HOSPITAL 로 저장
-    # TODO(agent): SSE CONVERSATION_OPENED 이벤트 발행 (workers/events.py)
-    return {"draft": f"[open_hospital_conversation 골격] hospital={state.get('selected_hospital_id')}"}
+async def run_open_hospital_conversation(state: AgentState, *, business_loader=None) -> dict:
+    action = state.get("action") or {}
+    hospital_id = action.get("hospitalId") if action.get("type") == "SELECT_HOSPITAL" else None
+    prepared = prepare_handoff_summary(state, hospital_id, state.get("candidates") or [],
+                                       state.get("conditions") or {})
+    locale = (state.get("user") or {}).get("locale", "en")
+    if prepared["status"] != "summary_ready":
+        messages = {"en": "Please select a hospital from the current results.",
+                    "ko": "현재 검색 결과에서 병원을 선택해 주세요.",
+                    "zh": "请从当前搜索结果中选择医院。", "ja": "現在の検索結果から病院を選択してください。"}
+        return {"draft": messages.get(locale, messages["en"]), "summary": None,
+                "selected_hospital_id": None, "opened_conversation": None}
+    update = {"summary": prepared["summary"], "selected_hospital_id": hospital_id, "opened_conversation": None}
+    try:
+        parent_id = str(UUID(state["conversation_id"]))
+        tools = await (business_loader or load_business_tools)()
+        target = next(t for t in tools if t.name == "business_open_hospital_conversation")
+        result = decode_result(await asyncio.wait_for(target.ainvoke({
+            "hospital_id": hospital_id, "parent_conversation_id": parent_id}), 20))
+        conversation_id = str(UUID(result["id"]))
+        returned_hospital = result.get("hospital") or {}
+        if (conversation_id == parent_id or type(returned_hospital.get("id")) is not int
+                or returned_hospital["id"] != hospital_id or result.get("mode") not in ("HOSPITAL", "HUMAN")
+                or (result.get("conditions") is not None and not isinstance(result["conditions"], dict))):
+            raise ValueError("Invalid hospital conversation")
+        update["opened_conversation"] = {
+            "conversation_id": conversation_id, "hospital_id": hospital_id, "mode": result["mode"],
+            "parent_conversation_id": result.get("parent_conversation_id"),
+            "consultation_id": result.get("consultation_id"), "conditions": result["conditions"],
+        }
+    except Exception:
+        messages = {"en": "Unable to open the hospital conversation. Please try again later.",
+                    "ko": "병원 대화를 열지 못했습니다. 잠시 후 다시 시도해 주세요.",
+                    "zh": "暂时无法打开医院对话，请稍后重试。", "ja": "病院との会話を開けませんでした。後ほど再度お試しください。"}
+        return {**update, "draft": messages.get(locale, messages["en"])}
+    messages = {"en": "Hospital conversation opened.", "ko": "병원 대화를 열었습니다.",
+                "zh": "已打开医院对话。", "ja": "病院との会話を開きました。"}
+    return {**update, "draft": messages.get(locale, messages["en"])}
+
+
+async def open_hospital_conversation(state: AgentState) -> dict:
+    """Keep MCP calls on the worker's event loop."""
+    return await run_open_hospital_conversation(state)

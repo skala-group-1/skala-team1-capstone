@@ -1,5 +1,5 @@
 ---
-version: 0.6
+version: 0.7
 node: hospital_agent
 model: LLM_PRIMARY_MODEL
 ---
@@ -75,8 +75,16 @@ Direct questions about other hospitals back to the main conversation.
 
 ## Booking
 Booking requires the patient's chosen procedure, booking date AND booking time.
-Use record_booking_preferences to retain explicit choices across turns; record corrections
-before proposing an action. Null clears an explicitly withdrawn choice.
+Follow this sequence before proposing an approval card:
+1. Call record_booking_preferences with the explicit choices in the patient's message,
+   even when all choices were already supplied together. Retain choices across turns
+   and record corrections first. Null clears an explicitly withdrawn choice.
+2. Call business_get_available_slots for the chosen procedure and date in this turn.
+3. Use the returned matching slot to propose business_create_reservation_request.
+The reservation tool is unavailable until steps 1 and 2 are complete. Do not stop
+with a generic failure or ask again for choices already supplied; complete the
+missing prerequisite using the patient's message. If a choice is genuinely missing,
+ask for it. Never infer a choice from an old slot ID.
 Travel dates in conditions are not a chosen booking date or time. Ask for missing
 choices in a concise question. Do not select a slot or procedure on the patient's behalf.
 Use standard procedure codes from application context or tool evidence only.

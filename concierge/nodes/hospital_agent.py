@@ -59,11 +59,9 @@ def _preferences(current, args):
     return updated
 
 
-def _validate_booking(args, booking, messages, hospital_id):
+def _matching_booking_slots(booking, messages, hospital_id):
     if any(not booking.get(key) for key in ("date", "time", "procedure_code")):
-        raise ValueError("Ask for the missing booking date, time and procedure before requesting approval")
-    if args.get("procedure_code") != booking["procedure_code"]:
-        raise ValueError("Reservation procedure does not match the patient's choice")
+        return []
     # Only a successful lookup after the latest user message counts as fresh.
     calls = {}
     slots = []
@@ -79,16 +77,26 @@ def _validate_booking(args, booking, messages, hospital_id):
                     and query.get("hospital_id") == hospital_id
                     and query.get("procedure_code") == booking["procedure_code"]):
                 slots = tool_data(message).get("slots", [])
+    matching = []
     for slot in slots:
-        if slot.get("id") != args.get("slot_id") or slot.get("status") != "AVAILABLE":
+        if slot.get("status") != "AVAILABLE":
             continue
         start = datetime.fromisoformat(slot["start_at"])
         if start.tzinfo is None:
             continue
         start = start.astimezone(ZoneInfo("Asia/Seoul"))
         if start.date().isoformat() == booking["date"] and start.strftime("%H:%M") == booking["time"]:
-            return
-    raise ValueError("Look up available slots again and use a slot matching the chosen date/time/procedure")
+            matching.append(slot["id"])
+    return matching
+
+
+def _validate_booking(args, booking, messages, hospital_id):
+    if any(not booking.get(key) for key in ("date", "time", "procedure_code")):
+        raise ValueError("Record explicit booking choices with record_booking_preferences first; ask only for choices the patient has not supplied")
+    if args.get("procedure_code") != booking["procedure_code"]:
+        raise ValueError("Reservation procedure does not match the patient's choice")
+    if args.get("slot_id") not in _matching_booking_slots(booking, messages, hospital_id):
+        raise ValueError("Look up available slots again and use a slot matching the chosen date/time/procedure")
 
 
 def _action_finished(messages):
@@ -113,7 +121,6 @@ async def hospital_agent(state: AgentState) -> dict:
     tools = [tool for tool in await get_tools(names) if tool.name in names]
     allowed = {tool.name for tool in tools}
     plain_model = _model()
-    model = plain_model.bind_tools([*tools, PREFERENCES_TOOL], parallel_tool_calls=False)
     added = []
     booking = dict(state.get("hospital_booking") or {})
     loop = dict(state.get("loop") or {})
@@ -130,6 +137,10 @@ async def hospital_agent(state: AgentState) -> dict:
             "booking": booking,
             "summary": state.get("summary"),
         }
+        # Do not let the model skip recording choices or the current-turn slot lookup.
+        booking_ready = bool(_matching_booking_slots(booking, messages, hospital_id))
+        available_tools = [tool for tool in tools if tool.name != BOOK or booking_ready]
+        model = plain_model.bind_tools([*available_tools, PREFERENCES_TOOL], parallel_tool_calls=False)
         started = monotonic_time.monotonic()
         response = await model.ainvoke([
             SystemMessage(content=load_prompt("hospital_agent", directory=Path(__file__).resolve().parents[1] / "prompts")),

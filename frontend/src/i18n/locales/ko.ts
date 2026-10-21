@@ -282,6 +282,7 @@ const ko: typeof en = {
     aiTitle: '여신 AI',
     agentName: '{hospital} · AI 안내',
     mode: { ai: 'AI 상담', agent: '병원 에이전트', waiting: '상담사 대기 중', human: '상담원 연결됨' },
+    cards: { browse: '병원 검색 결과' },
     talkToHospital: '이 병원과 대화',
     typing: '입력 중…',
     evidenceCount: '근거 {n}',

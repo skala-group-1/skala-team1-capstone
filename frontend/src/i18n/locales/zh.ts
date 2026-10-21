@@ -281,6 +281,7 @@ const zh: typeof en = {
     aiTitle: 'Yeoshin AI',
     agentName: '{hospital} · AI 向导',
     mode: { ai: 'AI 咨询', agent: '医院助手', waiting: '等待咨询师', human: '已连接咨询师' },
+    cards: { browse: '医院搜索结果' },
     talkToHospital: '咨询这家医院',
     typing: '输入中…',
     evidenceCount: '依据 {n}',

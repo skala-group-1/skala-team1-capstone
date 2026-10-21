@@ -20,7 +20,7 @@ import AppChip from '@/components/ui/AppChip.vue'
 import AppButton from '@/components/ui/AppButton.vue'
 import AppDialog from '@/components/ui/AppDialog.vue'
 import AppBanner from '@/components/ui/AppBanner.vue'
-import HospitalCard from '@/components/HospitalCard.vue'
+import HospitalCarousel from '@/components/chat/HospitalCarousel.vue'
 import ChatBubble from '@/components/chat/ChatBubble.vue'
 import ApprovalCard from '@/components/chat/ApprovalCard.vue'
 import ConsultSummaryCard from '@/components/chat/ConsultSummaryCard.vue'
@@ -316,18 +316,12 @@ watch(
                 })
               }}
             </p>
-            <div class="cards" role="list">
-              <HospitalCard
-                v-for="c in m.cards"
-                :key="c.id"
-                role="listitem"
-                :card="c"
-                variant="compact"
-                :procedure-name="procedureName(conv.conditions?.procedureCode ?? null)"
-                @open="router.push(`/hospitals/${c.id}`)"
-                @chat="conv.send(null, { type: 'SELECT_HOSPITAL', hospitalId: c.id })"
-              />
-            </div>
+            <HospitalCarousel
+              :cards="m.cards"
+              :procedure-name="procedureName(conv.conditions?.procedureCode ?? null)"
+              @open="(id) => router.push(`/hospitals/${id}`)"
+              @chat="(id) => conv.send(null, { type: 'SELECT_HOSPITAL', hospitalId: id })"
+            />
             <div v-if="i === lastCardsIndex" class="inset row-actions">
               <AppButton variant="outline" size="s" @click="compareCards(m.cards)">
                 {{ t('chat.compareN', { n: Math.min(3, m.cards.length) }) }}
@@ -502,21 +496,12 @@ watch(
 }
 .messages { display: flex; flex: 1; flex-direction: column; gap: var(--space-16); padding: var(--space-16); overflow-y: auto; }
 .messages > :first-child { margin-top: auto; }
+.messages { scrollbar-width: none; }
+.messages::-webkit-scrollbar { display: none; }
 .hello { color: var(--text-tertiary); text-align: center; }
 .group { display: flex; flex-direction: column; gap: var(--space-6); }
 .inset { padding-left: 40px; }
 .basis { display: flex; align-items: center; gap: var(--space-4); color: var(--text-tertiary); }
-.cards {
-  display: flex;
-  gap: var(--space-12);
-  margin: 0 -16px;
-  padding: var(--space-4) var(--space-16);
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scroll-padding-inline: var(--space-16);
-  scrollbar-width: none;
-}
-.cards > * { scroll-snap-align: start; }
 .row-actions, .progress { display: flex; flex-wrap: wrap; gap: var(--space-8); }
 .relax { display: flex; flex-direction: column; gap: var(--space-8); }
 .relax__item {

@@ -105,7 +105,10 @@ async def run_coordinator(state, model=None, *, business_loader=None):
             return unavailable(state, "API_KEY_MISSING")
         if any(c.isspace() for c in key):
             return unavailable(state, "API_KEY_WHITESPACE")
-        model = ChatOpenAI(model=settings.llm_primary_model, api_key=key, timeout=30, max_retries=1)
+        options = {}
+        if settings.llm_reasoning_effort:
+            options["reasoning_effort"] = settings.llm_reasoning_effort
+        model = ChatOpenAI(model=settings.llm_primary_model, api_key=key, timeout=30, max_retries=1, **options)
     # Copy State so internal ToolMessages never leak into caller-owned history.
     graph, results = build_coordinator(model, business_loader=business_loader, initial_state=dict(state))
     try:

@@ -67,6 +67,33 @@ async def test_slot_conflict_preserves_backend_alternative(backend_response):
             })
 
 
+@pytest.mark.parametrize("procedure,expected", [
+    ({"procedure": {"code": "DOUBLE_EYELID_NONINCISION", "name": "Non-incisional double eyelid"}},
+     "DOUBLE_EYELID_NONINCISION"),
+    ({"procedureCode": "JAW_BOTOX"}, "JAW_BOTOX"),
+    ({"procedure": {"name": "Unknown procedure"}}, None),
+    ({"procedure": None}, None),
+    ({}, None),
+])
+async def test_reservation_preserves_backend_procedure_code_without_guessing(backend_response, procedure, expected):
+    backend_response.update(status=200, body=[{
+        "id": 23, "status": "PENDING", "source": "AI",
+        "hospital": {"id": 41, "name": "Demo clinic"},
+        "slot": {"id": 11432, "startAt": "2026-10-22T10:30:00+09:00",
+                 "endAt": "2026-10-22T11:00:00+09:00", "status": "HELD"},
+        "createdAt": "2026-10-21T12:00:00+09:00", **procedure,
+    }])
+    async with Client(server.mcp) as client:
+        result = await client.call_tool("get_my_reservations", {})
+    reservation, = result.structured_content["reservations"]
+    assert reservation["procedure_code"] == expected
+    assert "procedure" not in reservation
+    assert reservation["hospital"]["id"] == 41
+    assert reservation["slot"]["start_at"] == "2026-10-22T10:30:00+09:00"
+    request, = backend_response["requests"]
+    assert request.method == "GET" and request.url.path == "/internal/reservations/mine"
+
+
 PARENT_ID = "98b7eac5-0577-43c8-8601-4dfad34e6804"
 OPEN_ARGS = {"hospital_id": 1, "parent_conversation_id": PARENT_ID}
 

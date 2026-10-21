@@ -203,7 +203,7 @@ class SummaryCard(_Model):
     stay_days: int | None = None
     budget: str | None = None
     questions: list[str] = []
-    customer_locale: Literal["en", "zh", "ja"]
+    customer_locale: Literal["ko", "en", "zh", "ja"]
 
 
 class Consultation(_Model):

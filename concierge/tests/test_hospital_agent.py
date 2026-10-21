@@ -353,7 +353,7 @@ async def test_new_handoff_after_return_uses_current_mode_not_historical_status(
     proposal = {"args": {"hospital_id": 7}, "approved": False}
     monkeypatch.setattr(agent, "prepare_action", AsyncMock(return_value=proposal))
     result = await agent.hospital_agent(state)
-    context_message = model.ainvoke.call_args.args[0][1].content
-    assert '"mode": "HOSPITAL"' in context_message
-    assert HANDOFF in model.bound_tool_names[0]
+    model.ainvoke.assert_not_awaited()
+    assert agent.prepare_action.call_args.args[0]["mode"] == "HOSPITAL"
+    assert result["messages"][0].tool_calls[0]["name"] == HANDOFF
     assert result["pending_action"] == proposal

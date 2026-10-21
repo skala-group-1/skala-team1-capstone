@@ -47,6 +47,25 @@ async def lookup(name, args):
 
 async def summarize(state):
     locale = (state.get("user") or {}).get("locale", "en")
+    if locale == "ko":
+        # The separate summarizer does not accept Korean. Build a review card
+        # from recorded choices and verbatim patient messages, without inventing
+        # a translated summary or sending anything before consent.
+        booking = state.get("hospital_booking") or {}
+        conditions = state.get("conditions") or {}
+        procedure = booking.get("procedure_code") or conditions.get("procedure_code")
+        questions = [m.content for m in state.get("messages", [])
+                     if isinstance(m, HumanMessage) and isinstance(m.content, str)
+                     and m.content.strip()]
+        budget = conditions.get("budget_max_krw")
+        return SummaryCard(
+            # The handoff contract requires a string, even for an undecided
+            # procedure. Send the same explicit unknown shown in the review UI.
+            procedure=procedure_name(procedure, locale) if procedure else label("unknown", locale),
+            preferred_dates=booking.get("date"),
+            budget=f"{budget:,} KRW 이하" if type(budget) is int else None,
+            questions=questions, customer_locale=locale,
+        ).model_dump()
     if locale not in ("en", "zh", "ja"):
         raise ValueError("Summary service supports en, zh and ja only")
     # Only customer statements are evidence of needs; AI prose can contain mistakes.
@@ -59,8 +78,10 @@ async def summarize(state):
         })
         response.raise_for_status()
         card = SummaryCard.model_validate(response.json()["summaryCard"])
-    if card.customer_locale != locale or not card.procedure:
-        raise ValueError("Confirm the procedure and summary language before requesting consultation")
+    if card.customer_locale != locale:
+        raise ValueError("Confirm the summary language before requesting consultation")
+    if not card.procedure:
+        card.procedure = label("unknown", locale)
     return card.model_dump()
 
 
@@ -150,6 +171,8 @@ async def prepare_action(state, call):
         args["consent"] = False
         rows += summary_rows(args["summary_card"], locale)
         notice = label("consent_notice", locale)
+        if locale == "ko":
+            notice += " 확인된 선택 정보와 사용자 문의 원문을 표시합니다. 미확인 항목은 상담사에게 확인해 주세요."
     validate_args(tool, args, hospital_id)
     return {"action": PENDING_ACTION_BY_TOOL[tool], "tool": tool, "tool_call_id": call["id"],
             "hospital_id": hospital_id, "args": args, "approved": False,

@@ -58,6 +58,7 @@ export const useConversationStore = defineStore('conversation', {
     /** 새 메인 대화 또는 병원 대화(hospitalId) 생성 */
     async open(hospitalId: number | null = null, parentConversationId: Uuid | null = null) {
       const conv = await aiApi.createConversation({ hospitalId, parentConversationId })
+      this.unsubscribe?.()
       this.$reset()
       this.conversationId = conv.id
       this.mode = conv.mode
@@ -66,6 +67,7 @@ export const useConversationStore = defineStore('conversation', {
       this.conditions = conv.conditions
       this.messages = conv.messages ?? []
       this.parentConversationId = conv.parentConversationId
+      await this.restoreActiveTask()
       return conv
     },
     /** 기존 대화 불러오기 (/chat/:conversationId 진입) */
@@ -80,6 +82,7 @@ export const useConversationStore = defineStore('conversation', {
       this.conditions = conv.conditions
       this.messages = conv.messages ?? []
       this.parentConversationId = conv.parentConversationId
+      await this.restoreActiveTask()
       return conv
     },
     /** 같은 대화로 돌아올 때: 화면 상태(결과 카드·승인 대기)는 두고 모드만 서버 기준으로 맞춤 (자리 비운 사이 상담 종료 등) */
@@ -88,10 +91,29 @@ export const useConversationStore = defineStore('conversation', {
       this.mode = conv.mode
       this.consultationId = conv.consultationId
       this.hospital = conv.hospital
+      if (!this.streaming && !this.pendingAction) await this.restoreActiveTask()
+    },
+    /** Reload the existing approval instead of creating another task. */
+    async restoreActiveTask(activeTaskId?: Uuid): Promise<boolean> {
+      const conversationId = this.conversationId
+      if (!conversationId || this.mode === 'HUMAN') return false
+      try {
+        const tasks = activeTaskId ? [await aiApi.task(activeTaskId)] : await aiApi.myTasks()
+        if (this.conversationId !== conversationId || (this.mode as ConversationMode) === 'HUMAN') return false
+        const task = tasks.find((t) => t.conversationId === conversationId
+          && ['QUEUED', 'RUNNING', 'WAITING_APPROVAL'].includes(t.status))
+        if (!task) return false
+        this.pendingAction = task.status === 'WAITING_APPROVAL' ? task.pendingAction : null
+        this.subscribe(task.id)
+        return true
+      } catch {
+        return false
+      }
     },
     /** 메시지 전송 또는 버튼 action(SELECT_HOSPITAL·RELAX·SET_SORT·SAVE_PROFILE) */
     async send(message: string | null, action: TaskAction | null = null, echo = true) {
       if (!this.conversationId) throw new Error('conversation not opened')
+      if (this.pendingAction || this.streaming) return
       if (message && echo) this.messages.push({ role: 'user', text: message, sources: [], cards: [], createdAt: new Date().toISOString() })
       this.lastInput = { message, action }
       this.error = null
@@ -105,7 +127,9 @@ export const useConversationStore = defineStore('conversation', {
         this.subscribe(taskId)
       } catch (e) {
         this.streaming = false
-        const err = e as { response?: { data?: SseEventMap['FAILED'] } }
+        const err = e as { response?: { data?: SseEventMap['FAILED'] & { details?: { activeTaskId?: Uuid } } } }
+        const activeTaskId = err.response?.data?.details?.activeTaskId
+        if (activeTaskId && await this.restoreActiveTask(activeTaskId)) return
         this.error = err.response?.data ?? { code: 'AI_UNAVAILABLE', message: '', traceId: '' }
       }
     },
@@ -129,22 +153,27 @@ export const useConversationStore = defineStore('conversation', {
       this.streaming = true
       this.draft = ''
       this.error = null
-      this.unsubscribe = streamTask(
+      let cancelled = false
+      const stop = streamTask(
         taskId,
         {
           onEvent: (e) => {
+            if (cancelled) return
             if (e.seq != null) this.lastSeq = e.seq
             this.applyEvent(e)
           },
           onError: () => {
+            if (cancelled) return
             this.error = { code: 'AI_UNAVAILABLE', message: '', traceId: '' }
           },
           onClose: () => {
+            if (cancelled) return
             this.streaming = false
           },
         },
         fromSeq,
       )
+      this.unsubscribe = () => { cancelled = true; stop() }
     },
     /** SSE reducer — 「공통 계약서」 6장 이벤트별 처리 */
     applyEvent(e: SseEvent) {

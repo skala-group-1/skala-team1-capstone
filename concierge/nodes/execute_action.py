@@ -19,6 +19,21 @@ HANDOFF_REPLY = {
 }
 
 
+RESERVATION_REPLY = {
+    "PENDING": ("Your reservation request was submitted and is awaiting hospital approval.",
+                "예약 요청이 접수되었으며 병원 승인을 기다리고 있습니다.",
+                "预约申请已提交，正在等待医院批准。", "予約リクエストを送信しました。病院の承認をお待ちください。"),
+    "CONFIRMED": ("Your reservation is confirmed.", "예약이 확정되었습니다.",
+                  "预约已确认。", "予約が確定しました。"),
+    "REJECTED": ("The hospital declined your reservation request.", "병원이 예약 요청을 거절했습니다.",
+                 "医院已拒绝您的预约申请。", "病院が予約リクエストをお断りしました。"),
+    "EXPIRED": ("Your reservation request has expired.", "예약 요청이 만료되었습니다.",
+                "预约申请已过期。", "予約リクエストの有効期限が切れました。"),
+    "CANCELLED": ("Your reservation has been cancelled.", "예약이 취소되었습니다.",
+                  "预约已取消。", "予約をキャンセルしました。"),
+}
+
+
 async def execute_action(state: AgentState) -> dict:
     action = state.get("pending_action") or {}
     if action.get("approved") is not True:
@@ -47,6 +62,10 @@ async def execute_action(state: AgentState) -> dict:
                 raise ValueError("Consultation is already closed")
             update.update(mode="HUMAN", consultation_id=data["id"],
                           draft=HANDOFF_REPLY.get((state.get("user") or {}).get("locale"), HANDOFF_REPLY["en"]))
+        else:
+            locale = (state.get("user") or {}).get("locale", "en")
+            locales = ("en", "ko", "zh", "ja")
+            update["draft"] = RESERVATION_REPLY[data["status"]][locales.index(locale if locale in locales else "en")]
         content, status = json.dumps(data, ensure_ascii=False), "success"
     except Exception as exc:
         # Tool errors contain backend guidance/alternative slots, never fabricate success.

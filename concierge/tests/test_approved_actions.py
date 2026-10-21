@@ -325,8 +325,42 @@ async def test_duplicate_resume_cannot_approve_a_second_mutation_in_same_task(mo
     result = await g.ainvoke(Command(resume={"approved": approved}), config)
     assert not result.get("__interrupt__")
     assert actions.BOOK not in bound_names
-    assert actions.BOOK not in loader.call_args.args[0]
+    loader.assert_not_awaited()
+    model.ainvoke.assert_not_awaited()
     assert mutation.await_count == (1 if approved else 0)
     await g.ainvoke(Command(resume={"approved": True}), config)
     assert mutation.await_count == (1 if approved else 0)
     assert not hospital._action_finished([*result["messages"], HumanMessage(content="New action please")])
+
+
+@pytest.mark.parametrize("locale", ["en", "ko", "zh", "ja"])
+@pytest.mark.parametrize("status", ["PENDING", "CONFIRMED", "REJECTED", "EXPIRED", "CANCELLED"])
+async def test_verified_reservation_result_finishes_without_model(monkeypatch, locale, status):
+    hospital = importlib.import_module("concierge.nodes.hospital_agent")
+    s = await prepared(monkeypatch, actions.CANCEL if status == "CANCELLED" else actions.BOOK,
+                       {"reservation_id": 30} if status == "CANCELLED" else None)
+    s["user"]["locale"] = locale
+    s["pending_action"]["approved"] = True
+    monkeypatch.setattr(execution, "lookup", AsyncMock(return_value={"id": 30, "status": status}))
+    update = await execute_action(s)
+    model = AsyncMock(side_effect=AssertionError("A verified result must not be rewritten"))
+    monkeypatch.setattr(hospital, "_model", model)
+    reply = await hospital.hospital_agent({**s, **update})
+    assert reply["draft"] == execution.RESERVATION_REPLY[status][("en", "ko", "zh", "ja").index(locale)]
+    model.assert_not_called()
+
+
+@pytest.mark.parametrize("locale", ["en", "ko", "zh", "ja"])
+async def test_declining_action_returns_localized_result_without_model(monkeypatch, locale):
+    hospital = importlib.import_module("concierge.nodes.hospital_agent")
+    approvals = importlib.import_module("concierge.nodes.approval")
+    s = await prepared(monkeypatch)
+    s["user"]["locale"] = locale
+    monkeypatch.setattr(approvals, "interrupt", lambda _: {"approved": False})
+    update = approval(s)
+    model = AsyncMock(side_effect=AssertionError("A declined action must not be rewritten"))
+    monkeypatch.setattr(hospital, "_model", model)
+    result = await hospital.hospital_agent({**s, **update})
+    assert result["draft"] == approvals.REJECTION_REPLY[locale]
+    assert update["pending_action"] is None
+    model.assert_not_called()

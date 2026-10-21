@@ -40,7 +40,11 @@ def model_setup(monkeypatch, responses):
         }[name]
     monkeypatch.setattr("concierge.nodes.actions.lookup", AsyncMock(side_effect=reads))
     class Model:
+        def __init__(self):
+            self.bound_tool_names = []
+
         def bind_tools(self, tools, **kwargs):
+            self.bound_tool_names.append([tool["name"] if isinstance(tool, dict) else tool.name for tool in tools])
             return self
     model = Model()
     model.ainvoke = AsyncMock(side_effect=responses)
@@ -250,3 +254,106 @@ async def test_node_guards_final_draft_without_touching_booking(monkeypatch, sta
     assert result["draft"] == "턱 보톡스 가격은 150,000원입니다."
     assert result["hospital_booking"] == {"procedure_code": "JAW_BOTOX"}
     assert model.ainvoke.await_count == 2
+
+
+@pytest.mark.parametrize("skipped_preferences", [False, True])
+async def test_booking_tool_requires_recorded_choices_and_current_matching_slot(monkeypatch, state, skipped_preferences):
+    state["messages"] = [HumanMessage(
+        "Please book jaw Botox on October 22, 2026 at 10:00 and show the approval card.")]
+    premature = [call(agent.BOOK, {"slot_id": 12, "procedure_code": "JAW_BOTOX"}, id="premature")] if skipped_preferences else []
+    model = model_setup(monkeypatch, [
+        *premature,
+        call(agent.COLLECT, {"procedure_code": "JAW_BOTOX", "date": "2026-10-22", "time": "10:00"}, id="preferences"),
+        call("business_get_available_slots", {"hospital_id": 7, "procedure_code": "JAW_BOTOX"}),
+        call(agent.BOOK, {"hospital_id": 7, "slot_id": 12, "procedure_code": "JAW_BOTOX"}),
+    ])
+    update = await agent.hospital_agent(state)
+    assert all(agent.BOOK not in names for names in model.bound_tool_names)
+    if skipped_preferences:
+        assert update["messages"][1].status == "error"
+        assert "record_booking_preferences" in update["messages"][1].content
+    assert update.get("pending_action") is None
+    state = {**state, **update, "messages": [*state["messages"], *update["messages"], slot_messages()[-1]]}
+    proposal = await agent.hospital_agent(state)
+    assert agent.BOOK in model.bound_tool_names[-1]
+    assert proposal["pending_action"]["args"]["slot_id"] == 12
+    assert proposal["pending_action"]["approved"] is False
+
+
+@pytest.mark.parametrize("invalid", ["missing", "stale", "wrong_time", "wrong_hospital", "wrong_procedure", "unavailable"])
+async def test_booking_tool_hidden_until_prerequisites_match(monkeypatch, state, invalid):
+    state["hospital_booking"] = {"date": "2026-10-22", "time": "10:00", "procedure_code": "JAW_BOTOX"}
+    state["messages"] += slot_messages()
+    if invalid == "missing":
+        state["hospital_booking"].pop("time")
+    elif invalid == "stale":
+        state["messages"].append(HumanMessage("Please book it."))
+    elif invalid == "wrong_time":
+        state["hospital_booking"]["time"] = "11:00"
+    elif invalid == "wrong_hospital":
+        state["messages"][-2].tool_calls[0]["args"]["hospital_id"] = 8
+    elif invalid == "wrong_procedure":
+        state["messages"][-2].tool_calls[0]["args"]["procedure_code"] = "OTHER"
+    else:
+        state["messages"][-1].content = state["messages"][-1].content.replace("AVAILABLE", "BOOKED")
+    model = model_setup(monkeypatch, [AIMessage(content="Please confirm your booking choices.")])
+    await agent.hospital_agent(state)
+    assert agent.BOOK not in model.bound_tool_names[0]
+
+
+async def test_new_cancellation_request_after_booking_approval_is_available(monkeypatch, state):
+    from concierge.nodes.actions import CANCEL
+    state["messages"] += [
+        call(agent.BOOK, {"slot_id": 12, "procedure_code": "JAW_BOTOX"}),
+        ToolMessage(content='{"id": 23, "status": "PENDING"}', tool_call_id="c1",
+                    additional_kwargs={"approval_completed": True}),
+    ]
+    model = model_setup(monkeypatch, [AIMessage(content="Your booking request is awaiting hospital approval.")])
+    tools = [fake_tool(agent.BOOK), fake_tool(CANCEL), fake_tool("business_get_my_reservations")]
+    monkeypatch.setattr(agent, "get_tools", AsyncMock(return_value=tools))
+    await agent.hospital_agent(state)
+    assert CANCEL not in model.bound_tool_names[0]
+    state["messages"].append(HumanMessage("Please cancel reservation 23 and show the approval card."))
+    model.ainvoke.side_effect = [call(CANCEL, {"reservation_id": 23}, id="cancel")]
+    proposal = {"args": {"reservation_id": 23}, "approved": False}
+    prepare = AsyncMock(return_value=proposal)
+    monkeypatch.setattr(agent, "prepare_action", prepare)
+    result = await agent.hospital_agent(state)
+    assert CANCEL in model.bound_tool_names[-1]
+    assert result["pending_action"] == proposal
+    prepare.assert_awaited_once()
+
+
+@pytest.mark.parametrize("draft,rewritten", [
+    ("Your reservation is PENDING for 2026-10-22 at 10:30, 1,900,000 KRW including VAT.",
+     "Your reservation is awaiting hospital approval for 2026-10-22 at 10:30, 1,900,000 KRW including VAT."),
+    ("Please choose a slot_id from the available appointments.",
+     "Please choose a date and time from the available appointments."),
+])
+async def test_reply_edit_only_replaces_existing_slot_question(draft, rewritten):
+    model = AsyncMock()
+    model.ainvoke.return_value = AIMessage(content=rewritten)
+    assert await patient_reply(draft, "en", model) == rewritten
+    instructions = json.loads(model.ainvoke.call_args.args[0][-1].content)["task"]
+    assert "Only if the draft already asks the patient" in instructions
+    assert "Never add a question or ask the patient to choose again after an action." in instructions
+    assert "same order and notation" in instructions
+
+
+async def test_new_handoff_after_return_uses_current_mode_not_historical_status(monkeypatch, state):
+    from concierge.nodes.actions import HANDOFF
+    state["messages"] += [
+        call(HANDOFF, {"hospital_id": 7}, id="old-handoff"),
+        ToolMessage(content='{"id": 5, "status": "WAITING"}', tool_call_id="old-handoff",
+                    additional_kwargs={"approval_completed": True}),
+        HumanMessage("I want to talk to a counselor."),
+    ]
+    model = model_setup(monkeypatch, [call(HANDOFF, {"hospital_id": 7}, id="new-handoff")])
+    monkeypatch.setattr(agent, "get_tools", AsyncMock(return_value=[fake_tool(HANDOFF)]))
+    proposal = {"args": {"hospital_id": 7}, "approved": False}
+    monkeypatch.setattr(agent, "prepare_action", AsyncMock(return_value=proposal))
+    result = await agent.hospital_agent(state)
+    context_message = model.ainvoke.call_args.args[0][1].content
+    assert '"mode": "HOSPITAL"' in context_message
+    assert HANDOFF in model.bound_tool_names[0]
+    assert result["pending_action"] == proposal

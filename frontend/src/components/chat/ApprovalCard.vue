@@ -72,7 +72,7 @@ function approve() {
 .rows { display: grid; grid-template-columns: auto 1fr; gap: 10px var(--space-12); margin: 0; }
 .row { display: contents; }
 .row dt { min-width: 44px; color: var(--text-tertiary); }
-.row dd { margin: 0; }
+.row dd { margin: 0; white-space: pre-line; }
 .note { display: flex; flex-direction: column; gap: var(--space-6); color: var(--text-secondary); }
 .note textarea {
   padding: var(--space-12);

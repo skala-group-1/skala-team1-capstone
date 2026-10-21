@@ -27,6 +27,16 @@ async def test_consent_display_includes_customer_language(monkeypatch, locale, e
     assert pending["args"]["consent"] is False
 
 
+def test_multiple_questions_become_numbered_lines():
+    from concierge.nodes.action_display import question_lines, summary_rows
+    qs = ["전문 의사가 있나요?", "상담원 연결이 되나요?"]
+    assert question_lines(qs) == "1. 전문 의사가 있나요?\n2. 상담원 연결이 되나요?"
+    assert question_lines(["하나뿐인 질문"]) == "하나뿐인 질문"      # 1개면 번호 없이
+    assert question_lines([]) == ""
+    rows = summary_rows({**CARD, "questions": qs}, "ko")
+    assert {"label": "질문", "value": "1. 전문 의사가 있나요?\n2. 상담원 연결이 되나요?"} in rows
+
+
 def test_missing_summary_language_is_not_invented():
     from concierge.nodes.action_display import label, summary_rows
     for value in (None, "unknown"):

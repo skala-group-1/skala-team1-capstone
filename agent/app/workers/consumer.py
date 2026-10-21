@@ -16,7 +16,7 @@ from app.config import get_settings
 from app.mcp_client.client import mcp_request_context
 from app.workers.events import SseEvent, TERMINAL_EVENTS, camel, state_events
 from app.workers.messages import AiTaskEvent, AiTaskRequested, AiTaskResume, Queue
-from coordinator.nodes.coordinator_tools import prepare_handoff_summary
+from coordinator.nodes.coordinator_tools import summarizer_handoff_summary
 
 logger = logging.getLogger(__name__)
 # Keep the existing namespace so deployed task receipts survive this upgrade.
@@ -186,7 +186,7 @@ class HospitalWorker:
                                     or parent.values.get("mode") != "MAIN"):
                                 raise ValueError("Parent conversation identity mismatch")
                             conditions = parent.values.get("conditions") or {}
-                            prepared = prepare_handoff_summary(parent.values, conv.hospital_id,
+                            prepared = await summarizer_handoff_summary(parent.values, conv.hospital_id,
                                 [{"id": conv.hospital_id}], conditions)
                             payload.update({"conditions": conditions, "summary": prepared["summary"]})
             except (ValueError, TypeError, KeyError) as exc:

@@ -37,7 +37,7 @@ class Conditions(CamelModel):
 class SummarizeRequest(CamelModel):
     purpose: Literal["HANDOFF_TO_SUB", "NEEDS_CARD"]
     messages: list[ChatTurn]
-    locale: Literal["en", "zh", "ja"]
+    locale: Literal["ko", "en", "zh", "ja"]
     conditions: Conditions | None = None
 
 

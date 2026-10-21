@@ -81,9 +81,17 @@ def price_rows(price, locale):
             row("verified", price.get("verified_at"), locale)]
 
 
+def question_lines(questions):
+    """질문 2개 이상이면 번호 목록("1. …\n2. …")으로, 1개면 그대로."""
+    questions = questions or []
+    if len(questions) < 2:
+        return "\n".join(questions)
+    return "\n".join(f"{i}. {q}" for i, q in enumerate(questions, 1))
+
+
 def summary_rows(card, locale):
     return [row("procedure", procedure_name(card.get("procedure"), locale), locale),
             *[row(key, card.get(key), locale) for key in ("preferred_dates", "stay_days", "budget")],
             row("customer_locale", label(card["customer_locale"], locale)
                 if card.get("customer_locale") in ("en", "ko", "zh", "ja") else None, locale),
-            row("questions", "\n".join(card.get("questions") or []), locale)]
+            row("questions", question_lines(card.get("questions")), locale)]

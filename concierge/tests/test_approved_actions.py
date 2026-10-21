@@ -204,21 +204,32 @@ async def test_no_consultation_without_consent(monkeypatch):
 
 @pytest.mark.parametrize("approved", [True, False])
 async def test_korean_review_form_then_explicit_handoff(monkeypatch, approved):
-    def unexpected_http(**kwargs):
-        pytest.fail("Korean review card must not call the separate summarizer")
-    monkeypatch.setattr(actions.httpx, "AsyncClient", unexpected_http)
+    # Korean goes through the summarizer service like every other locale:
+    # categorized card fields, not verbatim patient messages.
+    monkeypatch.setattr(actions, "get_settings", lambda: SimpleNamespace(summarizer_url="http://summary"))
+    request_json = []
+    def handler(request):
+        request_json.append(json.loads(request.content))
+        return httpx.Response(200, json={"summaryCard": {
+            "procedure": "사각턱 보톡스 (JAW_BOTOX)", "preferredDates": "2026-10-22",
+            "stayDays": None, "budget": None,
+            "questions": ["통역 지원이 되나요?"], "customerLocale": "ko"}, "text": ""})
+    client = httpx.AsyncClient(transport=httpx.MockTransport(handler))
+    monkeypatch.setattr(actions.httpx, "AsyncClient", lambda **kw: client)
     s = state()
     s["user"]["locale"] = "ko"
-    s["messages"] = [HumanMessage(content="턱 보톡스 상담사 연결 폼을 보여주세요."),
+    s["messages"] = [HumanMessage(content="턱 보톡스 상담사 연결 폼을 보여주세요. 통역 지원이 되나요?"),
                      AIMessage(content="확인되지 않은 가격 999원")]
     c = call(actions.HANDOFF, {})
     pending = await actions.prepare_action(s, c)
     card = pending["args"]["summary_card"]
+    assert request_json[0]["locale"] == "ko"
+    assert [m["content"] for m in request_json[0]["messages"]] == [s["messages"][0].content]
     assert card["customer_locale"] == "ko"
-    assert card["procedure"] == "사각턱 보톡스"
+    assert card["procedure"] == "사각턱 보톡스 (JAW_BOTOX)"
     assert card["preferred_dates"] == "2026-10-22"
     assert card["budget"] is None
-    assert card["questions"] == [s["messages"][0].content]
+    assert card["questions"] == ["통역 지원이 되나요?"]       # 선별된 질문만, 발화 원문 나열 금지
     s["pending_action"] = pending
     s["messages"].append(AIMessage(content="", tool_calls=[{**c, "args": pending["args"]}]))
     mutation = AsyncMock(return_value={"id": 701, "status": "WAITING"})
@@ -236,11 +247,14 @@ async def test_korean_review_form_then_explicit_handoff(monkeypatch, approved):
         assert mutation.call_args.args[1]["consent"] is True
 
 
-async def test_korean_review_leaves_unknown_choices_empty():
+async def test_korean_review_leaves_unknown_choices_empty(monkeypatch):
+    monkeypatch.setattr(actions, "get_settings", lambda: SimpleNamespace(summarizer_url="http://summary"))
+    client = httpx.AsyncClient(transport=httpx.MockTransport(lambda request: httpx.Response(
+        200, json={"summaryCard": {"procedure": None, "preferredDates": None, "stayDays": None,
+                                   "budget": None, "questions": [], "customerLocale": "ko"}})))
+    monkeypatch.setattr(actions.httpx, "AsyncClient", lambda **kw: client)
     s = state()
     s["user"]["locale"] = "ko"
-    s["hospital_booking"] = {}
-    s["conditions"] = {"date_from": "2026-10-22", "date_to": "2026-10-26"}
     card = await actions.summarize(s)
     assert card["procedure"] == "확인 필요"
     assert card["preferred_dates"] is None
@@ -253,6 +267,10 @@ async def test_explicit_form_request_cannot_be_replaced_with_chat_text(monkeypat
     hospital = importlib.import_module("concierge.nodes.hospital_agent")
     monkeypatch.setattr(hospital, "get_tools", AsyncMock(return_value=[SimpleNamespace(name=actions.HANDOFF)]))
     monkeypatch.setattr(hospital, "_model", lambda: pytest.fail("Explicit form request needs no model"))
+    monkeypatch.setattr(actions, "get_settings", lambda: SimpleNamespace(summarizer_url="http://summary"))
+    client = httpx.AsyncClient(transport=httpx.MockTransport(lambda request: httpx.Response(
+        200, json={"summaryCard": {"procedure": "사각턱 보톡스 (JAW_BOTOX)", "customerLocale": "ko"}})))
+    monkeypatch.setattr(actions.httpx, "AsyncClient", lambda **kw: client)
     s = state()
     s["user"]["locale"] = "ko"
     s["hospital_context"]["hospital_id"] = 7

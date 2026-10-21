@@ -281,6 +281,7 @@ export default {
     aiTitle: 'Yeoshin AI',
     agentName: '{hospital} · AI guide',
     mode: { ai: 'AI chat', agent: 'Clinic agent', waiting: 'Waiting for counselor', human: 'Counselor connected' },
+    cards: { browse: 'Hospital search results' },
     talkToHospital: 'Chat with clinic',
     typing: 'Typing…',
     evidenceCount: 'Sources {n}',

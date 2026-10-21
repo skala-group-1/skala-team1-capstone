@@ -281,6 +281,7 @@ const ja: typeof en = {
     aiTitle: 'Yeoshin AI',
     agentName: '{hospital} · AI案内',
     mode: { ai: 'AI相談', agent: '病院エージェント', waiting: '相談員を待機中', human: '相談員と接続中' },
+    cards: { browse: '病院の検索結果' },
     talkToHospital: 'この病院と話す',
     typing: '入力中…',
     evidenceCount: '根拠 {n}',

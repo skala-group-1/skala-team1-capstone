@@ -35,7 +35,6 @@ def build_coordinator(model, *, business_loader=None, initial_state=None):
         context = {"locale": (state.get("user") or {}).get("locale") or "en",
                    "action": source.get("action"),
                    "conditions": results.get("conditions", state.get("conditions", {})),
-                   "optional_conditions_asked": source.get("optional_conditions_asked", False),
                    "today": datetime.now(ZoneInfo("Asia/Seoul")).date().isoformat(),
                    "candidates": results.get("hospitals", state.get("candidates", []))}
         messages = [
@@ -57,8 +56,12 @@ def build_coordinator(model, *, business_loader=None, initial_state=None):
                 "procedure_code may be the user's exact phrase: the tool normalizes it. "
                 "Omit unchanged and unmentioned fields; never replace prior filters with null. "
                 "Consultation language is ONLY an explicitly requested language, never the message language or locale. "
-                "Convert areas to the tool enums and relative dates using today. Keep both arrival and departure. "
-                "Only user-selected sort; no default. Null only for explicit no preference."), *messages[1:]])
+                "Convert explicit districts to the tool enums; explicit Seoul-wide location uses areas=[]. "
+                "Omit areas if location was not given. Never map an unsupported location to Seoul. "
+                "Convert relative dates using today. Keep both arrival and departure. "
+                "Collect a sort only when requested; the application supplies its default. "
+                "Budget and consultation language are optional; never ask for them before searching. "
+                "Null only for explicit no preference or clearing a field."), *messages[1:]])
         else:
             reply = await bound.ainvoke(messages)
         if not reply.tool_calls and "conditions" not in results and not results.get("evidence"):
@@ -159,7 +162,7 @@ async def run_coordinator(state, model=None, *, business_loader=None):
         update.update({k: state[k] for k in ("conditions", "candidates", "summary", "selected_hospital_id")})
     if "hospitals" in results:
         update["candidates"] = results["hospitals"]
-    for field in ("conditions", "missing", "optional_conditions_asked", "summary", "selected_hospital_id"):
+    for field in ("conditions", "missing", "summary", "selected_hospital_id"):
         if field in results:
             update[field] = results[field]
     if update.get("missing") and not results.get("failed"):
@@ -176,31 +179,25 @@ async def run_coordinator(state, model=None, *, business_loader=None):
 
 
 def search_reply(state, results):
-    """Render only returned search facts; model prose cannot add medical claims."""
+    """Summarize results; structured cards carry hospital names and prices."""
     locale = (state.get("user") or {}).get("locale", "en")
     labels = {
-        "en": ("Matching hospitals", "Starting at", "reviews", "Please select hospitals to compare.",
+        "en": ("Found {count} matching hospitals, sorted by {sort}. Browse the cards below.",
                "No matches. Which filter would you like to change?", "Needs confirmation",
                ("review count", "rating", "price", "distance")),
-        "zh": ("符合条件的医院", "起价", "条评论", "请选择要比较的医院。",
+        "zh": ("找到了{count}家符合条件的医院，按{sort}排序。请浏览下方卡片。",
                "没有符合条件的医院。您想调整哪个条件？", "待确认", ("评论数", "评分", "价格", "距离")),
-        "ja": ("条件に合う病院", "料金", "件の口コミ", "比較する病院を選んでください。",
+        "ja": ("条件に合う病院が{count}件見つかりました。{sort}順に表示します。下のカードをご覧ください。",
                "条件に合う病院はありません。どの条件を変更しますか？", "要確認", ("口コミ数", "評価", "価格", "距離")),
-        "ko": ("조건에 맞는 병원", "시작 가격", "개 리뷰", "비교할 병원을 선택해 주세요.",
+        "ko": ("조건에 맞는 병원 {count}곳을 찾았어요. {sort} 기준으로 보여드릴게요. 아래 카드를 확인해 주세요.",
                "조건에 맞는 병원이 없습니다. 어떤 조건을 바꾸시겠어요?", "확인 필요", ("리뷰 수", "평점", "가격", "거리")),
     }
-    title, price, reviews, ending, empty, unknown, sorts = labels.get(locale, labels["en"])
+    template, empty, unknown, sorts = labels.get(locale, labels["en"])
     hospitals = results.get("hospitals", [])
     if not hospitals:
         return empty
     sort = dict(zip(("REVIEW_COUNT", "RATING", "PRICE", "DISTANCE"), sorts))
-    lines = [f"{title} · {sort.get(results['conditions'].get('sort_by'), unknown)}"]
-    for index, hospital in enumerate(hospitals, 1):
-        amount = hospital.get("min_price_krw")
-        amount = f"{amount:,} KRW" if type(amount) is int else unknown
-        lines.append(f"{index}. {hospital.get('name') or unknown} · {price} {amount} · "
-                     f"{hospital.get('review_count', unknown)} {reviews}")
-    return "\n".join([*lines, ending])
+    return template.format(count=len(hospitals), sort=sort.get(results["conditions"].get("sort_by"), unknown))
 
 
 async def planner_agent(state: AgentState) -> dict:
@@ -255,6 +252,8 @@ async def chat_with_mock_hospitals(locale="en", *, read=input, write=print, runn
         answer = update.get("draft", "")
         state["messages"].append(AIMessage(content=answer))
         write("Agent > " + str(answer))
+        for hospital in update.get("candidates", []):
+            write(json.dumps(hospital, ensure_ascii=False))
         brief = state.get("summary")
         if brief and brief != previous_summary:
             write("\n--- 미전송 인계 요약 ---\n" + brief)

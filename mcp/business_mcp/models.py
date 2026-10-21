@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import AliasChoices, AliasPath, BaseModel, ConfigDict, Field
 
 AreaCode = Literal["GANGNAM", "SINSA", "APGUJEONG", "CHEONGDAM", "MYEONGDONG", "HONGDAE", "JAMSIL"]
 SortBy = Literal["REVIEW_COUNT", "RATING", "PRICE", "DISTANCE"]
@@ -181,7 +181,9 @@ class Reservation(_Model):
     source: str | None = None
     hospital: HospitalRef | None = None
     slot: Slot | None = None
-    procedure_code: str | None = None
+    procedure_code: str | None = Field(
+        default=None, validation_alias=AliasChoices("procedure_code", AliasPath("procedure", "code")),
+    )
     hold_expires_at: str | None = None
     reject_reason: str | None = None
     created_at: str | None = None

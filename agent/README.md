@@ -83,6 +83,52 @@ PYTHONPATH=.. uv run uvicorn app.api.main:app --port 8000   # 큐 워커 + GET /
 | `DATABASE_URL` | (비어 있음) | 비어 있으면 MemorySaver(재시작 시 사라짐). 넣으면 PostgresSaver/PostgresStore (schema agent) |
 | `RABBITMQ_URL` | `amqp://guest:guest@localhost:5672/` | 큐 워커 |
 
+## CLI 대화·승인 복원
+
+`DATABASE_URL`을 설정하면 checkpointer와 store 모두 연결의 `search_path`를 `agent`로
+고정하고 해당 스키마·테이블을 준비합니다. 기존 `agent` 스키마 사용·테이블 생성 권한이
+필요하며 스키마가 없다면 DB의 스키마 생성 권한도 필요합니다. 연결·권한·마이그레이션
+오류는 그대로 실패하며 메모리 저장으로 자동 전환하지 않습니다. 기존 `public` 스키마에
+잘못 저장된 체크포인트는 자동 이동하지 않습니다.
+
+```bash
+cd agent
+# DATABASE_URL은 환경변수 또는 루트 .env에 설정 (접속 문자열/비밀번호를 커밋하지 않음)
+PYTHONPATH=.. uv run --frozen python -m app.cli --thread h1 --user 3 --locale zh --mode HOSPITAL --hospital-id 1
+# APPROVAL_REQUIRED에서 Ctrl-D 또는 프로세스 종료 후, 같은 thread/user로 재실행
+PYTHONPATH=.. uv run --frozen python -m app.cli --thread h1 --user 3
+```
+
+재실행하면 저장된 메시지·사용자·언어·모드·병원·조건을 복원하고, 새 메시지를 받기 전에
+대기 중인 승인 카드를 표시합니다. `y`는 승인, `n`은 거절이며 다른 입력은 재질문합니다.
+승인 프롬프트에서 Ctrl-D/Ctrl-C는 결정 없이 종료합니다. `--user-id`도 같은 옵션입니다.
+기존 대화에 다른 사용자 또는 다른 초기 설정을 지정하면 읽은 대화 내용을 출력하거나
+변경하지 않고 종료합니다. 설정 변경은 새 `--thread`로 시작합니다. 승인 대기가 아닌
+미완료 실행은 새 입력으로 덮어쓰지 않고 오류를 알립니다.
+
+CLI의 사용자 번호 검사는 로컬 실수 방지용이며 인증을 대신하지 않습니다. 웹 요청의
+사용자·대화 권한은 backend가 담당합니다. `DATABASE_URL`이 비어 있으면 개발용 메모리
+저장소를 사용하므로 프로세스 종료 후 복원되지 않습니다. 같은 thread를 여러 CLI에서
+동시에 조작하지 않습니다. 저장·복원은 새로운 업무 변경 권한을 부여하지 않으며,
+예약·취소·상담 실행은 그래프의 interrupt 승인과 MCP 경계를 그대로 따릅니다.
+실제 MCP 호출에는 지정 사용자·복원된 언어·요청 추적 UUID를 전달합니다. 실제 backend에
+연결할 때 `--thread`는 그 사용자의 기존 대화 UUID를 사용합니다(`h1`은 로컬 예시).
+새 메시지마다 `task_id` UUID와 `conversation_id=thread_id`를 state에 전달하고,
+승인 재개는 저장된 작업을 그대로 이어갑니다(공통 State에 해당 필드 등록 필요).
+
+```bash
+uv run --frozen pytest -q tests/test_memory.py tests/test_cli.py
+# 격리된 빈 PostgreSQL DB만 사용: 모든 사용자 테이블이 agent 스키마인지도 검사
+# AGENT_TEST_DATABASE_URL을 설정한 터미널에서 실행 (미설정 시 이 테스트만 skip)
+uv run --frozen pytest -q -s tests/test_cli.py::test_postgres_cli_restart_in_separate_processes
+```
+
+실제 PostgreSQL 테스트는 결정적 중첩 그래프를 CLI에 연결합니다. 승인 대기 프로세스를
+강제 종료한 뒤 별도 프로세스에서 각각 승인·거절하고, 메시지·store 지속과 사용자·대화
+분리를 확인합니다. LLM·MCP·RabbitMQ와 업무 DB 쓰기는 실행하지 않으므로 이 테스트는
+실제 예약 접수의 검증이 아닙니다. 테스트용 사용자 3의 프로필과 UUID thread가 남으므로
+테스트가 끝나면 전용 DB를 폐기합니다.
+
 ## 가짜 도구 (D-31)
 
 agent 안에 별도의 가짜 도구를 만들지 않습니다. `USE_FAKE_TOOLS=true`면 `app/mcp_client/client.py`가

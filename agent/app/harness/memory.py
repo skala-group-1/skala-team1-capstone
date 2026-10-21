@@ -20,7 +20,6 @@ PROFILE_KEY = "profile"
 async def open_checkpointer_and_store():
     """(checkpointer, store) 를 연다. 그래프 compile 시 넘긴다.
 
-    TODO(agent): 테스트 — interrupt → 프로세스 재시작 → 같은 thread 로 resume 성공 (「Harness 명세」, 데모 B)
     TODO(agent): PostgresStore 에 저장하는 skinConcerns 등 민감 필드는 로그에서 마스킹 (「AI Agent 설계」 9-4)
     """
     url = get_settings().database_url
@@ -31,11 +30,16 @@ async def open_checkpointer_and_store():
     from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
     from langgraph.store.postgres.aio import AsyncPostgresStore
 
-    # TODO(agent): URL 에 search_path=agent 를 넣거나 연결 후 SET search_path 로 schema agent 사용 확인
     async with (
         AsyncPostgresSaver.from_conn_string(url) as saver,
         AsyncPostgresStore.from_conn_string(url) as store,
     ):
+        # URL/role 기본 search_path 와 관계없이 업무 스키마에 테이블을 만들지 않는다.
+        schema = await (await saver.conn.execute("SELECT to_regnamespace('agent') AS name")).fetchone()
+        if schema["name"] is None:
+            await saver.conn.execute("CREATE SCHEMA IF NOT EXISTS agent")
+        await saver.conn.execute("SET search_path TO agent")
+        await store.conn.execute("SET search_path TO agent")
         await saver.setup()
         await store.setup()
         yield saver, store

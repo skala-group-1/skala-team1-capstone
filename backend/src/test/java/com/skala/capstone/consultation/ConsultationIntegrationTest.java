@@ -148,6 +148,48 @@ class ConsultationIntegrationTest extends IntegrationTest {
 		session.disconnect();
 	}
 
+	/** 고객이 직접 종료: WAITING(요청 취소)·ACTIVE → CLOSED, 대화창은 AI 로 복귀. 병원 3(counselor.h3)을 쓴다 */
+	@Test
+	void customerClosesWaitingAndActiveConsultation() throws Exception {
+		String customer = accessToken("customer.en1@demo.local");
+		String counselor = accessToken("counselor.h3@demo.local");
+		String conversationId = body(mvc.perform(post("/api/ai/conversations").header(HttpHeaders.AUTHORIZATION, customer)
+				.contentType(MediaType.APPLICATION_JSON).content(json(Map.of("hospitalId", 3))))
+				.andReturn()).get("id").asText();
+		Map<String, Object> card = Map.of("procedure", "Jaw Botox", "questions", List.of("How long does it last?"));
+
+		// WAITING → 고객 종료(요청 취소)
+		long waiting = body(internalConsultation(3, conversationId, card, true).andExpect(status().isCreated()).andReturn())
+				.get("id").asLong();
+		// 다른 고객·상담사는 고객 종료 API 를 쓸 수 없다
+		mvc.perform(post("/api/consultations/{id}/close", waiting)
+				.header(HttpHeaders.AUTHORIZATION, accessToken("customer.en2@demo.local")))
+				.andExpect(status().isForbidden());
+		mvc.perform(post("/api/consultations/{id}/close", waiting).header(HttpHeaders.AUTHORIZATION, counselor))
+				.andExpect(status().isForbidden());
+		mvc.perform(post("/api/consultations/{id}/close", waiting).header(HttpHeaders.AUTHORIZATION, customer))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.status").value("CLOSED"));
+		assertThat(jdbc.sql("SELECT mode FROM app.conversations WHERE id = :id").param("id", UUID.fromString(conversationId))
+				.query(String.class).single()).isEqualTo("HOSPITAL");
+		// 이미 종료된 상담 → 409
+		mvc.perform(post("/api/consultations/{id}/close", waiting).header(HttpHeaders.AUTHORIZATION, customer))
+				.andExpect(status().isConflict()).andExpect(jsonPath("$.code").value("INVALID_STATE_TRANSITION"));
+
+		// 다시 요청 → 상담사 수락(ACTIVE) → 고객 종료 → 상담사도 더 보낼 수 없다
+		long active = body(internalConsultation(3, conversationId, card, true).andExpect(status().isCreated()).andReturn())
+				.get("id").asLong();
+		assertThat(active).isNotEqualTo(waiting);
+		mvc.perform(post("/api/counselor/consultations/{id}/accept", active).header(HttpHeaders.AUTHORIZATION, counselor))
+				.andExpect(status().isOk());
+		mvc.perform(post("/api/consultations/{id}/close", active).header(HttpHeaders.AUTHORIZATION, customer))
+				.andExpect(status().isOk()).andExpect(jsonPath("$.status").value("CLOSED"));
+		assertThat(jdbc.sql("SELECT mode FROM app.conversations WHERE id = :id").param("id", UUID.fromString(conversationId))
+				.query(String.class).single()).isEqualTo("HOSPITAL");
+		mvc.perform(post("/api/consultations/{id}/messages", active).header(HttpHeaders.AUTHORIZATION, counselor)
+				.contentType(MediaType.APPLICATION_JSON).content(json(Map.of("text", "안녕하세요", "clientMsgId", UUID.randomUUID()))))
+				.andExpect(status().isConflict());
+	}
+
 	/** 11 문서 7장: 병원 2 상담사가 병원 1 상담방을 구독 → 거부(연결 끊김) + 감사 로그 */
 	@Test
 	void stompSubscribeToOtherHospitalRoomIsDenied() throws Exception {
@@ -181,10 +223,15 @@ class ConsultationIntegrationTest extends IntegrationTest {
 
 	private org.springframework.test.web.servlet.ResultActions internalConsultation(String conversationId,
 			Map<String, Object> card, boolean consent) throws Exception {
+		return internalConsultation(2, conversationId, card, consent);
+	}
+
+	private org.springframework.test.web.servlet.ResultActions internalConsultation(long hospitalId, String conversationId,
+			Map<String, Object> card, boolean consent) throws Exception {
 		return mvc.perform(post("/internal/consultations")
 				.header("X-Service-Token", "test-service-token").header("X-Acting-User-Id", "1")
 				.contentType(MediaType.APPLICATION_JSON)
-				.content(json(Map.of("hospitalId", 2, "conversationId", conversationId, "summaryCard", card,
+				.content(json(Map.of("hospitalId", hospitalId, "conversationId", conversationId, "summaryCard", card,
 						"consent", consent))));
 	}
 

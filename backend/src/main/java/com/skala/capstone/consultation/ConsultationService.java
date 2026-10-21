@@ -169,6 +169,25 @@ public class ConsultationService {
 	@Transactional
 	public Consultation close(CurrentUser counselor, long id, String locale) {
 		var p = requireCounselorOf(counselor, id);
+		closeParty(counselor, p);
+		notifications.notify(List.of(p.customerId()), "CONSULTATION_CLOSED",
+				Map.of("consultationId", id, "conversationId", conversationIdOf(id)));
+		return toDto(id, counselor, locale);
+	}
+
+	/** 고객이 직접 종료 (WAITING 이면 요청 취소). 상담사 화면은 CONSULTATION_STATUS 푸시로 반영되므로 알림은 보내지 않는다 */
+	@Transactional
+	public Consultation closeByCustomer(CurrentUser customer, long id, String locale) {
+		var p = access.require(customer, id);
+		if (customer.role() != Role.CUSTOMER) {
+			throw new ApiException(ErrorCode.ACCESS_DENIED);
+		}
+		closeParty(customer, p);
+		return toDto(id, customer, locale);
+	}
+
+	private void closeParty(CurrentUser actor, ConsultationAccess.Party p) {
+		long id = p.consultationId();
 		if (!"WAITING".equals(p.status()) && !"ACTIVE".equals(p.status())) {
 			throw new ApiException(ErrorCode.INVALID_STATE_TRANSITION, Map.of("from", p.status(), "to", "CLOSED"));
 		}
@@ -180,11 +199,8 @@ public class ConsultationService {
 		}
 		jdbc.sql("UPDATE app.conversations SET mode = 'HOSPITAL' WHERE consultation_id = :id AND mode = 'HUMAN'")
 				.param("id", id).update();
-		notifications.notify(List.of(p.customerId()), "CONSULTATION_CLOSED",
-				Map.of("consultationId", id, "conversationId", conversationIdOf(id)));
 		pushStatus(id, "CLOSED", p.counselorId());
-		AfterCommit.run(() -> audit.log(counselor, "CONSULTATION_CLOSED", "consultation:" + id, Map.of()));
-		return toDto(id, counselor, locale);
+		AfterCommit.run(() -> audit.log(actor, "CONSULTATION_CLOSED", "consultation:" + id, Map.of()));
 	}
 
 	/** summary.translated: 한국어 요약 카드 저장 */

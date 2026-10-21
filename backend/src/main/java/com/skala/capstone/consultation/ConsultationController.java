@@ -50,6 +50,13 @@ public class ConsultationController {
 		return consultations.get(user, id, RequestLocale.resolve(request));
 	}
 
+	@Operation(summary = "고객이 상담 종료 (WAITING·ACTIVE → CLOSED, 대화창은 AI 응답 재개)")
+	@PostMapping("/{id}/close")
+	public Consultation close(@AuthenticationPrincipal CurrentUser user, @PathVariable long id,
+			HttpServletRequest request) {
+		return consultations.closeByCustomer(user, id, RequestLocale.resolve(request));
+	}
+
 	@Operation(summary = "메시지 기록 (오래된 순, afterId 이후)")
 	@GetMapping("/{id}/messages")
 	public List<ChatMessage> messages(@AuthenticationPrincipal CurrentUser user, @PathVariable long id,

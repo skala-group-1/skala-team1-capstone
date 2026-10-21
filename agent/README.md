@@ -1,16 +1,18 @@
-# agent — FastAPI + LangGraph
+# agent — 공통 LangGraph 실행 기반
 
-AI 상담 에이전트(메인 그래프 + 병원 서브그래프), Harness, 큐 워커(AI 작업·번역)가 들어가는 서비스입니다.
-병원 서브에이전트는 LLM·MCP 조회와 웹 채팅 큐에 연결되어 있습니다. 메인 AI와 번역 워커,
-실제 예약 변경 실행은 아직 골격입니다. 남은 작업은 `# TODO(agent):`로 표시합니다.
+병원 선택 전 탐색은 [`coordinator/`](../coordinator/README.md), 선택 병원 상담은
+[`concierge/`](../concierge/README.md)에서 노드·프롬프트·역할별 테스트를 관리합니다.
+이 폴더는 두 역할의 공통 State·Harness·MCP 연결·그래프 조립·API·큐 워커·CLI와 의존성을 관리합니다.
+요약·번역은 기존 `summarizer/`, `translator/` 서비스가 담당합니다.
 
-병원 선택 전 노드·프롬프트·테스트는 [`coordinator/`](../coordinator/README.md)에서 관리합니다.
-공통 실행 환경은 이 폴더에 두며, 로컬 실행은 `PYTHONPATH=..`로 저장소 루트의 역할 패키지를 읽습니다.
+역할별 코드를 분리했으며 실행 프로세스는 기존과 같습니다. 로컬 실행은 `PYTHONPATH=..`로
+저장소 루트의 역할 패키지를 읽습니다. 별도 가상환경이나 큐 소비자를 역할마다 만들지 않습니다.
+그래프 노드 이름·State·큐/SSE 계약·승인 흐름도 유지합니다.
 
 - 설계 기준: Notion 「AI Agent 설계」(그래프·State), 「Harness 명세」, 「공통 계약서」(큐 메시지·SSE), 「MCP 설계」(도구 이름)
-- 남은 일 찾기: `rg -n "TODO\\(agent\\)" app prompts`
+- 남은 일 찾기: `rg -n "TODO\\(agent\\)" app prompts ../coordinator ../concierge`
 
-## 병원 상세 → 서브에이전트 웹 채팅
+## 병원 상세 → concierge 웹 채팅
 
 프론트의 **병원 상세 → 이 병원에 물어보기**로 진입합니다.
 backend가 보낸 `conversation.mode=HOSPITAL`과 `hospitalId`를 사용하며 메인 LLM을 호출하지 않습니다.
@@ -62,8 +64,8 @@ VITE_USE_MSW=false npm run dev
 
 ```bash
 cd agent
-uv sync                                   # Python 3.12 가상환경 + 의존성
-uv run pytest                             # 단위·그래프 테스트 (MCP·DB·큐 없이 실행)
+uv sync --frozen                          # Python 3.12 가상환경 + 의존성
+uv run --frozen pytest                    # 단위·그래프 테스트 (MCP·DB·큐 없이 실행)
 PYTHONPATH=.. uv run python -m app.cli --thread t1      # CLI 대화 (MAIN 모드)
 PYTHONPATH=.. uv run python -m app.cli --thread h1 --mode HOSPITAL --hospital-id 1   # 기본 fake 모드 병원 대화 (LLM 키 필요)
 PYTHONPATH=.. uv run python -m app.cli --conditions '{"procedure_code":"JAW_BOTOX","date_from":"2026-10-20"}'  # planner 경로
@@ -91,23 +93,37 @@ MCP 코드는 `mcp/`에 있습니다. 도구 목록은 처음 필요한 시점�
 
 ## 폴더 구조
 
-```
+```text
+coordinator/
+├─ nodes/                  탐색·조건·가드·기억·검증·인계 노드
+├─ prompts/                coordinator, guard_input, extract_conditions, ask_clarify, rag_answer
+└─ tests/                  탐색 도구 루프·조건·인계 요약
+concierge/
+├─ nodes/                  병원 상담·컨텍스트·응답 검증·조회 도구·승인·변경 실행
+├─ prompts/                hospital_agent
+└─ tests/                  병원 상담·RAG·큐 워커
 agent/
 ├─ app/
-│  ├─ config.py            「공통 계약서」 9장 env
-│  ├─ graph/state.py       「AI Agent 설계」 2장 + 9-5 State
-│  ├─ graph/routing.py     조건부 엣지 (state 값 기반, 실제 동작)
-│  ├─ graph/builder.py     메인 그래프 v2 + 병원 서브그래프 조립
-│  ├─ nodes/               노드 1개 = 파일 1개 (상단에 입력→출력·LLM/도구·프롬프트·근거 문서)
-│  ├─ mcp_client/          MultiServerMCPClient(D-31) + 도구 이름 상수(화이트리스트·변경 도구)
-│  ├─ harness/             「Harness 명세」 8요소 (loop 한도는 구현, 나머지는 TODO)
-│  ├─ workers/             「공통 계약서」 7장 큐 메시지 모델, SSE 이벤트 enum, aio-pika consumer/publisher 틀
-│  ├─ api/main.py          FastAPI /health (8000)
+│  ├─ config.py            공통 환경변수
+│  ├─ graph/               State·분기·두 역할 그래프 조립
+│  ├─ nodes/respond.py     공통 응답 마무리
+│  ├─ mcp_client/          MCP 연결·도구 이름 상수
+│  ├─ harness/             반복 한도·메모리·프롬프트 로더 등
+│  ├─ workers/             큐 계약·AI 작업 소비·SSE 이벤트 발행
+│  ├─ api/main.py          FastAPI /health (8000)·병원 채팅 진입점
 │  └─ cli.py               CLI 러너
-├─ prompts/*.md            「AI Agent 설계」 8장 프롬프트 8종 (version 메타 + 작성할 내용 주석)
-├─ tests/                  그래프 분기·interrupt, 메시지 camelCase, Harness
-└─ Dockerfile              build context = 저장소 루트
+├─ prompts/                공통 system_base와 기존 요약·번역 템플릿
+├─ tests/                  통합 그래프·계약·Harness·MCP 컨텍스트
+├─ pyproject.toml          공통 의존성·세 폴더의 pytest 수집 설정
+└─ Dockerfile              저장소 루트 context로 세 폴더를 함께 복사
 ```
+
+전체 테스트는 `cd agent && uv run --frozen pytest -q`로 실행합니다.
+역할만 확인할 때는 `uv run --frozen pytest -c pyproject.toml ../coordinator/tests -q` 또는
+`uv run --frozen pytest -c pyproject.toml ../concierge/tests -q`를 사용합니다.
+
+Docker에서도 `/app/{agent,coordinator,concierge}`로 같은 배치를 유지합니다.
+저장소 루트에서 `docker build -f agent/Dockerfile -t capstone-agent .`로 빌드합니다.
 
 ## 그래프 (`draw_mermaid` 출력, 골격 기준)
 
@@ -173,11 +189,11 @@ graph TD;
 	load_hospital_context --> hospital_agent;
 ```
 
-## 담당자가 채울 순서 (「파트별 착수 가이드」 Agent 착수 순서 기준)
+## 남은 구현 위치
 
-1. `guard_input`·`extract_conditions`에 LLM structured output 붙이기 (`prompts/` 작성)
-2. `planner_agent` tool-calling + `harness/tools.py` 래퍼 (절단·ToolError·tool_ledger)
-3. `verify`(Critic)·`memory_propose`·`load_memory` (「AI Agent 설계」 9-3·9-4)
-4. 병원 서브그래프 `hospital_agent` LLM 교체, `execute_action` 실제 도구 호출
-5. `workers/consumer.py` 큐 연결 + `workers/events.py` SSE 변환기, `api/main.py` lifespan
-6. Harness 나머지(context·recovery·observability) + `tests/eval/cases.yaml`
+- `coordinator/nodes/`: 입력·조건 추출의 LLM 연결, 외부 시술 정보 검색, 검증·프로필 기억, 병원 대화 생성
+- `concierge/nodes/`: `execute_action`의 실제 변경 도구 연결, 상담사 인계·취소 연동
+- `agent/app/workers/`: MAIN 작업 연동 (현재 소비자는 HOSPITAL만 처리)
+- `agent/app/harness/`: 미구현 Harness 항목과 평가셋
+
+남은 기능은 각 파일의 `TODO(agent)`를 기준으로 확인합니다.

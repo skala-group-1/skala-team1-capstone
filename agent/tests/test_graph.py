@@ -60,8 +60,8 @@ def booking_graph(monkeypatch):
     The mutation boundary is a spy; these tests do not claim a DB write.
     Live MCP connectivity is checked separately against the running servers.
     """
-    hospital = importlib.import_module("app.nodes.hospital_agent")
-    context = importlib.import_module("app.nodes.load_hospital_context")
+    hospital = importlib.import_module("concierge.nodes.hospital_agent")
+    context = importlib.import_module("concierge.nodes.load_hospital_context")
     client = importlib.import_module("app.mcp_client.client")
     builder = importlib.import_module("app.graph.builder")
 

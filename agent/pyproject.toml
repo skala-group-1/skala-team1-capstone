@@ -25,6 +25,6 @@ dev = [
 package = false
 
 [tool.pytest.ini_options]
-testpaths = ["tests", "../coordinator/tests"]
+testpaths = ["tests", "../coordinator/tests", "../concierge/tests"]
 pythonpath = [".", ".."]
 asyncio_mode = "auto"

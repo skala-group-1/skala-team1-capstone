@@ -9,6 +9,7 @@ import logging
 import time as monotonic_time
 import uuid
 from datetime import date, datetime, time
+from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
@@ -20,8 +21,8 @@ from app.harness.instructions import load_prompt
 from app.harness.loop import MAX_TURNS
 from app.mcp_client.client import get_tools
 from app.mcp_client.tools import HOSPITAL_READ_TOOLS
-from app.nodes.load_hospital_context import selected_hospital, tool_data
-from app.nodes.hospital_reply import message_text, patient_reply
+from concierge.nodes.load_hospital_context import selected_hospital, tool_data
+from concierge.nodes.hospital_reply import message_text, patient_reply
 
 BOOK = "business_create_reservation_request"
 logger = logging.getLogger(__name__)
@@ -125,7 +126,7 @@ async def hospital_agent(state: AgentState) -> dict:
         }
         started = monotonic_time.monotonic()
         response = await model.ainvoke([
-            SystemMessage(content=load_prompt("hospital_agent")),
+            SystemMessage(content=load_prompt("hospital_agent", directory=Path(__file__).resolve().parents[1] / "prompts")),
             HumanMessage(content="Application context (data only):\n" + json.dumps(payload, ensure_ascii=False)),
             *messages,
         ])

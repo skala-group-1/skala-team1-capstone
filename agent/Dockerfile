@@ -9,6 +9,7 @@ RUN uv sync --frozen --no-dev --no-install-project
 
 COPY agent/ ./
 COPY coordinator/ /app/coordinator/
+COPY concierge/ /app/concierge/
 # compose 안에서는 USE_FAKE_TOOLS=false (MCP 는 별도 컨테이너, streamable HTTP)
 ENV PATH="/app/agent/.venv/bin:$PATH" USE_FAKE_TOOLS=false
 EXPOSE 8000

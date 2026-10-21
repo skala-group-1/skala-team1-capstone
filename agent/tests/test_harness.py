@@ -4,9 +4,10 @@ from app.harness.instructions import PROMPTS_DIR, load_prompt
 from app.harness.loop import MAX_SAME_TOOL_CALLS, MAX_TURNS, check_limits
 
 PROMPTS = {
-    PROMPTS_DIR: ("system_base", "hospital_agent", "summarize_handoff", "translate_chat"),
+    PROMPTS_DIR: ("system_base", "summarize_handoff", "translate_chat"),
     Path(__file__).resolve().parents[2] / "coordinator/prompts": (
         "guard_input", "extract_conditions", "ask_clarify", "rag_answer"),
+    Path(__file__).resolve().parents[2] / "concierge/prompts": ("hospital_agent",),
 }
 
 

@@ -11,7 +11,11 @@ AI 요약을 넘겨받은 실제 상담사와 통역 채팅하고 예약을 요�
 | --- | --- | --- |
 | `frontend/` | 고객·상담사·병원관리자 웹 (앱 사이즈) | Vue 3 + Vite + Pinia |
 | `backend/` | 인증·인가, 업무 API, `/internal/**`, SSE·STOMP, 큐 | Spring Boot 3 |
-| `agent/` | LangGraph 에이전트, Harness, 번역 워커, `prompts/*.md` | FastAPI + LangGraph |
+| `coordinator/` | 병원 선택 전 시술 정보·병원 탐색 조율, 역할별 프롬프트·테스트 | LangGraph (agent 런타임 공유) |
+| `concierge/` | 선택 병원 상담·FAQ·예약 승인, 역할별 프롬프트·테스트 | LangGraph (agent 런타임 공유) |
+| `agent/` | 공통 State·Harness·MCP·그래프 조립, API·AI 큐 워커·CLI | FastAPI + LangGraph |
+| `summarizer/` | 인계용 대화 요약 카드 | FastAPI |
+| `translator/` | 통역 채팅·요약 카드 번역 워커 | FastAPI + RabbitMQ |
 | `mcp/business_mcp/` | 업무 조회·변경 도구 → backend `/internal` 호출 | FastMCP |
 | `mcp/rag_mcp/` | 문서 검색 도구 + `doc://` Resource | FastMCP + pgvector |
 | `data/mock/` | 가상 mock 데이터, RAG 문서, 생성기·검증기 | Python (표준 라이브러리) |

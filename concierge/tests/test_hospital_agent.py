@@ -7,10 +7,10 @@ import pytest
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 from langchain_core.tools import StructuredTool
 
-from app.nodes.hospital_reply import internal_labels, patient_reply
+from concierge.nodes.hospital_reply import internal_labels, patient_reply
 
-agent = importlib.import_module("app.nodes.hospital_agent")
-context = importlib.import_module("app.nodes.load_hospital_context")
+agent = importlib.import_module("concierge.nodes.hospital_agent")
+context = importlib.import_module("concierge.nodes.load_hospital_context")
 
 
 def call(name, args, id="c1"):

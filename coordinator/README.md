@@ -15,7 +15,7 @@ Python namespace package이며 저장소 루트를 `PYTHONPATH`에 포함합니�
 # 저장소 루트에서
 cd agent
 uv sync --frozen
-uv run --frozen pytest ../coordinator/tests -q
+uv run --frozen pytest -c pyproject.toml ../coordinator/tests -q
 PYTHONPATH=.. uv run --frozen python -m coordinator.nodes.planner_agent --locale en
 ```
 

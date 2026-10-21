@@ -230,6 +230,23 @@ async function newConversation() {
     startingConversation.value = false
   }
 }
+// 고객 상담 종료 (WAITING 이면 요청 취소). 종료 후 병원 대화 복귀는 아래 CLOSED watch 가 맡는다
+const canEndConsult = computed(() => isHuman.value && !!consult.current && ['WAITING', 'ACTIVE'].includes(consultStatus.value))
+const endConsultOpen = ref(false)
+const endingConsult = ref(false)
+async function endConsult() {
+  const waiting = consultStatus.value === 'WAITING'
+  endingConsult.value = true
+  try {
+    await consult.endByCustomer()
+    endConsultOpen.value = false
+    showToast(t(waiting ? 'chat.human.cancelled' : 'chat.human.ended'))
+  } catch {
+    showToast(t('common.error'))
+  } finally {
+    endingConsult.value = false
+  }
+}
 async function cancelRequested() {
   if (!requested.value) return
   await reservations.cancel(requested.value.id)
@@ -580,6 +597,11 @@ watch(
         <AppButton variant="outline" block @click="conv.send(t('chat.requestCounselor'))">{{ t('chat.connectCounselor') }}</AppButton>
         <AppButton block @click="router.push(`/hospitals/${conv.hospital?.id}/book`)">{{ t('chat.book') }}</AppButton>
       </div>
+      <div v-if="canEndConsult" class="quick">
+        <AppButton variant="outline" block @click="endConsultOpen = true">
+          {{ consultStatus === 'WAITING' ? t('chat.human.cancelRequest') : t('chat.human.end') }}
+        </AppButton>
+      </div>
       <form class="input" @submit.prevent="submit">
         <textarea
           ref="inputEl"
@@ -599,6 +621,18 @@ watch(
     <EvidenceSheet :open="!!evidence" :sources="evidence ?? []" @close="evidence = null" />
     <AppDialog :open="infoOpen" :title="t('chat.info.title')" :body="t('chat.info.body')">
       <template #actions><AppButton @click="infoOpen = false">{{ t('common.confirm') }}</AppButton></template>
+    </AppDialog>
+    <AppDialog
+      :open="endConsultOpen"
+      :title="consultStatus === 'WAITING' ? t('chat.human.cancelTitle') : t('chat.human.endTitle')"
+      :body="consultStatus === 'WAITING' ? t('chat.human.cancelBody') : t('chat.human.endBody')"
+    >
+      <template #actions>
+        <AppButton variant="secondary" :disabled="endingConsult" @click="endConsultOpen = false">{{ t('common.cancel') }}</AppButton>
+        <AppButton variant="primary" :loading="endingConsult" @click="endConsult">
+          {{ consultStatus === 'WAITING' ? t('chat.human.cancelRequest') : t('chat.human.end') }}
+        </AppButton>
+      </template>
     </AppDialog>
   </div>
 </template>

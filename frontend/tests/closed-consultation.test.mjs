@@ -12,7 +12,7 @@ const script = compileScript(parse(source).descriptor, { id: 'chat-history-test'
 const compiled = ts.transpileModule(script, { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText
 
 function setup(mode = 'HUMAN', status = 'ACTIVE') {
-  const calls = { opened: [], closed: 0, ai: [], human: [] }
+  const calls = { opened: [], closed: 0, ai: [], human: [], ended: 0, toasts: [] }
   const conv = vue.reactive({
     conversationId: 'conversation-1', consultationId: 4, mode,
     messages: [], cards: [], streaming: false, draft: '',
@@ -28,6 +28,7 @@ function setup(mode = 'HUMAN', status = 'ACTIVE') {
     },
     close() { calls.closed++; this.current = null; this.messages = [] },
     send: async (text) => calls.human.push(text),
+    async endByCustomer() { calls.ended++; this.current = { ...this.current, status: 'CLOSED' } },
   })
   const lifecycle = {}
   const mocks = {
@@ -40,6 +41,7 @@ function setup(mode = 'HUMAN', status = 'ACTIVE') {
     '@/stores/reservation': { useReservationStore: () => ({}) },
     '@/stores/auth': { useAuthStore: () => ({ user: { locale: 'en' } }) },
     '@/composables/useNow': { useNow: () => vue.ref(0) },
+    '@/composables/useToast': { showToast: (text) => calls.toasts.push(text) },
   }
   const module = { exports: {} }
   vm.runInNewContext(compiled, { exports: module.exports, require: (name) => mocks[name] ?? {} })
@@ -95,4 +97,38 @@ test('a stale closed consultation cannot change another conversation mode', asyn
     await vue.nextTick()
     assert.equal(h.conv.mode, 'HUMAN')
   } finally { h.stop() }
+})
+
+test('customer ends an active consultation and the chat returns to AI', async () => {
+  const h = setup()
+  try {
+    await vue.nextTick()
+    assert.equal(h.view.canEndConsult.value, true)
+    h.view.endConsultOpen.value = true
+    await h.view.endConsult()
+    await vue.nextTick()
+    assert.equal(h.calls.ended, 1)
+    assert.equal(h.view.endConsultOpen.value, false)
+    assert.deepEqual(h.calls.toasts, ['chat.human.ended'])
+    assert.equal(h.conv.mode, 'HOSPITAL')
+    assert.equal(h.view.canEndConsult.value, false)
+    h.view.input.value = 'Back to AI'
+    await h.view.submit()
+    assert.deepEqual(h.calls.ai, ['Back to AI'])
+  } finally { h.stop() }
+})
+
+test('a waiting consultation can be cancelled, a closed one shows no end button', async () => {
+  const waiting = setup('HUMAN', 'WAITING')
+  try {
+    await vue.nextTick()
+    assert.equal(waiting.view.canEndConsult.value, true)
+    await waiting.view.endConsult()
+    assert.deepEqual(waiting.calls.toasts, ['chat.human.cancelled'])
+  } finally { waiting.stop() }
+  const closed = setup('HOSPITAL', 'CLOSED')
+  try {
+    await vue.nextTick()
+    assert.equal(closed.view.canEndConsult.value, false)
+  } finally { closed.stop() }
 })

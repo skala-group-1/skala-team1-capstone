@@ -63,11 +63,11 @@ def procedure_display(code: str, locale: str) -> str:
 
 
 def format_budget(krw: int, locale: str) -> str:
-    """예산 상한(KRW) 표시 문자열. 예: 200万韩元以下 / Up to 2,000,000 KRW"""
-    if locale in ("zh", "ja") and krw % 10_000 == 0:
+    """예산 상한(KRW) 표시 문자열. 예: 200만원 이하 / 200万韩元以下 / Up to 2,000,000 KRW"""
+    if locale in ("ko", "zh", "ja") and krw % 10_000 == 0:
         man = krw // 10_000
-        return f"{man}万韩元以下" if locale == "zh" else f"{man}万ウォン以下"
-    return f"Up to {krw:,} KRW"
+        return {"ko": f"{man}만원 이하", "zh": f"{man}万韩元以下", "ja": f"{man}万ウォン以下"}[locale]
+    return f"{krw:,}원 이하" if locale == "ko" else f"Up to {krw:,} KRW"
 
 
 def _prompt(req: SummarizeRequest) -> str:

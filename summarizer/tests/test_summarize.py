@@ -72,6 +72,32 @@ def test_customer_locale_is_request_locale(client, fake_llm):
     assert post(client, locale="ja")["summaryCard"]["customerLocale"] == "ja"
 
 
+def test_korean_locale_is_supported(client, fake_llm):
+    llm = fake_llm(CardDraft(procedure=None, preferred_dates="12월 초", stay_days=None, budget=None,
+                             questions=["회복 기간이 얼마나 걸리나요?", "통역 지원이 되나요?"], text=""))
+    card = post(client, locale="ko", messages=[
+        {"role": "user", "content": "12월 초에 쌍꺼풀 받고 싶은데 회복 기간이랑 통역 지원이 궁금해요."},
+    ])["summaryCard"]
+    assert card["customerLocale"] == "ko"
+    assert card["preferredDates"] == "12월 초"
+    assert card["questions"] == ["회복 기간이 얼마나 걸리나요?", "통역 지원이 되나요?"]
+    assert card["budget"] is None and card["stayDays"] is None          # 언급 없는 항목은 빈 값 유지
+    assert "Write card field values in Korean" in llm.calls[0]
+
+
+def test_korean_conditions_use_korean_display(client, fake_llm):
+    fake_llm(CardDraft(procedure=None, preferred_dates=None, stay_days=None,
+                       budget=None, questions=[], text=""))
+    card = post(client, locale="ko", conditions={
+        "procedureCode": "DOUBLE_EYELID_NONINCISION",
+        "areas": [], "dateFrom": "2026-10-20", "dateTo": "2026-10-26",
+        "budgetMaxKrw": 2_000_000, "consultLanguage": "ko", "sortBy": "REVIEW_COUNT",
+    })["summaryCard"]
+    assert card["procedure"] == "매몰법 (DOUBLE_EYELID_NONINCISION)"     # glossary term_ko + 코드
+    assert card["stayDays"] == 7
+    assert card["budget"] == "200만원 이하"
+
+
 def test_text_language_instruction_per_purpose(client, fake_llm):
     llm = fake_llm(DRAFT)
     post(client, purpose="HANDOFF_TO_SUB", locale="zh")

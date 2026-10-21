@@ -47,27 +47,8 @@ async def lookup(name, args):
 
 async def summarize(state):
     locale = (state.get("user") or {}).get("locale", "en")
-    if locale == "ko":
-        # The separate summarizer does not accept Korean. Build a review card
-        # from recorded choices and verbatim patient messages, without inventing
-        # a translated summary or sending anything before consent.
-        booking = state.get("hospital_booking") or {}
-        conditions = state.get("conditions") or {}
-        procedure = booking.get("procedure_code") or conditions.get("procedure_code")
-        questions = [m.content for m in state.get("messages", [])
-                     if isinstance(m, HumanMessage) and isinstance(m.content, str)
-                     and m.content.strip()]
-        budget = conditions.get("budget_max_krw")
-        return SummaryCard(
-            # The handoff contract requires a string, even for an undecided
-            # procedure. Send the same explicit unknown shown in the review UI.
-            procedure=procedure_name(procedure, locale) if procedure else label("unknown", locale),
-            preferred_dates=booking.get("date"),
-            budget=f"{budget:,} KRW 이하" if type(budget) is int else None,
-            questions=questions, customer_locale=locale,
-        ).model_dump()
-    if locale not in ("en", "zh", "ja"):
-        raise ValueError("Summary service supports en, zh and ja only")
+    if locale not in ("ko", "en", "zh", "ja"):
+        raise ValueError("Summary service supports ko, en, zh and ja only")
     # Only customer statements are evidence of needs; AI prose can contain mistakes.
     messages = [{"role": "user", "content": m.content} for m in state.get("messages", [])
                 if isinstance(m, HumanMessage) and isinstance(m.content, str)]

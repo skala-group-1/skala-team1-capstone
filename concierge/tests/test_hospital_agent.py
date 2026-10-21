@@ -299,3 +299,26 @@ async def test_booking_tool_hidden_until_prerequisites_match(monkeypatch, state,
     model = model_setup(monkeypatch, [AIMessage(content="Please confirm your booking choices.")])
     await agent.hospital_agent(state)
     assert agent.BOOK not in model.bound_tool_names[0]
+
+
+async def test_new_cancellation_request_after_booking_approval_is_available(monkeypatch, state):
+    from concierge.nodes.actions import CANCEL
+    state["messages"] += [
+        call(agent.BOOK, {"slot_id": 12, "procedure_code": "JAW_BOTOX"}),
+        ToolMessage(content='{"id": 23, "status": "PENDING"}', tool_call_id="c1",
+                    additional_kwargs={"approval_completed": True}),
+    ]
+    model = model_setup(monkeypatch, [AIMessage(content="Your booking request is awaiting hospital approval.")])
+    tools = [fake_tool(agent.BOOK), fake_tool(CANCEL), fake_tool("business_get_my_reservations")]
+    monkeypatch.setattr(agent, "get_tools", AsyncMock(return_value=tools))
+    await agent.hospital_agent(state)
+    assert CANCEL not in model.bound_tool_names[0]
+    state["messages"].append(HumanMessage("Please cancel reservation 23 and show the approval card."))
+    model.ainvoke.side_effect = [call(CANCEL, {"reservation_id": 23}, id="cancel")]
+    proposal = {"args": {"reservation_id": 23}, "approved": False}
+    prepare = AsyncMock(return_value=proposal)
+    monkeypatch.setattr(agent, "prepare_action", prepare)
+    result = await agent.hospital_agent(state)
+    assert CANCEL in model.bound_tool_names[-1]
+    assert result["pending_action"] == proposal
+    prepare.assert_awaited_once()

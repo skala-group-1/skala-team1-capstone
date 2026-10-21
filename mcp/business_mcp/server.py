@@ -172,7 +172,7 @@ async def plan_trip(
 
     For each hospital: the earliest slot before departure, recovery_end_date = procedure date + downtime days,
     buffer_days = departure - recovery end, feasible (true if buffer >= 1 day) and reason
-    (OK | RECOVERY_AFTER_DEPARTURE | NO_SLOT_BEFORE_DEPARTURE).
+    (OK | RECOVERY_AFTER_DEPARTURE | NO_SLOT_BEFORE_DEPARTURE | PROCEDURE_NOT_OFFERED).
     This is a data-based schedule calculation, NOT a medical judgment; tell the user that actual recovery
     time must be confirmed with the clinic's doctor. If nothing is feasible, consider a procedure with
     shorter downtime and explain the difference with rag_search_procedure_docs.

@@ -35,6 +35,11 @@ TEXT = {
     "stay_days": ("Stay (days)", "체류일 수", "停留天数", "滞在日数"),
     "budget": ("Budget", "예산", "预算", "予算"),
     "questions": ("Questions", "질문", "问题", "質問"),
+    "customer_locale": ("Customer language", "고객 언어", "客户语言", "お客様の言語"),
+    "en": ("English", "영어", "英语", "英語"),
+    "ko": ("Korean", "한국어", "韩语", "韓国語"),
+    "zh": ("Chinese", "중국어", "中文", "中国語"),
+    "ja": ("Japanese", "일본어", "日语", "日本語"),
     "book": ("Reservation request", "예약 요청", "预约申请", "予約リクエスト"),
     "cancel": ("Cancel reservation", "예약 취소", "取消预约", "予約キャンセル"),
     "handoff": ("Review summary and consent", "요약 확인 및 공유 동의", "核对摘要并同意分享", "要約の確認と共有への同意"),
@@ -79,4 +84,6 @@ def price_rows(price, locale):
 def summary_rows(card, locale):
     return [row("procedure", procedure_name(card.get("procedure"), locale), locale),
             *[row(key, card.get(key), locale) for key in ("preferred_dates", "stay_days", "budget")],
+            row("customer_locale", label(card["customer_locale"], locale)
+                if card.get("customer_locale") in ("en", "ko", "zh", "ja") else None, locale),
             row("questions", "\n".join(card.get("questions") or []), locale)]

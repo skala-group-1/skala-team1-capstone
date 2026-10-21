@@ -322,3 +322,19 @@ async def test_new_cancellation_request_after_booking_approval_is_available(monk
     assert CANCEL in model.bound_tool_names[-1]
     assert result["pending_action"] == proposal
     prepare.assert_awaited_once()
+
+
+@pytest.mark.parametrize("draft,rewritten", [
+    ("Your reservation is PENDING for 2026-10-22 at 10:30, 1,900,000 KRW including VAT.",
+     "Your reservation is awaiting hospital approval for 2026-10-22 at 10:30, 1,900,000 KRW including VAT."),
+    ("Please choose a slot_id from the available appointments.",
+     "Please choose a date and time from the available appointments."),
+])
+async def test_reply_edit_only_replaces_existing_slot_question(draft, rewritten):
+    model = AsyncMock()
+    model.ainvoke.return_value = AIMessage(content=rewritten)
+    assert await patient_reply(draft, "en", model) == rewritten
+    instructions = json.loads(model.ainvoke.call_args.args[0][-1].content)["task"]
+    assert "Only if the draft already asks the patient" in instructions
+    assert "Never add a question or ask the patient to choose again after an action." in instructions
+    assert "same order and notation" in instructions

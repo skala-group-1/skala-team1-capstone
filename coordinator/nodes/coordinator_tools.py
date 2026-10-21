@@ -1,11 +1,16 @@
 """Main-only wrappers over existing Business MCP. No RAG or business writes."""
 import json
+import logging
 from datetime import date
 from typing import Literal
 
+import httpx
 from langchain_core.messages import HumanMessage
 from langchain_core.tools import tool
 from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic.alias_generators import to_camel
+
+log = logging.getLogger(__name__)
 
 
 class ConditionPatch(BaseModel):
@@ -70,6 +75,37 @@ def prepare_handoff_summary(state, hospital_id, candidates, conditions):
         f"{language}: {locale}", f"{filters}: {json.dumps(conditions, ensure_ascii=False, sort_keys=True)}",
         f"{statements}:\n" + ("\n".join(f"- {q}" for q in quotes) or unknown), caveat])
     return {"status": "summary_ready", "summary": summary, "selected_hospital_id": hospital_id}
+
+
+async def summarizer_handoff_summary(state, hospital_id, candidates, conditions):
+    """Main→sub handoff via the summarizer (HANDOFF_TO_SUB), same SummaryCard contract
+    as the sub→counselor handoff. Falls back to the code-assembled draft when the
+    summarizer is unreachable or the locale is unsupported."""
+    prepared = prepare_handoff_summary(state, hospital_id, candidates, conditions)
+    if prepared["status"] != "summary_ready":
+        return prepared
+    locale = (state.get("user") or {}).get("locale") or "en"
+    if locale not in ("ko", "en", "zh", "ja"):
+        return prepared
+    # Only customer statements are evidence of needs; AI prose can contain mistakes.
+    messages = [{"role": "user", "content": m.content} for m in state.get("messages", [])
+                if isinstance(m, HumanMessage) and isinstance(m.content, str)]
+    from app.config import get_settings
+    try:
+        async with httpx.AsyncClient(timeout=30) as client:
+            response = await client.post(get_settings().summarizer_url.rstrip("/") + "/summarize", json={
+                "purpose": "HANDOFF_TO_SUB", "messages": messages, "locale": locale,
+                "conditions": {to_camel(k): v for k, v in (conditions or {}).items()},
+            })
+            response.raise_for_status()
+            body = response.json()
+        card, text = body["summaryCard"], body["text"]
+        if not isinstance(card, dict) or card.get("customerLocale") != locale or not isinstance(text, str):
+            raise ValueError("Invalid summary card")
+        prepared["summary"] = json.dumps({"summaryCard": card, "text": text}, ensure_ascii=False)
+    except Exception as exc:  # noqa: BLE001 — the handoff must not fail on summarizer outage
+        log.warning("Summarizer handoff unavailable, using code-assembled draft: %r", exc)
+    return prepared
 
 
 def make_coordinator_tools(business_loader=None, *, initial_state=None):
@@ -162,7 +198,7 @@ def make_coordinator_tools(business_loader=None, *, initial_state=None):
             args = {"text": aliases.get(text.strip(), text) if isinstance(text, str) else text}
         if operation == "prepare_handoff":
             results.update({"summary": None, "selected_hospital_id": None})
-            prepared = prepare_handoff_summary(source, args.get("hospital_id"),
+            prepared = await summarizer_handoff_summary(source, args.get("hospital_id"),
                 results.get("hospitals", source.get("candidates", [])),
                 results.get("conditions", source.get("conditions", {})))
             if prepared["status"] == "summary_ready":

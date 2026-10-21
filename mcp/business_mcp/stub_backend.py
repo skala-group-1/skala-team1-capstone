@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import itertools
 import json
+import uuid
 from datetime import date, datetime, timedelta
 from functools import cached_property
 from pathlib import Path
@@ -27,6 +28,7 @@ class StubBackendClient:
         self._reservation_seq = itertools.count(90001)
         self._consultation_seq = itertools.count(9001)
         self._idempotency: dict[str, dict] = {}
+        self._conversations: dict[tuple[int, int], dict] = {}
 
     # --- mock 로딩 ----------------------------------------------------------
     def _load(self, name: str) -> list[dict[str, Any]]:
@@ -275,6 +277,19 @@ class StubBackendClient:
                           "buffer_days": buffer, "feasible": feasible,
                           "reason": "OK" if feasible else "RECOVERY_AFTER_DEPARTURE"})
         return {"plans": plans}
+
+    async def open_hospital_conversation(self, ctx, hospital_id, parent_conversation_id):
+        hospital = self._hospital(hospital_id)
+        key = (ctx.acting_user_id, hospital_id)
+        # shortcut: stub has no parent ownership/conditions, use the real backend to verify inheritance and access.
+        if key not in self._conversations:
+            self._conversations[key] = {
+                "id": str(uuid.uuid4()), "mode": "HOSPITAL",
+                "hospital": {"id": hospital_id, "name": self._pick(hospital, "name", self._locale(ctx))},
+                "parent_conversation_id": parent_conversation_id, "consultation_id": None,
+                "conditions": None, "created_at": "2026-10-22T09:00:00+09:00", "messages": None,
+            }
+        return self._conversations[key]
 
     # --- 변경 (메모리 내에서만) ----------------------------------------------
     async def create_reservation(self, ctx, body, idempotency_key):

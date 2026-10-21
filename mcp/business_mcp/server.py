@@ -1,10 +1,10 @@
-"""business-mcp 서버 (port 9101). 도구 12개 = 조회 9 + 변경 3 (「MCP 설계」 2장).
+"""business-mcp 서버 (port 9101). 도구 13개 = 조회 9 + 승인 변경 3 + 대화 열기 1.
 
 규칙 (「MCP 설계」 1장)
 - 함수명 = 도구명. agent 에서는 접두어가 붙어 business_<name> 으로 보인다
 - docstring = description (영어, 입력·출력·단위·언제 쓰는지). LLM 이 읽는 문장이므로 신중히 수정
-- 조회 도구 readOnlyHint=true / 변경 도구 destructiveHint=true + idempotentHint
-- 변경 도구는 agent 가 반드시 승인 interrupt 를 거친 뒤 호출한다 (「AI Agent 설계」 4장)
+- 조회 도구 readOnlyHint=true / 승인 필요 도구 destructiveHint=true + idempotentHint
+- 예약·취소·상담 도구는 승인 interrupt 후 호출한다. 대화 열기는 명시적 병원 선택만 필요하다
 - acting_user_id·trace_id 는 인자로 받지 않는다 → context.current_context()
 
 실행: cd mcp && uv run python -m business_mcp.server   (MCP_TRANSPORT=stdio 로 stdio)
@@ -22,7 +22,7 @@ from pydantic import Field
 from business_mcp.backend_client import BackendClient, build_client
 from business_mcp.context import current_context
 from business_mcp.models import (
-    AreaCode, CompareResult, Consultation, DoctorList, HospitalDetail, Locale, NormalizeResult,
+    AreaCode, CompareResult, Consultation, Conversation, DoctorList, HospitalDetail, Locale, NormalizeResult,
     PriceOptionList, Reservation, ReservationList, ReservationStatus, SearchHospitalsResult, SlotList,
     SortBy, SummaryCard, TripPlanResult,
 )
@@ -181,6 +181,26 @@ async def plan_trip(
         "procedure_code": procedure_code, "hospital_ids": hospital_ids,
         "arrival_date": arrival_date, "departure_date": departure_date,
     }))
+
+
+# ============================== 대화 열기 (1) ==============================
+
+@mcp.tool(annotations=ToolAnnotations(
+    read_only_hint=False, destructive_hint=False, idempotent_hint=True, open_world_hint=False))
+async def open_hospital_conversation(
+    hospital_id: Annotated[int, Field(gt=0, strict=True, description="Hospital id explicitly selected by the user from search results")],
+    parent_conversation_id: Annotated[uuid.UUID, Field(description="Current MAIN conversation UUID")],
+) -> Conversation:
+    """Open a hospital conversation only after the user explicitly selects that hospital.
+
+    Inputs: a positive hospital id and the current MAIN conversation UUID. Returns the backend
+    Conversation: id, mode, hospital, parent_conversation_id, consultation_id, conditions,
+    created_at (ISO-8601 +09:00), messages. The backend validates ownership and the hospital,
+    reuses an existing HOSPITAL/HUMAN conversation, or copies parent conditions into a new one.
+    Navigation needs no approval interrupt; reservation, cancellation and consultation still do.
+    """
+    return Conversation.model_validate(await backend.open_hospital_conversation(
+        current_context(), hospital_id, str(parent_conversation_id)))
 
 
 # ============================== 변경 도구 (3) ==============================

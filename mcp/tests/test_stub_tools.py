@@ -8,7 +8,10 @@ import pytest
 from fastmcp import Client
 from fastmcp.exceptions import ToolError
 
+from business_mcp import server
+from business_mcp.context import CallContext
 from business_mcp.server import mcp as business
+from business_mcp.stub_backend import StubBackendClient
 from rag_mcp.server import mcp as rag
 
 
@@ -37,6 +40,22 @@ async def test_unknown_procedure_is_tool_error():
 async def test_hospital_not_found():
     with pytest.raises(ToolError, match="not found"):
         await call(business, "get_hospital_detail", {"hospital_id": 999})
+
+
+async def test_open_hospital_conversation_stub_reuses_per_user(monkeypatch):
+    monkeypatch.setattr(server, "backend", StubBackendClient())
+    monkeypatch.setattr(server, "current_context", lambda: CallContext(3, "stub-test", "zh"))
+    args = {"hospital_id": 1, "parent_conversation_id": "98b7eac5-0577-43c8-8601-4dfad34e6804"}
+    first = await call(business, "open_hospital_conversation", args)
+    second = await call(business, "open_hospital_conversation", args)
+    assert first == second
+    assert first["mode"] == "HOSPITAL" and first["hospital"]["id"] == 1
+    assert first["parent_conversation_id"] == args["parent_conversation_id"]
+    monkeypatch.setattr(server, "current_context", lambda: CallContext(5, "stub-test", "en"))
+    other = await call(business, "open_hospital_conversation", args)
+    assert other["id"] != first["id"]
+    with pytest.raises(ToolError, match="not found"):
+        await call(business, "open_hospital_conversation", {**args, "hospital_id": 999})
 
 
 async def test_reservation_idempotent():

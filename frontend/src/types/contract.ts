@@ -345,12 +345,42 @@ export interface Source {
   snippet: string
 }
 
+// C4-T 상담 주제 · 피부 고민 (FE 제안 — 공통 계약서 반영 필요, docs/api/c4t-topic-concern.md)
+export type ConsultTopic =
+  | 'SKIN_CONCERN'
+  | 'PROCEDURE_INFO'
+  | 'RECOVERY'
+  | 'HOSPITAL_SEARCH'
+  | 'HOSPITAL_COMPARE'
+  | 'COUNSELOR_CHAT'
+  | 'BOOK'
+  | 'MY_RESERVATIONS'
+  | 'CANCEL_RESERVATION'
+export const SKIN_CONCERNS = ['PIGMENTATION', 'PORES', 'ACNE_SCAR', 'WRINKLE_FIRMNESS', 'TONE_TEXTURE', 'REDNESS', 'FACE_CONTOUR'] as const
+export type SkinConcern = (typeof SKIN_CONCERNS)[number]
+/** 고민 관련 시술 정보 카드. 시간·가격은 DB 값만 (추천·효과 표현 없음) */
+export interface ProcedureInfo {
+  procedureCode: ProcedureCode
+  /** 요청자 locale */
+  name: string
+  description: string
+  /** 사용자가 고른 고민 중 이 시술과 관련된 것 */
+  concerns: SkinConcern[]
+  durationMin: number
+  downtimeDays: number
+  /** 등록된 price_options 의 최저·최고 (없으면 null) */
+  minPriceKrw: number | null
+  maxPriceKrw: number | null
+}
+
 export type MessageRole = 'user' | 'assistant' | 'counselor' | 'system'
 export interface ConversationMessage {
   role: MessageRole
   text: string
   sources: Source[]
   cards: HospitalCard[]
+  /** C4-T: PROCEDURE_INFO 로 받은 카드 (없으면 생략 가능) */
+  procedures?: ProcedureInfo[]
   createdAt: IsoDateTime
 }
 
@@ -361,6 +391,8 @@ export interface Conversation {
   parentConversationId: Uuid | null
   consultationId: number | null
   conditions: Conditions
+  /** C4-T: 메인 대화에서 고른 상담 주제 (없으면 null) */
+  topic?: ConsultTopic | null
   createdAt: IsoDateTime
   messages: ConversationMessage[]
 }
@@ -372,6 +404,8 @@ export type TaskAction =
   | { type: 'RELAX'; option: RelaxOption }
   | { type: 'SET_SORT'; sortBy: SortBy }
   | { type: 'SAVE_PROFILE'; fields: AiProfile }
+  | { type: 'SELECT_TOPIC'; topic: ConsultTopic }
+  | { type: 'FIND_BY_CONCERNS'; concerns: SkinConcern[] }
 
 export interface CreateTaskRequest {
   conversationId: Uuid
@@ -522,6 +556,7 @@ export interface SseEventMap {
   APPROVAL_REQUIRED: PendingAction
   TRIP_PLAN: { arrivalDate: IsoDate; departureDate: IsoDate; plans: TripPlan[]; summary: string }
   MEMORY_PROPOSAL: { fields: AiProfile; message: string }
+  PROCEDURE_INFO: { procedures: ProcedureInfo[] }
   VERIFY: { passed: boolean; attempts: number }
   DONE: { answer: string; sources: Source[] }
   FAILED: { code: ErrorCode; message: string; traceId: Uuid }

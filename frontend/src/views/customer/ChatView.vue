@@ -240,6 +240,11 @@ async function decide(approved: boolean, editedArgs: Record<string, unknown> | n
 }
 const approve = (editedArgs: Record<string, unknown> | null = null) => decide(true, editedArgs)
 const reject = () => decide(false)
+// 지난 답변의 병원 카드 "이 병원과 대화": 승인 대기 중엔 store.send 가 무시하므로 이유를 알려 준다
+function chatWithHospital(id: number) {
+  if (conv.pendingAction) return showToast(t('chat.input.approvalPending'), 'info')
+  if (!conv.streaming) void conv.send(null, { type: 'SELECT_HOSPITAL', hospitalId: id })
+}
 async function compareCards(cards: { id: number; name: string }[]) {
   if (busy.value || !cards.length) return
   // 버튼 문구 그대로 보낸다. 계약서에 비교 action 이 없어 병원 이름을 붙여 agent 가 대상을 알게 함 ("3곳 비교하기: A, B, C")
@@ -583,7 +588,7 @@ watch(
               :cards="m.cards"
               :procedure-name="procedureName(conv.conditions?.procedureCode ?? null)"
               @open="(id) => router.push(`/hospitals/${id}`)"
-              @chat="(id) => conv.send(null, { type: 'SELECT_HOSPITAL', hospitalId: id })"
+              @chat="chatWithHospital"
             />
             <div v-if="i === lastCardsIndex" class="inset row-actions">
               <AppButton variant="outline" size="s" :disabled="busy" @click="compareCards(m.cards)">

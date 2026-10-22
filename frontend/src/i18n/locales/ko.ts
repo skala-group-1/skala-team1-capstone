@@ -179,6 +179,7 @@ const ko: typeof en = {
     timesOn: '{date} 예약 가능 시간',
     duration: '{n}분 진료',
     noSlots: '열린 시간이 없어요. 다른 달이나 의료진을 골라 보세요.',
+    slotsFailed: '열린 시간을 불러오지 못했어요.',
     hospital: '병원',
     when: '일시',
     price: '가격',
@@ -196,6 +197,7 @@ const ko: typeof en = {
     },
   },
   reservations: {
+    keep: '유지하기',
     title: '내 예약',
     detailTitle: '예약 상세',
     tabs: { all: '전체 {n}', active: '진행 중 {n}', past: '지난 예약 {n}' },

@@ -178,6 +178,7 @@ const zh: typeof en = {
     timesOn: '{date} 可约时间',
     duration: '诊疗 {n} 分钟',
     noSlots: '暂无可约时段，请换个月份或医生。',
+    slotsFailed: '无法加载可预约时间。',
     hospital: '医院',
     when: '时间',
     price: '价格',
@@ -195,6 +196,7 @@ const zh: typeof en = {
     },
   },
   reservations: {
+    keep: '保留',
     title: '我的预约',
     detailTitle: '预约详情',
     tabs: { all: '全部 {n}', active: '进行中 {n}', past: '历史 {n}' },

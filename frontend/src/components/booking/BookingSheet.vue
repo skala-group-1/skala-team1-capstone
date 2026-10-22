@@ -43,6 +43,9 @@ const slotId = ref<number | null>(null)
 const note = ref('')
 const submitting = ref(false)
 const loadingSlots = ref(false)
+const slotsFailed = ref(false)
+/** loadSlots 순번 — 달을 빨리 넘길 때 늦게 온 이전 달 응답 무시 */
+let slotsSeq = 0
 const conflict = ref<Slot[] | null>(null)
 const altSlotId = ref<number | null>(null)
 const errorMsg = ref<string | null>(null)
@@ -95,7 +98,10 @@ watch(procedure, () => {
 
 async function loadSlots() {
   if (!procedure.value) return
+  const seq = ++slotsSeq
   loadingSlots.value = true
+  slotsFailed.value = false
+  slots.value = []
   const [y, m] = month.value.split('-').map(Number)
   const last = new Date(Date.UTC(y, m, 0)).getUTCDate()
   const from = month.value === today.slice(0, 7) ? today : `${month.value}-01`
@@ -107,10 +113,14 @@ async function loadSlots() {
       doctorId: doctorId.value ?? undefined,
       limit: 500,
     })
+    if (seq !== slotsSeq) return
     // 오늘 이미 지난 시간은 고를 수 없게
     slots.value = list.filter((s) => new Date(s.startAt).getTime() > Date.now())
+  } catch {
+    if (seq === slotsSeq) slotsFailed.value = true
+    return
   } finally {
-    loadingSlots.value = false
+    if (seq === slotsSeq) loadingSlots.value = false
   }
   if (!day.value || !availableDays.value.has(day.value)) day.value = [...availableDays.value].sort()[0] ?? null
 }
@@ -228,6 +238,10 @@ async function submitAlternative() {
         <span class="muted">{{ t('booking.duration', { n: entry?.procedure.durationMin ?? 30 }) }}</span>
       </div>
       <p v-if="loadingSlots" class="t-caption-13 muted">{{ t('common.loading') }}</p>
+      <div v-else-if="slotsFailed" class="center" role="alert">
+        <p class="t-body-14 muted">{{ t('booking.slotsFailed') }}</p>
+        <AppButton variant="secondary" size="s" icon="refresh-cw" @click="loadSlots">{{ t('common.retry') }}</AppButton>
+      </div>
       <p v-else-if="!availableDays.size" class="t-body-14 muted center">{{ t('booking.noSlots') }}</p>
       <div v-else class="times">
         <button

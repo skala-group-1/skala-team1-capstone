@@ -24,7 +24,6 @@ from coordinator.nodes.memory_propose import memory_propose
 from coordinator.nodes.open_hospital_conversation import open_hospital_conversation
 from coordinator.nodes.planner_agent import planner_agent
 from coordinator.nodes.tools import planner_tools
-from coordinator.nodes.verify import verify
 
 
 async def execute_approved_action(state: AgentState) -> dict:
@@ -64,7 +63,6 @@ def build_main_graph() -> StateGraph:
     g.add_node("ask_clarify", ask_clarify)
     g.add_node("planner_agent", planner_agent)
     g.add_node("tools", planner_tools)
-    g.add_node("verify", verify)
     g.add_node("memory_propose", memory_propose)
     g.add_node("respond", respond)
     g.add_node("hospital_subgraph", build_hospital_subgraph().compile())
@@ -83,10 +81,8 @@ def build_main_graph() -> StateGraph:
     g.add_conditional_edges("extract_conditions", routing.route_after_extract,
                             {"ask_clarify": "ask_clarify", "planner_agent": "planner_agent"})
     g.add_conditional_edges("planner_agent", routing.route_after_planner,
-                            {"tools": "tools", "verify": "verify"})
+                            {"tools": "tools", "memory_propose": "memory_propose"})
     g.add_edge("tools", "planner_agent")
-    g.add_conditional_edges("verify", routing.route_after_verify,
-                            {"planner_agent": "planner_agent", "memory_propose": "memory_propose"})
     g.add_edge("memory_propose", "respond")
     for node in ("guard_reply", "ask_clarify", "open_hospital_conversation", "hospital_subgraph", "aftercare_subgraph"):
         g.add_edge(node, "respond")

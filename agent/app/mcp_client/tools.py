@@ -8,7 +8,6 @@ PLANNER_TOOLS = (
     "business_compare_hospitals",
     "business_plan_trip",
     "business_list_doctors",
-    "rag_search_procedure_docs",
 )
 
 # 「AI Agent 설계」 4장: 병원 서브그래프 조회 도구 (hospital_id 는 state 에서 강제 주입)

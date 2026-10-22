@@ -150,29 +150,49 @@ def make_coordinator_tools(business_loader=None, *, initial_state=None):
             response["normalization"] = {"candidates": results["ambiguity"]} if results.get("ambiguity") else results.get("normalization", {})
             response["message"] = ("Procedure not resolved. If no candidates matched the phrase, call "
                 "hospital_lookup normalize with a concise synonym or translated name, then collect its verified code. "
-                "If multiple candidates match, ask the user; never choose for them.")
+                "Present returned related candidates as a numbered list, even if there is only one approximate match. "
+                "Ask the user to choose; never treat a related name as an equivalent treatment.")
         return response
 
     @tool
-    async def collect_conditions(fields: ConditionPatch):
+    async def collect_conditions(fields: ConditionPatch, search_hospitals: bool = False):
         """Save only explicitly supplied Conditions, before asking or searching.
 
         Supply the user's procedure phrase or a normalized code; it is verified
         through Business MCP before saving. Omitted fields retain previous values;
         explicit null clears a filter. Ask only returned missing required fields.
         Location, procedure and date are required. Budget, consultation language
-        and sorting are optional; search immediately when required fields are ready.
+        and sorting are optional. Search when the user wants hospitals and required
+        fields are ready; saving filters alone does not turn skin counseling into search.
+        Set search_hospitals=true when the user explicitly wants to find a hospital
+        or book a procedure, including after skin counseling. This remembers that
+        intent across subsequent location/date answers. Do not ask permission to normalize.
         """
+        if search_hospitals:
+            results["topic"] = "HOSPITAL_SEARCH"
         return await collect(fields.model_dump(mode="json", exclude_unset=True))
 
     @tool
     async def procedure_consultation(question: str):
-        """Tool A: general procedure information requires external evidence.
+        """Search external medical sources for general procedure information.
 
-        No external provider is connected. Do not replace evidence with model memory.
+        Use concise English medical search terms for the user's procedure/concern
+        and factual question, preserving meaning; omit personal identifiers.
+        Output uses the user's locale. No hospital RAG. Returns a sourced answer
+        or unavailability.
         """
-        return {"status": "external_search_unavailable", "message":
-                "External evidence search is not connected. Do not provide medical facts or benefit examples."}
+        from coordinator.nodes.procedure_search import search_procedure
+        from app.config import get_settings
+        import asyncio
+        try:
+            result = await asyncio.wait_for(search_procedure(question,
+                (source.get("user") or {}).get("locale") or "en"),
+                get_settings().procedure_search_timeout_seconds)
+        except TimeoutError:
+            result = {"status": "external_search_unavailable"}
+        if result.get("status") == "ready":
+            results["procedure_answer"] = result["answer"]
+        return result
 
     @tool
     async def hospital_lookup(operation: Literal["normalize", "search", "reservations", "hours", "slots", "compare", "prepare_handoff"], arguments: LookupArguments):
@@ -236,10 +256,18 @@ def make_coordinator_tools(business_loader=None, *, initial_state=None):
         result = decode_result(await target.ainvoke(args))
         if result.get("status") in ("unavailable", "error") or result.get("isError"):
             raise ValueError("Business lookup failed")
+        if operation == "normalize" and not result.get("candidates"):
+            # Broaden only a known generic wording, not to a specific technique/code.
+            broader = {"레이저 토닝": "토닝", "레이저토닝": "토닝", "laser toning": "toning"}.get(
+                str(args.get("text", "")).strip().lower())
+            if broader:
+                result = decode_result(await target.ainvoke({"text": broader}))
+        if result.get("status") in ("unavailable", "error") or result.get("isError"):
+            raise ValueError("Business lookup failed")
         if operation == "normalize":
             results["normalization"] = result
             candidates = result.get("candidates", [])
-            if len(candidates) > 1 and len([c for c in candidates if c.get("score") == 1]) != 1:
+            if candidates and len([c for c in candidates if c.get("score") == 1]) != 1:
                 # Only a new user turn may resolve an ambiguous procedure choice.
                 results["ambiguity"] = candidates
                 conditions = dict(results.get("conditions", source.get("conditions") or {}))

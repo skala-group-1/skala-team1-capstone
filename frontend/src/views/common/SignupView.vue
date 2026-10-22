@@ -13,6 +13,7 @@ import TextField from '@/components/ui/TextField.vue'
 import AppButton from '@/components/ui/AppButton.vue'
 import AppChip from '@/components/ui/AppChip.vue'
 import type { Gender, Locale } from '@/types/contract'
+import { storage } from '@/utils/storage'
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -76,7 +77,7 @@ async function submit() {
   try {
     await auth.signup({ ...form, email: form.email.trim(), name: form.name.trim(), gender: form.gender as Gender })
     // 가입 때 고른 언어가 계정 언어 → 온보딩에서 고른 언어(localePicked)로 덮어쓰지 않게 지운다
-    localStorage.removeItem('localePicked')
+    storage.remove('localePicked')
     await auth.login({ email: form.email.trim(), password: form.password })
     const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : null
     await router.replace(redirect ?? auth.home)

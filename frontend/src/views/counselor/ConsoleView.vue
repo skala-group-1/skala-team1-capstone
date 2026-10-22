@@ -63,7 +63,13 @@ const visible = computed(() => {
 })
 const groups = computed(() =>
   (['ACTIVE', 'WAITING', 'CLOSED'] as const)
-    .map((s) => ({ status: s, items: visible.value.filter((c) => c.status === s) }))
+    // 대기는 오래 기다린 순(먼저 온 고객부터), 나머지는 최근 순
+    .map((s) => ({
+      status: s,
+      items: visible.value
+        .filter((c) => c.status === s)
+        .sort((a, b) => (s === 'WAITING' ? 1 : -1) * (Date.parse(a.createdAt) - Date.parse(b.createdAt))),
+    }))
     .filter((g) => g.items.length),
 )
 const waitMin = (c: Consultation) => Math.max(1, Math.round((now.value - new Date(c.createdAt).getTime()) / 60000))
@@ -169,9 +175,12 @@ watch(selectedId, (id, prev) => {
 })
 watch(
   () => store.messages.length,
-  async () => {
+  async (_len, prev) => {
+    // 지난 대화를 읽는 중이면 끌어내리지 않는다 (맨 아래 근처이거나 내가 보낸 경우만). 방을 처음 열면 바로 맨 아래로
+    const el = scroller.value
+    const stick = !el || el.scrollHeight - el.scrollTop - el.clientHeight < 80 || store.messages.at(-1)?.senderRole === 'COUNSELOR'
     await nextTick()
-    scroller.value?.scrollTo({ top: scroller.value.scrollHeight, behavior: 'smooth' })
+    if (stick) scroller.value?.scrollTo({ top: scroller.value.scrollHeight, behavior: prev ? 'smooth' : 'auto' })
   },
 )
 onBeforeUnmount(() => store.close())

@@ -19,18 +19,18 @@ const holdTone = (r: Reservation) => {
 </script>
 
 <template>
-  <div class="table" role="table">
-    <div class="tr th t-caption-12-sb" role="row">
-      <span role="columnheader">{{ t('staff.table.customer') }}</span>
-      <span role="columnheader">{{ t('staff.table.procedure') }}</span>
-      <span role="columnheader">{{ t('staff.table.when') }}</span>
-      <span role="columnheader">{{ t('staff.table.status') }}</span>
+  <div class="table">
+    <!-- 행이 버튼이라 ARIA 표 대신 버튼 목록으로 읽히게 (행 역할이 버튼 역할을 덮던 문제). 머리글은 시각용 -->
+    <div class="tr th t-caption-12-sb" aria-hidden="true">
+      <span>{{ t('staff.table.customer') }}</span>
+      <span>{{ t('staff.table.procedure') }}</span>
+      <span>{{ t('staff.table.when') }}</span>
+      <span>{{ t('staff.table.status') }}</span>
     </div>
     <button
       v-for="r in rows"
       :key="r.id"
       type="button"
-      role="row"
       class="tr td"
       :class="{ 'td--on': r.id === selectedId }"
       @click="$emit('select', r)"

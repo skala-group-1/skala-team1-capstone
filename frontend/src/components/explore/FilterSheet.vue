@@ -8,10 +8,11 @@ import AppChip from '../ui/AppChip.vue'
 import AppButton from '../ui/AppButton.vue'
 import AppIcon from '../ui/AppIcon.vue'
 import { catalogApi } from '@/api'
-import { fmtKrw } from '@/utils/format'
+import { fmtKrw, seoulDate } from '@/utils/format'
 import { AREA_CODES, type AreaCode, type HospitalSearchQuery, type Locale, type Procedure } from '@/types/contract'
 
 const props = defineProps<{ open: boolean; query: HospitalSearchQuery; procedures: Procedure[] }>()
+const today = seoulDate()
 const emit = defineEmits<{ close: []; apply: [q: Partial<HospitalSearchQuery>] }>()
 const { t } = useI18n()
 
@@ -101,11 +102,11 @@ const languages: Locale[] = ['en', 'zh', 'ja']
       <div class="dates">
         <label class="date">
           <AppIcon name="calendar" :size="18" />
-          <input v-model="draft.dateFrom" type="date" :aria-label="t('explore.filter.dateFrom')" />
+          <input v-model="draft.dateFrom" type="date" :min="today" :aria-label="t('explore.filter.dateFrom')" />
         </label>
         <label class="date">
           <AppIcon name="calendar" :size="18" />
-          <input v-model="draft.dateTo" type="date" :min="draft.dateFrom" :aria-label="t('explore.filter.dateTo')" />
+          <input v-model="draft.dateTo" type="date" :min="draft.dateFrom || today" :aria-label="t('explore.filter.dateTo')" />
         </label>
       </div>
     </section>

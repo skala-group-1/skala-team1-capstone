@@ -23,15 +23,16 @@ const langs = computed(() => props.card.languages.filter((l) => l !== 'ko'))
 </script>
 
 <template>
-  <article class="card" :class="`card--${variant ?? 'list'}`">
+  <!-- 카드 어디를 눌러도 상세로 (키보드는 제목 버튼). 비교 체크는 .stop -->
+  <article class="card" :class="`card--${variant ?? 'list'}`" @click="emit('open')">
     <div class="top">
-      <button type="button" class="title" @click="emit('open')">
+      <button type="button" class="title" @click.stop="emit('open')">
         <h3 class="t-body-16-sb">{{ card.name }}</h3>
         <p :class="variant === 'compact' ? 't-caption-12' : 't-caption-13'" class="meta">
           {{ t(`domain.area.${card.areaCode}`) }} · {{ t(`domain.category.${card.category}`) }}
         </p>
       </button>
-      <label v-if="variant !== 'compact'" class="check hit t-body-14" :class="{ 'check--disabled': compareDisabled && !compareChecked }">
+      <label v-if="variant !== 'compact'" class="check hit t-body-14" @click.stop :class="{ 'check--disabled': compareDisabled && !compareChecked }">
         <input type="checkbox" :checked="compareChecked" :disabled="compareDisabled && !compareChecked" @change="emit('compare')" />
         <span class="box" aria-hidden="true"><AppIcon v-if="compareChecked" name="check" :size="14" /></span>
         {{ t('explore.compare') }}
@@ -70,7 +71,7 @@ const langs = computed(() => props.card.languages.filter((l) => l !== 'ko'))
       <div class="actions">
         <slot name="actions" />
         <span class="spacer" />
-        <button type="button" class="chat-btn t-caption-13" @click="emit('chat')">{{ t('chat.talkToHospital') }}</button>
+        <button type="button" class="chat-btn t-caption-13" @click.stop="emit('chat')">{{ t('chat.talkToHospital') }}</button>
       </div>
     </template>
   </article>
@@ -78,6 +79,7 @@ const langs = computed(() => props.card.languages.filter((l) => l !== 'ko'))
 
 <style scoped>
 .card {
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   gap: 10px;

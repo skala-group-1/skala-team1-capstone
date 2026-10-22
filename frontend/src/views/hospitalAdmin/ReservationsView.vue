@@ -182,7 +182,7 @@ watch(filter, () => {
       </div>
       <div class="badges">
         <AppBadge :tone="RESERVATION_TONE[effective(selected)]" dot>{{ t(`domain.status.${effective(selected)}`) }}</AppBadge>
-        <AppBadge v-if="effective(selected) === 'PENDING'" tone="danger" icon="clock">{{ t('domain.holdLeft', { time: remaining(selected.holdExpiresAt, now) }) }}</AppBadge>
+        <AppBadge v-if="effective(selected) === 'PENDING'" :tone="new Date(selected.holdExpiresAt!).getTime() - now < 5 * 60_000 ? 'danger' : 'warning'" icon="clock">{{ t('domain.holdLeft', { time: remaining(selected.holdExpiresAt, now) }) }}</AppBadge>
       </div>
       <hr />
       <dl class="kv">

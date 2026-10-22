@@ -5,7 +5,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useSearchStore } from '@/stores/search'
-import { fmtDateTime, fmtKrw } from '@/utils/format'
+import { fmtDate, fmtDateTime, fmtKrw } from '@/utils/format'
 import TopAppBar from '@/components/ui/TopAppBar.vue'
 import AppIcon from '@/components/ui/AppIcon.vue'
 import AppButton from '@/components/ui/AppButton.vue'
@@ -123,7 +123,7 @@ onMounted(async () => {
           <h2 class="t-caption-12-sb label">{{ t('compare.verifiedAt') }}</h2>
           <div class="cells">
             <p v-for="c in columns" :key="c.hospital.id" class="cell t-body-14" :class="{ warnText: !c.verifiedAt }">
-              {{ c.verifiedAt ?? t('domain.priceUnverified') }}
+              {{ c.verifiedAt ? fmtDate(c.verifiedAt, { weekday: false, year: true }) : t('domain.priceUnverified') }}
             </p>
           </div>
         </section>

@@ -7,6 +7,7 @@ import { setLocale } from '@/i18n'
 import AppButton from '@/components/ui/AppButton.vue'
 import AppIcon, { type IconName } from '@/components/ui/AppIcon.vue'
 import type { Locale } from '@/types/contract'
+import { storage } from '@/utils/storage'
 
 const router = useRouter()
 const route = useRoute()
@@ -34,11 +35,11 @@ function pick(l: Locale) {
 function next() {
   // 기본 선택(브라우저 언어)을 그대로 두고 넘어가도 '고른 언어'로 저장 → 다음 고객 로그인 때 계정 언어로 1번 반영 (auth.setUser)
   setLocale(picked.value)
-  localStorage.setItem('localePicked', picked.value)
+  storage.set('localePicked', picked.value)
   step.value = 'intro'
 }
 function finish(to: '/signup' | '/login') {
-  localStorage.setItem('onboarded', '1')
+  storage.set('onboarded', '1')
   // 공유 링크 목적지(redirect)를 로그인·가입으로 이어 넘김
   void router.replace({ path: to, query: route.query.redirect ? { redirect: route.query.redirect } : {} })
 }

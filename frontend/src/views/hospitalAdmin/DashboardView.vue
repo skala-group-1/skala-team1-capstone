@@ -52,7 +52,10 @@ useNotificationRefresh(['RESERVATION_REQUESTED', 'RESERVATION_CANCELLED', 'RESER
     <EmptyState v-if="failed" icon="alert-triangle" tone="danger" :title="t('staff.loadFailed')">
       <AppButton variant="secondary" icon="refresh-cw" @click="load">{{ t('common.retry') }}</AppButton>
     </EmptyState>
-    <template v-else-if="data">
+    <div v-else-if="!data" class="skeleton-list" role="status" :aria-label="t('common.loading')" aria-busy="true">
+      <span class="bone" style="height: 96px" /><span class="bone" style="height: 240px" />
+    </div>
+    <template v-else>
       <div class="kpis">
         <KpiCard :label="t('staff.kpi.today')" :value="data.todayReservations" :sub="t('staff.kpi.todaySub', { date: fmtDate(seoulDate()) })" />
         <KpiCard

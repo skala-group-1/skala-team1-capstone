@@ -22,6 +22,10 @@ const reservations = ref<Reservation[]>([])
 const consultStatus = ref<Record<number, ConsultationStatus>>({})
 const failed = ref(false)
 const aftercareIds = ref(new Set<string>())
+/** 대화별 마지막 활동 시각 = 그 대화의 가장 최근 AI 작업 시각 (GET /api/ai/tasks, 계약 변경 없음) */
+const lastActive = ref<Record<string, string>>({})
+// ponytail: /api/ai/tasks 는 최근 50건만 → 그보다 오래 쉰 대화는 생성 시각으로. 정확히 하려면 Conversation 에 마지막 활동 시각 필드 필요
+const activeAt = (c: Conversation) => lastActive.value[c.id] ?? c.createdAt
 
 const main = computed(() => conversations.value?.find((c) => c.mode === 'MAIN') ?? null)
 /** 병원마다 최근 대화 1개 (목록은 최근 순) */
@@ -51,8 +55,19 @@ const lastReservation = (hospitalId: number) =>
 async function load() {
   failed.value = false
   try {
-    const [list, mine] = await Promise.all([aiApi.conversations(), reservationApi.mine().catch(() => [])])
-    conversations.value = list
+    const [list, mine, tasks] = await Promise.all([
+      aiApi.conversations(),
+      reservationApi.mine().catch(() => []),
+      aiApi.myTasks().catch(() => []),
+    ])
+    const last: Record<string, string> = {}
+    for (const task of tasks) {
+      const prev = last[task.conversationId]
+      if (!prev || Date.parse(task.createdAt) > Date.parse(prev)) last[task.conversationId] = task.createdAt
+    }
+    lastActive.value = last
+    // 최근에 대화한 순 (메인 대화·병원별 대화 모두 마지막 활동 기준으로 고른다)
+    conversations.value = [...list].sort((a, b) => Date.parse(activeAt(b)) - Date.parse(activeAt(a)))
     reservations.value = mine
     const ids = list.filter((c) => c.mode === 'HUMAN' && c.consultationId).map((c) => c.consultationId!)
     const got = await Promise.all(ids.map((id) => consultationApi.get(id).catch(() => null)))
@@ -76,6 +91,10 @@ onMounted(() => {
     </EmptyState>
 
     <div v-else class="content">
+      <!-- 불러오는 중 (빈 화면 대신) -->
+      <div v-if="!conversations" class="skeleton-list" role="status" :aria-label="t('common.loading')" aria-busy="true">
+        <span v-for="i in 4" :key="i" class="bone" style="height: 64px" />
+      </div>
       <template v-if="conversations">
         <!-- 여신 AI (맨 위 고정): 최근 메인 대화. 없으면 /chat 이 새로 연다 -->
         <RouterLink :to="main ? `/chat/${main.id}` : '/chat'" class="row">
@@ -83,7 +102,7 @@ onMounted(() => {
           <span class="text">
             <span class="line1">
               <span class="name t-body-16-sb">{{ t('chat.aiTitle') }}</span>
-              <span v-if="main" class="date t-caption-12">{{ md(main.createdAt) }}</span>
+              <span v-if="main" class="date t-caption-12">{{ md(activeAt(main)) }}</span>
             </span>
             <span class="sub t-body-14">{{ main ? mainSummary(main) : t('chat.helloAi') }}</span>
             <span class="badges"><AppBadge tone="brand" icon="sparkles">{{ t('chat.mode.ai') }}</AppBadge></span>
@@ -100,7 +119,7 @@ onMounted(() => {
               <span class="text">
                 <span class="line1">
                   <span class="name t-body-16-sb">{{ c.hospital!.name }}</span>
-                  <span class="date t-caption-12">{{ md(c.createdAt) }}</span>
+                  <span class="date t-caption-12">{{ md(activeAt(c)) }}</span>
                 </span>
                 <span class="sub t-body-14">{{ procName(c) ?? t('chat.list.noConditions') }}</span>
                 <span class="badges">

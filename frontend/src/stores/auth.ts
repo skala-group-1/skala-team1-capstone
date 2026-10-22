@@ -12,6 +12,7 @@ import { useNotificationStore } from './notification'
 import { useReservationStore } from './reservation'
 import { useSearchStore } from './search'
 import type { LoginRequest, Locale, Role, SignupRequest, UserSummary } from '@/types/contract'
+import { storage } from '@/utils/storage'
 
 export const ROLE_HOME: Record<Role, string> = {
   CUSTOMER: '/',
@@ -71,8 +72,8 @@ export const useAuthStore = defineStore('auth', {
      * backend 응답 언어(병원·시술 이름 등)는 토큰 locale 로 정해지므로, 저장 후 화면이 데이터를 불러오기 전에 새 토큰을 받는다
      */
     async applyPickedLocale(user: UserSummary): Promise<UserSummary> {
-      const picked = localStorage.getItem('localePicked') as Locale | null
-      localStorage.removeItem('localePicked')
+      const picked = storage.get('localePicked') as Locale | null
+      storage.remove('localePicked')
       if (user.role !== 'CUSTOMER' || !picked || !['en', 'zh', 'ja', 'ko'].includes(picked) || picked === user.locale) return user
       try {
         await authApi.updateMe({ locale: picked })

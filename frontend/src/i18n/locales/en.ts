@@ -375,6 +375,7 @@ export default {
     changeConditions: 'Change conditions',
     relaxCount: '{n} found',
     relaxManual: 'Change conditions myself',
+    changeConditionsHint: 'Type the condition you want to change below',
     failed: "Couldn't load the answer",
     counselor: 'Counselor',
     reconnecting: 'Reconnecting…',

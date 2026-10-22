@@ -375,6 +375,7 @@ const ja: typeof en = {
     changeConditions: '条件を変える',
     relaxCount: '{n}件',
     relaxManual: '自分で条件を変える',
+    changeConditionsHint: '変更したい条件を下の入力欄に入力してください',
     failed: '回答を読み込めませんでした',
     counselor: '相談員',
     reconnecting: '再接続しています…',

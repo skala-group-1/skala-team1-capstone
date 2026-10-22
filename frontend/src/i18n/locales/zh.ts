@@ -375,6 +375,7 @@ const zh: typeof en = {
     changeConditions: '修改条件',
     relaxCount: '{n} 家',
     relaxManual: '自己修改条件',
+    changeConditionsHint: '请在下方输入框中写下想修改的条件',
     failed: '未能加载回答',
     counselor: '咨询师',
     reconnecting: '正在重新连接…',

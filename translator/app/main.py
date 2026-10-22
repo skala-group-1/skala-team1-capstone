@@ -8,6 +8,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from app.glossary import load_glossary
+from app.review import start_review_consumer
 from app.worker import start_consumers
 
 
@@ -15,6 +16,7 @@ from app.worker import start_consumers
 async def lifespan(app: FastAPI):
     load_glossary()
     connection = await start_consumers()
+    await start_review_consumer(connection)
     yield
     await connection.close()
 

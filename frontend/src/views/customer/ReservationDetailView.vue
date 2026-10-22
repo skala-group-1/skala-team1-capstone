@@ -213,13 +213,13 @@ useNotificationRefresh(['RESERVATION_CONFIRMED', 'RESERVATION_REJECTED', 'RESERV
         </section>
         <p v-if="r.status === 'CONFIRMED'" class="t-caption-12 muted">{{ t('reservations.visit.policy') }}</p>
 
-        <!-- 확정 → 리뷰 쓰기 / 작성 완료 -->
+        <!-- 확정 → 리뷰 쓰기 / 작성 완료 (취소하면 리뷰는 병원 목록에서 숨겨지므로 카드도 안 보임) -->
         <section v-if="r.reviewable" class="card">
           <h2 class="t-body-16-sb">{{ t('reservations.review.title') }}</h2>
           <p class="t-caption-13 secondary">{{ t('reservations.review.body') }}</p>
           <AppButton variant="outline" icon="star" block @click="reviewOpen = true">{{ t('reservations.review.write') }}</AppButton>
         </section>
-        <section v-else-if="r.reviewId" class="card reviewed">
+        <section v-else-if="r.status === 'CONFIRMED' && r.reviewId" class="card reviewed">
           <p class="row-between t-body-14-sb"><AppIcon name="check" :size="18" />{{ t('reservations.review.written') }}</p>
           <button type="button" class="btn-link t-caption-13" @click="openReviews">{{ t('reservations.review.see') }}</button>
         </section>

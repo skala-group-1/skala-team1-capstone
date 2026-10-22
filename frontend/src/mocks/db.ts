@@ -111,6 +111,8 @@ type ReviewRow = {
   created_at: string
   /** 고객이 예약에서 쓴 리뷰만 (seed 리뷰는 없음) */
   reservation_id?: number
+  /** 예약이 취소되면 true → 목록·집계에서 제외 (backend V103 과 같은 규칙) */
+  hidden?: boolean
 }
 export const reviews = (reviewsJson as ReviewRow[]).sort((a, b) => b.created_at.localeCompare(a.created_at))
 /** app.hospital_review_stats 뷰와 같은 집계 (건수·평균·연령대·성별) */
@@ -120,10 +122,17 @@ export function addReview(row: ReviewRow) {
   reviews.unshift(row)
   statsCache.delete(row.hospital_id)
 }
+/** 예약 취소 → 그 예약으로 쓴 리뷰를 숨긴다 (삭제하지 않음) */
+export function hideReviewOf(reservationId: number) {
+  const row = reviews.find((r) => r.reservation_id === reservationId)
+  if (!row) return
+  row.hidden = true
+  statsCache.delete(row.hospital_id)
+}
 export function reviewStats(hospitalId: number): ReviewStats {
   let s = statsCache.get(hospitalId)
   if (!s) {
-    const rows = reviews.filter((r) => r.hospital_id === hospitalId)
+    const rows = reviews.filter((r) => r.hospital_id === hospitalId && !r.hidden)
     const count = (key: 'age_group' | 'gender') => rows.reduce<Record<string, number>>((m, r) => ((m[r[key]] = (m[r[key]] ?? 0) + 1), m), {})
     s = {
       reviewCount: rows.length,

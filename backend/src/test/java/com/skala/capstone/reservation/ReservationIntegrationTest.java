@@ -291,6 +291,24 @@ class ReservationIntegrationTest extends IntegrationTest {
 		mvc.perform(get("/api/hospitals/{id}/reviews", 3).param("lang", "ko").header(HttpHeaders.AUTHORIZATION, owner))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.items[0].id").value(reviewId));
+
+		// 예약을 취소하면 리뷰는 남지만 목록·통계에서 숨겨진다
+		long countBefore = reviewCount(3);
+		mvc.perform(post("/api/reservations/{id}/cancel", id).header(HttpHeaders.AUTHORIZATION, owner))
+				.andExpect(status().isOk());
+		assertThat(count("SELECT count(*) FROM app.reviews WHERE id = " + reviewId)).isEqualTo(1);
+		assertThat(reviewCount(3)).isEqualTo(countBefore - 1);
+		JsonNode list = body(mvc.perform(get("/api/hospitals/{id}/reviews", 3).param("lang", "ko").param("size", "50")
+				.header(HttpHeaders.AUTHORIZATION, owner)).andExpect(status().isOk()).andReturn());
+		list.get("items").forEach(item -> assertThat(item.get("id").asLong()).isNotEqualTo(reviewId));
+		JsonNode cancelled = body(mvc.perform(get("/api/reservations/{id}", id).header(HttpHeaders.AUTHORIZATION, owner))
+				.andExpect(status().isOk()).andReturn());
+		assertThat(cancelled.get("reviewable").asBoolean()).isFalse();
+	}
+
+	private long reviewCount(long hospitalId) {
+		return jdbc.sql("SELECT review_count FROM app.hospital_review_stats WHERE hospital_id = :h")
+				.param("h", hospitalId).query(Long.class).single();
 	}
 
 	// ------------------------------------------------------------------ helpers

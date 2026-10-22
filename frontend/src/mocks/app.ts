@@ -34,6 +34,7 @@ import type {
 } from '@/types/contract'
 import {
   addReview,
+  hideReviewOf,
   doctors,
   hospitals,
   pickName,
@@ -619,7 +620,7 @@ export const appHandlers = [
   http.get(`${API}/hospitals/:id/reviews`, ({ request, params }) => {
     if (!auth(request)) return deny()
     const url = new URL(request.url)
-    return HttpResponse.json(page(reviews.filter((r) => r.hospital_id === Number(params.id)).map(toReview), url))
+    return HttpResponse.json(page(reviews.filter((r) => r.hospital_id === Number(params.id) && !r.hidden).map(toReview), url))
   }),
   http.post(`${API}/hospitals/compare`, async ({ request }) => {
     if (!auth(request)) return deny()
@@ -704,6 +705,7 @@ export const appHandlers = [
     if (!r) return error(403, 'ACCESS_DENIED', 'Access denied')
     if (r.status !== 'PENDING' && r.status !== 'CONFIRMED') return error(409, 'INVALID_STATE_TRANSITION', 'Cannot cancel', { from: r.status, to: 'CANCELLED' })
     r.status = 'CANCELLED'
+    hideReviewOf(r.id)
     notify(adminsOf(r.hospital_id), 'RESERVATION_CANCELLED', { reservationId: r.id })
     return HttpResponse.json(toReservation(r, localeOf(request), false))
   }),

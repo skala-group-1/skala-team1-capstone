@@ -92,8 +92,8 @@ public class CatalogController {
 	public PageResponse<Review> reviews(@PathVariable long id,
 			@RequestParam(required = false) String lang,
 			@RequestParam(defaultValue = "0") @Min(0) int page,
-			@RequestParam(defaultValue = "20") @Min(1) @Max(50) int size) {
-		return catalog.reviews(id, lang, page, size);
+			@RequestParam(defaultValue = "20") @Min(1) @Max(50) int size, HttpServletRequest request) {
+		return catalog.reviews(id, lang, page, size, RequestLocale.resolve(request));
 	}
 
 	@Operation(summary = "병원 비교 (최대 3곳, 한 시술 기준)")

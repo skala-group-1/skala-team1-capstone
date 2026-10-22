@@ -304,6 +304,7 @@ export default {
       pick: 'Choose a topic.',
       label: 'Topic',
       change: 'Change topic',
+      new: 'NEW',
       started: 'Started \'{topic}\'',
       next: 'Next topics',
       groups: {

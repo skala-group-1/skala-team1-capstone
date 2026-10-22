@@ -88,16 +88,17 @@ public class InternalCatalogController {
 		return catalog.doctors(id, procedureCode, RequestLocale.resolve(locale, request));
 	}
 
-	@Operation(summary = "선택 병원 리뷰 조회 (최신순, lang 필터)")
+	@Operation(summary = "선택 병원 리뷰 조회 (최신순, lang·시술 필터)")
 	@GetMapping("/hospitals/{id}/reviews")
 	public PageResponse<Review> reviews(@PathVariable long id,
 			@RequestParam(required = false) String lang,
+			@RequestParam(required = false) String procedureCode,
 			@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "20") int size) {
 		if (page < 0 || size < 1 || size > 50) {
 			throw new ApiException(ErrorCode.VALIDATION_FAILED);
 		}
-		return catalog.reviews(id, lang, page, size);
+		return catalog.reviews(id, lang, procedureCode, page, size, null);
 	}
 
 	@GetMapping("/hospitals/{id}/prices")

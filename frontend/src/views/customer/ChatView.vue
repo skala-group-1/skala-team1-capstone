@@ -51,7 +51,6 @@ const approving = ref(false)
 const requested = ref<Reservation | null>(null)
 const shownOriginal = ref(new Set<number>())
 const startingConversation = ref(false)
-const pendingHospitalGreeting = ref<{ conversationId: string; text: string } | null>(null)
 
 // ─── 모드 ───
 const isHospital = computed(() => conv.mode !== 'MAIN')
@@ -270,12 +269,18 @@ async function enter() {
         await conv.refresh(id)
         if (conv.consultationId) await consult.open(conv.consultationId)
       }
-      const greeting = pendingHospitalGreeting.value
-      if (greeting?.conversationId === id) {
-        if (conv.mode === 'HOSPITAL' && !conv.messages.length) {
-          conv.messages.push({ role: 'assistant', text: greeting.text, sources: [], cards: [], createdAt: new Date().toISOString() })
-        }
-        pendingHospitalGreeting.value = null
+      if (conv.mode === 'HOSPITAL' && conv.parentConversationId && !conv.messages.length) {
+        const conditions = conv.conditions
+        const date = conditions?.dateFrom
+          ? [conditions.dateFrom, conditions.dateTo].filter(Boolean).map((d) => fmtDate(d!, { weekday: false })).join('–')
+          : ''
+        const area = conditions?.areas?.map((value) => t(`domain.area.${value}`)).join('·') ?? ''
+        const procedure = procedureName(conditions?.procedureCode ?? null)
+        const context = [date, area, procedure].filter(Boolean).join(' · ')
+        const text = context
+          ? t('chat.handoffGreeting', { context })
+          : t('chat.helloAgent', { hospital: conv.hospital?.name ?? '' })
+        conv.messages.push({ role: 'assistant', text, sources: [], cards: [], createdAt: new Date().toISOString() })
       }
     } else {
       const hospitalId = route.query.hospitalId ? Number(route.query.hospitalId) : null
@@ -305,20 +310,6 @@ watch(
   () => conv.openedConversation,
   (o) => {
     if (o) {
-      if (o.summary) {
-        let summary = o.summary
-        try {
-          const parsed: unknown = JSON.parse(summary)
-          if (parsed && typeof parsed === 'object' && 'text' in parsed && typeof parsed.text === 'string') {
-            summary = parsed.text
-          }
-        } catch {
-          // The fallback handoff summary is already displayable plain text.
-        }
-        const hospitalName = conv.cards.find((card) => card.id === o.hospitalId)?.name
-        const followUp = hospitalName ? `\n\n${t('chat.helloAgent', { hospital: hospitalName })}` : ''
-        pendingHospitalGreeting.value = { conversationId: o.conversationId, text: `${summary}${followUp}` }
-      }
       conv.openedConversation = null
       void router.push(`/chat/${o.conversationId}`)
     }

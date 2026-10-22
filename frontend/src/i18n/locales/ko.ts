@@ -363,6 +363,7 @@ const ko: typeof en = {
     backToMain: '메인 대화 보기',
     helloAi: '원하는 시술과 일정, 지역을 말씀해 주세요.',
     helloAgent: '{hospital}의 의료진·가격·예약 가능 시간을 물어보세요.',
+    handoffGreeting: '메인 대화에서 나눈 내용을 이어서 {context} 시술에 대해 계속 상담해 드릴까요?',
     requestCounselor: '상담원과 직접 이야기하고 싶어요',
     connectCounselor: '상담원 연결',
     book: '예약하기',

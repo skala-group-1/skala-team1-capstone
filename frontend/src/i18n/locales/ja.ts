@@ -362,6 +362,7 @@ const ja: typeof en = {
     backToMain: 'メイン会話を見る',
     helloAi: '希望の施術・日程・エリアを教えてください。',
     helloAgent: '{hospital}の医師・価格・予約可能な時間を聞いてみてください。',
+    handoffGreeting: 'メインの会話でお話しした{context}について、引き続き相談しますか？',
     requestCounselor: '相談員と直接話したいです',
     connectCounselor: '相談員につなぐ',
     book: '予約する',

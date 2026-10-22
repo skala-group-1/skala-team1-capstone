@@ -104,7 +104,7 @@ watch(auditOnly, () => void load())
           </div>
           <div v-for="l in logs?.items ?? []" :key="l.id" class="tr tr--logs t-body-14">
             <span>{{ ts(l.createdAt) }}</span>
-            <span class="mono">{{ l.traceId.slice(0, 10) }}</span>
+            <span class="mono">{{ l.traceId?.slice(0, 10) ?? '—' }}</span>
             <span>{{ l.actorRole ?? '—' }}</span>
             <span>{{ l.action }}</span>
             <span class="ellipsis">{{ l.target }}</span>

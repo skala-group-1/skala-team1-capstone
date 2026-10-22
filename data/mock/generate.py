@@ -743,10 +743,13 @@ def gen_reservations(rng, base, users, hospitals, slots, offered):
     return rows
 
 
-def gen_reviews(rng, base, hospitals, offered):
+def gen_reviews(rng, base, hospitals, offered, counts=None):
     rows = []
     for h in hospitals:
-        n = rng.randint(60, 80) if h["id"] <= 3 else rng.randint(5, 80)
+        if counts is not None:
+            n = counts[h["id"]]
+        else:
+            n = rng.randint(60, 80) if h["id"] <= 3 else rng.randint(5, 80)
         langs = h["supported_languages"]
         lang_w = [4 if l == "ko" else 2 for l in langs]
         an = AREAS[h["area_code"]][6]
@@ -771,6 +774,19 @@ def gen_reviews(rng, base, hospitals, offered):
                 "content": sep.join(parts), "created_at": iso(created),
             })
     return rows
+
+
+REVIEW_FACTOR = 4  # 병원마다 리뷰를 원래 개수의 4배로
+
+
+def extend_reviews(reviews, base, hospitals, offered, seed, factor=REVIEW_FACTOR):
+    """병원마다 (factor-1)배 리뷰를 뒤에 덧붙인다. 별도 rng 라 기존 리뷰와 다른 테이블은 그대로다."""
+    rng = random.Random("%d-review-extension" % seed)
+    per_h = Counter(r["hospital_id"] for r in reviews)
+    extra = gen_reviews(rng, base, hospitals, offered, {h: n * (factor - 1) for h, n in per_h.items()})
+    for r in extra:
+        r["id"] += len(reviews)
+    reviews.extend(extra)
 
 
 def gen_glossary():
@@ -1454,8 +1470,9 @@ def main():
     reviews = gen_reviews(rng, base, hospitals, offered)
     glossary = gen_glossary()
     conversations, consultations, chat_messages = gen_consultations(rng, base, users, price_options, slots)
-    # 아래 두 개는 기존 rng 를 쓰지 않으므로 위 데이터는 그대로다 (seed_extras.py 참고)
+    # 아래 세 개는 기존 rng 를 쓰지 않으므로 위 데이터는 그대로다 (seed_extras.py 참고)
     seed_extras.extend_slots(slots, hospitals, base, args.seed)
+    extend_reviews(reviews, base, hospitals, offered, args.seed)
     review_translations = seed_extras.gen_review_translations(
         reviews, hospitals, {code: a[6] for code, a in AREAS.items()}, PROC_NAME)
 

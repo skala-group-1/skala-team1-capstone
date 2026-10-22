@@ -146,6 +146,8 @@ const zh: typeof en = {
     koOnly: '仅韩语咨询',
     age: '{age}',
     noReviews: '暂无评价',
+    noProcReviews: '该项目暂无评价',
+    moreReviews: '查看更多评价',
     writtenIn: '{lang}撰写',
     showOriginal: '查看原文',
     showTranslation: '查看翻译',

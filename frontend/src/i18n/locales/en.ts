@@ -406,7 +406,7 @@ export default {
       title: 'About this chat',
       body: 'Yeoshin AI does not recommend or rank clinics and does not give medical advice. Prices and times come only from the data clinics provide.',
     },
-    approval: { request: 'Request booking', cancelReservation: 'Cancel booking', edit: 'Edit', note: 'Note to the clinic', notePlaceholder: 'e.g. afternoon visits only' },
+    approval: { request: 'Request booking', dismiss: 'Not now', cancelReservation: 'Cancel booking', edit: 'Edit', note: 'Note to the clinic', notePlaceholder: 'e.g. afternoon visits only' },
     summary: {
       title: 'Consultation summary',
       titleCount: 'Consultation summary · {n} questions',

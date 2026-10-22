@@ -406,7 +406,7 @@ const zh: typeof en = {
       title: '对话说明',
       body: 'Yeoshin AI 不推荐医院、不排名，也不做医疗判断。价格和时间仅显示医院提供的信息。',
     },
-    approval: { request: '提交预约', cancelReservation: '取消预约', edit: '修改', note: '给医院的备注', notePlaceholder: '例：只能下午就诊' },
+    approval: { request: '提交预约', dismiss: '暂不', cancelReservation: '取消预约', edit: '修改', note: '给医院的备注', notePlaceholder: '例：只能下午就诊' },
     summary: {
       title: '咨询请求摘要',
       titleCount: '咨询请求摘要 · {n} 个问题',

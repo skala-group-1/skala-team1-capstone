@@ -406,7 +406,7 @@ const ja: typeof en = {
       title: 'この会話について',
       body: 'Yeoshin AIは病院をおすすめしたり順位を付けたりせず、医療的な判断もしません。価格・時間は病院が提供した情報のみ表示します。',
     },
-    approval: { request: '予約をリクエスト', cancelReservation: '予約をキャンセル', edit: '修正', note: '病院へのメモ', notePlaceholder: '例：午後のみ来院可能' },
+    approval: { request: '予約をリクエスト', dismiss: '今はしない', cancelReservation: '予約をキャンセル', edit: '修正', note: '病院へのメモ', notePlaceholder: '例：午後のみ来院可能' },
     summary: {
       title: '相談リクエストの要約',
       titleCount: '相談リクエストの要約 · 質問 {n}件',

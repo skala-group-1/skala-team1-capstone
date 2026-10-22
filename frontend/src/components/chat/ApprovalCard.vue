@@ -14,9 +14,10 @@ const { t } = useI18n()
 const editingNote = ref(false)
 const note = ref(typeof props.action.args.note === 'string' ? props.action.args.note : '')
 const canEditNote = computed(() => props.action.editable.includes('note'))
-const primaryLabel = computed(() =>
-  props.action.action === 'CANCEL_RESERVATION' ? t('chat.approval.cancelReservation') : t('chat.approval.request'),
-)
+// 예약 취소 카드: "예약 취소하기"와 "취소"가 ja·zh 에서 같은 말로 읽힘 → 주 버튼은 위험(빨강)·✕, 보조 버튼은 "유지하기"
+const isCancel = computed(() => props.action.action === 'CANCEL_RESERVATION')
+const primaryLabel = computed(() => (isCancel.value ? t('chat.approval.cancelReservation') : t('chat.approval.request')))
+const dismissLabel = computed(() => (isCancel.value ? t('reservations.keep') : t('chat.approval.dismiss')))
 
 function approve() {
   emit('approve', editingNote.value ? { note: note.value.trim() || null } : null)
@@ -26,7 +27,7 @@ function approve() {
 <template>
   <section class="card" :aria-label="action.display.title">
     <header class="head">
-      <AppIcon name="calendar" :size="20" class="brand" />
+      <AppIcon :name="isCancel ? 'x' : 'calendar'" :size="20" :class="isCancel ? 'danger' : 'brand'" />
       <h3 class="t-body-16-sb">{{ action.display.title }}</h3>
     </header>
     <dl class="rows">
@@ -44,18 +45,19 @@ function approve() {
       <span>{{ action.display.notice }}</span>
     </p>
     <div class="actions">
-      <AppButton block :loading="busy" @click="approve">{{ primaryLabel }}</AppButton>
+      <AppButton block :variant="isCancel ? 'danger' : 'primary'" :loading="busy" @click="approve">{{ primaryLabel }}</AppButton>
       <div class="actions__row">
         <AppButton v-if="canEditNote && !editingNote" variant="outline" block :disabled="busy" @click="editingNote = true">
           {{ t('chat.approval.edit') }}
         </AppButton>
-        <AppButton variant="ghost" block :disabled="busy" @click="emit('reject')">{{ t('common.cancel') }}</AppButton>
+        <AppButton variant="ghost" block :disabled="busy" @click="emit('reject')">{{ dismissLabel }}</AppButton>
       </div>
     </div>
   </section>
 </template>
 
 <style scoped>
+.danger { color: var(--status-danger); }
 .card {
   display: flex;
   flex-direction: column;

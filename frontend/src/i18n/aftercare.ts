@@ -15,6 +15,13 @@ export const aftercareMessages = {
       closedBadge: 'Guidance ended',
       closed: 'This reservation was cancelled or declined, so guidance in this chat has ended.',
       notice: 'General information only. Follow your clinic’s instructions first.',
+      ops: {
+        title: 'Procedure care guides',
+        body: 'Sends today’s procedure care guide now to pending and confirmed reservations (7 days before to 30 days after). It also runs automatically every day at 9:00, and rooms that already got today’s guide are skipped.',
+        send: 'Send today’s guides now',
+        done: 'Checked {checked} · requested {requested}',
+        failed: 'Could not send the guides. Please try again.',
+      },
     },
     notifications: {
       types: { AFTERCARE_MESSAGE: 'New procedure care message' },
@@ -37,6 +44,13 @@ export const aftercareMessages = {
       closedBadge: '안내 종료',
       closed: '예약이 취소·반려되어 이 대화의 안내가 종료됐어요.',
       notice: '일반 정보예요. 병원 안내를 먼저 따라 주세요.',
+      ops: {
+        title: '시술 관리 안내',
+        body: '승인 대기·확정 예약(시술 7일 전~30일 후)에 오늘의 시술 관리 안내를 지금 보냅니다. 매일 오전 9시에도 자동으로 실행되며, 오늘 이미 안내한 방은 건너뜁니다.',
+        send: '오늘 안내 지금 보내기',
+        done: '확인 {checked}건 · 안내 요청 {requested}건',
+        failed: '안내를 보내지 못했어요. 다시 시도해 주세요.',
+      },
     },
     notifications: {
       types: { AFTERCARE_MESSAGE: '시술 관리 메시지가 도착했어요' },
@@ -59,6 +73,13 @@ export const aftercareMessages = {
       closedBadge: '指导已结束',
       closed: '该预约已取消或被拒绝，本聊天的指导已结束。',
       notice: '仅为一般信息，请优先遵循医院的指示。',
+      ops: {
+        title: '护理指导',
+        body: '立即向待确认和已确认的预约（术前7天至术后30天）发送今天的护理指导。每天9:00也会自动执行，今天已发送的聊天会跳过。',
+        send: '立即发送今天的指导',
+        done: '检查 {checked} · 请求 {requested}',
+        failed: '发送失败，请重试。',
+      },
     },
     notifications: {
       types: { AFTERCARE_MESSAGE: '收到新的护理消息' },
@@ -81,6 +102,13 @@ export const aftercareMessages = {
       closedBadge: '案内終了',
       closed: '予約がキャンセルまたはお断りとなったため、このチャットの案内は終了しました。',
       notice: '一般的な情報です。病院の指示を優先してください。',
+      ops: {
+        title: 'ケア案内',
+        body: '承認待ち・確定の予約（施術7日前〜30日後）に今日のケア案内を今すぐ送ります。毎日9:00にも自動で実行され、今日すでに案内したルームはスキップします。',
+        send: '今日の案内を今すぐ送る',
+        done: '確認 {checked}件 · 依頼 {requested}件',
+        failed: '送信できませんでした。もう一度お試しください。',
+      },
     },
     notifications: {
       types: { AFTERCARE_MESSAGE: 'ケアメッセージが届きました' },

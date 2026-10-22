@@ -1,0 +1,29 @@
+discovery.docker "perf" {
+  host = "unix:///var/run/docker.sock"
+  filter {
+    name = "label"
+    values = ["com.docker.compose.project=capstone-perf"]
+  }
+}
+discovery.relabel "perf" {
+  targets = []
+  rule {
+    source_labels = ["__meta_docker_container_label_com_docker_compose_service"]
+    target_label = "service"
+  }
+  rule {
+    target_label = "job"
+    replacement = "capstone-perf"
+  }
+}
+loki.source.docker "perf" {
+  host = "unix:///var/run/docker.sock"
+  targets = discovery.docker.perf.targets
+  relabel_rules = discovery.relabel.perf.rules
+  forward_to = [loki.write.local.receiver]
+}
+loki.write "local" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}

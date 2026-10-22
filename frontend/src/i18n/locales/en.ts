@@ -547,6 +547,8 @@ export default {
       started: 'Started',
       customerLang: 'Language',
       closeNote: 'After you end it, the AI answers in the customer chat again',
+      closeConfirm: 'End this consultation?',
+      notMine: 'Another counselor is handling this consultation',
       translateFailed: 'Translation failed · Retry',
       notice: 'During the consultation the AI stops answering the customer; only your replies are translated and delivered.',
       noticeSame: 'During the consultation the AI stops answering the customer; only your replies are delivered as written.',

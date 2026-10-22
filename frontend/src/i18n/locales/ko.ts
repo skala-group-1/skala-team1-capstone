@@ -548,6 +548,8 @@ const ko: typeof en = {
       started: '시작',
       customerLang: '고객 언어',
       closeNote: '상담을 종료하면 고객 대화창은 다시 AI가 답해요',
+      closeConfirm: '상담을 종료할까요?',
+      notMine: '다른 상담사가 진행 중인 상담이에요',
       translateFailed: '번역 실패 · 다시 번역',
       notice: '상담 중에는 고객 화면의 AI 답변이 멈추고, 이 화면의 답변만 고객 언어로 번역돼 전달돼요.',
       noticeSame: '상담 중에는 고객 화면의 AI 답변이 멈추고, 이 화면의 답변이 그대로 전달돼요.',

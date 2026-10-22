@@ -132,7 +132,7 @@ const isMine = (m: ChatMessage) => m.senderRole === 'CUSTOMER'
 const untranslated = (m: ChatMessage) => m.translatedLang === m.originalLang
 function myStatus(m: ChatMessage) {
   if (m.translationStatus === 'PENDING') return t('chat.human.translating')
-  if (m.translationStatus === 'FAILED') return t('chat.human.failed')
+  if (m.translationStatus === 'FAILED') return t(m.id < 0 ? 'chat.human.sendFailed' : 'chat.human.failed')
   if (untranslated(m)) return ''
   return m.translatedLang ? t('chat.human.sentIn', { lang: t(`domain.langName.${m.translatedLang}`) }) : ''
 }

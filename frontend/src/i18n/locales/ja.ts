@@ -438,6 +438,7 @@ const ja: typeof en = {
     human: {
       translating: '翻訳中…',
       failed: '翻訳失敗 · 再送信',
+      sendFailed: '送信できませんでした · 再送信',
       sentIn: '{lang}に翻訳して送信済み',
       autoTranslated: '自動翻訳 · 原文を見る',
       hideOriginal: '原文を隠す',

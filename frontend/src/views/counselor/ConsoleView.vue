@@ -58,11 +58,12 @@ const langName = (l: string) => t(`domain.langName.${l}`)
 // D-43: 한국어 고객은 번역 없이 그대로 전달 → 번역 안내·원문 보기를 숨긴다
 const sameLang = computed(() => current.value?.customer.locale === 'ko')
 const untranslated = (m: ChatMessage) => m.translatedLang === m.originalLang
+const hasTranslation = (m: ChatMessage) => m.translationStatus === 'DONE' && !!m.translatedText && !untranslated(m)
 const flagged = computed(() => store.messages.filter((m) => m.senderRole === 'CUSTOMER' && m.flags.length))
 
 function statusLine(m: ChatMessage) {
   if (m.translationStatus === 'PENDING') return t('chat.human.translating')
-  if (m.translationStatus === 'FAILED') return t('chat.human.failed')
+  if (m.translationStatus === 'FAILED') return t(m.id < 0 ? 'chat.human.sendFailed' : 'chat.human.failed')
   if (untranslated(m)) return ''
   return t('staff.console.sentIn', { lang: langName(current.value?.customer.locale ?? 'en') })
 }
@@ -245,11 +246,16 @@ onBeforeUnmount(() => store.close())
               :text="m.translationStatus === 'DONE' ? (m.translatedText ?? m.originalText) : m.originalText"
             >
               <p v-if="m.translationStatus === 'PENDING'" class="status t-caption-11">{{ t('chat.human.translating') }}</p>
-              <p v-if="(showAllOriginal || shown.has(m.id)) && !untranslated(m)" class="original t-caption-12">{{ t('staff.console.original') }} · {{ m.originalText }}</p>
+              <!-- 번역 실패: 원문이 그대로 보이므로 실패를 알리고 다시 번역 -->
+              <button v-else-if="m.translationStatus === 'FAILED'" type="button" class="status status--failed t-caption-12-sb" @click="store.retryTranslation(m)">
+                <AppIcon name="alert-triangle" :size="14" />{{ t('staff.console.translateFailed') }}
+              </button>
+              <!-- 원문 보기는 번역이 끝난 메시지만 (번역 전·실패는 이미 원문이 보임) -->
+              <p v-if="(showAllOriginal || shown.has(m.id)) && hasTranslation(m)" class="original t-caption-12">{{ t('staff.console.original') }} · {{ m.originalText }}</p>
               <div class="flags">
                 <AppBadge v-if="m.flags.includes('MEDICAL_QUESTION')" tone="warning" icon="alert-triangle">{{ t('staff.console.flags.MEDICAL_QUESTION') }}</AppBadge>
                 <AppBadge v-if="m.flags.includes('NUMBER_MISMATCH')" tone="warning" icon="alert-triangle">{{ t('staff.console.flags.NUMBER_MISMATCH') }}</AppBadge>
-                <button v-if="!showAllOriginal && !untranslated(m)" type="button" class="link t-caption-12-sb" @click="toggle(m.id)">
+                <button v-if="!showAllOriginal && hasTranslation(m)" type="button" class="link t-caption-12-sb" @click="toggle(m.id)">
                   {{ shown.has(m.id) ? t('chat.human.hideOriginal') : t('staff.console.seeOriginal') }}
                 </button>
               </div>

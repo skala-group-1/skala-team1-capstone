@@ -438,6 +438,7 @@ const zh: typeof en = {
     human: {
       translating: '翻译中…',
       failed: '翻译失败 · 重新发送',
+      sendFailed: '发送失败 · 重新发送',
       sentIn: '已翻译为{lang}发送',
       autoTranslated: '自动翻译 · 查看原文',
       hideOriginal: '隐藏原文',

@@ -123,7 +123,8 @@ function booked(r: Reservation) {
 }
 
 onMounted(load)
-watch(tab, (v) => v === 'reviews' && !reviews.value.length && void loadReviews())
+// ?tab=reviews 로 바로 들어와도(예약 상세 → 병원 리뷰 보기) 불러오도록 immediate
+watch(tab, (v) => v === 'reviews' && !reviews.value.length && void loadReviews(), { immediate: true })
 watch(id, () => void load())
 </script>
 

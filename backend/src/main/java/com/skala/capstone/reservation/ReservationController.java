@@ -18,11 +18,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.skala.capstone.catalog.CatalogDtos.Review;
 import com.skala.capstone.common.security.CurrentUser;
 import com.skala.capstone.common.web.RequestLocale;
 import com.skala.capstone.reservation.ReservationDtos.AcceptAlternativeRequest;
 import com.skala.capstone.reservation.ReservationDtos.CancelRequest;
 import com.skala.capstone.reservation.ReservationDtos.CreateReservationRequest;
+import com.skala.capstone.reservation.ReservationDtos.CreateReviewRequest;
 import com.skala.capstone.reservation.ReservationDtos.Reservation;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -82,5 +84,14 @@ public class ReservationController {
 			@Valid @RequestBody AcceptAlternativeRequest req, HttpServletRequest request) {
 		var result = reservations.acceptAlternative(user, id, req.slotId(), key, RequestLocale.resolve(request));
 		return ResponseEntity.status(result.created() ? HttpStatus.CREATED : HttpStatus.OK).body(result.reservation());
+	}
+
+	@Operation(summary = "리뷰 작성 (본인의 CONFIRMED 예약, 예약당 1회)")
+	@PreAuthorize("hasRole('CUSTOMER')")
+	@PostMapping("/{id}/review")
+	public ResponseEntity<Review> writeReview(@AuthenticationPrincipal CurrentUser user, @PathVariable long id,
+			@Valid @RequestBody CreateReviewRequest req, HttpServletRequest request) {
+		return ResponseEntity.status(HttpStatus.CREATED)
+				.body(reservations.writeReview(user, id, req, RequestLocale.resolve(request)));
 	}
 }

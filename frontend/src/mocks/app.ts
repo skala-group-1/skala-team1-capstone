@@ -33,6 +33,8 @@ import type {
   SummaryCard,
 } from '@/types/contract'
 import {
+  addReview,
+  hideReviewOf,
   doctors,
   hospitals,
   pickName,
@@ -204,6 +206,7 @@ function toReservation(r: ResRow, locale: Locale, staff: boolean): Reservation {
   const slotRow = slots.find((s) => s.id === r.slot_id)!
   const u = users.find((x) => x.id === r.user_id)!
   const raw = u as unknown as { nationality?: string }
+  const reviewId = reviews.find((x) => x.reservation_id === r.id)?.id ?? null
   return {
     id: r.id,
     status: r.status,
@@ -219,6 +222,8 @@ function toReservation(r: ResRow, locale: Locale, staff: boolean): Reservation {
     note: r.customer_note,
     createdAt: r.created_at,
     decidedAt: r.decided_at,
+    reviewable: r.status === 'CONFIRMED' && reviewId === null,
+    reviewId,
   }
 }
 function toSummary(card: Row, locale: Locale): SummaryCard {
@@ -615,7 +620,7 @@ export const appHandlers = [
   http.get(`${API}/hospitals/:id/reviews`, ({ request, params }) => {
     if (!auth(request)) return deny()
     const url = new URL(request.url)
-    return HttpResponse.json(page(reviews.filter((r) => r.hospital_id === Number(params.id)).map(toReview), url))
+    return HttpResponse.json(page(reviews.filter((r) => r.hospital_id === Number(params.id) && !r.hidden).map(toReview), url))
   }),
   http.post(`${API}/hospitals/compare`, async ({ request }) => {
     if (!auth(request)) return deny()
@@ -700,6 +705,7 @@ export const appHandlers = [
     if (!r) return error(403, 'ACCESS_DENIED', 'Access denied')
     if (r.status !== 'PENDING' && r.status !== 'CONFIRMED') return error(409, 'INVALID_STATE_TRANSITION', 'Cannot cancel', { from: r.status, to: 'CANCELLED' })
     r.status = 'CANCELLED'
+    hideReviewOf(r.id)
     notify(adminsOf(r.hospital_id), 'RESERVATION_CANCELLED', { reservationId: r.id })
     return HttpResponse.json(toReservation(r, localeOf(request), false))
   }),
@@ -713,6 +719,36 @@ export const appHandlers = [
     resRows.push(n)
     notify(adminsOf(n.hospital_id), 'RESERVATION_REQUESTED', { reservationId: n.id })
     return HttpResponse.json(toReservation(n, localeOf(request), false), { status: 201 })
+  }),
+  http.post(`${API}/reservations/:id/review`, async ({ request, params }) => {
+    const u = auth(request)
+    if (!u) return deny()
+    const r = resRows.find((x) => x.id === Number(params.id) && x.user_id === u.id)
+    if (!r) return error(403, 'ACCESS_DENIED', 'Access denied')
+    if (r.status !== 'CONFIRMED') return error(409, 'REVIEW_NOT_ALLOWED', 'Reviews can be written only for confirmed reservations.', { status: r.status })
+    if (reviews.some((x) => x.reservation_id === r.id)) return error(409, 'REVIEW_ALREADY_EXISTS', 'You have already written a review for this reservation.')
+    const { rating, content } = (await request.json()) as { rating: number; content: string }
+    const text = (content ?? '').trim()
+    if (!(rating >= 1 && rating <= 5) || text.length < 10 || text.length > 1000) {
+      return error(400, 'VALIDATION_FAILED', 'Invalid review', { fields: [{ field: 'content', reason: 'size must be between 10 and 1000' }] })
+    }
+    const raw = u as unknown as { birth_date?: string; gender?: string; nationality?: string }
+    const age = raw.birth_date ? new Date().getFullYear() - Number(raw.birth_date.slice(0, 4)) : 0
+    const row = {
+      id: Math.max(...reviews.map((x) => x.id)) + 1,
+      hospital_id: r.hospital_id,
+      procedure_code: r.procedure_code,
+      rating,
+      age_group: age >= 20 && age < 60 ? `${Math.floor(age / 10) * 10}s` : '',
+      gender: raw.gender ?? '',
+      reviewer_nationality: raw.nationality ?? null,
+      lang: localeOf(request),
+      content: text,
+      created_at: nowIso(),
+      reservation_id: r.id,
+    }
+    addReview(row)
+    return HttpResponse.json(toReview(row), { status: 201 })
   }),
 
   // 알림

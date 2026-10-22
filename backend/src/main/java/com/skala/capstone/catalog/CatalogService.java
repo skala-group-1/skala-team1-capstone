@@ -472,7 +472,10 @@ public class CatalogService {
 
 	public PageResponse<Review> reviews(long hospitalId, String lang, int page, int size) {
 		requireHospital(hospitalId);
-		String where = " WHERE hospital_id = :id" + (lang != null ? " AND lang = :lang" : "");
+		// 취소된 예약으로 쓴 리뷰는 숨긴다 (hospital_review_stats 뷰와 같은 조건, V103)
+		String where = " WHERE hospital_id = :id" + (lang != null ? " AND lang = :lang" : "")
+				+ " AND NOT EXISTS (SELECT 1 FROM app.reservations x WHERE x.id = reviews.reservation_id"
+				+ " AND x.status = 'CANCELLED')";
 		Map<String, Object> params = new LinkedHashMap<>();
 		params.put("id", hospitalId);
 		if (lang != null) {

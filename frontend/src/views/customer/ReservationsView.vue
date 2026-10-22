@@ -137,7 +137,7 @@ onMounted(load)
       </li>
     </ul>
 
-    <AppDialog :open="!!cancelTarget" :title="t('reservations.cancelTitle')" :body="t('reservations.cancelBody')">
+    <AppDialog :open="!!cancelTarget" @close="cancelling || (cancelTarget = null)" :title="t('reservations.cancelTitle')" :body="t('reservations.cancelBody')">
       <template #actions>
         <AppButton variant="secondary" :disabled="cancelling" @click="cancelTarget = null">{{ t('reservations.keep') }}</AppButton>
         <AppButton variant="danger" :loading="cancelling" @click="cancel">{{ t('chat.requested.cancel') }}</AppButton>

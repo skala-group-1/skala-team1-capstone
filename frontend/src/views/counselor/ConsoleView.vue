@@ -351,7 +351,7 @@ onBeforeUnmount(() => store.close())
       </section>
       <p class="notice t-caption-13"><AppIcon name="info" :size="16" />{{ t(sameLang ? 'staff.console.noticeSame' : 'staff.console.notice') }}</p>
     </aside>
-    <AppDialog :open="closeOpen" :title="t('staff.console.closeConfirm')" :body="t('staff.console.closeNote')">
+    <AppDialog :open="closeOpen" @close="busy || (closeOpen = false)" :title="t('staff.console.closeConfirm')" :body="t('staff.console.closeNote')">
       <template #actions>
         <AppButton variant="secondary" :disabled="busy" @click="closeOpen = false">{{ t('common.cancel') }}</AppButton>
         <AppButton variant="danger" :loading="busy" @click="finish">{{ t('staff.console.close') }}</AppButton>

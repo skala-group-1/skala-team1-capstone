@@ -748,17 +748,18 @@ watch(
     </footer>
 
     <EvidenceSheet :open="!!evidence" :sources="evidence ?? []" @close="evidence = null" />
-    <AppDialog :open="cancelRequestOpen" :title="t('reservations.cancelTitle')" :body="t('reservations.cancelBody')">
+    <AppDialog :open="cancelRequestOpen" @close="cancellingRequest || (cancelRequestOpen = false)" :title="t('reservations.cancelTitle')" :body="t('reservations.cancelBody')">
       <template #actions>
         <AppButton variant="secondary" :disabled="cancellingRequest" @click="cancelRequestOpen = false">{{ t('reservations.keep') }}</AppButton>
         <AppButton variant="danger" :loading="cancellingRequest" @click="cancelRequested">{{ t('chat.requested.cancel') }}</AppButton>
       </template>
     </AppDialog>
-    <AppDialog :open="infoOpen" :title="t('chat.info.title')" :body="t('chat.info.body')">
+    <AppDialog :open="infoOpen" @close="infoOpen = false" :title="t('chat.info.title')" :body="t('chat.info.body')">
       <template #actions><AppButton @click="infoOpen = false">{{ t('common.confirm') }}</AppButton></template>
     </AppDialog>
     <AppDialog
       :open="endConsultOpen"
+      @close="endingConsult || (endConsultOpen = false)"
       :title="consultStatus === 'WAITING' ? t('chat.human.cancelTitle') : t('chat.human.endTitle')"
       :body="consultStatus === 'WAITING' ? t('chat.human.cancelBody') : t('chat.human.endBody')"
     >

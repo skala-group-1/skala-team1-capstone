@@ -304,6 +304,7 @@ const ja: typeof en = {
       pick: '相談テーマを選んでください。',
       label: '相談テーマ',
       change: 'テーマを変更',
+      new: 'NEW',
       started: '「{topic}」の相談を始めました',
       next: '次のテーマ',
       groups: {
@@ -333,7 +334,7 @@ const ja: typeof en = {
       },
     },
     quick: {
-      procedures: '施術のおすすめ',
+      procedures: '施術を調べる',
       hospitals: '病院を探す',
       reservations: '予約',
       faq: 'よくある質問',

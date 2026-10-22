@@ -304,6 +304,7 @@ const zh: typeof en = {
       pick: '请选择咨询主题。',
       label: '咨询主题',
       change: '更换主题',
+      new: '新',
       started: '已开始「{topic}」咨询',
       next: '更多主题',
       groups: {
@@ -333,7 +334,7 @@ const zh: typeof en = {
       },
     },
     quick: {
-      procedures: '项目推荐',
+      procedures: '了解项目',
       hospitals: '找医院',
       reservations: '我的预约',
       faq: '常见问题',

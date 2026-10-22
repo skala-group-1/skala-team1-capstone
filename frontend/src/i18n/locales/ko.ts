@@ -305,6 +305,7 @@ const ko: typeof en = {
       pick: '상담할 주제를 골라주세요.',
       label: '상담 주제',
       change: '주제 바꾸기',
+      new: 'NEW',
       started: '‘{topic}’ 상담을 시작했어요',
       next: '다음 주제',
       groups: {
@@ -334,7 +335,7 @@ const ko: typeof en = {
       },
     },
     quick: {
-      procedures: '시술 추천',
+      procedures: '시술 알아보기',
       hospitals: '병원 찾기',
       reservations: '내 예약',
       faq: '자주 묻는 질문',

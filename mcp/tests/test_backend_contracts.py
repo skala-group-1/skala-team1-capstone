@@ -135,6 +135,17 @@ async def test_reviews_use_existing_pagination_and_language_contract(backend_res
     assert request.url.path == "/internal/hospitals/7/reviews"
     assert request.url.params["lang"] == "ja"
     assert request.url.params["page"] == "1"
+    assert "procedureCode" not in request.url.params
+
+
+async def test_reviews_pass_procedure_filter(backend_response):
+    backend_response.update(status=200, body={"items": [], "page": 0, "size": 10, "total": 0})
+    async with Client(server.mcp) as client:
+        await client.call_tool("get_hospital_reviews", {
+            "hospital_id": 7, "procedure_code": "NOSE_FILLER", "size": 10,
+        })
+    request, = backend_response["requests"]
+    assert request.url.params["procedureCode"] == "NOSE_FILLER"
 
 
 @pytest.mark.parametrize("args", [{"hospital_id": 0}, {"hospital_id": 1, "page": -1},

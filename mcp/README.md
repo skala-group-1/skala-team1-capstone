@@ -6,8 +6,8 @@
 
 FastMCP 서버 2개 (「MCP 설계」). agent 는 두 서버를 한 Client 에 붙여 도구명 접두어 `business_`, `rag_` 로 쓴다.
 
-병원 리뷰: `get_hospital_reviews(hospital_id, lang=None, page=0, size=5)`는
-`GET /internal/hospitals/{id}/reviews`를 호출합니다. 공개 리뷰 API와 같은 백엔드
+병원 리뷰: `get_hospital_reviews(hospital_id, lang=None, procedure_code=None, page=0, size=5)`는
+`GET /internal/hospitals/{id}/reviews`를 호출합니다. `procedure_code`는 페이지를 자르기 전에 적용되는 시술 필터입니다. 공개 리뷰 API와 같은 백엔드
 서비스를 사용하며 최신순 `items/page/size/total`을 반환합니다. MCP의 `size`는 1~10이고,
 반환 항목은 리뷰 ID·시술 코드·평점·원문 언어·본문·작성일입니다. 사용자 ID는 전달하지 않습니다.
 

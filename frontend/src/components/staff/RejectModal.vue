@@ -31,23 +31,29 @@ const detail = ref('')
 const picked = ref<Slot[]>([])
 const pool = ref<Slot[]>([])
 const picking = ref(false)
+const poolLoading = ref(false)
 
 watch(
   () => props.open,
   async (open) => {
     if (!open || !props.reservation) return
-    preset.value = 'slotTaken'
+    // 사유를 미리 골라 두지 않는다 (확인 없이 '슬롯 마감'으로 나가던 문제)
+    preset.value = null
     detail.value = ''
     picked.value = []
     picking.value = false
     const r = props.reservation
     const from = seoulDate()
     const to = seoulDate(new Date(Date.now() + 14 * 86400000))
+    poolLoading.value = true
     pool.value = (await catalogApi.slots(r.hospital.id, { procedure: r.procedure.code, dateFrom: from, dateTo: to, limit: 60 }).catch(() => [])).filter(
       (s) => s.id !== r.slot.id,
     )
+    poolLoading.value = false
   },
 )
+// '기타'는 상세 사유가 있어야 고객이 이해할 수 있다
+const canSubmit = computed(() => (preset.value && preset.value !== 'other') || !!detail.value.trim())
 const reason = computed(() => [preset.value ? t(`staff.reject.presets.${preset.value}`) : '', detail.value.trim()].filter(Boolean).join(' — '))
 const candidates = computed(() => pool.value.filter((s) => !picked.value.some((p) => p.id === s.id)).slice(0, 12))
 
@@ -56,7 +62,7 @@ function add(s: Slot) {
   picking.value = false
 }
 function submit() {
-  if (!reason.value) return
+  if (!canSubmit.value) return
   emit('submit', { reason: reason.value.slice(0, 500), alternativeSlotIds: picked.value.map((s) => s.id) })
 }
 </script>
@@ -97,14 +103,15 @@ function submit() {
             </button>
             <div v-if="picking" class="pool">
               <button v-for="s in candidates" :key="s.id" type="button" class="slot t-caption-13" @click="add(s)">{{ fmtDateTime(s.startAt) }} · {{ s.doctorName }}</button>
-              <p v-if="!candidates.length" class="t-caption-12 muted">{{ t('booking.noSlots') }}</p>
+              <p v-if="poolLoading" class="t-caption-12 muted">{{ t('common.loading') }}</p>
+              <p v-else-if="!candidates.length" class="t-caption-12 muted">{{ t('booking.noSlots') }}</p>
             </div>
           </div>
           <p class="notice t-caption-13"><AppIcon name="info" :size="16" />{{ t('staff.reject.notice') }}</p>
         </div>
         <footer class="foot">
           <AppButton variant="ghost" :disabled="busy" @click="requestClose">{{ t('common.cancel') }}</AppButton>
-          <AppButton variant="danger" block :disabled="!reason" :loading="busy" @click="submit">{{ t('staff.reject.submit') }}</AppButton>
+          <AppButton variant="danger" block :disabled="!canSubmit" :loading="busy" @click="submit">{{ t('staff.reject.submit') }}</AppButton>
         </footer>
     </template>
   </dialog>

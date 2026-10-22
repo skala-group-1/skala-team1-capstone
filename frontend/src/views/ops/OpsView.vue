@@ -10,6 +10,7 @@ import AppChip from '@/components/ui/AppChip.vue'
 import AppBadge from '@/components/ui/AppBadge.vue'
 import AppIcon from '@/components/ui/AppIcon.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
+import AppButton from '@/components/ui/AppButton.vue'
 import AftercareOpsCard from '@/components/aftercare/AftercareOpsCard.vue'
 import type { AuditLog, OpsAiTask, Page } from '@/types/contract'
 
@@ -58,7 +59,9 @@ watch(auditOnly, () => void load())
 
 <template>
   <div class="page">
-    <EmptyState v-if="failed" icon="alert-triangle" tone="danger" :title="t('staff.loadFailed')" />
+    <EmptyState v-if="failed" icon="alert-triangle" tone="danger" :title="t('staff.loadFailed')">
+      <AppButton variant="secondary" icon="refresh-cw" @click="load">{{ t('common.retry') }}</AppButton>
+    </EmptyState>
     <template v-else>
       <AftercareOpsCard v-if="!auditOnly" />
       <section v-if="!auditOnly" class="section">
@@ -82,15 +85,15 @@ watch(auditOnly, () => void load())
             <span>#{{ x.userId }}</span>
             <span class="ellipsis">{{ x.message ?? '—' }}</span>
             <span class="ellipsis">{{ x.error?.message ?? '—' }}</span>
-            <span><AppBadge :tone="x.status === 'FAILED' ? 'danger' : x.status === 'DONE' ? 'success' : 'neutral'">{{ x.status }}</AppBadge></span>
+            <span><AppBadge :tone="x.status === 'FAILED' ? 'danger' : x.status === 'DONE' ? 'success' : 'neutral'">{{ t(`staff.ops.status.${x.status}`) }}</AppBadge></span>
             <button type="button" class="link t-caption-13" @click="copyTrace(x.id)">{{ t('staff.ops.copyTrace') }} <AppIcon name="chevron-right" :size="14" /></button>
           </div>
           <p v-if="!tasks?.items.length" class="no-rows t-body-14">{{ t('staff.ops.noTasks') }}</p>
           <footer class="foot t-caption-12">
             <span>{{ range(tasks) }} · GET /api/ops/ai-tasks</span>
             <span class="pager">
-              <button type="button" :disabled="!taskPage" :aria-label="t('booking.prevMonth')" @click="taskPage--"><AppIcon name="chevron-left" :size="16" /></button>
-              <button type="button" :disabled="!tasks || (taskPage + 1) * SIZE >= tasks.total" :aria-label="t('booking.nextMonth')" @click="taskPage++"><AppIcon name="chevron-right" :size="16" /></button>
+              <button type="button" :disabled="!taskPage" :aria-label="t('staff.ops.prevPage')" @click="taskPage--"><AppIcon name="chevron-left" :size="16" /></button>
+              <button type="button" :disabled="!tasks || (taskPage + 1) * SIZE >= tasks.total" :aria-label="t('staff.ops.nextPage')" @click="taskPage++"><AppIcon name="chevron-right" :size="16" /></button>
             </span>
           </footer>
         </div>
@@ -100,7 +103,7 @@ watch(auditOnly, () => void load())
         <h2 :class="auditOnly ? 't-title-22' : 't-title-18'">{{ t('staff.nav.auditLogs') }}</h2>
         <div class="table">
           <div class="tr tr--logs th t-caption-12-sb">
-            <span>{{ t('staff.ops.cols.time') }}</span><span>traceId</span><span>{{ t('staff.ops.cols.role') }}</span><span>action</span><span>target</span>
+            <span>{{ t('staff.ops.cols.time') }}</span><span>{{ t('staff.ops.cols.trace') }}</span><span>{{ t('staff.ops.cols.role') }}</span><span>{{ t('staff.ops.cols.action') }}</span><span>{{ t('staff.ops.cols.target') }}</span>
           </div>
           <div v-for="l in logs?.items ?? []" :key="l.id" class="tr tr--logs t-body-14">
             <span>{{ ts(l.createdAt) }}</span>
@@ -113,8 +116,8 @@ watch(auditOnly, () => void load())
           <footer class="foot t-caption-12">
             <span>{{ range(logs) }} · {{ t('staff.ops.latest') }} · GET /api/ops/audit-logs</span>
             <span class="pager">
-              <button type="button" :disabled="!logPage" :aria-label="t('booking.prevMonth')" @click="logPage--"><AppIcon name="chevron-left" :size="16" /></button>
-              <button type="button" :disabled="!logs || (logPage + 1) * SIZE >= logs.total" :aria-label="t('booking.nextMonth')" @click="logPage++"><AppIcon name="chevron-right" :size="16" /></button>
+              <button type="button" :disabled="!logPage" :aria-label="t('staff.ops.prevPage')" @click="logPage--"><AppIcon name="chevron-left" :size="16" /></button>
+              <button type="button" :disabled="!logs || (logPage + 1) * SIZE >= logs.total" :aria-label="t('staff.ops.nextPage')" @click="logPage++"><AppIcon name="chevron-right" :size="16" /></button>
             </span>
           </footer>
         </div>

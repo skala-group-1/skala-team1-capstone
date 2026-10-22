@@ -130,7 +130,15 @@ onMounted(async () => {
 })
 // 새 상담 요청이 오면 문의함 갱신 (열어 둔 채팅은 그대로)
 useNotificationRefresh(['CONSULTATION_REQUESTED'], loadInbox)
-watch(selectedId, () => void openSelected())
+// 상담방을 바꾸면 쓰던 답장은 그 상담에 임시 저장하고 새 방 것을 꺼낸다 (다른 고객에게 잘못 보내지 않게)
+const drafts = new Map<number, string>()
+watch(selectedId, (id, prev) => {
+  if (prev) drafts.set(prev, input.value)
+  input.value = (id && drafts.get(id)) || ''
+  shown.value = new Set()
+  busy.value = false
+  void openSelected()
+})
 watch(
   () => store.messages.length,
   async () => {

@@ -313,9 +313,8 @@ async function enter() {
     if (id) {
       if (conv.conversationId !== id) await conv.load(id)
       else {
+        // 상담 열기는 아래 consultationId watch 한 곳에서만 (여기서도 열면 두 번 열려 구독이 샌다)
         await conv.refresh(id)
-        // 상담을 못 불러와도 대화 자체는 보여 준다
-        if (conv.consultationId) await consult.open(conv.consultationId).catch(() => undefined)
       }
     } else {
       const hospitalId = route.query.hospitalId ? Number(route.query.hospitalId) : null

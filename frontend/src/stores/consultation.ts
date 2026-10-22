@@ -13,6 +13,9 @@ import {
 } from '@/api'
 import type { ChatMessage, Consultation, ConsultationStatus, ConsultationTopicEvent, Locale } from '@/types/contract'
 
+/** open() 순번 — await 사이에 다른 상담을 열거나 close() 하면 늦게 끝난 open 은 구독을 등록하지 않는다 */
+let openSeq = 0
+
 export const useConsultationStore = defineStore('consultation', {
   state: () => ({
     current: null as Consultation | null,
@@ -26,8 +29,13 @@ export const useConsultationStore = defineStore('consultation', {
   actions: {
     async open(id: number) {
       this.close()
-      this.current = await consultationApi.get(id)
-      this.messages = await consultationApi.messages(id)
+      const seq = openSeq
+      const current = await consultationApi.get(id)
+      if (seq !== openSeq) return
+      this.current = current
+      const messages = await consultationApi.messages(id)
+      if (seq !== openSeq) return
+      this.messages = messages
       // 연결될 때마다(재연결 포함) 상담방을 다시 구독. 끊기면 connected=false → "재연결 중" 표시
       this.cancelWait = whenStompConnected(
         () => {
@@ -43,6 +51,7 @@ export const useConsultationStore = defineStore('consultation', {
       )
     },
     close() {
+      openSeq++
       this.cancelWait?.()
       this.cancelWait = null
       safeUnsubscribe(this.sub)
@@ -90,6 +99,8 @@ export const useConsultationStore = defineStore('consultation', {
       else this.messages.push(m)
     },
     applyEvent(e: ConsultationTopicEvent) {
+      // 다른 상담방 이벤트는 버린다 (구독 해제가 늦게 반영되는 경우 대비)
+      if (e.data.consultationId !== this.current?.id) return
       if (e.type === 'CONSULTATION_STATUS') {
         if (this.current) {
           this.current.status = e.data.status

@@ -130,6 +130,8 @@ def plain_codes(text: str, procedure_code: str | None) -> str:
     The guard rejects any internal label and falls back to a generic error, so one stray
     "SHURINK" would otherwise discard a correct answer.
     """
+    # Chat bubbles show plain text: drop markdown headings and bold markers.
+    text = re.sub(r"(?m)^\s{0,3}#{1,6}\s*", "", text).replace("**", "").replace("__", "")
     text = re.sub(r"\bAFTERCARE_[A-Z0-9_]+\b", "", text)
     if procedure_code:
         text = re.sub(rf"\b{re.escape(procedure_code)}\b", procedure_code.replace("_", " ").title(), text)

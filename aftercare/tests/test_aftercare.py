@@ -119,6 +119,7 @@ def test_plain_codes_removes_internal_labels():
     text = agent.plain_codes("After SHURINK see AFTERCARE_SHURINK. JAW_BOTOX stays.", "SHURINK")
     assert "SHURINK" not in text and "Shurink" in text
     assert agent.plain_codes("JAW_BOTOX day", "JAW_BOTOX") == "Jaw Botox day"
+    assert agent.plain_codes("### 施術当日\n- **24時間** 避ける", None) == "施術当日\n- 24時間 避ける"
     assert not internal_labels(agent.plain_codes("SHURINK", "SHURINK"))
 
 

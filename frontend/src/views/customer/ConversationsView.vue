@@ -76,6 +76,10 @@ onMounted(() => {
     </EmptyState>
 
     <div v-else class="content">
+      <!-- 불러오는 중 (빈 화면 대신) -->
+      <div v-if="!conversations" class="skeleton-list" role="status" :aria-label="t('common.loading')" aria-busy="true">
+        <span v-for="i in 4" :key="i" class="bone" style="height: 64px" />
+      </div>
       <template v-if="conversations">
         <!-- 여신 AI (맨 위 고정): 최근 메인 대화. 없으면 /chat 이 새로 연다 -->
         <RouterLink :to="main ? `/chat/${main.id}` : '/chat'" class="row">

@@ -29,6 +29,8 @@ import EvidenceSheet from '@/components/chat/EvidenceSheet.vue'
 import TripPlanCard from '@/components/chat/TripPlanCard.vue'
 import TopicCarousel from '@/components/chat/TopicCarousel.vue'
 import ProcedureInfoCard from '@/components/chat/ProcedureInfoCard.vue'
+import AftercareHeader from '@/components/aftercare/AftercareHeader.vue'
+import { useAftercareRoom } from '@/composables/useAftercareRoom'
 import { SKIN_CONCERNS } from '@/types/contract'
 import type { ChatMessage, Conditions, ConsultTopic, ConversationMessage, Locale, ProcedureInfo, Reservation, SkinConcern, Source } from '@/types/contract'
 
@@ -61,9 +63,11 @@ const loading = ref(false)
 const isHospital = computed(() => conv.mode !== 'MAIN')
 const isHuman = computed(() => conv.mode === 'HUMAN')
 const consultStatus = computed(() => consult.current?.status ?? 'WAITING')
+const aftercare = useAftercareRoom(() => conv.conversationId)
 const title = computed(() => (isHospital.value ? (conv.hospital?.name ?? '') : t('chat.aiTitle')))
 const modeBadge = computed(() => {
   if (!isHospital.value) return { tone: 'brand' as const, icon: 'sparkles' as const, label: t('chat.mode.ai') }
+  if (conv.mode === 'AFTERCARE') return { tone: 'success' as const, icon: 'file-text' as const, label: t('aftercare.badge') }
   if (!isHuman.value) return { tone: 'agent' as const, icon: 'hospital' as const, label: t('chat.mode.agent') }
   if (consultStatus.value === 'WAITING') return { tone: 'warning' as const, icon: 'clock' as const, label: t('chat.mode.waiting') }
   return { tone: 'info' as const, icon: 'headphones' as const, label: t('chat.mode.human') }
@@ -357,7 +361,7 @@ watch(pending, () => (consent.value = false))
 watch(
   () => consult.current?.status,
   (s) => {
-    if (s === 'CLOSED' && consult.current?.id === conv.consultationId && conv.mode === 'HUMAN') conv.mode = 'HOSPITAL'
+    if (s === 'CLOSED' && consult.current?.id === conv.consultationId && conv.mode === 'HUMAN') conv.mode = aftercare.value ? 'AFTERCARE' : 'HOSPITAL'
   },
 )
 // 종료된 상담도 ID로 다시 불러와 요약·통역 기록을 유지한다.
@@ -421,6 +425,7 @@ watch(
       </template>
     </TopAppBar>
 
+    <AftercareHeader v-if="aftercare" :room="aftercare" />
     <AppBanner v-if="isHuman && consult.current && !consult.connected" type="reconnecting">{{ t('chat.reconnecting') }}</AppBanner>
 
     <!-- C4-T 상담 주제 바 -->

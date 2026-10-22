@@ -12,6 +12,7 @@ import AppBadge, { RESERVATION_TONE } from '@/components/ui/AppBadge.vue'
 import AppButton from '@/components/ui/AppButton.vue'
 import AppIcon from '@/components/ui/AppIcon.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
+import AftercareChatRows from '@/components/aftercare/AftercareChatRows.vue'
 import type { ConsultationStatus, Conversation, Reservation } from '@/types/contract'
 
 const { t } = useI18n()
@@ -20,12 +21,14 @@ const conversations = ref<Conversation[] | null>(null)
 const reservations = ref<Reservation[]>([])
 const consultStatus = ref<Record<number, ConsultationStatus>>({})
 const failed = ref(false)
+const aftercareIds = ref(new Set<string>())
 
 const main = computed(() => conversations.value?.find((c) => c.mode === 'MAIN') ?? null)
 /** 병원마다 최근 대화 1개 (목록은 최근 순) */
 const hospitalChats = computed(() => {
   const seen = new Set<number>()
-  return (conversations.value ?? []).filter((c) => c.hospital && !seen.has(c.hospital.id) && seen.add(c.hospital.id))
+  return (conversations.value ?? []).filter((c) => c.hospital && c.mode !== 'AFTERCARE' && !aftercareIds.value.has(c.id)
+    && !seen.has(c.hospital.id) && seen.add(c.hospital.id))
 })
 
 const md = (iso: string) => seoulDate(iso).slice(5).replace('-', '/')
@@ -110,6 +113,7 @@ onMounted(() => {
             </RouterLink>
           </template>
         </template>
+        <AftercareChatRows @loaded="(ids) => (aftercareIds = new Set(ids))" />
       </template>
     </div>
   </div>

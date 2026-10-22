@@ -1,3 +1,8 @@
+<script lang="ts">
+/** 열린 시트 수 — 본 시트↔대안 시간 시트처럼 하나가 닫히고 다른 하나가 열려도 스크롤 잠금이 풀리지 않게 */
+let openSheets = 0
+</script>
+
 <script setup lang="ts">
 // Figma Bottom Sheet: 손잡이 + 제목/닫기 + 내용 + (선택) 하단 버튼. 위쪽 반경 20, 스크림 45% (04 ① 셀 수치)
 // C4-1 근거 · C5-1 필터 · C8 예약 시트 · Edge ④ 대안 시간에서 사용
@@ -10,16 +15,25 @@ const emit = defineEmits<{ close: [] }>()
 function onKey(e: KeyboardEvent) {
   if (e.key === 'Escape') emit('close')
 }
+let holding = false
+function lockScroll(on: boolean) {
+  if (on === holding) return
+  holding = on
+  openSheets += on ? 1 : -1
+  document.body.style.overflow = openSheets > 0 ? 'hidden' : ''
+}
+// immediate: 처음부터 열린 채로 마운트돼도(/hospitals/:id/book 직접 진입) ESC·스크롤 잠금이 걸리게
 watch(
   () => props.open,
   (open) => {
-    document.body.style.overflow = open ? 'hidden' : ''
+    lockScroll(open)
     if (open) window.addEventListener('keydown', onKey)
     else window.removeEventListener('keydown', onKey)
   },
+  { immediate: true },
 )
 onBeforeUnmount(() => {
-  document.body.style.overflow = ''
+  lockScroll(false)
   window.removeEventListener('keydown', onKey)
 })
 </script>

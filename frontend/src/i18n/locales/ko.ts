@@ -89,6 +89,7 @@ const ko: typeof en = {
     selected: '{n}곳 선택됨',
     maxThree: '최대 3곳까지 비교할 수 있어요',
     compareGo: '비교하기',
+    more: '더 보기 ({n}곳 남음)',
     compareNeedsProcedure: '가격을 비교하려면 시술을 골라 주세요',
     filter: {
       title: '필터',

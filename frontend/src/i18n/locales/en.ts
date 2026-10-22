@@ -88,6 +88,7 @@ export default {
     selected: '{n} selected',
     maxThree: 'Compare up to 3 clinics',
     compareGo: 'Compare',
+    more: 'Show more ({n} left)',
     compareNeedsProcedure: 'Choose a procedure to compare prices',
     filter: {
       title: 'Filters',

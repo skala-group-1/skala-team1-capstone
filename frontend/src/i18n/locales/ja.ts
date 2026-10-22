@@ -88,6 +88,7 @@ const ja: typeof en = {
     selected: '{n}件選択中',
     maxThree: '最大3件まで比較できます',
     compareGo: '比較する',
+    more: 'もっと見る（残り{n}件）',
     compareNeedsProcedure: '価格を比較するには施術を選んでください',
     filter: {
       title: '絞り込み',

@@ -101,8 +101,10 @@ const timeline = computed(() => {
   const c = consult.current
   if (c && c.id === conv.consultationId) {
     // 로컬은 Z, 서버는 +09:00 이라 문자열 비교 대신 Date.parse
+    // 상담을 연결한 AI 답변("상담사 연결을 요청했어요")은 상담 생성 직후에 끝나므로 시각만 보면 블록 아래로 간다
+    // → 상담 뒤 사용자가 AI 에게 처음 말한 메시지 앞에 블록을 둔다 (연결 답변은 블록 위, 상담 종료 후 대화는 아래)
     const at = Date.parse(c.createdAt)
-    const k = conv.messages.findIndex((m) => Date.parse(m.createdAt) > at)
+    const k = conv.messages.findIndex((m) => m.role === 'user' && Date.parse(m.createdAt) > at)
     rows.splice(k < 0 ? rows.length : k, 0, { i: -1 })
   }
   return rows
@@ -132,7 +134,7 @@ const isMine = (m: ChatMessage) => m.senderRole === 'CUSTOMER'
 const untranslated = (m: ChatMessage) => m.translatedLang === m.originalLang
 function myStatus(m: ChatMessage) {
   if (m.translationStatus === 'PENDING') return t('chat.human.translating')
-  if (m.translationStatus === 'FAILED') return t('chat.human.failed')
+  if (m.translationStatus === 'FAILED') return t(m.id < 0 ? 'chat.human.sendFailed' : 'chat.human.failed')
   if (untranslated(m)) return ''
   return m.translatedLang ? t('chat.human.sentIn', { lang: t(`domain.langName.${m.translatedLang}`) }) : ''
 }
@@ -206,7 +208,8 @@ async function submit() {
   else await conv.send(text)
 }
 function onKey(e: KeyboardEvent) {
-  if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
+  // keyCode 229: Safari 는 변환을 확정하는 Enter 에서 isComposing=false 로 들어온다 (ja·zh·ko 입력 중 전송 방지)
+  if (e.key === 'Enter' && !e.shiftKey && !e.isComposing && e.keyCode !== 229) {
     e.preventDefault()
     void submit()
   }
@@ -313,9 +316,8 @@ async function enter() {
     if (id) {
       if (conv.conversationId !== id) await conv.load(id)
       else {
+        // 상담 열기는 아래 consultationId watch 한 곳에서만 (여기서도 열면 두 번 열려 구독이 샌다)
         await conv.refresh(id)
-        // 상담을 못 불러와도 대화 자체는 보여 준다
-        if (conv.consultationId) await consult.open(conv.consultationId).catch(() => undefined)
       }
     } else {
       const hospitalId = route.query.hospitalId ? Number(route.query.hospitalId) : null

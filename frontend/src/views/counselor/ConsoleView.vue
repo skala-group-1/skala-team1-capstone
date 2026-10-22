@@ -9,12 +9,14 @@ import { useAuthStore } from '@/stores/auth'
 import { useNow } from '@/composables/useNow'
 import { useNotificationRefresh } from '@/composables/useNotificationRefresh'
 import { showToast } from '@/composables/useToast'
+import { toApiError } from '@/api'
 import { fmtTime } from '@/utils/format'
 import AppIcon from '@/components/ui/AppIcon.vue'
 import AppChip from '@/components/ui/AppChip.vue'
 import AppBadge from '@/components/ui/AppBadge.vue'
 import AppButton from '@/components/ui/AppButton.vue'
 import AppBanner from '@/components/ui/AppBanner.vue'
+import AppDialog from '@/components/ui/AppDialog.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import ChatBubble from '@/components/chat/ChatBubble.vue'
 import type { ChatMessage, Consultation, ConsultationStatus } from '@/types/contract'
@@ -32,10 +34,21 @@ const showAllOriginal = ref(false)
 const shown = ref(new Set<number>())
 const busy = ref(false)
 const scroller = ref<HTMLElement | null>(null)
+const inputEl = ref<HTMLTextAreaElement | null>(null)
+const closeOpen = ref(false)
 const listFailed = ref(false)
 
 const selectedId = computed(() => (route.params.id ? Number(route.params.id) : null))
 const current = computed(() => (store.current?.id === selectedId.value ? store.current : null))
+// 표시용: 내가 맡은 진행 중 상담만 답장·종료 가능 (권한 판단은 backend)
+const mine = computed(() => !!current.value && current.value.counselorId === auth.user?.id)
+const canReply = computed(() => current.value?.status === 'ACTIVE' && mine.value)
+const placeholder = computed(() => {
+  if (!current.value) return ''
+  if (current.value.status !== 'ACTIVE') return t('staff.console.acceptFirst')
+  if (!mine.value) return t('staff.console.notMine')
+  return sameLang.value ? t('staff.console.placeholderSame') : t('staff.console.placeholder', { lang: langName(current.value.customer.locale) })
+})
 const counts = computed(() => ({
   ALL: store.inbox.length,
   WAITING: store.inbox.filter((c) => c.status === 'WAITING').length,
@@ -58,11 +71,12 @@ const langName = (l: string) => t(`domain.langName.${l}`)
 // D-43: 한국어 고객은 번역 없이 그대로 전달 → 번역 안내·원문 보기를 숨긴다
 const sameLang = computed(() => current.value?.customer.locale === 'ko')
 const untranslated = (m: ChatMessage) => m.translatedLang === m.originalLang
+const hasTranslation = (m: ChatMessage) => m.translationStatus === 'DONE' && !!m.translatedText && !untranslated(m)
 const flagged = computed(() => store.messages.filter((m) => m.senderRole === 'CUSTOMER' && m.flags.length))
 
 function statusLine(m: ChatMessage) {
   if (m.translationStatus === 'PENDING') return t('chat.human.translating')
-  if (m.translationStatus === 'FAILED') return t('chat.human.failed')
+  if (m.translationStatus === 'FAILED') return t(m.id < 0 ? 'chat.human.sendFailed' : 'chat.human.failed')
   if (untranslated(m)) return ''
   return t('staff.console.sentIn', { lang: langName(current.value?.customer.locale ?? 'en') })
 }
@@ -88,37 +102,51 @@ async function openSelected() {
   if (selectedId.value && store.current?.id !== selectedId.value) await store.open(selectedId.value).catch(() => showToast(t('staff.loadFailed'), 'error'))
   if (!selectedId.value) store.close()
 }
+/** 수락·종료 실패(다른 상담사가 먼저 수락 등) → 상담·문의함을 다시 불러와 화면을 서버 상태로 맞춘다 */
+async function resync(id: number, e: unknown) {
+  showToast(toApiError(e)?.message || t('common.error'), 'error')
+  await store.open(id).catch(() => undefined)
+  await loadInbox()
+}
 async function accept() {
   if (!current.value) return
+  const id = current.value.id
   busy.value = true
   try {
-    await store.accept(current.value.id)
+    await store.accept(id)
     await loadInbox()
-  } catch {
-    showToast(t('common.error'), 'error')
+    await nextTick()
+    inputEl.value?.focus()
+  } catch (e) {
+    await resync(id, e)
   } finally {
     busy.value = false
   }
 }
 async function finish() {
   if (!current.value) return
+  const id = current.value.id
   busy.value = true
   try {
-    await store.finish(current.value.id)
+    await store.finish(id)
     await loadInbox()
     showToast(t('staff.console.closed'))
+  } catch (e) {
+    await resync(id, e)
   } finally {
     busy.value = false
+    closeOpen.value = false
   }
 }
 async function submit() {
   const text = input.value.trim()
-  if (!text || current.value?.status !== 'ACTIVE') return
+  if (!text || !canReply.value) return
   input.value = ''
   await store.send(text, 'COUNSELOR', 'ko')
 }
 function onKey(e: KeyboardEvent) {
-  if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
+  // keyCode 229: Safari 는 변환을 확정하는 Enter 에서 isComposing=false 로 들어온다 (ja·zh·ko 입력 중 전송 방지)
+  if (e.key === 'Enter' && !e.shiftKey && !e.isComposing && e.keyCode !== 229) {
     e.preventDefault()
     void submit()
   }
@@ -128,9 +156,17 @@ onMounted(async () => {
   await loadInbox()
   await openSelected()
 })
-// 새 상담 요청이 오면 문의함 갱신 (열어 둔 채팅은 그대로)
-useNotificationRefresh(['CONSULTATION_REQUESTED'], loadInbox)
-watch(selectedId, () => void openSelected())
+// 새 상담 요청·수락·종료 알림이 오면 문의함 갱신 (열어 둔 채팅은 그대로)
+useNotificationRefresh(['CONSULTATION_REQUESTED', 'CONSULTATION_ACCEPTED', 'CONSULTATION_CLOSED'], loadInbox)
+// 상담방을 바꾸면 쓰던 답장은 그 상담에 임시 저장하고 새 방 것을 꺼낸다 (다른 고객에게 잘못 보내지 않게)
+const drafts = new Map<number, string>()
+watch(selectedId, (id, prev) => {
+  if (prev) drafts.set(prev, input.value)
+  input.value = (id && drafts.get(id)) || ''
+  shown.value = new Set()
+  busy.value = false
+  void openSelected()
+})
 watch(
   () => store.messages.length,
   async () => {
@@ -215,7 +251,8 @@ onBeforeUnmount(() => store.close())
             <span class="track" aria-hidden="true" />
           </label>
           <AppButton v-if="current.status === 'WAITING'" :loading="busy" @click="accept">{{ t('staff.console.accept') }}</AppButton>
-          <AppButton v-else-if="current.status === 'ACTIVE'" variant="outline" :loading="busy" @click="finish">{{ t('staff.console.close') }}</AppButton>
+          <AppButton v-else-if="current.status === 'ACTIVE' && mine" variant="outline" :disabled="busy" @click="closeOpen = true">{{ t('staff.console.close') }}</AppButton>
+          <AppBadge v-else-if="current.status === 'ACTIVE'" tone="info">{{ t('staff.console.filters.ACTIVE') }}</AppBadge>
           <AppBadge v-else tone="neutral">{{ t('staff.console.filters.CLOSED') }}</AppBadge>
         </header>
         <AppBanner v-if="!store.connected" type="reconnecting">{{ t('chat.reconnecting') }}</AppBanner>
@@ -236,11 +273,16 @@ onBeforeUnmount(() => store.close())
               :text="m.translationStatus === 'DONE' ? (m.translatedText ?? m.originalText) : m.originalText"
             >
               <p v-if="m.translationStatus === 'PENDING'" class="status t-caption-11">{{ t('chat.human.translating') }}</p>
-              <p v-if="(showAllOriginal || shown.has(m.id)) && !untranslated(m)" class="original t-caption-12">{{ t('staff.console.original') }} · {{ m.originalText }}</p>
+              <!-- 번역 실패: 원문이 그대로 보이므로 실패를 알리고 다시 번역 -->
+              <button v-else-if="m.translationStatus === 'FAILED'" type="button" class="status status--failed t-caption-12-sb" @click="store.retryTranslation(m)">
+                <AppIcon name="alert-triangle" :size="14" />{{ t('staff.console.translateFailed') }}
+              </button>
+              <!-- 원문 보기는 번역이 끝난 메시지만 (번역 전·실패는 이미 원문이 보임) -->
+              <p v-if="(showAllOriginal || shown.has(m.id)) && hasTranslation(m)" class="original t-caption-12">{{ t('staff.console.original') }} · {{ m.originalText }}</p>
               <div class="flags">
                 <AppBadge v-if="m.flags.includes('MEDICAL_QUESTION')" tone="warning" icon="alert-triangle">{{ t('staff.console.flags.MEDICAL_QUESTION') }}</AppBadge>
                 <AppBadge v-if="m.flags.includes('NUMBER_MISMATCH')" tone="warning" icon="alert-triangle">{{ t('staff.console.flags.NUMBER_MISMATCH') }}</AppBadge>
-                <button v-if="!showAllOriginal && !untranslated(m)" type="button" class="link t-caption-12-sb" @click="toggle(m.id)">
+                <button v-if="!showAllOriginal && hasTranslation(m)" type="button" class="link t-caption-12-sb" @click="toggle(m.id)">
                   {{ shown.has(m.id) ? t('chat.human.hideOriginal') : t('staff.console.seeOriginal') }}
                 </button>
               </div>
@@ -249,14 +291,16 @@ onBeforeUnmount(() => store.close())
         </div>
         <form class="chat__input" @submit.prevent="submit">
           <textarea
+            ref="inputEl"
             v-model="input"
             rows="1"
             class="t-body-15"
-            :disabled="current.status !== 'ACTIVE'"
-            :placeholder="current.status !== 'ACTIVE' ? t('staff.console.acceptFirst') : sameLang ? t('staff.console.placeholderSame') : t('staff.console.placeholder', { lang: langName(current.customer.locale) })"
+            :disabled="!canReply"
+            :placeholder="placeholder"
+            :aria-label="placeholder"
             @keydown="onKey"
           />
-          <button type="submit" class="send" :class="{ 'send--on': input.trim() }" :disabled="!input.trim() || current.status !== 'ACTIVE'" :aria-label="t('chat.send')">
+          <button type="submit" class="send" :class="{ 'send--on': input.trim() && canReply }" :disabled="!input.trim() || !canReply" :aria-label="t('chat.send')">
             <AppIcon name="send" :size="20" />
           </button>
         </form>
@@ -307,6 +351,12 @@ onBeforeUnmount(() => store.close())
       </section>
       <p class="notice t-caption-13"><AppIcon name="info" :size="16" />{{ t(sameLang ? 'staff.console.noticeSame' : 'staff.console.notice') }}</p>
     </aside>
+    <AppDialog :open="closeOpen" :title="t('staff.console.closeConfirm')" :body="t('staff.console.closeNote')">
+      <template #actions>
+        <AppButton variant="secondary" :disabled="busy" @click="closeOpen = false">{{ t('common.cancel') }}</AppButton>
+        <AppButton variant="danger" :loading="busy" @click="finish">{{ t('staff.console.close') }}</AppButton>
+      </template>
+    </AppDialog>
   </div>
 </template>
 

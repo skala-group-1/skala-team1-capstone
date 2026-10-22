@@ -118,7 +118,8 @@ async function submit() {
   await store.send(text, 'COUNSELOR', 'ko')
 }
 function onKey(e: KeyboardEvent) {
-  if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
+  // keyCode 229: Safari 는 변환을 확정하는 Enter 에서 isComposing=false 로 들어온다 (ja·zh·ko 입력 중 전송 방지)
+  if (e.key === 'Enter' && !e.shiftKey && !e.isComposing && e.keyCode !== 229) {
     e.preventDefault()
     void submit()
   }

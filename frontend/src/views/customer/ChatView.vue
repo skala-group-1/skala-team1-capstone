@@ -278,12 +278,26 @@ async function endConsult() {
     endingConsult.value = false
   }
 }
+// "예약 요청 완료" 카드의 요청 취소: 확인 후 실행 (슬롯이 풀리는 되돌릴 수 없는 동작)
+const cancelRequestOpen = ref(false)
+const cancellingRequest = ref(false)
 async function cancelRequested() {
-  if (!requested.value) return
-  await reservations.cancel(requested.value.id)
-  requested.value = { ...requested.value, status: 'CANCELLED' }
-  showToast(t('chat.requested.cancelled'))
+  if (!requested.value || cancellingRequest.value) return
+  cancellingRequest.value = true
+  try {
+    await reservations.cancel(requested.value.id)
+    requested.value = { ...requested.value, status: 'CANCELLED' }
+    showToast(t('chat.requested.cancelled'))
+  } catch (e) {
+    showToast(toApiError(e)?.message || t('common.error'), 'error')
+  } finally {
+    cancellingRequest.value = false
+    cancelRequestOpen.value = false
+  }
 }
+// 다시 보내도 같은 결과인 오류(비즈니스 규칙)·승인 뒤 실패는 "다시 시도"를 숨긴다
+const NO_RETRY = ['SLOT_UNAVAILABLE', 'CONSENT_REQUIRED', 'TASK_NOT_WAITING_APPROVAL']
+const canRetry = computed(() => !!conv.lastInput && !!conv.error && !NO_RETRY.includes(conv.error.code))
 function saveMemory() {
   const fields = conv.memoryProposal?.fields
   conv.memoryProposal = null
@@ -458,7 +472,7 @@ watch(
     </TopAppBar>
 
     <AftercareHeader v-if="aftercare" :room="aftercare" />
-    <AppBanner v-if="isHuman && consult.current && !consult.connected" type="reconnecting">{{ t('chat.reconnecting') }}</AppBanner>
+    <AppBanner v-if="(isHuman && consult.current && !consult.connected) || (!isHuman && conv.reconnecting)" type="reconnecting">{{ t('chat.reconnecting') }}</AppBanner>
 
     <!-- C4-T 상담 주제 바 -->
     <div v-if="!isHospital && conv.topic" class="topic-bar">
@@ -665,7 +679,7 @@ watch(
           <p class="t-caption-12 muted">{{ t('chat.requested.note') }}</p>
           <div class="requested__actions">
             <AppButton variant="secondary" size="s" block @click="router.push('/reservations')">{{ t('chat.requested.view') }}</AppButton>
-            <AppButton v-if="requested.status === 'PENDING'" variant="ghost" size="s" block @click="cancelRequested">
+            <AppButton v-if="requested.status === 'PENDING'" variant="ghost" size="s" block @click="cancelRequestOpen = true">
               {{ t('chat.requested.cancel') }}
             </AppButton>
           </div>
@@ -685,7 +699,7 @@ watch(
       </section>
 
       <!-- Edge ② 응답 실패 -->
-      <ChatBubble v-if="conv.error" sender="error" :text="t('chat.failed')" @retry="conv.retry()" />
+      <ChatBubble v-if="conv.error" sender="error" :text="conv.error.message || t('chat.failed')" :no-retry="!canRetry" @retry="conv.retry()" />
 
     </div>
 
@@ -733,6 +747,12 @@ watch(
     </footer>
 
     <EvidenceSheet :open="!!evidence" :sources="evidence ?? []" @close="evidence = null" />
+    <AppDialog :open="cancelRequestOpen" :title="t('reservations.cancelTitle')" :body="t('reservations.cancelBody')">
+      <template #actions>
+        <AppButton variant="secondary" :disabled="cancellingRequest" @click="cancelRequestOpen = false">{{ t('reservations.keep') }}</AppButton>
+        <AppButton variant="danger" :loading="cancellingRequest" @click="cancelRequested">{{ t('chat.requested.cancel') }}</AppButton>
+      </template>
+    </AppDialog>
     <AppDialog :open="infoOpen" :title="t('chat.info.title')" :body="t('chat.info.body')">
       <template #actions><AppButton @click="infoOpen = false">{{ t('common.confirm') }}</AppButton></template>
     </AppDialog>

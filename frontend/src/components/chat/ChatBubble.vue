@@ -6,6 +6,8 @@ import AppIcon, { type IconName } from '../ui/AppIcon.vue'
 const props = defineProps<{
   sender: 'me' | 'ai' | 'agent' | 'counselor' | 'customer' | 'system' | 'typing' | 'error'
   text?: string
+  /** 오류 말풍선에서 "다시 시도"를 숨김 (다시 보내도 같은 결과인 오류) */
+  noRetry?: boolean
   name?: string
   time?: string
   /** 번역 실패 등으로 말풍선 테두리 강조 */
@@ -46,7 +48,7 @@ const AVATAR: Partial<Record<typeof props.sender, IconName>> = {
       <p v-else-if="sender === 'error'" class="bubble bubble--error t-body-14">
         <AppIcon name="alert-triangle" :size="16" />
         <span>{{ text }}</span>
-        <button type="button" class="retry t-caption-12-sb" @click="$emit('retry')">
+        <button v-if="!noRetry" type="button" class="retry t-caption-12-sb" @click="$emit('retry')">
           <AppIcon name="refresh-cw" :size="14" />{{ $t('common.retry') }}
         </button>
       </p>

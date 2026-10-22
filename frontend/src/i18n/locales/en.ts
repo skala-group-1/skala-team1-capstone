@@ -25,6 +25,7 @@ export default {
     signup: 'Sign up',
     logout: 'Log out',
     loginFailed: 'Email or password is incorrect',
+    sessionExpired: 'Your session has expired. Please log in again',
     loginTitle: 'Welcome back',
     loginBody: 'Log in to continue your chats and bookings.',
     loginFoot: 'Log in to explore and compare clinics, chat with AI and book.',

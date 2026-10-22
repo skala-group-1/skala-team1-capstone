@@ -26,6 +26,7 @@ const ko: typeof en = {
     signup: '회원가입',
     logout: '로그아웃',
     loginFailed: '이메일 또는 비밀번호가 맞지 않아요',
+    sessionExpired: '로그인이 만료됐어요. 다시 로그인해 주세요',
     loginTitle: '다시 만나서 반가워요',
     loginBody: '이메일로 로그인하면 이전 대화와 예약을 이어서 볼 수 있어요.',
     loginFoot: '로그인하면 병원 탐색·비교, AI 상담, 예약을 모두 이용할 수 있어요.',

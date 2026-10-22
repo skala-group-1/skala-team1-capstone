@@ -1,11 +1,12 @@
 <script setup lang="ts">
 // 「화면 목록」 C2 회원가입 (Figma 1:5873, 고객만). 가입 성공 → 같은 계정으로 로그인 → 홈
 // 검증: 이메일 형식, 비밀번호 8자 이상 + 영문·숫자. 서버 오류 EMAIL_DUPLICATED(409) · VALIDATION_FAILED(details.fields)
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import { toApiError } from '@/api'
+import { setLocale } from '@/i18n'
 import TopAppBar from '@/components/ui/TopAppBar.vue'
 import TextField from '@/components/ui/TextField.vue'
 import AppButton from '@/components/ui/AppButton.vue'
@@ -42,6 +43,8 @@ const localeOptions = [
   { value: 'ko', label: '한국어' },
 ]
 const genders: Gender[] = ['F', 'M', 'X']
+// 고른 언어를 화면에도 바로 반영
+watch(() => form.locale, (l) => setLocale(l))
 
 const clientErrors = computed(() => ({
   email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email) ? null : t('signup.errors.email'),
@@ -63,6 +66,8 @@ async function submit() {
   serverErrors.value = {}
   try {
     await auth.signup({ ...form, email: form.email.trim(), name: form.name.trim(), gender: form.gender as Gender })
+    // 가입 때 고른 언어가 계정 언어 → 온보딩에서 고른 언어(localePicked)로 덮어쓰지 않게 지운다
+    localStorage.removeItem('localePicked')
     await auth.login({ email: form.email.trim(), password: form.password })
     await router.replace(auth.home)
   } catch (e) {

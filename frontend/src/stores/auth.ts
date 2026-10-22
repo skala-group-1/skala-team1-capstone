@@ -25,6 +25,8 @@ export const useAuthStore = defineStore('auth', {
     user: null as UserSummary | null,
     /** bootstrap(새로고침 refresh 시도) 완료 여부 — 라우터 가드가 기다린다 */
     ready: false,
+    /** 사용 중 세션 만료 → App.vue 가 보고 안내 + /login?redirect= 로 보낸다 (스토어가 router 를 import 하면 순환) */
+    sessionExpired: false,
   }),
   getters: {
     isLoggedIn: (s) => !!s.user,
@@ -34,7 +36,10 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     /** 앱 시작 시 1회: refresh 성공 → 로그인 유지 / 실패 → 비로그인 */
     async bootstrap() {
-      session.onLoggedOut(() => this.clear())
+      session.onLoggedOut(() => {
+        if (this.user) this.sessionExpired = true
+        this.clear()
+      })
       try {
         const res = await authApi.refresh()
         this.setUser(await this.applyPickedLocale(res.user))

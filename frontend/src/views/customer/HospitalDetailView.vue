@@ -119,8 +119,11 @@ async function copyAddress() {
 function openBooking() {
   void router.push(`/hospitals/${id.value}/book`)
 }
+// 상세에서 열었으면 그 기록을 되돌린다 (replace 하면 상세가 히스토리에 두 번 쌓임). 링크로 바로 열렸으면 상세로 바꿔치기
 function closeBooking() {
-  void router.replace(`/hospitals/${id.value}`)
+  const back = window.history.state?.back as string | null | undefined
+  if (back?.split('?')[0] === `/hospitals/${id.value}`) router.back()
+  else void router.replace(`/hospitals/${id.value}`)
 }
 function booked(r: Reservation) {
   showToast(t('hospital.booked', { at: fmtDate(r.slot.startAt) }))

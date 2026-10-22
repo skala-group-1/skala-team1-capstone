@@ -6,10 +6,11 @@ import AppIcon from './AppIcon.vue'
 const props = withDefaults(defineProps<{ title?: string; back?: boolean | string; chat?: boolean }>(), { back: false })
 const router = useRouter()
 
+// 앱 안에서 넘어왔으면 그 화면으로 돌아간다 (vue-router 가 history.state.back 에 이전 경로를 둔다).
+// 링크로 바로 들어와 이전 화면이 없을 때만 지정 경로로 (push 대신 replace — 기록이 쌓이지 않게)
 function goBack() {
-  if (typeof props.back === 'string') void router.push(props.back)
-  else if (window.history.length > 1) router.back()
-  else void router.push('/')
+  if (window.history.state?.back) router.back()
+  else void router.replace(typeof props.back === 'string' ? props.back : '/')
 }
 </script>
 

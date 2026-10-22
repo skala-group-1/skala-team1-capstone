@@ -480,7 +480,7 @@ watch(
       <AppIcon name="sparkles" :size="16" />
       <span class="t-caption-12 secondary">{{ t('chat.topic.label') }}</span>
       <strong class="topic-bar__name t-caption-13">{{ topicLabel(conv.topic) }}</strong>
-      <button v-if="!busy" type="button" class="topic-bar__change t-caption-12" @click="pickingTopic = true">
+      <button v-if="!busy" type="button" class="topic-bar__change hit t-caption-12" @click="pickingTopic = true">
         {{ t('chat.topic.change') }}<AppIcon name="chevron-right" :size="14" />
       </button>
     </div>
@@ -503,7 +503,7 @@ watch(
         <p class="inherit__head t-caption-12-sb">
           <AppIcon name="sparkles" :size="14" />
           <span>{{ t('chat.inherited') }}</span>
-          <RouterLink :to="`/chat/${conv.parentConversationId}`" class="link">{{ t('chat.backToMain') }}</RouterLink>
+          <RouterLink :to="`/chat/${conv.parentConversationId}`" class="link hit">{{ t('chat.backToMain') }}</RouterLink>
         </p>
         <div class="inherit__tags">
           <AppBadge v-for="c in conditionChips" :key="c.key" tag>{{ c.value }}</AppBadge>
@@ -539,7 +539,7 @@ watch(
                 <button
                   v-if="cm.translationStatus === 'FAILED'"
                   type="button"
-                  class="status status--failed t-caption-12-sb"
+                  class="status status--failed hit t-caption-12-sb"
                   @click="consult.retryTranslation(cm)"
                 >
                   <AppIcon name="alert-triangle" :size="14" />{{ myStatus(cm) }}
@@ -550,7 +550,7 @@ watch(
               </ChatBubble>
               <ChatBubble v-else sender="counselor" :name="t('chat.counselor')" :text="cm.translatedText ?? cm.originalText">
                 <p v-if="shownOriginal.has(cm.id) && !untranslated(cm)" class="original t-caption-12">{{ cm.originalText }}</p>
-                <button v-if="!untranslated(cm)" type="button" class="status t-caption-11" @click="toggleOriginal(cm.id)">
+                <button v-if="!untranslated(cm)" type="button" class="status hit t-caption-11" @click="toggleOriginal(cm.id)">
                   <AppIcon name="languages" :size="14" />
                   {{ shownOriginal.has(cm.id) ? t('chat.human.hideOriginal') : t('chat.human.autoTranslated') }}
                 </button>
@@ -648,7 +648,7 @@ watch(
           <span class="t-body-14-sb brand">{{ t('chat.relaxCount', { n: o.expectedCount }) }}</span>
           <AppIcon name="chevron-right" :size="18" />
         </button>
-        <button type="button" class="link t-caption-13" :aria-expanded="editingConditionsAt === 'relax'" @click="toggleConditions('relax')">
+        <button type="button" class="link hit t-caption-13" :aria-expanded="editingConditionsAt === 'relax'" @click="toggleConditions('relax')">
           {{ t('chat.relaxManual') }}
         </button>
         <div v-if="editingConditionsAt === 'relax'" class="chips">
@@ -775,7 +775,7 @@ watch(
 <style scoped>
 .chat { display: flex; flex-direction: column; height: 100dvh; }
 .ellipsis { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.icon-btn { display: grid; place-items: center; border: 0; background: none; color: var(--icon-default); }
+.icon-btn { display: grid; place-items: center; width: 44px; height: 44px; border: 0; background: none; color: var(--icon-default); }
 .conditions {
   display: flex;
   gap: var(--space-8);

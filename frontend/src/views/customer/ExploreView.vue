@@ -145,7 +145,7 @@ watch(text, () => (suggestOpen.value = true))
         </ul>
       </div>
       <div class="filters">
-        <button type="button" class="filter-btn t-caption-13" :class="{ 'filter-btn--on': filterCount }" @click="sheetOpen = true">
+        <button type="button" class="filter-btn hit t-caption-13" :class="{ 'filter-btn--on': filterCount }" @click="sheetOpen = true">
           <AppIcon name="filter" :size="16" />{{ t('explore.filterN', { n: filterCount }) }}
         </button>
         <AppChip v-for="c in filterChips" :key="c.key" type="condition" :label="c.label" @click="sheetOpen = true">{{ c.value }}</AppChip>

@@ -22,7 +22,7 @@ withDefaults(
   <button
     v-else
     type="button"
-    class="chip"
+    class="chip hit"
     :class="[`chip--${type}`, { 'chip--on': selected }]"
     :aria-pressed="type === 'filter' ? !!selected : undefined"
     :disabled="disabled"

@@ -173,3 +173,17 @@ a {
   gap: var(--space-12);
   padding: var(--space-16);
 }
+
+/* 터치 영역: 겉모습·레이아웃은 그대로 두고 누르는 범위만 44×44 이상으로 (작은 텍스트·아이콘 버튼) */
+.hit {
+  position: relative;
+}
+.hit::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100%, 44px);
+  height: max(100%, 44px);
+  transform: translate(-50%, -50%);
+}

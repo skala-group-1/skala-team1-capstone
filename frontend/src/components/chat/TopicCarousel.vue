@@ -71,10 +71,10 @@ function next() {
   right: 12px;
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border: 1px solid var(--border-default);
-  border-radius: 18px;
+  border-radius: 22px;
   background: var(--surface-card);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   color: var(--icon-default);

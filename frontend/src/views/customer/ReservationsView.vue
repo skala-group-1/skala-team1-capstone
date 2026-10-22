@@ -117,19 +117,19 @@ onMounted(load)
           <footer class="card__foot t-caption-12">
             <template v-if="r.status === 'PENDING'">
               <span class="muted">{{ t('reservations.pendingNote') }}</span>
-              <button type="button" class="act" @click="cancelTarget = r">{{ t('chat.requested.cancel') }}</button>
+              <button type="button" class="act hit" @click="cancelTarget = r">{{ t('chat.requested.cancel') }}</button>
             </template>
             <template v-else-if="r.status === 'REJECTED'">
               <span class="danger">{{ t('reservations.rejectedNote', { n: r.alternatives.length }) }}</span>
-              <RouterLink :to="`/reservations/${r.id}`" class="act brand">{{ t('reservations.seeAlternatives') }}</RouterLink>
+              <RouterLink :to="`/reservations/${r.id}`" class="act brand hit">{{ t('reservations.seeAlternatives') }}</RouterLink>
             </template>
             <template v-else-if="r.status === 'CONFIRMED'">
               <span class="ok">{{ t('reservations.confirmedNote') }}</span>
-              <RouterLink :to="`/reservations/${r.id}`" class="act">{{ t('reservations.visitGuide') }}</RouterLink>
+              <RouterLink :to="`/reservations/${r.id}`" class="act hit">{{ t('reservations.visitGuide') }}</RouterLink>
             </template>
             <template v-else-if="r.status === 'EXPIRED'">
               <span class="muted">{{ t('reservations.expiredNote') }}</span>
-              <RouterLink :to="`/reservations/${r.id}`" class="act brand">{{ t('reservations.requestAgain') }}</RouterLink>
+              <RouterLink :to="`/reservations/${r.id}`" class="act brand hit">{{ t('reservations.requestAgain') }}</RouterLink>
             </template>
             <span v-else class="muted">{{ t('reservations.cancelledNote') }}</span>
           </footer>

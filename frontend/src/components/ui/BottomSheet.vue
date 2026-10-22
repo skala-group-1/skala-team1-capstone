@@ -97,6 +97,9 @@ onBeforeUnmount(() => {
 .sheet__close {
   display: grid;
   place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: -10px;
   border: 0;
   background: none;
   color: var(--icon-default);

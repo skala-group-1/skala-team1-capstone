@@ -267,7 +267,7 @@ def validate_sql(out, data):
 
 
 def validate_rag(rag, data):
-    want = {"GUIDE": 18, "TRAVEL": 1, "PREP": 1, "AFTERCARE": 19, "FAQ": 1, "HOSPITAL_FAQ": 100}
+    want = {"GUIDE": 18, "TRAVEL": 1, "PREP": 19, "AFTERCARE": 19, "FAQ": 1, "HOSPITAL_FAQ": 100}
     expected_samples = sample_faq_documents(data["hospitals"])
     got = Counter()
     ids = set()
@@ -298,7 +298,7 @@ def validate_rag(rag, data):
                 for sec in ("Overview", "How it works", "Procedure steps", "Recovery & downtime",
                             "Common side effects", "Before your visit", "Questions to ask your doctor"):
                     check("\n## %s\n" % sec in text, "%s: missing section %s" % (fn, sec))
-            if fm.get("doc_type") == "AFTERCARE" and fm.get("procedure_code") != "null":
+            if fm.get("doc_type") in ("AFTERCARE", "PREP") and fm.get("procedure_code") != "null":
                 check(fm.get("procedure_code") in procs, "%s: procedure_code" % fn)
             if fm.get("doc_type") == "HOSPITAL_FAQ":
                 check(int(fm.get("hospital_id", 0)) in {h["id"] for h in data["hospitals"]}, "%s: hospital_id" % fn)

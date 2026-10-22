@@ -50,10 +50,18 @@ const soon = computed(() => pending.value.filter((r) => new Date(r.holdExpiresAt
 const today = computed(() => all.value.filter((r) => r.status === 'CONFIRMED' && seoulDate(r.slot.startAt) === seoulDate()).length)
 const nation = (code?: string) => (code ? new Intl.DisplayNames([locale.value], { type: 'region' }).of(code) : '')
 
+// 건수·KPI·표를 화면에서 계산하므로 전체를 받는다 (API 는 한 번에 최대 50건) — 첫 50건만 받으면 뒤쪽 승인 대기가 안 보여 홀드가 만료됨
+// ponytail: 최대 20페이지(1,000건). 병원당 예약이 더 많아지면 status 서버 필터 + 페이지네이션으로
 async function load() {
   failed.value = false
   try {
-    all.value = (await hospitalAdminApi.reservations({ size: 50 })).items
+    const items: Reservation[] = []
+    for (let page = 0; page < 20; page++) {
+      const res = await hospitalAdminApi.reservations({ page, size: 50 })
+      items.push(...res.items)
+      if (!res.items.length || items.length >= res.total) break
+    }
+    all.value = items
   } catch {
     failed.value = true
   } finally {
@@ -100,6 +108,15 @@ onMounted(async () => {
   await load()
   if (selected.value) filter.value = effective(selected.value)
 })
+// 알림·대시보드에서 ?id= 만 바뀌어도(같은 화면) 그 예약을 선택
+watch(
+  () => route.query.id,
+  (id) => {
+    if (!id) return
+    selectedId.value = Number(id)
+    if (selected.value) filter.value = effective(selected.value)
+  },
+)
 watch(filter, () => {
   if (selected.value && effective(selected.value) !== filter.value) selectedId.value = null
 })

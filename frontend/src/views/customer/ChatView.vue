@@ -4,7 +4,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { aiApi } from '@/api'
+import { aiApi, toApiError } from '@/api'
 import { useConversationStore } from '@/stores/conversation'
 import { useConsultationStore } from '@/stores/consultation'
 import { useSearchStore } from '@/stores/search'
@@ -99,6 +99,8 @@ const timeline = computed(() => {
 const lastCardsIndex = computed(() => conv.messages.map((m) => m.cards.length > 0).lastIndexOf(true))
 const showTyping = computed(() => conv.streaming && !conv.draft && !conv.pendingAction)
 const pending = computed(() => conv.pendingAction)
+// 답변 중이거나 승인 카드가 떠 있으면 새 요청을 보낼 수 없다 (store.send 가 무시함) → 입력·버튼을 미리 막는다
+const busy = computed(() => conv.streaming || !!conv.pendingAction)
 const consultRows = computed(() => {
   const s = consult.current?.summaryCard
   if (!s) return []
@@ -132,7 +134,7 @@ function toggleOriginal(id: number) {
 
 // ─── C4-T 상담 주제 · 피부 고민 ───
 const pickingTopic = ref(false)
-const showTopics = computed(() => !isHospital.value && !conv.streaming && (pickingTopic.value || (!conv.topic && !conv.messages.length)))
+const showTopics = computed(() => !isHospital.value && !busy.value && (pickingTopic.value || (!conv.topic && !conv.messages.length)))
 const topicLabel = (topic: ConsultTopic) => t(`chat.topic.items.${topic}`)
 const QUICK: { key: string; topic?: ConsultTopic; to?: string }[] = [
   { key: 'procedures', topic: 'SKIN_CONCERN' },
@@ -158,7 +160,7 @@ const concerns = ref<SkinConcern[]>([])
 const addingConcern = ref(false)
 const lastProcIndex = computed(() => conv.messages.map((m) => !!m.procedures?.length).lastIndexOf(true))
 const showConcerns = computed(
-  () => conv.topic === 'SKIN_CONCERN' && !conv.streaming && !pickingTopic.value && (addingConcern.value || lastProcIndex.value < 0),
+  () => conv.topic === 'SKIN_CONCERN' && !busy.value && !pickingTopic.value && (addingConcern.value || lastProcIndex.value < 0),
 )
 function toggleConcern(c: SkinConcern) {
   concerns.value = concerns.value.includes(c) ? concerns.value.filter((x) => x !== c) : [...concerns.value, c]
@@ -176,9 +178,10 @@ function findHospitals(procs: ProcedureInfo[]) {
 // ─── 입력 ───
 const placeholder = computed(() => {
   if (isHuman.value) return consultStatus.value === 'WAITING' ? t('chat.input.waiting') : t('chat.input.human')
+  if (conv.pendingAction) return t('chat.input.approvalPending')
   return isHospital.value ? t('chat.input.agent') : t('chat.input.ai')
 })
-const canSend = computed(() => input.value.trim().length > 0 && (isHuman.value || !conv.streaming))
+const canSend = computed(() => input.value.trim().length > 0 && (isHuman.value ? !!consult.current : !busy.value))
 async function submit() {
   const text = input.value.trim()
   if (!text || !canSend.value) return
@@ -198,19 +201,21 @@ function editCondition(label: string) {
 }
 
 // ─── 액션 ───
-async function approve(editedArgs: Record<string, unknown> | null = null) {
+async function decide(approved: boolean, editedArgs: Record<string, unknown> | null = null) {
+  if (approving.value) return
   approving.value = true
   try {
-    await conv.approve(true, editedArgs)
+    await conv.approve(approved, editedArgs)
+  } catch (e) {
+    showToast(toApiError(e)?.message || t('common.error'))
   } finally {
     approving.value = false
   }
 }
-async function reject() {
-  await conv.approve(false, null, null)
-}
+const approve = (editedArgs: Record<string, unknown> | null = null) => decide(true, editedArgs)
+const reject = () => decide(false)
 async function compareCards(cards: { id: number; name: string }[]) {
-  if (conv.streaming || !cards.length) return
+  if (busy.value || !cards.length) return
   const names = cards.slice(0, 3).map((c) => c.name).join(', ')
   await conv.send(t('compare.askAiMessage', { names, procedure: procedureName(conv.conditions?.procedureCode ?? null) }))
 }
@@ -302,6 +307,8 @@ watch(
     }
   },
 )
+// 승인 카드가 바뀌면 동의 체크를 다시 받는다 (이전 요청의 동의를 재사용하지 않음)
+watch(pending, () => (consent.value = false))
 // 상담원이 상담을 종료하면 (STOMP CONSULTATION_STATUS · 재진입 시 조회) 병원 대화로 돌아가 AI 가 다시 답함
 watch(
   () => consult.current?.status,
@@ -376,7 +383,7 @@ watch(
       <AppIcon name="sparkles" :size="16" />
       <span class="t-caption-12 secondary">{{ t('chat.topic.label') }}</span>
       <strong class="topic-bar__name t-caption-13">{{ topicLabel(conv.topic) }}</strong>
-      <button type="button" class="topic-bar__change t-caption-12" @click="pickingTopic = true">
+      <button v-if="!busy" type="button" class="topic-bar__change t-caption-12" @click="pickingTopic = true">
         {{ t('chat.topic.change') }}<AppIcon name="chevron-right" :size="14" />
       </button>
     </div>
@@ -475,7 +482,7 @@ watch(
               @chat="(id) => conv.send(null, { type: 'SELECT_HOSPITAL', hospitalId: id })"
             />
             <div v-if="i === lastCardsIndex" class="inset row-actions">
-              <AppButton variant="outline" size="s" :disabled="conv.streaming" @click="compareCards(m.cards)">
+              <AppButton variant="outline" size="s" :disabled="busy" @click="compareCards(m.cards)">
                 {{ t('chat.compareN', { n: Math.min(3, m.cards.length) }) }}
               </AppButton>
               <AppButton variant="ghost" size="s" @click="inputEl?.focus()">{{ t('chat.changeConditions') }}</AppButton>
@@ -487,7 +494,7 @@ watch(
               <ProcedureInfoCard v-for="p in m.procedures" :key="p.procedureCode" :info="p" />
             </div>
             <p class="inset t-caption-12 muted">{{ t('chat.concern.disclaimer') }}</p>
-            <div v-if="i === lastProcIndex && !conv.streaming && !showConcerns" class="inset chips">
+            <div v-if="i === lastProcIndex && !busy && !showConcerns" class="inset chips">
               <AppChip @click="findHospitals(m.procedures)">{{ t('chat.concern.find', m.procedures.length) }}</AppChip>
               <AppChip @click="addingConcern = true">{{ t('chat.concern.more') }}</AppChip>
             </div>
@@ -515,7 +522,7 @@ watch(
       <TopicCarousel v-if="showTopics" @pick="pickTopic" />
 
       <!-- Edge ① 0건 → AI 가 정한 완화안 (D-35: 탭하면 문구를 message 로) -->
-      <div v-if="conv.relaxOptions.length && !conv.streaming" class="inset relax">
+      <div v-if="conv.relaxOptions.length && !busy" class="inset relax">
         <button
           v-for="o in conv.relaxOptions.filter((x) => x.expectedCount > 0)"
           :key="o.option"
@@ -564,7 +571,7 @@ watch(
       <div v-if="conv.tripPlan" class="inset">
         <TripPlanCard :plan="conv.tripPlan" :procedure-name="(c) => procedureName(c)" />
       </div>
-      <section v-if="conv.memoryProposal && !conv.streaming" class="memory">
+      <section v-if="conv.memoryProposal && !busy" class="memory">
         <p class="t-body-14"><AppIcon name="sparkles" :size="16" class="brand" />{{ conv.memoryProposal.message }}</p>
         <div class="memory__actions">
           <AppButton variant="ghost" size="s" @click="conv.memoryProposal = null">{{ t('chat.memory.no') }}</AppButton>
@@ -590,6 +597,7 @@ watch(
       </label>
       <p class="t-caption-12 muted consent__desc">{{ t('chat.consent.desc', { hospital: conv.hospital?.name ?? '' }) }}</p>
       <AppButton block :disabled="!consent" :loading="approving" @click="approve()">{{ t('chat.consent.submit') }}</AppButton>
+      <AppButton variant="ghost" block :disabled="approving" @click="reject()">{{ t('chat.consent.decline') }}</AppButton>
       <p class="t-caption-12 muted center">{{ t('chat.consent.note') }}</p>
     </footer>
     <footer v-else class="dock">

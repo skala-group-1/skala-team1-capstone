@@ -385,7 +385,7 @@ const zh: typeof en = {
     connectCounselor: '连接咨询师',
     book: '预约',
     send: '发送',
-    input: { ai: '向 Yeoshin AI 提问', agent: '向医院提问', waiting: '给咨询师留言', human: '输入消息' },
+    input: { ai: '向 Yeoshin AI 提问', agent: '向医院提问', waiting: '给咨询师留言', human: '输入消息', approvalPending: '请先在上方卡片中选择' },
     cond: { label: '搜索条件', procedure: '项目', area: '地区', budget: '预算', language: '语言', date: '日期', sort: '排序' },
     info: {
       title: '对话说明',
@@ -407,6 +407,7 @@ const zh: typeof en = {
       label: '同意提供个人信息（必选）',
       desc: '为进行咨询，将向{hospital}的咨询师提供上述内容以及您的姓名、国籍和使用语言。',
       submit: '请求连接咨询师',
+      decline: '暂不需要',
       note: '提交后 AI 将停止回答，由咨询师接手。',
     },
     requested: {

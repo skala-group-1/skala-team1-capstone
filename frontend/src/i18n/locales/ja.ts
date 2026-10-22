@@ -385,7 +385,7 @@ const ja: typeof en = {
     connectCounselor: '相談員につなぐ',
     book: '予約する',
     send: '送信',
-    input: { ai: 'Yeoshin AIに質問', agent: '病院に質問', waiting: '相談員へのメッセージを入力', human: 'メッセージを入力' },
+    input: { ai: 'Yeoshin AIに質問', agent: '病院に質問', waiting: '相談員へのメッセージを入力', human: 'メッセージを入力', approvalPending: '先に上のカードで選択してください' },
     cond: { label: '検索条件', procedure: '施術', area: 'エリア', budget: '予算', language: '言語', date: '日程', sort: '並び順' },
     info: {
       title: 'この会話について',
@@ -407,6 +407,7 @@ const ja: typeof en = {
       label: '個人情報の提供に同意（必須）',
       desc: '相談のため、上記の内容と氏名・国籍・使用言語を{hospital}の相談員に提供します。',
       submit: '相談員への接続をリクエスト',
+      decline: '今はしない',
       note: 'リクエストするとAIの回答は止まり、相談員が引き継ぎます。',
     },
     requested: {

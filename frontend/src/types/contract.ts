@@ -64,6 +64,7 @@ export type NotificationType =
   | 'CONSULTATION_REQUESTED'
   | 'CONSULTATION_ACCEPTED'
   | 'CONSULTATION_CLOSED'
+  | 'AFTERCARE_MESSAGE'
 
 export const AREA_CODES: readonly AreaCode[] = ['GANGNAM', 'SINSA', 'APGUJEONG', 'CHEONGDAM', 'MYEONGDONG', 'HONGDAE', 'JAMSIL']
 export const SORT_BY: readonly SortBy[] = ['REVIEW_COUNT', 'RATING', 'PRICE', 'DISTANCE']

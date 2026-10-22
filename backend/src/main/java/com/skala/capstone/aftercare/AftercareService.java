@@ -2,10 +2,13 @@ package com.skala.capstone.aftercare;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -27,9 +30,10 @@ import com.skala.capstone.common.web.Times;
 import com.skala.capstone.reservation.ReservationDtos.HospitalRef;
 
 /**
- * 시술 사후관리 대화방.
- * - 확정(CONFIRMED) 예약 1건당 대화 1개 (mode AFTERCARE, selected_hospital_id = 예약 병원)
- * - 방을 처음 열면 AI 첫 안내를 요청한다 (action AFTERCARE_INTRO, 사용자 입력 없음)
+ * 시술 사후관리 대화방 (시술 전 준비 안내 포함).
+ * - 승인 대기(PENDING)·확정(CONFIRMED) 예약 1건당 대화 1개 (mode AFTERCARE, selected_hospital_id = 예약 병원)
+ * - 방을 열 때 그날 안내가 아직 없으면 AI 안내를 요청한다: 처음은 AFTERCARE_INTRO, 다른 날은 AFTERCARE_DAILY
+ * - 예약이 반려·취소·만료되면 방과 기록은 남기고 새 안내는 요청하지 않는다
  * - 이후 질문은 기존 /api/ai/tasks 로 보낸다
  */
 @Service
@@ -37,18 +41,25 @@ public class AftercareService {
 
 	private static final Logger log = LoggerFactory.getLogger(AftercareService.class);
 
+	/** 방을 새로 열거나 안내를 받을 수 있는 예약 상태 */
+	static final Set<String> ACTIVE = Set.of("PENDING", "CONFIRMED");
+
 	public record Opened(AftercareConversation conversation, boolean created) {
 	}
 
-	record Row(UUID conversationId, long reservationId, String mode, String procedureCode, long hospitalId,
-			OffsetDateTime startAt, OffsetDateTime createdAt) {
+	record Row(UUID conversationId, long reservationId, String reservationStatus, String mode, String procedureCode,
+			long hospitalId, OffsetDateTime startAt, OffsetDateTime createdAt) {
 	}
 
 	private record Reservation(long userId, long hospitalId, String status) {
 	}
 
+	private record GuideState(boolean anyTask, boolean busy, boolean guidedToday) {
+	}
+
 	private static final String SELECT = """
-			SELECT a.conversation_id, a.reservation_id, c.mode, r.procedure_code, r.hospital_id, s.start_at, a.created_at
+			SELECT a.conversation_id, a.reservation_id, r.status AS reservation_status, c.mode, r.procedure_code,
+			       r.hospital_id, s.start_at, a.created_at
 			FROM app.aftercare_rooms a
 			JOIN app.conversations c ON c.id = a.conversation_id
 			JOIN app.reservations r ON r.id = a.reservation_id
@@ -67,7 +78,7 @@ public class AftercareService {
 		this.tasks = tasks;
 	}
 
-	/** 사후관리 방 열기: 있으면 그 방(200), 없으면 만들고 첫 안내 요청(201). 본인 확정 예약만. */
+	/** 사후관리 방 열기: 있으면 그 방(200), 없으면 만든다(201). 열 때마다 그날 안내가 없으면 요청한다. */
 	public Opened open(CurrentUser user, long reservationId, String locale) {
 		Reservation r = jdbc.sql("SELECT user_id, hospital_id, status FROM app.reservations WHERE id = :id")
 				.param("id", reservationId)
@@ -79,7 +90,7 @@ public class AftercareService {
 		Optional<UUID> existing = roomOf(reservationId);
 		boolean created = false;
 		if (existing.isEmpty()) {
-			if (!"CONFIRMED".equals(r.status())) {
+			if (!ACTIVE.contains(r.status())) {
 				throw new ApiException(ErrorCode.INVALID_STATE_TRANSITION, Map.of("from", r.status(), "to", "AFTERCARE"));
 			}
 			try {
@@ -90,9 +101,9 @@ public class AftercareService {
 				existing = roomOf(reservationId);
 			}
 		}
-		UUID conversationId = existing.orElseThrow(() -> ApiException.notFound("conversation"));
-		requestIntroIfEmpty(user, conversationId, reservationId);
-		return new Opened(toDto(require(conversationId), locale), created);
+		Row room = require(existing.orElseThrow(() -> ApiException.notFound("conversation")));
+		requestGuideIfDue(user, room);
+		return new Opened(toDto(room, locale), created);
 	}
 
 	/** 내 사후관리 방 목록 (최신순) */
@@ -112,19 +123,36 @@ public class AftercareService {
 		return id;
 	}
 
-	/** 아직 작업이 하나도 없는 방이면 첫 안내를 요청한다 (큐 발행 실패 후 다시 열 때도 재시도됨) */
-	private void requestIntroIfEmpty(CurrentUser user, UUID conversationId, long reservationId) {
-		boolean empty = jdbc.sql("SELECT NOT EXISTS (SELECT 1 FROM app.ai_tasks WHERE conversation_id = :c)")
-				.param("c", conversationId).query(Boolean.class).single();
-		if (!empty) {
+	/**
+	 * 하루 한 번(Asia/Seoul 날짜 기준) 그날 안내를 요청한다. 진행 중인 작업이 있거나, 상담사 연결 중이거나,
+	 * 예약이 끝났으면 요청하지 않는다. 큐 발행에 실패하면 다음에 방을 열 때 다시 시도된다.
+	 */
+	private void requestGuideIfDue(CurrentUser user, Row room) {
+		if (!ACTIVE.contains(room.reservationStatus()) || !"AFTERCARE".equals(room.mode())) {
 			return;
 		}
+		GuideState state = jdbc.sql("""
+				SELECT EXISTS (SELECT 1 FROM app.ai_tasks WHERE conversation_id = :c) AS any_task,
+				       EXISTS (SELECT 1 FROM app.ai_tasks WHERE conversation_id = :c
+				               AND status IN ('QUEUED','RUNNING','WAITING_APPROVAL')) AS busy,
+				       EXISTS (SELECT 1 FROM app.ai_tasks WHERE conversation_id = :c
+				               AND action->>'type' IN ('AFTERCARE_INTRO','AFTERCARE_DAILY')
+				               AND (created_at AT TIME ZONE 'Asia/Seoul')::date = (now() AT TIME ZONE 'Asia/Seoul')::date
+				               ) AS guided_today
+				""").param("c", room.conversationId())
+				.query((rs, i) -> new GuideState(rs.getBoolean("any_task"), rs.getBoolean("busy"),
+						rs.getBoolean("guided_today")))
+				.single();
+		if (state.busy() || state.guidedToday()) {
+			return;
+		}
+		String type = state.anyTask() ? "AFTERCARE_DAILY" : "AFTERCARE_INTRO";
 		try {
-			tasks.create(user, new CreateTaskRequest(conversationId, null,
-					Map.of("type", "AFTERCARE_INTRO", "reservationId", reservationId)));
+			tasks.create(user, new CreateTaskRequest(room.conversationId(), null,
+					Map.of("type", type, "reservationId", room.reservationId())));
 		} catch (ApiException e) {
 			// 방은 열어 주고, 고객이 질문하면 그때 답한다
-			log.warn("aftercare intro not requested for {}: {}", conversationId, e.code());
+			log.warn("aftercare guide not requested for {}: {}", room.conversationId(), e.code());
 		}
 	}
 
@@ -139,10 +167,15 @@ public class AftercareService {
 	}
 
 	private static Row row(ResultSet rs) throws SQLException {
-		return new Row(rs.getObject("conversation_id", UUID.class), rs.getLong("reservation_id"), rs.getString("mode"),
-				rs.getString("procedure_code"), rs.getLong("hospital_id"),
-				Times.kst(rs.getObject("start_at", OffsetDateTime.class)),
+		return new Row(rs.getObject("conversation_id", UUID.class), rs.getLong("reservation_id"),
+				rs.getString("reservation_status"), rs.getString("mode"), rs.getString("procedure_code"),
+				rs.getLong("hospital_id"), Times.kst(rs.getObject("start_at", OffsetDateTime.class)),
 				Times.kst(rs.getObject("created_at", OffsetDateTime.class)));
+	}
+
+	/** 시술일 기준 오늘이 며칠째인지 (시술일 = 0, 시술 전은 음수) — Asia/Seoul 날짜 기준 */
+	static int daysFromProcedure(OffsetDateTime startAt, LocalDate today) {
+		return (int) ChronoUnit.DAYS.between(startAt.atZoneSameInstant(Times.SEOUL).toLocalDate(), today);
 	}
 
 	private AftercareConversation toDto(Row r, String locale) {
@@ -150,9 +183,9 @@ public class AftercareService {
 				SELECT id FROM app.ai_tasks WHERE conversation_id = :c AND status IN ('QUEUED','RUNNING','WAITING_APPROVAL')
 				ORDER BY created_at DESC LIMIT 1
 				""").param("c", r.conversationId()).query(UUID.class).optional().orElse(null);
-		return new AftercareConversation(r.conversationId(), r.reservationId(), r.mode(), r.procedureCode(),
-				catalog.procedure(r.procedureCode(), locale).map(Procedure::name).orElse(null),
+		return new AftercareConversation(r.conversationId(), r.reservationId(), r.reservationStatus(), r.mode(),
+				r.procedureCode(), catalog.procedure(r.procedureCode(), locale).map(Procedure::name).orElse(null),
 				new HospitalRef(r.hospitalId(), catalog.hospitalName(r.hospitalId(), locale).orElse(null)),
-				r.startAt(), active, r.createdAt());
+				r.startAt(), daysFromProcedure(r.startAt(), LocalDate.now(Times.SEOUL)), active, r.createdAt());
 	}
 }

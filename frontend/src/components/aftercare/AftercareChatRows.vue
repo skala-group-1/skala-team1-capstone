@@ -2,8 +2,8 @@
 // 대화 목록(/chats)의 "사후관리 N" 행들. 불러온 방 ID 는 부모가 병원 대화 목록에서 빼도록 알린다
 import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { aftercareApi, type AftercareConversation } from '@/api/aftercare'
-import { daysSinceProcedure } from '@/composables/useAftercareRoom'
+import { aftercareApi, isAftercareClosed, type AftercareConversation } from '@/api/aftercare'
+import { aftercareDayLabel } from '@/composables/useAftercareRoom'
 import { seoulDate } from '@/utils/format'
 import AppBadge from '@/components/ui/AppBadge.vue'
 import AppIcon from '@/components/ui/AppIcon.vue'
@@ -14,9 +14,7 @@ const rooms = ref<AftercareConversation[]>([])
 
 const md = (iso: string) => seoulDate(iso).slice(5).replace('-', '/')
 function day(room: AftercareConversation) {
-  const n = daysSinceProcedure(room.startAt)
-  if (n == null) return t('aftercare.before')
-  return n === 0 ? t('aftercare.dayZero') : t('aftercare.day', { n })
+  return isAftercareClosed(room) ? t('aftercare.closedBadge') : aftercareDayLabel(t, room.daysFromProcedure)
 }
 
 onMounted(async () => {

@@ -213,7 +213,7 @@ useNotificationRefresh(['RESERVATION_CONFIRMED', 'RESERVATION_REJECTED', 'RESERV
           </div>
         </section>
         <p v-if="r.status === 'CONFIRMED'" class="t-caption-12 muted">{{ t('reservations.visit.policy') }}</p>
-        <AftercareCard v-if="r.status === 'CONFIRMED'" :reservation-id="r.id" />
+        <AftercareCard v-if="r.status === 'CONFIRMED' || r.status === 'PENDING'" :reservation-id="r.id" />
 
         <!-- 확정 → 리뷰 쓰기 / 작성 완료 (취소하면 리뷰는 병원 목록에서 숨겨지므로 카드도 안 보임) -->
         <section v-if="r.reviewable" class="card">

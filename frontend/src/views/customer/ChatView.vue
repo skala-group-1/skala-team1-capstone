@@ -242,8 +242,9 @@ const approve = (editedArgs: Record<string, unknown> | null = null) => decide(tr
 const reject = () => decide(false)
 async function compareCards(cards: { id: number; name: string }[]) {
   if (busy.value || !cards.length) return
-  const names = cards.slice(0, 3).map((c) => c.name).join(', ')
-  await conv.send(t('compare.askAiMessage', { names, procedure: procedureName(conv.conditions?.procedureCode ?? null) }))
+  // 버튼 문구 그대로 보낸다. 계약서에 비교 action 이 없어 병원 이름을 붙여 agent 가 대상을 알게 함 ("3곳 비교하기: A, B, C")
+  const picked = cards.slice(0, 3)
+  await conv.send(`${t('chat.compareN', { n: picked.length })}: ${picked.map((c) => c.name).join(', ')}`)
 }
 async function newConversation() {
   if (conv.streaming || startingConversation.value) return

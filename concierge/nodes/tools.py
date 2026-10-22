@@ -15,6 +15,8 @@ from app.graph.state import AgentState
 from app.mcp_client.tools import HOSPITAL_READ_TOOLS
 from concierge.nodes.load_hospital_context import selected_hospital, tool_data
 
+REVIEWS_PER_PROCEDURE = 10
+
 
 async def hospital_tools(state: AgentState) -> dict:
     from app.mcp_client.client import get_tools  # MCP 연결은 실제 도구 호출 시점에만 (lazy)
@@ -35,6 +37,8 @@ async def hospital_tools(state: AgentState) -> dict:
         args = dict(call["args"])
         if tool is not None and "hospital_id" in tool.args:
             args["hospital_id"] = hospital_id
+        if call["name"] == "business_get_hospital_reviews" and args.get("procedure_code"):
+            args["size"] = REVIEWS_PER_PROCEDURE  # 시술 필터 조회는 모델이 정한 size 와 무관하게 최신 10개
         calls.append({**call, "args": args})
     scoped_last = last.model_copy(update={"tool_calls": calls})
     state = {**state, "messages": [*state["messages"][:-1], scoped_last]}

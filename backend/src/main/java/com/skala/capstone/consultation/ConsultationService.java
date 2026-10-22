@@ -197,8 +197,12 @@ public class ConsultationService {
 		if (n == 0) {
 			throw new ApiException(ErrorCode.CONCURRENT_UPDATE);
 		}
-		jdbc.sql("UPDATE app.conversations SET mode = 'HOSPITAL' WHERE consultation_id = :id AND mode = 'HUMAN'")
-				.param("id", id).update();
+		// 사후관리 방은 AFTERCARE 로, 병원 방은 HOSPITAL 로 돌아간다
+		jdbc.sql("""
+				UPDATE app.conversations c SET mode = CASE WHEN EXISTS (
+				    SELECT 1 FROM app.aftercare_rooms a WHERE a.conversation_id = c.id) THEN 'AFTERCARE' ELSE 'HOSPITAL' END
+				WHERE consultation_id = :id AND mode = 'HUMAN'
+				""").param("id", id).update();
 		pushStatus(id, "CLOSED", p.counselorId());
 		AfterCommit.run(() -> audit.log(actor, "CONSULTATION_CLOSED", "consultation:" + id, Map.of()));
 	}

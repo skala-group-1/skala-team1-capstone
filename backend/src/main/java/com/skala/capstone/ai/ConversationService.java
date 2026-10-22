@@ -58,7 +58,8 @@ public class ConversationService {
 		Row parent = parentId == null ? null : requireOwned(user, parentId);
 		if (hospitalId != null) {
 			catalog.requireHospital(hospitalId);
-			Optional<Row> existing = rows("user_id = :u AND selected_hospital_id = :h AND mode IN ('HOSPITAL','HUMAN')",
+			Optional<Row> existing = rows("user_id = :u AND selected_hospital_id = :h AND mode IN ('HOSPITAL','HUMAN')"
+					+ " AND id NOT IN (SELECT conversation_id FROM app.aftercare_rooms)",
 					user.id(), hospitalId).stream().findFirst();
 			if (existing.isPresent()) {
 				return new Created(toDto(existing.get(), locale, false), false);

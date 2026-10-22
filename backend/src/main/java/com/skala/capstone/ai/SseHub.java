@@ -42,6 +42,12 @@ public class SseHub {
 
 	private final Map<UUID, Stream> streams = new ConcurrentHashMap<>();
 
+	/** 지금 이 작업의 SSE 를 받고 있는 브라우저가 있는지 */
+	public boolean isWatched(UUID taskId) {
+		Stream s = streams.get(taskId);
+		return s != null && !s.emitters.isEmpty();
+	}
+
 	/** agent 이벤트(또는 backend 가 만든 이벤트)를 버퍼에 넣고 연결된 브라우저에 보낸다 */
 	public void publish(UUID taskId, Event e) {
 		Stream s = streams.computeIfAbsent(taskId, k -> new Stream());

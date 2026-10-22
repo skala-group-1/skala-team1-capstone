@@ -13,6 +13,7 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.AmqpException;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -70,9 +71,10 @@ public class AiTaskService {
 	private final Json json;
 	private final TransactionTemplate tx;
 	private final AppProperties app;
+	private final ApplicationEventPublisher events;
 
 	public AiTaskService(JdbcClient jdbc, ConversationService conversations, MessagePublisher publisher, SseHub hub,
-			Json json, TransactionTemplate tx, AppProperties app) {
+			Json json, TransactionTemplate tx, AppProperties app, ApplicationEventPublisher events) {
 		this.jdbc = jdbc;
 		this.conversations = conversations;
 		this.publisher = publisher;
@@ -80,6 +82,7 @@ public class AiTaskService {
 		this.json = json;
 		this.tx = tx;
 		this.app = app;
+		this.events = events;
 	}
 
 	// ------------------------------------------------------------------ 작업 생성·승인
@@ -262,6 +265,9 @@ public class AiTaskService {
 			return true;
 		});
 		if (Boolean.TRUE.equals(applied)) {
+			if ("DONE".equals(e.event())) {
+				events.publishEvent(new AiTaskDone(e.taskId(), hub.isWatched(e.taskId())));
+			}
 			hub.publish(e.taskId(), new SseHub.Event(e.seq(), e.event(), e.data()));
 		}
 	}

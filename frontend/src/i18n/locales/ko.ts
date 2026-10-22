@@ -89,6 +89,7 @@ const ko: typeof en = {
     selected: '{n}곳 선택됨',
     maxThree: '최대 3곳까지 비교할 수 있어요',
     compareGo: '비교하기',
+    more: '더 보기 ({n}곳 남음)',
     compareNeedsProcedure: '가격을 비교하려면 시술을 골라 주세요',
     filter: {
       title: '필터',
@@ -307,6 +308,7 @@ const ko: typeof en = {
       pick: '상담할 주제를 골라주세요.',
       label: '상담 주제',
       change: '주제 바꾸기',
+      new: 'NEW',
       started: '‘{topic}’ 상담을 시작했어요',
       next: '다음 주제',
       groups: {
@@ -336,7 +338,7 @@ const ko: typeof en = {
       },
     },
     quick: {
-      procedures: '시술 추천',
+      procedures: '시술 알아보기',
       hospitals: '병원 찾기',
       reservations: '내 예약',
       faq: '자주 묻는 질문',
@@ -344,6 +346,7 @@ const ko: typeof en = {
     },
     concern: {
       done: '{n}개 선택 완료',
+      pick: '고민을 골라 주세요',
       note: '진단이 아닌 시술 정보 안내예요. 말로 설명해도 돼요.',
       disclaimer: '적합 여부·효과는 병원 상담에서 의료진이 판단해요.',
       find: '이 시술 하는 병원 찾기 | {n}개 시술 하는 병원 찾기',
@@ -376,6 +379,7 @@ const ko: typeof en = {
     changeConditions: '조건 바꾸기',
     relaxCount: '{n}곳',
     relaxManual: '조건 직접 바꾸기',
+    changeConditionsHint: '바꾸고 싶은 조건을 아래 입력창에 적어 주세요',
     failed: '답변을 불러오지 못했어요',
     counselor: '상담원',
     reconnecting: '다시 연결하는 중…',
@@ -387,7 +391,7 @@ const ko: typeof en = {
     connectCounselor: '상담원 연결',
     book: '예약하기',
     send: '보내기',
-    input: { ai: '여신 AI에게 물어보세요', agent: '병원에 궁금한 점을 물어보세요', waiting: '상담원에게 남길 메시지를 입력하세요', human: '메시지를 입력하세요' },
+    input: { ai: '여신 AI에게 물어보세요', agent: '병원에 궁금한 점을 물어보세요', waiting: '상담원에게 남길 메시지를 입력하세요', human: '메시지를 입력하세요', approvalPending: '위 카드에서 먼저 선택해 주세요' },
     cond: { label: '검색 조건', procedure: '시술', area: '지역', budget: '예산', language: '언어', date: '날짜', sort: '정렬' },
     info: {
       title: '이 대화 안내',
@@ -409,6 +413,7 @@ const ko: typeof en = {
       label: '개인정보 제공 동의 (필수)',
       desc: '상담을 위해 위 내용과 이름·국적·사용 언어를 {hospital} 상담원에게 제공해요.',
       submit: '상담원 연결 요청',
+      decline: '지금은 안 할게요',
       note: '요청하면 AI 답변은 멈추고 상담원이 이어서 답해요.',
     },
     requested: {
@@ -437,6 +442,7 @@ const ko: typeof en = {
     human: {
       translating: '번역 중…',
       failed: '번역 실패 · 다시 보내기',
+      sendFailed: '보내지 못했어요 · 다시 보내기',
       sentIn: '{lang}로 번역되어 전송됨',
       autoTranslated: '자동 번역됨 · 원문 보기',
       hideOriginal: '원문 숨기기',
@@ -545,6 +551,9 @@ const ko: typeof en = {
       started: '시작',
       customerLang: '고객 언어',
       closeNote: '상담을 종료하면 고객 대화창은 다시 AI가 답해요',
+      closeConfirm: '상담을 종료할까요?',
+      notMine: '다른 상담사가 진행 중인 상담이에요',
+      translateFailed: '번역 실패 · 다시 번역',
       notice: '상담 중에는 고객 화면의 AI 답변이 멈추고, 이 화면의 답변만 고객 언어로 번역돼 전달돼요.',
       noticeSame: '상담 중에는 고객 화면의 AI 답변이 멈추고, 이 화면의 답변이 그대로 전달돼요.',
     },

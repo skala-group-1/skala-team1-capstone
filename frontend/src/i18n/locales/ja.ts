@@ -88,6 +88,7 @@ const ja: typeof en = {
     selected: '{n}件選択中',
     maxThree: '最大3件まで比較できます',
     compareGo: '比較する',
+    more: 'もっと見る（残り{n}件）',
     compareNeedsProcedure: '価格を比較するには施術を選んでください',
     filter: {
       title: '絞り込み',
@@ -306,6 +307,7 @@ const ja: typeof en = {
       pick: '相談テーマを選んでください。',
       label: '相談テーマ',
       change: 'テーマを変更',
+      new: 'NEW',
       started: '「{topic}」の相談を始めました',
       next: '次のテーマ',
       groups: {
@@ -335,7 +337,7 @@ const ja: typeof en = {
       },
     },
     quick: {
-      procedures: '施術のおすすめ',
+      procedures: '施術を調べる',
       hospitals: '病院を探す',
       reservations: '予約',
       faq: 'よくある質問',
@@ -343,6 +345,7 @@ const ja: typeof en = {
     },
     concern: {
       done: '{n}件選択して完了',
+      pick: '悩みを選んでください',
       note: '診断ではなく施術情報のご案内です。言葉で説明しても大丈夫です。',
       disclaimer: '適否・効果は病院の相談で医師が判断します。',
       find: 'この施術がある病院を探す | {n}つの施術がある病院を探す',
@@ -375,6 +378,7 @@ const ja: typeof en = {
     changeConditions: '条件を変える',
     relaxCount: '{n}件',
     relaxManual: '自分で条件を変える',
+    changeConditionsHint: '変更したい条件を下の入力欄に入力してください',
     failed: '回答を読み込めませんでした',
     counselor: '相談員',
     reconnecting: '再接続しています…',
@@ -386,7 +390,7 @@ const ja: typeof en = {
     connectCounselor: '相談員につなぐ',
     book: '予約する',
     send: '送信',
-    input: { ai: 'Yeoshin AIに質問', agent: '病院に質問', waiting: '相談員へのメッセージを入力', human: 'メッセージを入力' },
+    input: { ai: 'Yeoshin AIに質問', agent: '病院に質問', waiting: '相談員へのメッセージを入力', human: 'メッセージを入力', approvalPending: '先に上のカードで選択してください' },
     cond: { label: '検索条件', procedure: '施術', area: 'エリア', budget: '予算', language: '言語', date: '日程', sort: '並び順' },
     info: {
       title: 'この会話について',
@@ -408,6 +412,7 @@ const ja: typeof en = {
       label: '個人情報の提供に同意（必須）',
       desc: '相談のため、上記の内容と氏名・国籍・使用言語を{hospital}の相談員に提供します。',
       submit: '相談員への接続をリクエスト',
+      decline: '今はしない',
       note: 'リクエストするとAIの回答は止まり、相談員が引き継ぎます。',
     },
     requested: {
@@ -436,6 +441,7 @@ const ja: typeof en = {
     human: {
       translating: '翻訳中…',
       failed: '翻訳失敗 · 再送信',
+      sendFailed: '送信できませんでした · 再送信',
       sentIn: '{lang}に翻訳して送信済み',
       autoTranslated: '自動翻訳 · 原文を見る',
       hideOriginal: '原文を隠す',

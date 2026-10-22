@@ -88,6 +88,7 @@ export default {
     selected: '{n} selected',
     maxThree: 'Compare up to 3 clinics',
     compareGo: 'Compare',
+    more: 'Show more ({n} left)',
     compareNeedsProcedure: 'Choose a procedure to compare prices',
     filter: {
       title: 'Filters',
@@ -306,6 +307,7 @@ export default {
       pick: 'Choose a topic.',
       label: 'Topic',
       change: 'Change topic',
+      new: 'NEW',
       started: 'Started \'{topic}\'',
       next: 'Next topics',
       groups: {
@@ -343,6 +345,7 @@ export default {
     },
     concern: {
       done: 'Done ({n} selected)',
+      pick: 'Choose your concerns',
       note: 'This is procedure info, not a diagnosis. You can also describe it in words.',
       disclaimer: 'Suitability and results are decided by the doctor at the clinic.',
       find: 'Find clinics for this | Find clinics for these {n}',
@@ -375,6 +378,7 @@ export default {
     changeConditions: 'Change conditions',
     relaxCount: '{n} found',
     relaxManual: 'Change conditions myself',
+    changeConditionsHint: 'Type the condition you want to change below',
     failed: "Couldn't load the answer",
     counselor: 'Counselor',
     reconnecting: 'Reconnecting…',
@@ -386,7 +390,7 @@ export default {
     connectCounselor: 'Talk to counselor',
     book: 'Book',
     send: 'Send',
-    input: { ai: 'Ask Yeoshin AI', agent: 'Ask the clinic anything', waiting: 'Leave a message for the counselor', human: 'Type a message' },
+    input: { ai: 'Ask Yeoshin AI', agent: 'Ask the clinic anything', waiting: 'Leave a message for the counselor', human: 'Type a message', approvalPending: 'Please choose an option on the card above first' },
     cond: { label: 'Search conditions', procedure: 'Procedure', area: 'Area', budget: 'Budget', language: 'Language', date: 'Dates', sort: 'Sort' },
     info: {
       title: 'About this chat',
@@ -408,6 +412,7 @@ export default {
       label: 'I agree to share my information (required)',
       desc: 'For the consultation, the summary above and your name, nationality and language will be shared with the {hospital} counselor.',
       submit: 'Request a counselor',
+      decline: 'Not now',
       note: 'Once requested, the AI stops answering and a counselor takes over.',
     },
     requested: {
@@ -436,6 +441,7 @@ export default {
     human: {
       translating: 'Translating…',
       failed: 'Translation failed · Retry',
+      sendFailed: 'Not sent · Send again',
       sentIn: 'Sent in {lang}',
       autoTranslated: 'Auto-translated · See original',
       hideOriginal: 'Hide original',
@@ -544,6 +550,9 @@ export default {
       started: 'Started',
       customerLang: 'Language',
       closeNote: 'After you end it, the AI answers in the customer chat again',
+      closeConfirm: 'End this consultation?',
+      notMine: 'Another counselor is handling this consultation',
+      translateFailed: 'Translation failed · Retry',
       notice: 'During the consultation the AI stops answering the customer; only your replies are translated and delivered.',
       noticeSame: 'During the consultation the AI stops answering the customer; only your replies are delivered as written.',
     },

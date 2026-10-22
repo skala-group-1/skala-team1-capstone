@@ -312,6 +312,8 @@ const TXT = {
   cancelled: { en: 'Okay, I did not send it.', ko: '알겠어요. 요청하지 않았어요.', zh: '好的，没有提交。', ja: 'わかりました。リクエストしていません。' },
   opened: { en: 'Opening a chat with this clinic.', ko: '이 병원과의 대화창을 열었어요.', zh: '已打开与这家医院的对话。', ja: 'この病院とのチャットを開きました。' },
   askConcern: { en: 'What skin concerns do you have? Pick all that apply.\nI will share info on related procedures.', ko: '어떤 피부 고민이 있으세요? 해당하는 걸 모두 골라주세요.\n고른 고민과 관련된 시술 정보를 알려드려요.', zh: '您有哪些皮肤困扰？请选择所有符合的项。\n我会介绍相关项目的信息。', ja: 'どんな肌の悩みがありますか？当てはまるものをすべて選んでください。\n関連する施術の情報をお伝えします。' },
+  askArea: { en: 'Which area would you like to visit: Gangnam, Myeongdong or Hongdae?', ko: '어느 지역이 편하세요? 강남, 명동, 홍대 중에서 골라 주세요.', zh: '您想去哪个区域？江南、明洞还是弘大？', ja: 'どのエリアがご希望ですか？江南・明洞・弘大から選んでください。' },
+  areaChoices: { en: 'Gangnam|Myeongdong|Hongdae', ko: '강남|명동|홍대', zh: '江南|明洞|弘大', ja: '江南|明洞|弘大' },
   topic: { en: 'Sure. Tell me what you would like to know.', ko: '좋아요. 궁금한 점을 말씀해 주세요.', zh: '好的，请告诉我您想了解的内容。', ja: 'わかりました。知りたいことを教えてください。' },
   procs: { en: 'Here are {n} related procedures.\nTimes and prices are based on registered clinic info.', ko: '관련 시술 {n}가지예요.\n시간·가격은 등록된 병원 정보 기준이에요.', zh: '相关项目共 {n} 个。\n时间·价格以医院登记的信息为准。', ja: '関連する施術は{n}つです。\n時間・価格は登録された病院情報に基づきます。' },
   saved: { en: 'Saved. I will use it next time.', ko: '기억해 둘게요. 다음 상담부터 반영할게요.', zh: '已保存，下次咨询会使用。', ja: '保存しました。次回から反映します。' },
@@ -384,9 +386,9 @@ const tokens = (text: string): [SseEventName, unknown][] => text.match(/.{1,6}/g
 function record(conv: ConvRow, text: string) {
   conv.messages!.push({ role: 'assistant', text, sources: [], cards: [], createdAt: nowIso() })
 }
-function done(conv: ConvRow, answer: string, extra: Partial<ConversationMessage> = {}): [SseEventName, unknown] {
+function done(conv: ConvRow, answer: string, extra: Partial<ConversationMessage> & { suggestions?: string[] } = {}): [SseEventName, unknown] {
   conv.messages!.push({ role: 'assistant', text: answer, sources: extra.sources ?? [], cards: extra.cards ?? [], procedures: extra.procedures, createdAt: nowIso() })
-  return ['DONE', { answer, sources: extra.sources ?? [] }]
+  return ['DONE', { answer, sources: extra.sources ?? [], suggestions: extra.suggestions ?? [] }]
 }
 
 function aiStream(task: TaskRow, request: Request) {
@@ -464,6 +466,11 @@ function aiStream(task: TaskRow, request: Request) {
   // C4-T 상담 주제 선택 · 피부 고민 → 관련 시술 정보
   if (action?.type === 'SELECT_TOPIC') {
     conv.topic = action.topic!
+    // 병원 찾기는 지역을 되묻고 선택지 칩(DONE.suggestions)을 함께 보낸다
+    if (action.topic === 'HOSPITAL_SEARCH') {
+      const answer = L(loc, TXT.askArea)
+      return sse([...ev, ...tokens(answer), done(conv, answer, { suggestions: L(loc, TXT.areaChoices).split('|') })])
+    }
     const answer = L(loc, action.topic === 'SKIN_CONCERN' ? TXT.askConcern : TXT.topic)
     return sse([...ev, ...tokens(answer), done(conv, answer)])
   }

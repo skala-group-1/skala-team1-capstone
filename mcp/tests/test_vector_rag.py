@@ -21,7 +21,7 @@ def test_splitting_preserves_content_and_resource_targets():
 
 def test_all_documents_chunk_without_truncation():
     docs = [_parse(p) for p in rag_docs_dir().rglob("*.md")]
-    assert len(docs) == 122
+    assert len(docs) == 158
     for doc in docs:
         chunks = chunk_sections(doc)
         assert all(len(c.text) <= 800 for c in chunks)

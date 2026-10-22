@@ -152,3 +152,24 @@ a {
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+
+/* 04 ③ 로딩 Skeleton: 회색 막대가 깜빡임. 크기는 화면에서 조정 */
+.bone {
+  display: block;
+  height: 12px;
+  border-radius: var(--radius-xs);
+  background: var(--bg-muted);
+  animation: shimmer 1.2s ease-in-out infinite;
+}
+@keyframes shimmer {
+  50% { opacity: 0.5; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bone { animation: none; }
+}
+.skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  padding: var(--space-16);
+}

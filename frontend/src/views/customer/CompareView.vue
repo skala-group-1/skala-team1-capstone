@@ -17,6 +17,7 @@ const router = useRouter()
 const { t } = useI18n()
 const search = useSearchStore()
 const failed = ref(false)
+const loading = ref(false)
 
 const procedure = computed(() => (route.query.procedure as ProcedureCode | undefined) ?? null)
 const procedureName = computed(() => search.procedures.find((p) => p.code === procedure.value)?.name ?? '')
@@ -28,10 +29,15 @@ async function load() {
   const ids = String(route.query.ids ?? '').split(',').map(Number).filter(Boolean)
   if (ids.length) search.compareIds = ids.slice(0, 3)
   if (!procedure.value || !search.compareIds.length) return
+  // 이전 비교 결과가 잠깐 보이지 않게 비우고 로딩 표시
+  search.compare = null
+  loading.value = true
   try {
     await search.loadCompare(procedure.value)
   } catch {
     failed.value = true
+  } finally {
+    loading.value = false
   }
 }
 async function remove(id: number) {
@@ -56,6 +62,9 @@ onMounted(async () => {
     <EmptyState v-if="failed" icon="alert-triangle" tone="danger" :title="t('explore.errorTitle')">
       <AppButton variant="secondary" icon="refresh-cw" @click="load">{{ t('common.retry') }}</AppButton>
     </EmptyState>
+<div v-else-if="loading" class="skeleton-list" role="status" :aria-label="t('common.loading')" aria-busy="true">
+      <span class="bone" style="width: 60%; height: 20px" /><span class="bone" style="width: 40%" /><span class="bone" style="height: 120px" /><span class="bone" style="height: 120px" />
+    </div>
     <EmptyState v-else-if="!columns.length" icon="columns" :title="t('compare.emptyTitle')" :description="t('compare.emptyBody')">
       <AppButton variant="secondary" @click="router.push('/explore')">{{ t('nav.explore') }}</AppButton>
     </EmptyState>

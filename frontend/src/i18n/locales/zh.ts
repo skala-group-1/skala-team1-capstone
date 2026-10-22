@@ -88,6 +88,7 @@ const zh: typeof en = {
     selected: '已选 {n} 家',
     maxThree: '最多可比较 3 家',
     compareGo: '比较',
+    more: '查看更多（还有 {n} 家）',
     compareNeedsProcedure: '比较价格前请先选择项目',
     filter: {
       title: '筛选',
@@ -306,6 +307,7 @@ const zh: typeof en = {
       pick: '请选择咨询主题。',
       label: '咨询主题',
       change: '更换主题',
+      new: '新',
       started: '已开始「{topic}」咨询',
       next: '更多主题',
       groups: {
@@ -335,7 +337,7 @@ const zh: typeof en = {
       },
     },
     quick: {
-      procedures: '项目推荐',
+      procedures: '了解项目',
       hospitals: '找医院',
       reservations: '我的预约',
       faq: '常见问题',
@@ -343,6 +345,7 @@ const zh: typeof en = {
     },
     concern: {
       done: '已选 {n} 项，完成',
+      pick: '请选择您的困扰',
       note: '这是项目信息介绍，不是诊断。也可以直接用文字描述。',
       disclaimer: '是否适合及效果由医院咨询时医生判断。',
       find: '查找做这个项目的医院 | 查找做这 {n} 个项目的医院',
@@ -375,6 +378,7 @@ const zh: typeof en = {
     changeConditions: '修改条件',
     relaxCount: '{n} 家',
     relaxManual: '自己修改条件',
+    changeConditionsHint: '请在下方输入框中写下想修改的条件',
     failed: '未能加载回答',
     counselor: '咨询师',
     reconnecting: '正在重新连接…',
@@ -386,7 +390,7 @@ const zh: typeof en = {
     connectCounselor: '连接咨询师',
     book: '预约',
     send: '发送',
-    input: { ai: '向 Yeoshin AI 提问', agent: '向医院提问', waiting: '给咨询师留言', human: '输入消息' },
+    input: { ai: '向 Yeoshin AI 提问', agent: '向医院提问', waiting: '给咨询师留言', human: '输入消息', approvalPending: '请先在上方卡片中选择' },
     cond: { label: '搜索条件', procedure: '项目', area: '地区', budget: '预算', language: '语言', date: '日期', sort: '排序' },
     info: {
       title: '对话说明',
@@ -408,6 +412,7 @@ const zh: typeof en = {
       label: '同意提供个人信息（必选）',
       desc: '为进行咨询，将向{hospital}的咨询师提供上述内容以及您的姓名、国籍和使用语言。',
       submit: '请求连接咨询师',
+      decline: '暂不需要',
       note: '提交后 AI 将停止回答，由咨询师接手。',
     },
     requested: {
@@ -436,6 +441,7 @@ const zh: typeof en = {
     human: {
       translating: '翻译中…',
       failed: '翻译失败 · 重新发送',
+      sendFailed: '发送失败 · 重新发送',
       sentIn: '已翻译为{lang}发送',
       autoTranslated: '自动翻译 · 查看原文',
       hideOriginal: '隐藏原文',

@@ -31,6 +31,7 @@ const category = ref<ProcedureCategory | 'ALL'>('ALL')
 const myLangOnly = ref(false)
 const reviews = ref<Review[]>([])
 const reviewTotal = ref(0)
+const reviewsState = ref<'loading' | 'error' | 'done' | null>(null)
 const reviewProc = ref<ProcedureCode | 'ALL'>('ALL')
 /** 번역본 대신 원문을 펼친 리뷰 id */
 const showingOriginal = ref<number[]>([])
@@ -104,21 +105,33 @@ async function load() {
 }
 const REVIEW_PAGE_SIZE = 20
 const reviewPage = ref(0)
-const reviewsLoading = ref(false)
+const reviewsMoreLoading = ref(false)
 let reviewRequest = 0
-/** more=false 면 시술을 바꾼 것 → 처음부터. 늦게 온 이전 시술 응답은 버림 */
+/** more=false 면 처음부터(시술 변경·재시도) → 스켈레톤. more=true 면 다음 페이지를 뒤에 붙임 → 버튼만 로딩.
+ *  시술·병원을 바꾸면 늦게 온 이전 응답은 버림 */
 async function loadReviews(more = false) {
   const req = ++reviewRequest
   const nextPage = more ? reviewPage.value + 1 : 0
   const procedure = reviewProc.value === 'ALL' ? undefined : reviewProc.value
-  reviewsLoading.value = true
-  const page = await catalogApi.reviews(id.value, { page: nextPage, size: REVIEW_PAGE_SIZE, procedure }).catch(() => null)
-  if (req !== reviewRequest) return
-  reviewsLoading.value = false
-  if (!page) return
-  reviews.value = more ? [...reviews.value, ...page.items] : page.items
-  reviewTotal.value = page.total
-  reviewPage.value = nextPage
+  if (more) reviewsMoreLoading.value = true
+  else {
+    reviews.value = []
+    reviewsState.value = 'loading'
+  }
+  try {
+    const page = await catalogApi.reviews(id.value, { page: nextPage, size: REVIEW_PAGE_SIZE, procedure })
+    if (req !== reviewRequest) return
+    reviews.value = more ? [...reviews.value, ...page.items] : page.items
+    reviewTotal.value = page.total
+    reviewPage.value = nextPage
+    reviewsState.value = 'done'
+  } catch {
+    if (req !== reviewRequest) return
+    if (more) showToast(t('common.error'))
+    else reviewsState.value = 'error'
+  } finally {
+    if (req === reviewRequest) reviewsMoreLoading.value = false
+  }
 }
 function selectReviewProc(code: ProcedureCode | 'ALL') {
   if (reviewProc.value === code) return
@@ -133,8 +146,11 @@ async function copyAddress() {
 function openBooking() {
   void router.push(`/hospitals/${id.value}/book`)
 }
+// 상세에서 열었으면 그 기록을 되돌린다 (replace 하면 상세가 히스토리에 두 번 쌓임). 링크로 바로 열렸으면 상세로 바꿔치기
 function closeBooking() {
-  void router.replace(`/hospitals/${id.value}`)
+  const back = window.history.state?.back as string | null | undefined
+  if (back?.split('?')[0] === `/hospitals/${id.value}`) router.back()
+  else void router.replace(`/hospitals/${id.value}`)
 }
 function booked(r: Reservation) {
   showToast(t('hospital.booked', { at: fmtDate(r.slot.startAt) }))
@@ -144,7 +160,18 @@ function booked(r: Reservation) {
 onMounted(load)
 // ?tab=reviews 로 바로 들어와도(예약 상세 → 병원 리뷰 보기) 불러오도록 immediate
 watch(tab, (v) => v === 'reviews' && !reviews.value.length && void loadReviews(), { immediate: true })
-watch(id, () => void load())
+// 다른 병원으로 넘어가면 이전 병원 정보·리뷰를 비우고 다시 불러온다
+watch(id, () => {
+  hospital.value = null
+  reviewRequest++
+  reviews.value = []
+  reviewTotal.value = 0
+  reviewPage.value = 0
+  reviewProc.value = 'ALL'
+  reviewsState.value = null
+  void load()
+  if (tab.value === 'reviews') void loadReviews()
+})
 </script>
 
 <template>
@@ -153,7 +180,10 @@ watch(id, () => void load())
     <EmptyState v-if="failed" icon="alert-triangle" tone="danger" :title="t('hospital.loadFailed')">
       <AppButton variant="secondary" icon="refresh-cw" @click="load">{{ t('common.retry') }}</AppButton>
     </EmptyState>
-    <template v-else-if="hospital">
+<div v-else-if="!hospital" class="skeleton-list" role="status" :aria-label="t('common.loading')" aria-busy="true">
+      <span class="bone" style="width: 60%; height: 20px" /><span class="bone" style="width: 40%" /><span class="bone" style="height: 120px" /><span class="bone" style="height: 120px" />
+    </div>
+    <template v-else>
       <header class="head">
         <h1 class="t-title-20">{{ hospital.name }}</h1>
         <p class="t-caption-13 muted">
@@ -274,10 +304,16 @@ watch(id, () => void load())
             </template>
           </p>
         </article>
-        <AppButton v-if="reviews.length < reviewTotal" variant="outline" block :loading="reviewsLoading" @click="loadReviews(true)">
+        <div v-if="reviewsState === 'loading'" class="skeleton-list" role="status" :aria-label="t('common.loading')">
+          <span class="bone" style="height: 80px" /><span class="bone" style="height: 80px" />
+        </div>
+        <EmptyState v-else-if="reviewsState === 'error'" icon="alert-triangle" tone="danger" :title="t('common.error')">
+          <AppButton variant="secondary" icon="refresh-cw" @click="loadReviews()">{{ t('common.retry') }}</AppButton>
+        </EmptyState>
+        <AppButton v-else-if="reviews.length < reviewTotal" variant="outline" block :loading="reviewsMoreLoading" @click="loadReviews(true)">
           {{ t('hospital.moreReviews') }}
         </AppButton>
-        <EmptyState v-if="!reviews.length && !reviewsLoading" icon="star" :title="reviewProc === 'ALL' ? t('hospital.noReviews') : t('hospital.noProcReviews')" />
+        <EmptyState v-else-if="reviewsState === 'done' && !reviews.length" icon="star" :title="reviewProc === 'ALL' ? t('hospital.noReviews') : t('hospital.noProcReviews')" />
       </section>
 
       <!-- 정보 -->

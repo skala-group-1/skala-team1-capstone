@@ -42,7 +42,7 @@ function next() {
           <p class="t-body-14 secondary">{{ t('chat.topic.pick') }}</p>
           <button v-for="topic in g.topics" :key="topic" type="button" class="option t-body-14" @click="emit('pick', topic)">
             {{ t(`chat.topic.items.${topic}`) }}
-            <span v-if="NEW.includes(topic)" class="new t-caption-11">NEW</span>
+            <span v-if="NEW.includes(topic)" class="new t-caption-11">{{ t('chat.topic.new') }}</span>
           </button>
         </div>
       </article>

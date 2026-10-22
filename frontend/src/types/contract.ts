@@ -49,7 +49,7 @@ export type SortBy = 'REVIEW_COUNT' | 'RATING' | 'PRICE' | 'DISTANCE'
 export type SlotStatus = 'AVAILABLE' | 'HELD' | 'BOOKED'
 export type ReservationStatus = 'PENDING' | 'CONFIRMED' | 'REJECTED' | 'EXPIRED' | 'CANCELLED'
 export type ReservationSource = 'AI' | 'DIRECT'
-export type ConversationMode = 'MAIN' | 'HOSPITAL' | 'HUMAN'
+export type ConversationMode = 'MAIN' | 'HOSPITAL' | 'HUMAN' | 'AFTERCARE'
 export type AiTaskStatus = 'QUEUED' | 'RUNNING' | 'WAITING_APPROVAL' | 'DONE' | 'FAILED'
 export type ConsultationStatus = 'WAITING' | 'ACTIVE' | 'CLOSED'
 export type TranslationStatus = 'PENDING' | 'DONE' | 'FAILED'
@@ -64,6 +64,7 @@ export type NotificationType =
   | 'CONSULTATION_REQUESTED'
   | 'CONSULTATION_ACCEPTED'
   | 'CONSULTATION_CLOSED'
+  | 'AFTERCARE_MESSAGE'
 
 export const AREA_CODES: readonly AreaCode[] = ['GANGNAM', 'SINSA', 'APGUJEONG', 'CHEONGDAM', 'MYEONGDONG', 'HONGDAE', 'JAMSIL']
 export const SORT_BY: readonly SortBy[] = ['REVIEW_COUNT', 'RATING', 'PRICE', 'DISTANCE']
@@ -576,7 +577,8 @@ export interface SseEventMap {
   MEMORY_PROPOSAL: { fields: AiProfile; message: string }
   PROCEDURE_INFO: { procedures: ProcedureInfo[] }
   VERIFY: { passed: boolean; attempts: number }
-  DONE: { answer: string; sources: Source[] }
+  /** suggestions: answer 가 고르라고 물을 때의 선택지 칩 (최대 4, 사용자 locale). 이전 agent 는 안 보낼 수 있음 */
+  DONE: { answer: string; sources: Source[]; suggestions?: string[] }
   FAILED: { code: ErrorCode; message: string; traceId: Uuid }
 }
 export type SseEventName = keyof SseEventMap

@@ -3,6 +3,9 @@ import { defineStore } from 'pinia'
 import { catalogApi } from '@/api'
 import type { CompareResponse, HospitalCard, HospitalSearchQuery, Procedure, ProcedureCode } from '@/types/contract'
 
+/** search() 순번 — 조건을 바꿔 새로 찾는 중에 늦게 온 "더 보기" 응답이 섞이지 않게 */
+let searchSeq = 0
+
 export const useSearchStore = defineStore('search', {
   state: () => ({
     procedures: [] as Procedure[],
@@ -18,17 +21,22 @@ export const useSearchStore = defineStore('search', {
     async loadProcedures() {
       if (!this.procedures.length) this.procedures = await catalogApi.procedures()
     },
-    async search(patch: Partial<HospitalSearchQuery> = {}) {
+    /** append: "더 보기" — 다음 페이지를 이어 붙임 */
+    async search(patch: Partial<HospitalSearchQuery> = {}, append = false) {
       this.query = { ...this.query, ...patch }
+      const seq = ++searchSeq
       this.loading = true
       try {
         const page = await catalogApi.searchHospitals(this.query)
-        // TODO(fe): 무한 스크롤이면 page>0 일 때 append
-        this.results = page.items
+        if (seq !== searchSeq) return
+        this.results = append ? [...this.results, ...page.items] : page.items
         this.total = page.total
       } finally {
-        this.loading = false
+        if (seq === searchSeq) this.loading = false
       }
+    },
+    async loadMore() {
+      if (this.results.length < this.total) await this.search({ page: (this.query.page ?? 0) + 1 }, true)
     },
     toggleCompare(id: number) {
       const i = this.compareIds.indexOf(id)

@@ -4,7 +4,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { aiApi } from '@/api'
+import { aiApi, toApiError } from '@/api'
 import { useConversationStore } from '@/stores/conversation'
 import { useConsultationStore } from '@/stores/consultation'
 import { useSearchStore } from '@/stores/search'
@@ -20,6 +20,7 @@ import AppChip from '@/components/ui/AppChip.vue'
 import AppButton from '@/components/ui/AppButton.vue'
 import AppDialog from '@/components/ui/AppDialog.vue'
 import AppBanner from '@/components/ui/AppBanner.vue'
+import EmptyState from '@/components/ui/EmptyState.vue'
 import HospitalCarousel from '@/components/chat/HospitalCarousel.vue'
 import ChatBubble from '@/components/chat/ChatBubble.vue'
 import ApprovalCard from '@/components/chat/ApprovalCard.vue'
@@ -28,6 +29,10 @@ import EvidenceSheet from '@/components/chat/EvidenceSheet.vue'
 import TripPlanCard from '@/components/chat/TripPlanCard.vue'
 import TopicCarousel from '@/components/chat/TopicCarousel.vue'
 import ProcedureInfoCard from '@/components/chat/ProcedureInfoCard.vue'
+import AftercareHeader from '@/components/aftercare/AftercareHeader.vue'
+import AftercareClosed from '@/components/aftercare/AftercareClosed.vue'
+import { isAftercareClosed } from '@/api/aftercare'
+import { useAftercareRoom } from '@/composables/useAftercareRoom'
 import { SKIN_CONCERNS } from '@/types/contract'
 import type { ChatMessage, Conditions, ConsultTopic, ConversationMessage, Locale, ProcedureInfo, Reservation, SkinConcern, Source } from '@/types/contract'
 
@@ -51,14 +56,20 @@ const approving = ref(false)
 const requested = ref<Reservation | null>(null)
 const shownOriginal = ref(new Set<number>())
 const startingConversation = ref(false)
+/** 대화를 불러오지 못함 (네트워크·서버 오류) → 재시도 화면 */
+const loadFailed = ref(false)
+/** 다른 대화를 불러오는 중 (이전 대화 화면·입력을 막는다) */
+const loading = ref(false)
 
 // ─── 모드 ───
 const isHospital = computed(() => conv.mode !== 'MAIN')
 const isHuman = computed(() => conv.mode === 'HUMAN')
 const consultStatus = computed(() => consult.current?.status ?? 'WAITING')
+const aftercare = useAftercareRoom(() => conv.conversationId)
 const title = computed(() => (isHospital.value ? (conv.hospital?.name ?? '') : t('chat.aiTitle')))
 const modeBadge = computed(() => {
   if (!isHospital.value) return { tone: 'brand' as const, icon: 'sparkles' as const, label: t('chat.mode.ai') }
+  if (conv.mode === 'AFTERCARE') return { tone: 'success' as const, icon: 'file-text' as const, label: t('aftercare.badge') }
   if (!isHuman.value) return { tone: 'agent' as const, icon: 'hospital' as const, label: t('chat.mode.agent') }
   if (consultStatus.value === 'WAITING') return { tone: 'warning' as const, icon: 'clock' as const, label: t('chat.mode.waiting') }
   return { tone: 'info' as const, icon: 'headphones' as const, label: t('chat.mode.human') }
@@ -90,8 +101,10 @@ const timeline = computed(() => {
   const c = consult.current
   if (c && c.id === conv.consultationId) {
     // 로컬은 Z, 서버는 +09:00 이라 문자열 비교 대신 Date.parse
+    // 상담을 연결한 AI 답변("상담사 연결을 요청했어요")은 상담 생성 직후에 끝나므로 시각만 보면 블록 아래로 간다
+    // → 상담 뒤 사용자가 AI 에게 처음 말한 메시지 앞에 블록을 둔다 (연결 답변은 블록 위, 상담 종료 후 대화는 아래)
     const at = Date.parse(c.createdAt)
-    const k = conv.messages.findIndex((m) => Date.parse(m.createdAt) > at)
+    const k = conv.messages.findIndex((m) => m.role === 'user' && Date.parse(m.createdAt) > at)
     rows.splice(k < 0 ? rows.length : k, 0, { i: -1 })
   }
   return rows
@@ -99,6 +112,8 @@ const timeline = computed(() => {
 const lastCardsIndex = computed(() => conv.messages.map((m) => m.cards.length > 0).lastIndexOf(true))
 const showTyping = computed(() => conv.streaming && !conv.draft && !conv.pendingAction)
 const pending = computed(() => conv.pendingAction)
+// 답변 중이거나 승인 카드가 떠 있으면 새 요청을 보낼 수 없다 (store.send 가 무시함) → 입력·버튼을 미리 막는다
+const busy = computed(() => conv.streaming || !!conv.pendingAction)
 const consultRows = computed(() => {
   const s = consult.current?.summaryCard
   if (!s) return []
@@ -119,7 +134,7 @@ const isMine = (m: ChatMessage) => m.senderRole === 'CUSTOMER'
 const untranslated = (m: ChatMessage) => m.translatedLang === m.originalLang
 function myStatus(m: ChatMessage) {
   if (m.translationStatus === 'PENDING') return t('chat.human.translating')
-  if (m.translationStatus === 'FAILED') return t('chat.human.failed')
+  if (m.translationStatus === 'FAILED') return t(m.id < 0 ? 'chat.human.sendFailed' : 'chat.human.failed')
   if (untranslated(m)) return ''
   return m.translatedLang ? t('chat.human.sentIn', { lang: t(`domain.langName.${m.translatedLang}`) }) : ''
 }
@@ -132,7 +147,7 @@ function toggleOriginal(id: number) {
 
 // ─── C4-T 상담 주제 · 피부 고민 ───
 const pickingTopic = ref(false)
-const showTopics = computed(() => !isHospital.value && !conv.streaming && (pickingTopic.value || (!conv.topic && !conv.messages.length)))
+const showTopics = computed(() => !isHospital.value && !busy.value && (pickingTopic.value || (!conv.topic && !conv.messages.length)))
 const topicLabel = (topic: ConsultTopic) => t(`chat.topic.items.${topic}`)
 const QUICK: { key: string; topic?: ConsultTopic; to?: string }[] = [
   { key: 'procedures', topic: 'SKIN_CONCERN' },
@@ -157,8 +172,12 @@ function pickTopic(topic: ConsultTopic) {
 const concerns = ref<SkinConcern[]>([])
 const addingConcern = ref(false)
 const lastProcIndex = computed(() => conv.messages.map((m) => !!m.procedures?.length).lastIndexOf(true))
+// 고민 칩은 주제를 막 고른 직후(마지막 사용자 말이 주제 선택)에만. 고민을 고른 뒤 AI 가 되물어도 다시 띄우지 않는다
+const justPickedConcernTopic = computed(
+  () => conv.messages.filter((m) => m.role === 'user').at(-1)?.text === topicLabel('SKIN_CONCERN'),
+)
 const showConcerns = computed(
-  () => conv.topic === 'SKIN_CONCERN' && !conv.streaming && !pickingTopic.value && (addingConcern.value || lastProcIndex.value < 0),
+  () => conv.topic === 'SKIN_CONCERN' && !busy.value && !pickingTopic.value && (addingConcern.value || justPickedConcernTopic.value),
 )
 function toggleConcern(c: SkinConcern) {
   concerns.value = concerns.value.includes(c) ? concerns.value.filter((x) => x !== c) : [...concerns.value, c]
@@ -176,41 +195,53 @@ function findHospitals(procs: ProcedureInfo[]) {
 // ─── 입력 ───
 const placeholder = computed(() => {
   if (isHuman.value) return consultStatus.value === 'WAITING' ? t('chat.input.waiting') : t('chat.input.human')
+  if (conv.pendingAction) return t('chat.input.approvalPending')
   return isHospital.value ? t('chat.input.agent') : t('chat.input.ai')
 })
-const canSend = computed(() => input.value.trim().length > 0 && (isHuman.value || !conv.streaming))
+const canSend = computed(() => input.value.trim().length > 0 && (isHuman.value ? !!consult.current : !busy.value) && !loading.value && !loadFailed.value)
 async function submit() {
   const text = input.value.trim()
   if (!text || !canSend.value) return
   input.value = ''
+  editingConditionsAt.value = null
   if (isHuman.value) await consult.send(text, 'CUSTOMER', (auth.user?.locale ?? 'en') as Locale)
   else await conv.send(text)
 }
 function onKey(e: KeyboardEvent) {
-  if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
+  // keyCode 229: Safari 는 변환을 확정하는 Enter 에서 isComposing=false 로 들어온다 (ja·zh·ko 입력 중 전송 방지)
+  if (e.key === 'Enter' && !e.shiftKey && !e.isComposing && e.keyCode !== 229) {
     e.preventDefault()
     void submit()
   }
 }
 function editCondition(label: string) {
+  editingConditionsAt.value = null
   input.value = `${label}: `
   void nextTick(() => inputEl.value?.focus())
 }
+// "조건 바꾸기"·"조건 직접 바꾸기": 그 자리에 현재 조건 칩을 펼친다 (칩을 누르면 editCondition). 조건이 없으면 안내 + 입력창 포커스
+const editingConditionsAt = ref<'cards' | 'relax' | null>(null)
+function toggleConditions(at: 'cards' | 'relax') {
+  editingConditionsAt.value = editingConditionsAt.value === at ? null : at
+  if (editingConditionsAt.value && !conditionChips.value.length) void nextTick(() => inputEl.value?.focus())
+}
 
 // ─── 액션 ───
-async function approve(editedArgs: Record<string, unknown> | null = null) {
+async function decide(approved: boolean, editedArgs: Record<string, unknown> | null = null) {
+  if (approving.value) return
   approving.value = true
   try {
-    await conv.approve(true, editedArgs)
+    await conv.approve(approved, editedArgs)
+  } catch (e) {
+    showToast(toApiError(e)?.message || t('common.error'))
   } finally {
     approving.value = false
   }
 }
-async function reject() {
-  await conv.approve(false, null, null)
-}
+const approve = (editedArgs: Record<string, unknown> | null = null) => decide(true, editedArgs)
+const reject = () => decide(false)
 async function compareCards(cards: { id: number; name: string }[]) {
-  if (conv.streaming || !cards.length) return
+  if (busy.value || !cards.length) return
   const names = cards.slice(0, 3).map((c) => c.name).join(', ')
   await conv.send(t('compare.askAiMessage', { names, procedure: procedureName(conv.conditions?.procedureCode ?? null) }))
 }
@@ -260,14 +291,33 @@ function saveMemory() {
 }
 
 // ─── 진입·전환 ───
+/** 대화가 바뀌면 화면에만 있는 상태를 비운다 (이전 대화의 예약 카드·입력이 남지 않게) */
+function resetLocal() {
+  input.value = ''
+  evidence.value = null
+  requested.value = null
+  consent.value = false
+  concerns.value = []
+  addingConcern.value = false
+  pickingTopic.value = false
+  shownOriginal.value = new Set()
+  infoOpen.value = false
+  endConsultOpen.value = false
+  editingConditionsAt.value = null
+}
+let enterSeq = 0
 async function enter() {
   const id = route.params.conversationId as string | undefined
+  const seq = ++enterSeq
+  loadFailed.value = false
+  // 같은 대화로 돌아오는 경우(refresh)는 화면을 그대로 두고, 다른 대화를 불러올 때만 로딩 표시
+  loading.value = !id || conv.conversationId !== id
   try {
     if (id) {
       if (conv.conversationId !== id) await conv.load(id)
       else {
+        // 상담 열기는 아래 consultationId watch 한 곳에서만 (여기서도 열면 두 번 열려 구독이 샌다)
         await conv.refresh(id)
-        if (conv.consultationId) await consult.open(conv.consultationId)
       }
     } else {
       const hospitalId = route.query.hospitalId ? Number(route.query.hospitalId) : null
@@ -282,17 +332,37 @@ async function enter() {
       // 홈 AI 입력창·비교표 "AI에게 물어보기"에서 넘어온 첫 질문
       if (q) await conv.send(q)
     }
-  } catch {
-    // 대화를 못 불러오면 새 메인 대화로
-    const created = await conv.open()
-    await router.replace(`/chat/${created.id}`)
+  } catch (e) {
+    // 없는 대화·남의 대화 링크만 새 메인 대화로. 그 밖의 오류(네트워크·5xx)는 재시도 화면 (상담 중 대화를 잃지 않게)
+    const code = toApiError(e)?.code
+    if (code !== 'NOT_FOUND' && code !== 'ACCESS_DENIED') return void (loadFailed.value = true)
+    try {
+      const created = await conv.open()
+      await router.replace(`/chat/${created.id}`)
+    } catch {
+      loadFailed.value = true
+    }
+  } finally {
+    if (seq === enterSeq) {
+      loading.value = false
+      // 대화를 열면 맨 아래(최신 메시지)부터
+      await nextTick()
+      scroller.value?.scrollTo({ top: scroller.value.scrollHeight })
+    }
   }
 }
 onMounted(() => {
   void search.loadProcedures().catch(() => undefined)
   void enter()
 })
-watch(() => route.params.conversationId, (id, prev) => id !== prev && void enter())
+watch(
+  () => route.params.conversationId,
+  (id, prev) => {
+    if (id === prev) return
+    resetLocal()
+    void enter()
+  },
+)
 watch(
   () => conv.openedConversation,
   (o) => {
@@ -302,11 +372,13 @@ watch(
     }
   },
 )
+// 승인 카드가 바뀌면 동의 체크를 다시 받는다 (이전 요청의 동의를 재사용하지 않음)
+watch(pending, () => (consent.value = false))
 // 상담원이 상담을 종료하면 (STOMP CONSULTATION_STATUS · 재진입 시 조회) 병원 대화로 돌아가 AI 가 다시 답함
 watch(
   () => consult.current?.status,
   (s) => {
-    if (s === 'CLOSED' && consult.current?.id === conv.consultationId && conv.mode === 'HUMAN') conv.mode = 'HOSPITAL'
+    if (s === 'CLOSED' && consult.current?.id === conv.consultationId && conv.mode === 'HUMAN') conv.mode = aftercare.value ? 'AFTERCARE' : 'HOSPITAL'
   },
 )
 // 종료된 상담도 ID로 다시 불러와 요약·통역 기록을 유지한다.
@@ -339,11 +411,12 @@ function nearBottom() {
 }
 watch(
   () =>
-    [conv.messages.length, conv.draft, conv.pendingAction, conv.cards.length, consult.messages.length, conv.error, requested.value, showTopics.value, showConcerns.value] as const,
+    [conv.messages.length, conv.draft, conv.pendingAction, conv.cards.length, conv.suggestions.length, conv.activeTools.length, showTyping.value, consult.messages.length, conv.error, requested.value, showTopics.value, showConcerns.value] as const,
   async () => {
     const stick = nearBottom()
     await nextTick()
-    if (stick) scroller.value?.scrollTo({ top: scroller.value.scrollHeight, behavior: 'smooth' })
+    // 답변이 흘러나오는 중엔 smooth 가 겹쳐 따라가기를 놓치므로 바로 이동
+    if (stick) scroller.value?.scrollTo({ top: scroller.value.scrollHeight, behavior: conv.streaming ? 'auto' : 'smooth' })
   },
 )
 </script>
@@ -369,6 +442,7 @@ watch(
       </template>
     </TopAppBar>
 
+    <AftercareHeader v-if="aftercare" :room="aftercare" />
     <AppBanner v-if="isHuman && consult.current && !consult.connected" type="reconnecting">{{ t('chat.reconnecting') }}</AppBanner>
 
     <!-- C4-T 상담 주제 바 -->
@@ -376,7 +450,7 @@ watch(
       <AppIcon name="sparkles" :size="16" />
       <span class="t-caption-12 secondary">{{ t('chat.topic.label') }}</span>
       <strong class="topic-bar__name t-caption-13">{{ topicLabel(conv.topic) }}</strong>
-      <button type="button" class="topic-bar__change t-caption-12" @click="pickingTopic = true">
+      <button v-if="!busy" type="button" class="topic-bar__change t-caption-12" @click="pickingTopic = true">
         {{ t('chat.topic.change') }}<AppIcon name="chevron-right" :size="14" />
       </button>
     </div>
@@ -387,7 +461,13 @@ watch(
       </AppChip>
     </div>
 
-    <div ref="scroller" class="messages" aria-live="polite">
+    <EmptyState v-if="loadFailed" class="load-failed" icon="alert-triangle" tone="danger" :title="t('common.error')">
+      <AppButton variant="secondary" icon="refresh-cw" @click="enter">{{ t('common.retry') }}</AppButton>
+    </EmptyState>
+    <div v-else-if="loading" class="messages" role="status" :aria-label="t('common.loading')" aria-busy="true">
+      <span class="bone bone--ai" /><span class="bone bone--user" /><span class="bone bone--ai bone--short" />
+    </div>
+    <div v-else ref="scroller" class="messages" aria-live="polite">
       <!-- 병원 대화: 메인 대화에서 이어받은 조건 (D-20) -->
       <section v-if="isHospital && conv.parentConversationId && conditionChips.length" class="inherit">
         <p class="inherit__head t-caption-12-sb">
@@ -475,10 +555,16 @@ watch(
               @chat="(id) => conv.send(null, { type: 'SELECT_HOSPITAL', hospitalId: id })"
             />
             <div v-if="i === lastCardsIndex" class="inset row-actions">
-              <AppButton variant="outline" size="s" :disabled="conv.streaming" @click="compareCards(m.cards)">
+              <AppButton variant="outline" size="s" :disabled="busy" @click="compareCards(m.cards)">
                 {{ t('chat.compareN', { n: Math.min(3, m.cards.length) }) }}
               </AppButton>
-              <AppButton variant="ghost" size="s" @click="inputEl?.focus()">{{ t('chat.changeConditions') }}</AppButton>
+              <AppButton variant="ghost" size="s" :aria-expanded="editingConditionsAt === 'cards'" @click="toggleConditions('cards')">
+                {{ t('chat.changeConditions') }}
+              </AppButton>
+            </div>
+            <div v-if="editingConditionsAt === 'cards'" class="inset chips">
+              <AppChip v-for="c in conditionChips" :key="c.key" type="condition" :label="c.label" @click="editCondition(c.label)">{{ c.value }}</AppChip>
+              <p v-if="!conditionChips.length" class="t-caption-12 muted">{{ t('chat.changeConditionsHint') }}</p>
             </div>
           </template>
           <!-- C4-T 고민 관련 시술 정보 -->
@@ -487,7 +573,7 @@ watch(
               <ProcedureInfoCard v-for="p in m.procedures" :key="p.procedureCode" :info="p" />
             </div>
             <p class="inset t-caption-12 muted">{{ t('chat.concern.disclaimer') }}</p>
-            <div v-if="i === lastProcIndex && !conv.streaming && !showConcerns" class="inset chips">
+            <div v-if="i === lastProcIndex && !busy && !showConcerns" class="inset chips">
               <AppChip @click="findHospitals(m.procedures)">{{ t('chat.concern.find', m.procedures.length) }}</AppChip>
               <AppChip @click="addingConcern = true">{{ t('chat.concern.more') }}</AppChip>
             </div>
@@ -509,13 +595,18 @@ watch(
             {{ t(`chat.concern.items.${c}`) }}
           </AppChip>
         </div>
-        <AppButton size="s" :disabled="!concerns.length" @click="submitConcerns">{{ t('chat.concern.done', { n: concerns.length }) }}</AppButton>
+        <AppButton size="s" :disabled="!concerns.length" @click="submitConcerns">{{ concerns.length ? t('chat.concern.done', { n: concerns.length }) : t('chat.concern.pick') }}</AppButton>
         <p class="t-caption-12 muted">{{ t('chat.concern.note') }}</p>
       </section>
       <TopicCarousel v-if="showTopics" @pick="pickTopic" />
 
+      <!-- AI 가 고르라고 물은 선택지 (DONE.suggestions): 탭하면 문구 그대로 전송 -->
+      <div v-if="conv.suggestions.length && !busy" class="inset chips">
+        <AppChip v-for="s in conv.suggestions" :key="s" @click="conv.send(s)">{{ s }}</AppChip>
+      </div>
+
       <!-- Edge ① 0건 → AI 가 정한 완화안 (D-35: 탭하면 문구를 message 로) -->
-      <div v-if="conv.relaxOptions.length && !conv.streaming" class="inset relax">
+      <div v-if="conv.relaxOptions.length && !busy" class="inset relax">
         <button
           v-for="o in conv.relaxOptions.filter((x) => x.expectedCount > 0)"
           :key="o.option"
@@ -527,7 +618,13 @@ watch(
           <span class="t-body-14-sb brand">{{ t('chat.relaxCount', { n: o.expectedCount }) }}</span>
           <AppIcon name="chevron-right" :size="18" />
         </button>
-        <button type="button" class="link t-caption-13" @click="inputEl?.focus()">{{ t('chat.relaxManual') }}</button>
+        <button type="button" class="link t-caption-13" :aria-expanded="editingConditionsAt === 'relax'" @click="toggleConditions('relax')">
+          {{ t('chat.relaxManual') }}
+        </button>
+        <div v-if="editingConditionsAt === 'relax'" class="chips">
+          <AppChip v-for="c in conditionChips" :key="c.key" type="condition" :label="c.label" @click="editCondition(c.label)">{{ c.value }}</AppChip>
+          <p v-if="!conditionChips.length" class="t-caption-12 muted">{{ t('chat.changeConditionsHint') }}</p>
+        </div>
       </div>
 
       <!-- C4-2 예약 승인 카드 -->
@@ -564,7 +661,7 @@ watch(
       <div v-if="conv.tripPlan" class="inset">
         <TripPlanCard :plan="conv.tripPlan" :procedure-name="(c) => procedureName(c)" />
       </div>
-      <section v-if="conv.memoryProposal && !conv.streaming" class="memory">
+      <section v-if="conv.memoryProposal && !busy" class="memory">
         <p class="t-body-14"><AppIcon name="sparkles" :size="16" class="brand" />{{ conv.memoryProposal.message }}</p>
         <div class="memory__actions">
           <AppButton variant="ghost" size="s" @click="conv.memoryProposal = null">{{ t('chat.memory.no') }}</AppButton>
@@ -590,12 +687,14 @@ watch(
       </label>
       <p class="t-caption-12 muted consent__desc">{{ t('chat.consent.desc', { hospital: conv.hospital?.name ?? '' }) }}</p>
       <AppButton block :disabled="!consent" :loading="approving" @click="approve()">{{ t('chat.consent.submit') }}</AppButton>
+      <AppButton variant="ghost" block :disabled="approving" @click="reject()">{{ t('chat.consent.decline') }}</AppButton>
       <p class="t-caption-12 muted center">{{ t('chat.consent.note') }}</p>
     </footer>
+    <AftercareClosed v-else-if="aftercare && isAftercareClosed(aftercare)" />
     <footer v-else class="dock">
       <div v-if="isHospital && !isHuman && !pending && !conv.streaming" class="quick">
         <AppButton variant="outline" block @click="conv.send(t('chat.requestCounselor'))">{{ t('chat.connectCounselor') }}</AppButton>
-        <AppButton block @click="router.push(`/hospitals/${conv.hospital?.id}/book`)">{{ t('chat.book') }}</AppButton>
+        <AppButton v-if="conv.mode !== 'AFTERCARE'" block @click="router.push(`/hospitals/${conv.hospital?.id}/book`)">{{ t('chat.book') }}</AppButton>
       </div>
       <div v-if="canEndConsult" class="quick">
         <AppButton variant="outline" block @click="endConsultOpen = true">
@@ -714,6 +813,12 @@ watch(
 .status--failed { color: var(--status-danger); }
 .original { max-width: 264px; padding: var(--space-8) var(--space-12); border-radius: var(--radius-sm); background: var(--bg-muted); color: var(--text-secondary); }
 
+.load-failed { flex: 1; }
+.bone { display: block; height: 48px; border-radius: var(--radius-lg); background: var(--bg-muted); animation: shimmer 1.2s ease-in-out infinite; }
+.bone--ai { width: 72%; }
+.bone--user { width: 48%; align-self: flex-end; }
+.bone--short { width: 40%; }
+@keyframes shimmer { 50% { opacity: 0.5; } }
 .dock { flex: none; border-top: 1px solid var(--border-default); background: var(--bg-default); padding-bottom: env(safe-area-inset-bottom); }
 .quick { display: flex; gap: var(--space-8); padding: var(--space-12) var(--space-16) 0; }
 .input { display: flex; align-items: flex-end; gap: var(--space-8); padding: 10px var(--space-12); }

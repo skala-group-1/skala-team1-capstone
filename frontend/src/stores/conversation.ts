@@ -52,6 +52,8 @@ export const useConversationStore = defineStore('conversation', {
     relaxOptions: [] as SseEventMap['RESULT_CARDS']['relaxOptions'],
     pendingAction: null as PendingAction | null,
     tripPlan: null as SseEventMap['TRIP_PLAN'] | null,
+    /** 마지막 답변의 선택지 칩 (DONE.suggestions). 탭하면 문구를 message 로 보냄 */
+    suggestions: [] as string[],
     memoryProposal: null as { fields: AiProfile; message: string } | null,
     error: null as SseEventMap['FAILED'] | null,
     /** CONVERSATION_OPENED 수신 시 화면이 이 값을 보고 /chat/:id 로 이동 */
@@ -137,6 +139,7 @@ export const useConversationStore = defineStore('conversation', {
       this.relaxOptions = []
       this.tripPlan = null
       this.memoryProposal = null
+      this.suggestions = []
       this.streaming = true
       try {
         const { taskId } = await aiApi.createTask({ conversationId: this.conversationId, message, action })
@@ -250,6 +253,7 @@ export const useConversationStore = defineStore('conversation', {
           break
         case 'DONE':
           this.pushAssistant(e.data.answer, e.data.sources)
+          this.suggestions = (e.data.suggestions ?? []).slice(0, 4)
           break
         case 'FAILED':
           this.error = e.data

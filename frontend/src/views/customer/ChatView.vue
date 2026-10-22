@@ -400,7 +400,7 @@ function nearBottom() {
 }
 watch(
   () =>
-    [conv.messages.length, conv.draft, conv.pendingAction, conv.cards.length, conv.activeTools.length, showTyping.value, consult.messages.length, conv.error, requested.value, showTopics.value, showConcerns.value] as const,
+    [conv.messages.length, conv.draft, conv.pendingAction, conv.cards.length, conv.suggestions.length, conv.activeTools.length, showTyping.value, consult.messages.length, conv.error, requested.value, showTopics.value, showConcerns.value] as const,
   async () => {
     const stick = nearBottom()
     await nextTick()
@@ -582,6 +582,11 @@ watch(
         <p class="t-caption-12 muted">{{ t('chat.concern.note') }}</p>
       </section>
       <TopicCarousel v-if="showTopics" @pick="pickTopic" />
+
+      <!-- AI 가 고르라고 물은 선택지 (DONE.suggestions): 탭하면 문구 그대로 전송 -->
+      <div v-if="conv.suggestions.length && !busy" class="inset chips">
+        <AppChip v-for="s in conv.suggestions" :key="s" @click="conv.send(s)">{{ s }}</AppChip>
+      </div>
 
       <!-- Edge ① 0건 → AI 가 정한 완화안 (D-35: 탭하면 문구를 message 로) -->
       <div v-if="conv.relaxOptions.length && !busy" class="inset relax">

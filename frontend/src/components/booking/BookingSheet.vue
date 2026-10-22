@@ -44,6 +44,8 @@ const note = ref('')
 const submitting = ref(false)
 const loadingSlots = ref(false)
 const slotsFailed = ref(false)
+/** 다시 요청(3단계부터)했는데 그 시간이 이미 마감 → 2단계로 내리고 안내 */
+const slotGone = ref(false)
 /** loadSlots 순번 — 달을 빨리 넘길 때 늦게 온 이전 달 응답 무시 */
 let slotsSeq = 0
 const conflict = ref<Slot[] | null>(null)
@@ -78,6 +80,7 @@ watch(
     store.startBooking()
     conflict.value = null
     errorMsg.value = null
+    slotGone.value = false
     const init = props.initial
     procedure.value = init?.procedure ?? props.hospital.procedures[0]?.procedure.code ?? ''
     optionId.value = init?.optionId ?? entry.value?.options[0]?.id ?? null
@@ -121,6 +124,11 @@ async function loadSlots() {
     return
   } finally {
     if (seq === slotsSeq) loadingSlots.value = false
+  }
+  if (step.value === 3 && slotId.value && !slot.value) {
+    step.value = 2
+    slotId.value = null
+    slotGone.value = true
   }
   if (!day.value || !availableDays.value.has(day.value)) day.value = [...availableDays.value].sort()[0] ?? null
 }
@@ -251,11 +259,13 @@ async function submitAlternative() {
           class="time t-body-14"
           :class="{ 'time--on': slotId === s.id }"
           :aria-pressed="slotId === s.id"
-          @click="slotId = s.id"
+          @click="(slotId = s.id), (slotGone = false)"
         >
           {{ fmtHm(s.startAt) }}
         </button>
       </div>
+      <p v-if="slotGone" class="error t-caption-12" role="alert">{{ t('booking.slotGone') }}</p>
+      <p class="t-caption-12 muted">{{ t('booking.kstNote') }}</p>
     </template>
 
     <!-- 3 메모 · 확인 -->
@@ -270,6 +280,7 @@ async function submitAlternative() {
           <dd>{{ option ? `${fmtKrw(option.priceKrw)} · ${option.vatIncluded ? t('compare.vatIn') : t('compare.vatEx')}` : t('common.needsCheck') }}</dd>
         </div>
       </dl>
+      <p class="t-caption-12 muted">{{ t('booking.kstNote') }}</p>
       <label class="memo">
         <span class="t-caption-13 label">{{ t('booking.memo') }}</span>
         <textarea v-model="note" class="t-body-15" rows="3" maxlength="200" :placeholder="t('chat.approval.notePlaceholder')" />
@@ -284,13 +295,14 @@ async function submitAlternative() {
       <template v-else>
         <AppButton variant="outline" size="l" @click="step = step === 3 ? 2 : 1">{{ t('booking.prev') }}</AppButton>
         <AppButton v-if="step === 2" size="l" block :disabled="!slotId" @click="step = 3">{{ t('booking.next') }}</AppButton>
-        <AppButton v-else size="l" block :loading="submitting" @click="submit()">{{ t('booking.submit') }}</AppButton>
+        <AppButton v-else size="l" block :loading="submitting" :disabled="!slot || loadingSlots" @click="submit()">{{ t('booking.submit') }}</AppButton>
       </template>
     </template>
   </BottomSheet>
 
   <!-- Edge ④ 방금 마감 → 대안 시간 (409 details.alternatives, 최대 3) -->
-  <BottomSheet :open="!!conflict" :title="t('booking.conflict.title')" @close="conflict = null">
+  <!-- X·ESC 로 닫아도 마감된 시간이 선택된 채 남지 않게 날짜 고르기로 (다시 요청 → 또 마감 루프 방지) -->
+  <BottomSheet :open="!!conflict" :title="t('booking.conflict.title')" @close="(conflict = null), goStep2()">
     <p class="gone t-body-14"><AppIcon name="clock" :size="16" /><s>{{ slot ? `${fmtDateTime(slot.startAt)} · ${slot.doctorName}` : '' }}</s></p>
     <p class="t-body-14 secondary">{{ t('booking.conflict.body') }}</p>
     <div class="group">

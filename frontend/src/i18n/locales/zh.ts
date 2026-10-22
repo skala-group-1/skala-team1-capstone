@@ -178,6 +178,8 @@ const zh: typeof en = {
     timesOn: '{date} 可约时间',
     duration: '诊疗 {n} 分钟',
     noSlots: '暂无可约时段，请换个月份或医生。',
+    kstNote: '所有时间均为韩国时间（KST）',
+    slotGone: '该时间已被预约，请选择其他时间。',
     slotsFailed: '无法加载可预约时间。',
     hospital: '医院',
     when: '时间',

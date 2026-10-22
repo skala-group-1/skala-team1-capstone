@@ -178,6 +178,8 @@ export default {
     timesOn: 'Available times on {date}',
     duration: '{n}-min procedure',
     noSlots: 'No open slots. Try another month or doctor.',
+    kstNote: 'All times are Korea Standard Time (KST)',
+    slotGone: 'That time is no longer available. Please pick another.',
     slotsFailed: "Couldn't load available times.",
     hospital: 'Clinic',
     when: 'Date',

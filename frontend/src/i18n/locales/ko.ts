@@ -179,6 +179,8 @@ const ko: typeof en = {
     timesOn: '{date} 예약 가능 시간',
     duration: '{n}분 진료',
     noSlots: '열린 시간이 없어요. 다른 달이나 의료진을 골라 보세요.',
+    kstNote: '시간은 모두 한국 시간(KST)이에요',
+    slotGone: '그 시간은 마감됐어요. 다른 시간을 골라 주세요.',
     slotsFailed: '열린 시간을 불러오지 못했어요.',
     hospital: '병원',
     when: '일시',

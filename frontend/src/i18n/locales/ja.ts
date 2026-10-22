@@ -178,6 +178,8 @@ const ja: typeof en = {
     timesOn: '{date}の予約可能時間',
     duration: '{n}分の診療',
     noSlots: '空き枠がありません。別の月や医師を選んでください。',
+    kstNote: '時間はすべて韓国時間（KST）です',
+    slotGone: 'その時間は締め切られました。別の時間を選んでください。',
     slotsFailed: '空き時間を読み込めませんでした。',
     hospital: '病院',
     when: '日時',

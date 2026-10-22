@@ -27,7 +27,11 @@ const tab = ref<'all' | 'active' | 'past'>('all')
 const loading = ref(true)
 const failed = ref(false)
 
-const isActive = (r: Reservation) => r.status === 'PENDING' || (r.status === 'CONFIRMED' && new Date(r.slot.startAt).getTime() > now.value)
+// 대안 시간이 온 반려 건은 고객이 고를 일이 남아 있으므로 진행 중
+const isActive = (r: Reservation) =>
+  r.status === 'PENDING' ||
+  (r.status === 'REJECTED' && r.alternatives.length > 0) ||
+  (r.status === 'CONFIRMED' && new Date(r.slot.startAt).getTime() > now.value)
 const list = computed(() =>
   store.mine.filter((r) => (tab.value === 'all' ? true : tab.value === 'active' ? isActive(r) : !isActive(r))),
 )
@@ -84,8 +88,11 @@ onMounted(load)
     <EmptyState v-if="failed" icon="alert-triangle" tone="danger" :title="t('reservations.loadFailed')">
       <AppButton variant="secondary" icon="refresh-cw" @click="load">{{ t('common.retry') }}</AppButton>
     </EmptyState>
+    <div v-else-if="loading" class="skeleton-list" role="status" :aria-label="t('common.loading')" aria-busy="true">
+      <span v-for="i in 3" :key="i" class="bone" style="height: 120px" />
+    </div>
     <EmptyState
-      v-else-if="!loading && !list.length"
+      v-else-if="!list.length"
       icon="calendar"
       :title="t('reservations.emptyTitle')"
       :description="t('reservations.emptyBody')"

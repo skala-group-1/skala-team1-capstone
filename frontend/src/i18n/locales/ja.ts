@@ -146,6 +146,8 @@ const ja: typeof en = {
     age: '{age}',
     noReviews: 'まだ口コミがありません',
     writtenIn: '{lang}で投稿',
+    showOriginal: '原文を見る',
+    showTranslation: '翻訳を見る',
     hours: '診療時間',
     openNow: '診療中',
     closedNow: '診療時間外',

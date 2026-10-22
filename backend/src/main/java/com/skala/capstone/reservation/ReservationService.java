@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.skala.capstone.catalog.CatalogDtos.Review;
 import com.skala.capstone.catalog.CatalogDtos.Slot;
 import com.skala.capstone.catalog.CatalogService;
+import com.skala.capstone.catalog.ReviewTranslations;
 import com.skala.capstone.common.config.AppProperties;
 import com.skala.capstone.common.error.ApiException;
 import com.skala.capstone.common.error.ErrorCode;
@@ -64,15 +65,17 @@ public class ReservationService {
 	private final AuditLogger audit;
 	private final ReservationExpiry expiry;
 	private final AppProperties app;
+	private final ReviewTranslations reviewTranslations;
 
 	public ReservationService(JdbcClient jdbc, CatalogService catalog, NotificationService notifications,
-			AuditLogger audit, ReservationExpiry expiry, AppProperties app) {
+			AuditLogger audit, ReservationExpiry expiry, AppProperties app, ReviewTranslations reviewTranslations) {
 		this.jdbc = jdbc;
 		this.catalog = catalog;
 		this.notifications = notifications;
 		this.audit = audit;
 		this.expiry = expiry;
 		this.app = app;
+		this.reviewTranslations = reviewTranslations;
 	}
 
 	/** 생성 결과: created=false 면 같은 멱등키의 기존 예약을 돌려준 것 (HTTP 200) */
@@ -348,12 +351,13 @@ public class ReservationService {
 					.query((rs, i) -> new Review(rs.getLong("id"), rs.getString("procedure_code"), rs.getInt("rating"),
 							rs.getString("age_group"), rs.getString("gender"), rs.getString("reviewer_nationality"),
 							rs.getString("lang"), rs.getString("content"),
-							Times.kst(rs.getObject("created_at", OffsetDateTime.class))))
+							Times.kst(rs.getObject("created_at", OffsetDateTime.class)), null))
 					.single();
 		} catch (DuplicateKeyException e) {
 			throw new ApiException(ErrorCode.REVIEW_ALREADY_EXISTS);
 		}
 		long reviewId = review.id();
+		reviewTranslations.requestAfterCommit(reviewId, review.content(), review.lang());
 		AfterCommit.run(() -> audit.log(user, "REVIEW_CREATED", "reservation:" + id,
 				Map.of("reviewId", reviewId, "rating", req.rating())));
 		return review;

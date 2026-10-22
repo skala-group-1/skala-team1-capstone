@@ -32,6 +32,11 @@ const myLangOnly = ref(false)
 const reviews = ref<Review[]>([])
 const reviewTotal = ref(0)
 const reviewProc = ref<ProcedureCode | 'ALL'>('ALL')
+/** 번역본 대신 원문을 펼친 리뷰 id */
+const showingOriginal = ref<number[]>([])
+function toggleOriginal(id: number) {
+  showingOriginal.value = showingOriginal.value.includes(id) ? showingOriginal.value.filter((x) => x !== id) : [...showingOriginal.value, id]
+}
 
 const bookingOpen = computed(() => route.path.endsWith('/book'))
 const bookingInitial = computed<BookingInitial | null>(() => {
@@ -246,8 +251,13 @@ watch(id, () => void load())
           <p class="t-caption-12 muted">
             {{ t('hospital.age', { age: r.ageGroup }) }} · {{ t(`signup.genders.${r.gender}`) }}<template v-if="r.reviewerNationality"> · {{ new Intl.DisplayNames([locale], { type: 'region' }).of(r.reviewerNationality) }}</template>
           </p>
-          <p class="t-body-14">{{ r.content }}</p>
-          <p class="t-caption-11 muted"><AppIcon name="languages" :size="12" /> {{ t('hospital.writtenIn', { lang: t(`domain.langName.${r.lang}`) }) }}</p>
+          <p class="t-body-14">{{ r.translatedContent && !showingOriginal.includes(r.id) ? r.translatedContent : r.content }}</p>
+          <p class="t-caption-11 muted">
+            <AppIcon name="languages" :size="12" /> {{ t('hospital.writtenIn', { lang: t(`domain.langName.${r.lang}`) }) }}
+            <template v-if="r.translatedContent">
+              · <button type="button" class="review__toggle" @click="toggleOriginal(r.id)">{{ showingOriginal.includes(r.id) ? t('hospital.showTranslation') : t('hospital.showOriginal') }}</button>
+            </template>
+          </p>
         </article>
         <EmptyState v-if="!shownReviews.length" icon="star" :title="t('hospital.noReviews')" />
       </section>
@@ -327,6 +337,7 @@ watch(id, () => void load())
 .stats__score { display: flex; flex-direction: column; align-items: center; gap: var(--space-2); }
 .stars, .review__stars { display: inline-flex; align-items: center; gap: 1px; color: var(--border-strong); }
 .review__stars b { margin-left: var(--space-6); color: var(--text-primary); }
+.review__toggle { padding: 0; border: 0; background: none; color: var(--brand-primary); font: inherit; text-decoration: underline; cursor: pointer; }
 .bars { display: flex; flex: 1; flex-direction: column; gap: var(--space-6); margin: 0; padding: 0; list-style: none; }
 .bars li { display: grid; grid-template-columns: 40px 1fr 28px; align-items: center; gap: var(--space-8); }
 .age-bar { height: 6px; border-radius: 3px; background: var(--bg-muted); overflow: hidden; }

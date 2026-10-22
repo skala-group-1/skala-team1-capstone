@@ -226,9 +226,13 @@ export interface Review {
   ageGroup: string
   gender: Gender
   reviewerNationality: string
+  /** 원문 언어 */
   lang: Locale
+  /** 원문 */
   content: string
   createdAt: IsoDateTime
+  /** 보는 사람 언어 번역본 (같은 언어이거나 아직 번역 전이면 null) */
+  translatedContent: string | null
 }
 
 export interface HospitalDetail {

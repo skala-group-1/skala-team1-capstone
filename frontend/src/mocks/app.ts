@@ -620,7 +620,7 @@ export const appHandlers = [
   http.get(`${API}/hospitals/:id/reviews`, ({ request, params }) => {
     if (!auth(request)) return deny()
     const url = new URL(request.url)
-    return HttpResponse.json(page(reviews.filter((r) => r.hospital_id === Number(params.id) && !r.hidden).map(toReview), url))
+    return HttpResponse.json(page(reviews.filter((r) => r.hospital_id === Number(params.id) && !r.hidden).map((r) => toReview(r, localeOf(request))), url))
   }),
   http.post(`${API}/hospitals/compare`, async ({ request }) => {
     if (!auth(request)) return deny()

@@ -146,6 +146,8 @@ export default {
     age: '{age}',
     noReviews: 'No reviews yet',
     writtenIn: 'Written in {lang}',
+    showOriginal: 'See original',
+    showTranslation: 'See translation',
     hours: 'Opening hours',
     openNow: 'Open now',
     closedNow: 'Closed now',

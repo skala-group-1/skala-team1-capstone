@@ -146,6 +146,8 @@ const zh: typeof en = {
     age: '{age}',
     noReviews: '暂无评价',
     writtenIn: '{lang}撰写',
+    showOriginal: '查看原文',
+    showTranslation: '查看翻译',
     hours: '营业时间',
     openNow: '营业中',
     closedNow: '已结束',

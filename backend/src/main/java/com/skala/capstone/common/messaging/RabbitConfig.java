@@ -51,7 +51,8 @@ public class RabbitConfig {
 		}
 		// agent → backend 결과 큐와 DLQ (인자 없음)
 		for (String q : List.of(Queues.AI_TASK_EVENT, Queues.CHAT_TRANSLATED, Queues.SUMMARY_TRANSLATED,
-				Queues.AI_TASK_DLQ, Queues.CHAT_TRANSLATE_DLQ, Queues.SUMMARY_TRANSLATE_DLQ, Queues.NOTIFY_DLQ)) {
+				Queues.AI_TASK_DLQ, Queues.CHAT_TRANSLATE_DLQ, Queues.SUMMARY_TRANSLATE_DLQ, Queues.NOTIFY_DLQ,
+				Queues.REVIEW_TRANSLATED, Queues.REVIEW_TRANSLATE_DLQ)) {
 			addBound(all, exchange, QueueBuilder.durable(q).build());
 		}
 		return new Declarables(all);

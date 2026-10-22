@@ -147,6 +147,8 @@ const ko: typeof en = {
     age: '{age}',
     noReviews: '아직 리뷰가 없어요',
     writtenIn: '{lang}로 작성됨',
+    showOriginal: '원문 보기',
+    showTranslation: '번역 보기',
     hours: '운영시간',
     openNow: '진료 중',
     closedNow: '진료 종료',

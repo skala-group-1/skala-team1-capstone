@@ -13,6 +13,7 @@ import doctorsJson from '@mock/doctors.json'
 import priceOptionsJson from '@mock/price_options.json'
 import slotsJson from '@mock/slots.json'
 import reviewsJson from '@mock/reviews.json'
+import reviewTranslationsJson from '@mock/review_translations.json'
 import type {
   AreaCode,
   Doctor,
@@ -144,7 +145,11 @@ export function reviewStats(hospitalId: number): ReviewStats {
   }
   return s
 }
-export function toReview(r: ReviewRow): Review {
+/** app.review_translations: (리뷰 id, 언어) → 번역본 */
+const reviewTranslations = new Map(
+  (reviewTranslationsJson as { review_id: number; lang: string; content: string }[]).map((t) => [`${t.review_id}:${t.lang}`, t.content]),
+)
+export function toReview(r: ReviewRow, viewer?: Locale): Review {
   return {
     id: r.id,
     procedureCode: r.procedure_code as ProcedureCode,
@@ -155,6 +160,7 @@ export function toReview(r: ReviewRow): Review {
     lang: r.lang as Locale,
     content: r.content,
     createdAt: r.created_at,
+    translatedContent: viewer ? (reviewTranslations.get(`${r.id}:${viewer}`) ?? null) : null,
   }
 }
 

@@ -267,6 +267,12 @@ class ReservationIntegrationTest extends IntegrationTest {
 		assertThat(created.get("content").asText()).isEqualTo("상담이 친절했고 통역도 정확했어요.");
 		assertThat(created.get("createdAt").asText()).endsWith("+09:00");
 
+		// 저장 후 translator 에 번역 요청 (원문·작성자 화면 언어)
+		JsonNode request = receiveFrom(com.skala.capstone.common.messaging.Queues.REVIEW_TRANSLATE,
+				m -> m.get("reviewId").asLong() == reviewId);
+		assertThat(request.get("text").asText()).isEqualTo("상담이 친절했고 통역도 정확했어요.");
+		assertThat(request.get("from").asText()).isEqualTo("ko");
+
 		// DB: 예약·병원·작성자 프로필(1997-07-14, F, KR, ko)에서 채워진 값
 		Map<String, Object> row = jdbc.sql("SELECT * FROM app.reviews WHERE id = :id").param("id", reviewId)
 				.query().singleRow();

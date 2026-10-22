@@ -103,6 +103,15 @@ async def test_context_rejects_unusable_reservation(monkeypatch, reservation):
             {"selected_hospital_id": 3, "action": {"type": "AFTERCARE_INTRO", "reservationId": 16}})
 
 
+@pytest.mark.parametrize("days, period", [
+    (None, "Before procedure"), (0, "Procedure day"), (1, "Days 1–3"), (3, "Days 1–3"),
+    (4, "Days 4–7"), (8, "Weeks 2–4"), (30, "Weeks 2–4"), (31, "After 1 month"),
+])
+def test_current_period_matches_document_sections(days, period):
+    assert agent.current_period(days) == period
+    assert period == "Before procedure" or period in agent.SECTIONS
+
+
 # ---------------------------------------------------------------- agent
 
 def fake_model(monkeypatch, responses):
@@ -134,7 +143,7 @@ async def test_intro_summarizes_only_this_procedure_document(monkeypatch):
     assert update["draft"].startswith("턱 보톡스")
     sent = json.loads(model.ainvoke.await_args.args[0][1].content.split("\n", 1)[1])
     assert [d["section"] for d in sent["documents"]] == ["Procedure day", "Days 1–3"]
-    assert sent["days_since_procedure"] == 2
+    assert sent["days_since_procedure"] == 2 and sent["current_period"] == "Days 1–3"
     assert {c["doc_id"] for c in update["citations"]} == {"AFTERCARE_JAW_BOTOX"}
 
 

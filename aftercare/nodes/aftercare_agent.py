@@ -62,6 +62,16 @@ def _citations(state, chunks):
     return list(citations.values())
 
 
+def current_period(days: int | None) -> str:
+    """Aftercare document section for the patient's day (procedure day = 0)."""
+    if days is None:
+        return "Before procedure"
+    for limit, section in ((0, "Procedure day"), (3, "Days 1–3"), (7, "Days 4–7"), (30, "Weeks 2–4")):
+        if days <= limit:
+            return section
+    return "After 1 month"
+
+
 def _payload(state, locale):
     context = state.get("aftercare_context") or {}
     detail = (state.get("hospital_context") or {}).get("detail") or {}
@@ -71,6 +81,7 @@ def _payload(state, locale):
         "procedure_code": context.get("procedure_code"),
         "procedure_start_at": context.get("start_at"),
         "days_since_procedure": context.get("days_since_procedure"),
+        "current_period": current_period(context.get("days_since_procedure")),
         "hospital": {"name": detail.get("name"), "phone": detail.get("phone")},
         "summary": state.get("summary"),
     }

@@ -32,8 +32,10 @@ let refreshing: Promise<LoginResponse> | null = null
 /** 앱 시작(새로고침) 시에도 호출 — 성공하면 로그인 유지, 실패하면 /login (「인증·인가 설계」 1장) */
 export function refreshAccessToken(): Promise<LoginResponse> {
   if (!refreshing) {
-    refreshing = axios
-      .post<LoginResponse>(`${API_BASE}/auth/refresh`, null, { withCredentials: true })
+    const post = () => axios.post<LoginResponse>(`${API_BASE}/auth/refresh`, null, { withCredentials: true })
+    // 탭 여러 개가 동시에 refresh 하면 늦은 쪽이 회전 전 쿠키를 보내 backend 가 재사용으로 보고 모든 세션을 폐기한다
+    // → Web Locks 로 탭 사이에서도 한 번에 하나씩 (뒤 탭은 회전된 새 쿠키로 요청). 미지원 브라우저는 그대로
+    refreshing = (navigator.locks ? navigator.locks.request('auth-refresh', post).then((r) => r) : post())
       .then((res) => {
         session.setToken(res.data.accessToken)
         return res.data

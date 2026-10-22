@@ -1,7 +1,8 @@
 <script setup lang="ts">
 // Figma Text Field: 라벨(Caption 13) + 48 박스(반경 12) + 오류(Caption 12 danger) / 도움말(tertiary)
 // State: Default(border/default) · Focus(border/focus 1.5) · Error(status/danger 1.5). options 를 주면 select
-import { useId } from 'vue'
+import { ref, useId } from 'vue'
+import { useI18n } from 'vue-i18n'
 import AppIcon from './AppIcon.vue'
 
 const model = defineModel<string>({ default: '' })
@@ -20,13 +21,16 @@ defineProps<{
   max?: string
 }>()
 const id = useId()
+const { t } = useI18n()
+/** 비밀번호 보기 (외국어 키보드로 잘못 치기 쉬움) */
+const reveal = ref(false)
 </script>
 
 <template>
   <div class="field">
     <label :for="id" class="field__label t-caption-13">{{ label }}</label>
     <div class="field__box" :class="{ 'field__box--error': error || invalid }">
-      <select v-if="options" :id="id" v-model="model" class="field__input" :required="required" :aria-invalid="!!error || invalid">
+      <select v-if="options" :id="id" v-model="model" class="field__input" :autocomplete="autocomplete" :required="required" :aria-invalid="!!error || invalid">
         <option v-if="placeholder" value="" disabled>{{ placeholder }}</option>
         <option v-for="o in options" :key="o.value" :value="o.value">{{ o.label }}</option>
       </select>
@@ -35,7 +39,7 @@ const id = useId()
         :id="id"
         v-model="model"
         class="field__input"
-        :type="type ?? 'text'"
+        :type="type === 'password' && reveal ? 'text' : (type ?? 'text')"
         :placeholder="placeholder"
         :autocomplete="autocomplete"
         :required="required"
@@ -44,6 +48,16 @@ const id = useId()
         :aria-describedby="error || hint ? `${id}-msg` : undefined"
       />
       <AppIcon v-if="options" name="chevron-down" :size="18" class="field__chevron" />
+      <button
+        v-if="type === 'password'"
+        type="button"
+        class="field__reveal hit"
+        :aria-label="reveal ? t('auth.hidePassword') : t('auth.showPassword')"
+        :aria-pressed="reveal"
+        @click="reveal = !reveal"
+      >
+        <AppIcon :name="reveal ? 'eye-off' : 'eye'" :size="20" />
+      </button>
     </div>
     <p v-if="error" :id="`${id}-msg`" class="field__error t-caption-12" role="alert">
       <slot name="error-icon" />{{ error }}
@@ -64,6 +78,7 @@ const id = useId()
   border-radius: var(--radius-md);
   background: var(--bg-default);
 }
+.field__reveal { display: grid; place-items: center; margin-right: 10px; padding: 0; border: 0; background: none; color: var(--icon-subtle); }
 .field__box:focus-within { border: 1.5px solid var(--border-focus); }
 .field__box--error,
 .field__box--error:focus-within { border: 1.5px solid var(--status-danger); }

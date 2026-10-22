@@ -26,6 +26,8 @@ const ja: typeof en = {
     logout: 'ログアウト',
     loginFailed: 'メールアドレスまたはパスワードが正しくありません',
     sessionExpired: 'ログインの有効期限が切れました。もう一度ログインしてください',
+    showPassword: 'パスワードを表示',
+    hidePassword: 'パスワードを隠す',
     loginTitle: 'おかえりなさい',
     loginBody: 'ログインすると、以前の会話と予約の続きが見られます。',
     loginFoot: 'ログインすると病院の検索・比較、AI相談、予約をすべて利用できます。',

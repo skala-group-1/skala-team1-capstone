@@ -13,11 +13,12 @@ import ko from './locales/ko'
 import { aftercareMessages } from './aftercare'
 import { session } from '@/api/session'
 import type { Locale } from '@/types/contract'
+import { storage } from '@/utils/storage'
 
 const SUPPORTED: Locale[] = ['en', 'zh', 'ja', 'ko']
 
 function initialLocale(): Locale {
-  const saved = localStorage.getItem('locale') as Locale | null
+  const saved = storage.get('locale') as Locale | null
   if (saved && SUPPORTED.includes(saved)) return saved
   const nav = navigator.language.slice(0, 2) as Locale
   return SUPPORTED.includes(nav) ? nav : 'en'
@@ -42,7 +43,7 @@ function applyDocumentLocale(locale: Locale) {
 export function setLocale(locale: Locale) {
   i18n.global.locale.value = locale
   session.setLocale(locale)
-  localStorage.setItem('locale', locale)
+  storage.set('locale', locale)
   applyDocumentLocale(locale)
 }
 // TODO(fe): 날짜·금액 포맷 (Intl.DateTimeFormat Asia/Seoul, priceKrw 는 원 단위 정수 — 통화 변환 없음 「공통 계약서」 1장)

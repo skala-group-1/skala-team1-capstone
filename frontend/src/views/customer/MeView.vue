@@ -37,10 +37,13 @@ const options = computed<{ value: Locale; label: string }[]>(() =>
 )
 async function pick(l: Locale) {
   if (l === locale.value) return
+  const prev = locale.value as Locale
   setLocale(l)
   try {
     await auth.setLocale(l)
   } catch {
+    // 계정 저장 실패 → 화면 언어도 되돌린다 (화면·AI 응답 언어가 어긋나지 않게)
+    setLocale(prev)
     showToast(t('common.error'), 'error')
   }
 }

@@ -26,6 +26,8 @@ const zh: typeof en = {
     logout: '退出登录',
     loginFailed: '邮箱或密码不正确',
     sessionExpired: '登录已过期，请重新登录',
+    showPassword: '显示密码',
+    hidePassword: '隐藏密码',
     loginTitle: '欢迎回来',
     loginBody: '登录后可继续查看之前的对话和预约。',
     loginFoot: '登录后即可使用医院探索与比较、AI 咨询和预约。',

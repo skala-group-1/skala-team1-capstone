@@ -31,7 +31,7 @@ export const catalogApi = {
     http.get<Page<HospitalCard>>('/hospitals/search', { params: q }).then((r) => r.data),
   hospital: (id: number) => http.get<HospitalDetail>(`/hospitals/${id}`).then((r) => r.data),
   slots: (id: number, q: SlotQuery) => http.get<Slot[]>(`/hospitals/${id}/slots`, { params: q }).then((r) => r.data),
-  reviews: (id: number, q: PageRequest & { lang?: Locale }) =>
+  reviews: (id: number, q: PageRequest & { lang?: Locale; procedure?: ProcedureCode }) =>
     http.get<Page<Review>>(`/hospitals/${id}/reviews`, { params: q }).then((r) => r.data),
   /** 최대 3곳 */
   compare: (body: CompareRequest) => http.post<CompareResponse>('/hospitals/compare', body).then((r) => r.data),

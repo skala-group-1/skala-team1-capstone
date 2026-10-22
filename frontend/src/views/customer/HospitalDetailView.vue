@@ -61,12 +61,8 @@ const doctors = computed(() =>
 )
 const foreignDoctors = computed(() => (hospital.value?.doctors ?? []).filter((d) => d.languages.some((l) => l !== 'ko')).length)
 const procName = (code: string) => hospital.value?.procedures.find((p) => p.procedure.code === code)?.procedure.name ?? code
-const reviewProcs = computed(() => {
-  const counts = new Map<ProcedureCode, number>()
-  for (const r of reviews.value) counts.set(r.procedureCode, (counts.get(r.procedureCode) ?? 0) + 1)
-  return [...counts.entries()]
-})
-const shownReviews = computed(() => reviews.value.filter((r) => reviewProc.value === 'ALL' || r.procedureCode === reviewProc.value))
+// 칩은 병원이 하는 시술 이름만. 거르기·건수는 서버(procedure 필터 + total)
+const reviewProcs = computed(() => (hospital.value?.procedures ?? []).map((p) => p.procedure.code))
 const ageBars = computed(() => {
   const by = hospital.value?.reviewStats.byAgeGroup ?? {}
   const max = Math.max(1, ...Object.values(by))
@@ -106,10 +102,28 @@ async function load() {
     failed.value = true
   }
 }
-async function loadReviews() {
-  const page = await catalogApi.reviews(id.value, { page: 0, size: 50 }).catch(() => null)
-  reviews.value = page?.items ?? []
-  reviewTotal.value = page?.total ?? 0
+const REVIEW_PAGE_SIZE = 20
+const reviewPage = ref(0)
+const reviewsLoading = ref(false)
+let reviewRequest = 0
+/** more=false 면 시술을 바꾼 것 → 처음부터. 늦게 온 이전 시술 응답은 버림 */
+async function loadReviews(more = false) {
+  const req = ++reviewRequest
+  const nextPage = more ? reviewPage.value + 1 : 0
+  const procedure = reviewProc.value === 'ALL' ? undefined : reviewProc.value
+  reviewsLoading.value = true
+  const page = await catalogApi.reviews(id.value, { page: nextPage, size: REVIEW_PAGE_SIZE, procedure }).catch(() => null)
+  if (req !== reviewRequest) return
+  reviewsLoading.value = false
+  if (!page) return
+  reviews.value = more ? [...reviews.value, ...page.items] : page.items
+  reviewTotal.value = page.total
+  reviewPage.value = nextPage
+}
+function selectReviewProc(code: ProcedureCode | 'ALL') {
+  if (reviewProc.value === code) return
+  reviewProc.value = code
+  void loadReviews()
 }
 async function copyAddress() {
   if (!hospital.value?.address) return
@@ -237,10 +251,11 @@ watch(id, () => void load())
           </ul>
         </div>
         <div class="chips">
-          <AppChip :selected="reviewProc === 'ALL'" @click="reviewProc = 'ALL'">{{ t('hospital.all') }}</AppChip>
-          <AppChip v-for="[code, n] in reviewProcs" :key="code" :selected="reviewProc === code" @click="reviewProc = code">{{ procName(code) }} {{ n }}</AppChip>
+          <AppChip :selected="reviewProc === 'ALL'" @click="selectReviewProc('ALL')">{{ t('hospital.all') }}</AppChip>
+          <AppChip v-for="code in reviewProcs" :key="code" :selected="reviewProc === code" @click="selectReviewProc(code)">{{ procName(code) }}</AppChip>
         </div>
-        <article v-for="r in shownReviews" :key="r.id" class="review">
+        <p v-if="reviews.length" class="t-caption-13 muted">{{ t('domain.reviews', { n: reviewTotal }) }}</p>
+        <article v-for="r in reviews" :key="r.id" class="review">
           <header class="row-between">
             <span class="review__stars">
               <AppIcon v-for="i in 5" :key="i" name="star" :size="14" :class="{ star: i <= r.rating }" />
@@ -259,7 +274,10 @@ watch(id, () => void load())
             </template>
           </p>
         </article>
-        <EmptyState v-if="!shownReviews.length" icon="star" :title="t('hospital.noReviews')" />
+        <AppButton v-if="reviews.length < reviewTotal" variant="outline" block :loading="reviewsLoading" @click="loadReviews(true)">
+          {{ t('hospital.moreReviews') }}
+        </AppButton>
+        <EmptyState v-if="!reviews.length && !reviewsLoading" icon="star" :title="reviewProc === 'ALL' ? t('hospital.noReviews') : t('hospital.noProcReviews')" />
       </section>
 
       <!-- 정보 -->

@@ -145,6 +145,8 @@ const ja: typeof en = {
     koOnly: '韓国語相談のみ',
     age: '{age}',
     noReviews: 'まだ口コミがありません',
+    noProcReviews: 'この施術の口コミはまだありません',
+    moreReviews: '口コミをもっと見る',
     writtenIn: '{lang}で投稿',
     showOriginal: '原文を見る',
     showTranslation: '翻訳を見る',

@@ -145,6 +145,8 @@ export default {
     koOnly: 'Korean consultation only',
     age: '{age}',
     noReviews: 'No reviews yet',
+    noProcReviews: 'No reviews for this procedure yet',
+    moreReviews: 'Show more reviews',
     writtenIn: 'Written in {lang}',
     showOriginal: 'See original',
     showTranslation: 'See translation',

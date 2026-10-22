@@ -390,6 +390,7 @@ const zh: typeof en = {
     backToMain: '查看主对话',
     helloAi: '请告诉我想做的项目、日期和地区。',
     helloAgent: '可以询问{hospital}的医生、价格和可约时间。',
+    handoffGreeting: '要继续咨询主对话中提到的{context}吗？',
     requestCounselor: '我想直接和咨询师沟通',
     connectCounselor: '连接咨询师',
     book: '预约',

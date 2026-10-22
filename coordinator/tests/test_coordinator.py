@@ -462,6 +462,17 @@ async def test_concern_response_does_not_force_search_filters():
 
 
 @pytest.mark.asyncio
+async def test_clarification_returns_without_reintroducing_review_model():
+    loader = AsyncMock()
+    model = ScriptedModel(AIMessage("어느 부위가 고민이세요?"))
+    result = await run_coordinator({"user": {"locale": "ko"}, "messages": [
+        HumanMessage("목선 정리")]}, model, business_loader=loader)
+    assert result["draft"] == "어느 부위가 고민이세요?"
+    assert len(model.history) == 1
+    loader.assert_not_awaited()
+
+
+@pytest.mark.asyncio
 async def test_normalization_failure_keeps_explicit_filters_and_blocks_hallucinated_final():
     loader = AsyncMock(side_effect=RuntimeError("Bearer SECRET"))
     fields = {"procedure_code": "매몰 쌍꺼풀", "budget_max_krw": 2000000, "consult_language": "zh"}

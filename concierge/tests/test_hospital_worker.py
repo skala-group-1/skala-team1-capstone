@@ -228,7 +228,7 @@ async def test_child_is_ready_before_open_event_and_first_message_inherits_conte
             assert saved.values["selected_hospital_id"] == 1
             assert saved.values["parent_conversation_id"] == parent
             assert not saved.values.get("messages") and not saved.next
-            assert event.data == {"conversationId": CHILD, "hospitalId": 1}
+            assert event.data == {"conversationId": CHILD, "hospitalId": 1, "summary": "Selected from search results"}
 
     publisher.side_effect = publish
     await worker.handle(selection_request())
@@ -286,12 +286,12 @@ async def test_reopening_child_refreshes_summary_but_preserves_history_and_inter
     else:
         assert reopened.values["summary"] == "Selected from search results"
         assert reopened.values["messages"] == saved.values["messages"]
-        assert reopened.values["conditions"] == saved.values["conditions"]
+        assert reopened.values["conditions"] == CONDITIONS
         assert not reopened.next
     assert len([e for e in events(publisher) if e.event == "CONVERSATION_OPENED"]) == 2
     records = [json.loads(r.getMessage().split("MAIN_TO_HOSPITAL ", 1)[1])
                for r in caplog.records if "MAIN_TO_HOSPITAL " in r.getMessage()]
-    assert records[0]["outcome"] == ("preserved" if pending else "summary_refreshed")
+    assert records[0]["outcome"] == ("preserved" if pending else "context_refreshed")
     assert records[-1]["summary"] == reopened.values["summary"]
     assert records[-1]["conditions"] == reopened.values["conditions"]
 

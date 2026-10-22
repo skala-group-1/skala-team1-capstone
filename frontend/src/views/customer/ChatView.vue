@@ -319,6 +319,21 @@ async function enter() {
         // 상담 열기는 아래 consultationId watch 한 곳에서만 (여기서도 열면 두 번 열려 구독이 샌다)
         await conv.refresh(id)
       }
+      if (conv.mode === 'HOSPITAL' && conv.parentConversationId
+        && (route.query.handoff === '1' || !conv.messages.length)) {
+        const conditions = conv.conditions
+        const date = conditions?.dateFrom
+          ? [conditions.dateFrom, conditions.dateTo].filter(Boolean).map((d) => fmtDate(d!, { weekday: false })).join('–')
+          : ''
+        const area = conditions?.areas?.map((value) => t(`domain.area.${value}`)).join('·') ?? ''
+        const procedure = procedureName(conditions?.procedureCode ?? null)
+        const context = [date, area, procedure].filter(Boolean).join(' · ')
+        const text = context
+          ? t('chat.handoffGreeting', { context })
+          : t('chat.helloAgent', { hospital: conv.hospital?.name ?? '' })
+        conv.messages.push({ role: 'assistant', text, sources: [], cards: [], createdAt: new Date().toISOString() })
+        if (route.query.handoff === '1') await router.replace(`/chat/${id}`)
+      }
     } else {
       const hospitalId = route.query.hospitalId ? Number(route.query.hospitalId) : null
       // 메인 대화는 최근 것을 이어 감 (빈 대화가 쌓이지 않게)
@@ -368,7 +383,7 @@ watch(
   (o) => {
     if (o) {
       conv.openedConversation = null
-      void router.push(`/chat/${o.conversationId}`)
+      void router.push({ path: `/chat/${o.conversationId}`, query: { handoff: '1' } })
     }
   },
 )

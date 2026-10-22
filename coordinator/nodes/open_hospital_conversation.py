@@ -3,14 +3,17 @@ import asyncio
 from uuid import UUID
 
 from app.graph.state import AgentState
-from coordinator.nodes.coordinator_tools import decode_result, load_business_tools, summarizer_handoff_summary
+from coordinator.nodes.coordinator_tools import decode_result, load_business_tools, prepare_handoff_summary
 
 
 async def run_open_hospital_conversation(state: AgentState, *, business_loader=None) -> dict:
     action = state.get("action") or {}
     hospital_id = action.get("hospitalId") if action.get("type") == "SELECT_HOSPITAL" else None
-    prepared = await summarizer_handoff_summary(state, hospital_id, state.get("candidates") or [],
-                                                state.get("conditions") or {})
+    # Hospital selection should not wait for the LLM summarizer. The parent
+    # conversation's saved conditions and customer statements are enough to
+    # carry context into the child conversation.
+    prepared = prepare_handoff_summary(state, hospital_id, state.get("candidates") or [],
+                                       state.get("conditions") or {})
     locale = (state.get("user") or {}).get("locale", "en")
     if prepared["status"] != "summary_ready":
         messages = {"en": "Please select a hospital from the current results.",

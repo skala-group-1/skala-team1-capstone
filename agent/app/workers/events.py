@@ -53,6 +53,7 @@ def state_events(update, state):
         opened = update["opened_conversation"]
         yield SseEvent.CONVERSATION_OPENED, {
             "conversationId": opened["conversation_id"], "hospitalId": opened["hospital_id"],
+            "summary": state.get("summary"),
         }
     if update.get("mode") == "HUMAN" and state.get("consultation_id"):
         yield SseEvent.MODE_CHANGED, {"mode": "HUMAN", "consultationId": state["consultation_id"]}

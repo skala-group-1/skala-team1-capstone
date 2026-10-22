@@ -390,6 +390,7 @@ export default {
     backToMain: 'Main chat',
     helloAi: 'Tell me the procedure, dates and area you have in mind.',
     helloAgent: 'Ask anything about {hospital}: doctors, prices, open times.',
+    handoffGreeting: 'Would you like to continue discussing {context} from your main chat?',
     requestCounselor: 'I want to talk to a counselor',
     connectCounselor: 'Talk to counselor',
     book: 'Book',

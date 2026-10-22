@@ -130,7 +130,7 @@ async def test_main_action_and_all_contract_state_events():
     assert output["TRIP_PLAN"]["arrivalDate"] == "2026-10-22"
     assert output["TRIP_PLAN"]["plans"][0]["bufferDays"] == 2
     assert output["CONVERSATION_OPENED"] == {
-        "conversationId": "c6d49de7-d0ab-4c99-a0d7-ec0880ac4995", "hospitalId": 1,
+        "conversationId": "c6d49de7-d0ab-4c99-a0d7-ec0880ac4995", "hospitalId": 1, "summary": None,
     }
     assert output["MEMORY_PROPOSAL"]["fields"]["preferredAreas"] == ["GANGNAM"]
     assert output["VERIFY"] == {"passed": True, "attempts": 0}
@@ -360,3 +360,31 @@ async def test_scaffold_cannot_report_success_after_approval(monkeypatch):
     with pytest.raises(NotImplementedError):
         await builder.execute_approved_action({"pending_action": {"approved": True}})
     execute.assert_not_awaited()
+
+
+@pytest.mark.parametrize('mode,pending', [('HOSPITAL', False), ('HOSPITAL', True), ('HUMAN', False)])
+async def test_handoff_merge_refreshes_context_and_logs_saved_state(mode, pending):
+    from types import SimpleNamespace
+    from unittest.mock import Mock
+    child = '00000000-0000-0000-0000-000000000073'
+    old = {'conversation_id': child, 'user': {'user_id': 1}, 'mode': mode,
+           'selected_hospital_id': 7, 'summary': 'old', 'conditions': {'areas': ['GANGNAM']},
+           'messages': [AIMessage('Keep hospital history')]}
+    new = {**old, 'summary': 'new', 'conditions': {'areas': [], 'date_from': '2026-10-24'},
+           'parent_conversation_id': 'thread'}
+    graph = AsyncMock()
+    graph.aget_state.side_effect = [SimpleNamespace(values=old, next=('approval',) if pending else (),
+        config={'configurable': {'checkpoint_id': 'saved'}}), SimpleNamespace(values=new)]
+    worker = HospitalWorker(graph, InMemoryStore(), AsyncMock())
+    worker._log_handoff = Mock()
+    await worker._initialize_child(request(), {'conversation_id': child, 'hospital_id': 7,
+        'mode': mode, 'conditions': new['conditions'], 'parent_conversation_id': 'thread'},
+        {'selected_hospital_id': 7, 'summary': 'new'})
+    if mode == 'HOSPITAL' and not pending:
+        graph.aupdate_state.assert_awaited_once_with({'configurable': {'thread_id': child}},
+            {'summary': 'new', 'conditions': new['conditions'], 'parent_conversation_id': 'thread'},
+            as_node='respond')
+        assert worker._log_handoff.call_args.args[2:] == (new, 'context_refreshed')
+    else:
+        graph.aupdate_state.assert_not_awaited()
+        assert worker._log_handoff.call_args.args[2:] == (old, 'preserved')

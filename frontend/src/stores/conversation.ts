@@ -21,6 +21,9 @@ import type {
   Uuid,
 } from '@/types/contract'
 
+/** load() 요청 순번 — 마지막 요청의 응답만 반영 */
+let loadSeq = 0
+
 export const useConversationStore = defineStore('conversation', {
   state: () => ({
     conversationId: null as Uuid | null,
@@ -79,7 +82,10 @@ export const useConversationStore = defineStore('conversation', {
     },
     /** 기존 대화 불러오기 (/chat/:conversationId 진입) */
     async load(conversationId: Uuid) {
+      const seq = ++loadSeq
       const conv = await aiApi.conversation(conversationId)
+      // A→B 로 빨리 넘어가면 늦게 온 A 응답은 버린다
+      if (seq !== loadSeq) return conv
       this.unsubscribe?.()
       this.$reset()
       this.conversationId = conv.id

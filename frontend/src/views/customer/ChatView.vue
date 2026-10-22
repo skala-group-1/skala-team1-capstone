@@ -54,6 +54,8 @@ const shownOriginal = ref(new Set<number>())
 const startingConversation = ref(false)
 /** 대화를 불러오지 못함 (네트워크·서버 오류) → 재시도 화면 */
 const loadFailed = ref(false)
+/** 다른 대화를 불러오는 중 (이전 대화 화면·입력을 막는다) */
+const loading = ref(false)
 
 // ─── 모드 ───
 const isHospital = computed(() => conv.mode !== 'MAIN')
@@ -184,7 +186,7 @@ const placeholder = computed(() => {
   if (conv.pendingAction) return t('chat.input.approvalPending')
   return isHospital.value ? t('chat.input.agent') : t('chat.input.ai')
 })
-const canSend = computed(() => input.value.trim().length > 0 && (isHuman.value ? !!consult.current : !busy.value) && !loadFailed.value)
+const canSend = computed(() => input.value.trim().length > 0 && (isHuman.value ? !!consult.current : !busy.value) && !loading.value && !loadFailed.value)
 async function submit() {
   const text = input.value.trim()
   if (!text || !canSend.value) return
@@ -268,9 +270,26 @@ function saveMemory() {
 }
 
 // ─── 진입·전환 ───
+/** 대화가 바뀌면 화면에만 있는 상태를 비운다 (이전 대화의 예약 카드·입력이 남지 않게) */
+function resetLocal() {
+  input.value = ''
+  evidence.value = null
+  requested.value = null
+  consent.value = false
+  concerns.value = []
+  addingConcern.value = false
+  pickingTopic.value = false
+  shownOriginal.value = new Set()
+  infoOpen.value = false
+  endConsultOpen.value = false
+}
+let enterSeq = 0
 async function enter() {
   const id = route.params.conversationId as string | undefined
+  const seq = ++enterSeq
   loadFailed.value = false
+  // 같은 대화로 돌아오는 경우(refresh)는 화면을 그대로 두고, 다른 대화를 불러올 때만 로딩 표시
+  loading.value = !id || conv.conversationId !== id
   try {
     if (id) {
       if (conv.conversationId !== id) await conv.load(id)
@@ -302,13 +321,27 @@ async function enter() {
     } catch {
       loadFailed.value = true
     }
+  } finally {
+    if (seq === enterSeq) {
+      loading.value = false
+      // 대화를 열면 맨 아래(최신 메시지)부터
+      await nextTick()
+      scroller.value?.scrollTo({ top: scroller.value.scrollHeight })
+    }
   }
 }
 onMounted(() => {
   void search.loadProcedures().catch(() => undefined)
   void enter()
 })
-watch(() => route.params.conversationId, (id, prev) => id !== prev && void enter())
+watch(
+  () => route.params.conversationId,
+  (id, prev) => {
+    if (id === prev) return
+    resetLocal()
+    void enter()
+  },
+)
 watch(
   () => conv.openedConversation,
   (o) => {
@@ -357,11 +390,12 @@ function nearBottom() {
 }
 watch(
   () =>
-    [conv.messages.length, conv.draft, conv.pendingAction, conv.cards.length, consult.messages.length, conv.error, requested.value, showTopics.value, showConcerns.value] as const,
+    [conv.messages.length, conv.draft, conv.pendingAction, conv.cards.length, conv.activeTools.length, showTyping.value, consult.messages.length, conv.error, requested.value, showTopics.value, showConcerns.value] as const,
   async () => {
     const stick = nearBottom()
     await nextTick()
-    if (stick) scroller.value?.scrollTo({ top: scroller.value.scrollHeight, behavior: 'smooth' })
+    // 답변이 흘러나오는 중엔 smooth 가 겹쳐 따라가기를 놓치므로 바로 이동
+    if (stick) scroller.value?.scrollTo({ top: scroller.value.scrollHeight, behavior: conv.streaming ? 'auto' : 'smooth' })
   },
 )
 </script>
@@ -408,6 +442,9 @@ watch(
     <EmptyState v-if="loadFailed" class="load-failed" icon="alert-triangle" tone="danger" :title="t('common.error')">
       <AppButton variant="secondary" icon="refresh-cw" @click="enter">{{ t('common.retry') }}</AppButton>
     </EmptyState>
+    <div v-else-if="loading" class="messages" role="status" :aria-label="t('common.loading')" aria-busy="true">
+      <span class="bone bone--ai" /><span class="bone bone--user" /><span class="bone bone--ai bone--short" />
+    </div>
     <div v-else ref="scroller" class="messages" aria-live="polite">
       <!-- 병원 대화: 메인 대화에서 이어받은 조건 (D-20) -->
       <section v-if="isHospital && conv.parentConversationId && conditionChips.length" class="inherit">
@@ -737,6 +774,11 @@ watch(
 .original { max-width: 264px; padding: var(--space-8) var(--space-12); border-radius: var(--radius-sm); background: var(--bg-muted); color: var(--text-secondary); }
 
 .load-failed { flex: 1; }
+.bone { display: block; height: 48px; border-radius: var(--radius-lg); background: var(--bg-muted); animation: shimmer 1.2s ease-in-out infinite; }
+.bone--ai { width: 72%; }
+.bone--user { width: 48%; align-self: flex-end; }
+.bone--short { width: 40%; }
+@keyframes shimmer { 50% { opacity: 0.5; } }
 .dock { flex: none; border-top: 1px solid var(--border-default); background: var(--bg-default); padding-bottom: env(safe-area-inset-bottom); }
 .quick { display: flex; gap: var(--space-8); padding: var(--space-12) var(--space-16) 0; }
 .input { display: flex; align-items: flex-end; gap: var(--space-8); padding: 10px var(--space-12); }

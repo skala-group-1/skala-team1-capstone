@@ -577,7 +577,8 @@ export interface SseEventMap {
   MEMORY_PROPOSAL: { fields: AiProfile; message: string }
   PROCEDURE_INFO: { procedures: ProcedureInfo[] }
   VERIFY: { passed: boolean; attempts: number }
-  DONE: { answer: string; sources: Source[] }
+  /** suggestions: answer 가 고르라고 물을 때의 선택지 칩 (최대 4, 사용자 locale). 이전 agent 는 안 보낼 수 있음 */
+  DONE: { answer: string; sources: Source[]; suggestions?: string[] }
   FAILED: { code: ErrorCode; message: string; traceId: Uuid }
 }
 export type SseEventName = keyof SseEventMap

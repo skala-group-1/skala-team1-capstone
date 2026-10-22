@@ -201,6 +201,7 @@ async function submit() {
   const text = input.value.trim()
   if (!text || !canSend.value) return
   input.value = ''
+  editingConditionsAt.value = null
   if (isHuman.value) await consult.send(text, 'CUSTOMER', (auth.user?.locale ?? 'en') as Locale)
   else await conv.send(text)
 }
@@ -211,8 +212,15 @@ function onKey(e: KeyboardEvent) {
   }
 }
 function editCondition(label: string) {
+  editingConditionsAt.value = null
   input.value = `${label}: `
   void nextTick(() => inputEl.value?.focus())
+}
+// "조건 바꾸기"·"조건 직접 바꾸기": 그 자리에 현재 조건 칩을 펼친다 (칩을 누르면 editCondition). 조건이 없으면 안내 + 입력창 포커스
+const editingConditionsAt = ref<'cards' | 'relax' | null>(null)
+function toggleConditions(at: 'cards' | 'relax') {
+  editingConditionsAt.value = editingConditionsAt.value === at ? null : at
+  if (editingConditionsAt.value && !conditionChips.value.length) void nextTick(() => inputEl.value?.focus())
 }
 
 // ─── 액션 ───
@@ -292,6 +300,7 @@ function resetLocal() {
   shownOriginal.value = new Set()
   infoOpen.value = false
   endConsultOpen.value = false
+  editingConditionsAt.value = null
 }
 let enterSeq = 0
 async function enter() {
@@ -400,7 +409,7 @@ function nearBottom() {
 }
 watch(
   () =>
-    [conv.messages.length, conv.draft, conv.pendingAction, conv.cards.length, conv.activeTools.length, showTyping.value, consult.messages.length, conv.error, requested.value, showTopics.value, showConcerns.value] as const,
+    [conv.messages.length, conv.draft, conv.pendingAction, conv.cards.length, conv.suggestions.length, conv.activeTools.length, showTyping.value, consult.messages.length, conv.error, requested.value, showTopics.value, showConcerns.value] as const,
   async () => {
     const stick = nearBottom()
     await nextTick()
@@ -547,7 +556,13 @@ watch(
               <AppButton variant="outline" size="s" :disabled="busy" @click="compareCards(m.cards)">
                 {{ t('chat.compareN', { n: Math.min(3, m.cards.length) }) }}
               </AppButton>
-              <AppButton variant="ghost" size="s" @click="inputEl?.focus()">{{ t('chat.changeConditions') }}</AppButton>
+              <AppButton variant="ghost" size="s" :aria-expanded="editingConditionsAt === 'cards'" @click="toggleConditions('cards')">
+                {{ t('chat.changeConditions') }}
+              </AppButton>
+            </div>
+            <div v-if="editingConditionsAt === 'cards'" class="inset chips">
+              <AppChip v-for="c in conditionChips" :key="c.key" type="condition" :label="c.label" @click="editCondition(c.label)">{{ c.value }}</AppChip>
+              <p v-if="!conditionChips.length" class="t-caption-12 muted">{{ t('chat.changeConditionsHint') }}</p>
             </div>
           </template>
           <!-- C4-T 고민 관련 시술 정보 -->
@@ -583,6 +598,11 @@ watch(
       </section>
       <TopicCarousel v-if="showTopics" @pick="pickTopic" />
 
+      <!-- AI 가 고르라고 물은 선택지 (DONE.suggestions): 탭하면 문구 그대로 전송 -->
+      <div v-if="conv.suggestions.length && !busy" class="inset chips">
+        <AppChip v-for="s in conv.suggestions" :key="s" @click="conv.send(s)">{{ s }}</AppChip>
+      </div>
+
       <!-- Edge ① 0건 → AI 가 정한 완화안 (D-35: 탭하면 문구를 message 로) -->
       <div v-if="conv.relaxOptions.length && !busy" class="inset relax">
         <button
@@ -596,7 +616,13 @@ watch(
           <span class="t-body-14-sb brand">{{ t('chat.relaxCount', { n: o.expectedCount }) }}</span>
           <AppIcon name="chevron-right" :size="18" />
         </button>
-        <button type="button" class="link t-caption-13" @click="inputEl?.focus()">{{ t('chat.relaxManual') }}</button>
+        <button type="button" class="link t-caption-13" :aria-expanded="editingConditionsAt === 'relax'" @click="toggleConditions('relax')">
+          {{ t('chat.relaxManual') }}
+        </button>
+        <div v-if="editingConditionsAt === 'relax'" class="chips">
+          <AppChip v-for="c in conditionChips" :key="c.key" type="condition" :label="c.label" @click="editCondition(c.label)">{{ c.value }}</AppChip>
+          <p v-if="!conditionChips.length" class="t-caption-12 muted">{{ t('chat.changeConditionsHint') }}</p>
+        </div>
       </div>
 
       <!-- C4-2 예약 승인 카드 -->

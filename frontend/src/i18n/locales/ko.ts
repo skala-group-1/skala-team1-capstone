@@ -376,6 +376,7 @@ const ko: typeof en = {
     changeConditions: '조건 바꾸기',
     relaxCount: '{n}곳',
     relaxManual: '조건 직접 바꾸기',
+    changeConditionsHint: '바꾸고 싶은 조건을 아래 입력창에 적어 주세요',
     failed: '답변을 불러오지 못했어요',
     counselor: '상담원',
     reconnecting: '다시 연결하는 중…',

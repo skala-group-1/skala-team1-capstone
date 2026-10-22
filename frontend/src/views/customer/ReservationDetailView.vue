@@ -265,7 +265,7 @@ useNotificationRefresh(['RESERVATION_CONFIRMED', 'RESERVATION_REJECTED', 'RESERV
     </template>
 
     <ReviewSheet v-if="r" :open="reviewOpen" :reservation="r" @close="reviewOpen = false" @done="onReviewed" />
-    <AppDialog :open="confirmCancel" :title="t('reservations.cancelTitle')" :body="t('reservations.cancelBody')">
+    <AppDialog :open="confirmCancel" @close="confirmCancel = false" :title="t('reservations.cancelTitle')" :body="t('reservations.cancelBody')">
       <template #actions>
         <AppButton variant="secondary" @click="confirmCancel = false">{{ t('reservations.keep') }}</AppButton>
         <AppButton variant="danger" @click="cancel">{{ r?.status === 'PENDING' ? t('chat.requested.cancel') : t('reservations.cancel') }}</AppButton>

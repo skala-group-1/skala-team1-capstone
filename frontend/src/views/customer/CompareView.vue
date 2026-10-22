@@ -74,7 +74,7 @@ onMounted(async () => {
           <div v-for="c in columns" :key="c.hospital.id" class="head">
             <RouterLink :to="`/hospitals/${c.hospital.id}`" class="t-body-14-sb">{{ c.hospital.name }}</RouterLink>
             <span class="t-caption-12 muted">{{ t(`domain.area.${c.hospital.areaCode}`) }}</span>
-            <button type="button" class="remove" :aria-label="t('compare.remove')" @click="remove(c.hospital.id)"><AppIcon name="x" :size="16" /></button>
+            <button type="button" class="remove hit" :aria-label="t('compare.remove')" @click="remove(c.hospital.id)"><AppIcon name="x" :size="16" /></button>
           </div>
         </div>
 

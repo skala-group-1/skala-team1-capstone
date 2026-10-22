@@ -6,7 +6,7 @@ let openSheets = 0
 <script setup lang="ts">
 // Figma Bottom Sheet: 손잡이 + 제목/닫기 + 내용 + (선택) 하단 버튼. 위쪽 반경 20, 스크림 45% (04 ① 셀 수치)
 // C4-1 근거 · C5-1 필터 · C8 예약 시트 · Edge ④ 대안 시간에서 사용
-import { onBeforeUnmount, watch } from 'vue'
+import { nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import AppIcon from './AppIcon.vue'
 
 const props = defineProps<{ open: boolean; title?: string }>()
@@ -14,6 +14,18 @@ const emit = defineEmits<{ close: [] }>()
 
 function onKey(e: KeyboardEvent) {
   if (e.key === 'Escape') emit('close')
+}
+const sheetEl = ref<HTMLElement | null>(null)
+/** 열 때 누른 버튼 — 닫으면 포커스를 돌려준다 (키보드·스크린리더 사용자가 위치를 잃지 않게) */
+let returnFocus: HTMLElement | null = null
+function moveFocus(open: boolean) {
+  if (open) {
+    returnFocus = document.activeElement as HTMLElement | null
+    void nextTick(() => sheetEl.value?.focus())
+  } else {
+    returnFocus?.focus()
+    returnFocus = null
+  }
 }
 let holding = false
 function lockScroll(on: boolean) {
@@ -27,6 +39,7 @@ watch(
   () => props.open,
   (open) => {
     lockScroll(open)
+    moveFocus(open)
     if (open) window.addEventListener('keydown', onKey)
     else window.removeEventListener('keydown', onKey)
   },
@@ -42,7 +55,7 @@ onBeforeUnmount(() => {
   <Teleport to="body">
     <Transition name="sheet">
       <div v-if="open" class="scrim" @click.self="emit('close')">
-        <section class="sheet" role="dialog" aria-modal="true" :aria-label="title">
+        <section ref="sheetEl" class="sheet" role="dialog" aria-modal="true" :aria-label="title" tabindex="-1">
           <div class="sheet__handle" aria-hidden="true" />
           <header v-if="title || $slots.header" class="sheet__header">
             <slot name="header">
@@ -70,6 +83,7 @@ onBeforeUnmount(() => {
   justify-content: center;
   background: rgb(0 0 0 / 45%);
 }
+.sheet:focus-visible { outline: none; }
 .sheet {
   display: flex;
   flex-direction: column;
@@ -97,6 +111,9 @@ onBeforeUnmount(() => {
 .sheet__close {
   display: grid;
   place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: -10px;
   border: 0;
   background: none;
   color: var(--icon-default);

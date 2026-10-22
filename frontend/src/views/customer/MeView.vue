@@ -102,7 +102,7 @@ onMounted(async () => {
 
       <AppButton variant="danger" size="l" block @click="logoutOpen = true">{{ t('auth.logout') }}</AppButton>
     </div>
-    <AppDialog :open="logoutOpen" :title="t('me.logoutConfirm')">
+    <AppDialog :open="logoutOpen" @close="logoutOpen = false" :title="t('me.logoutConfirm')">
       <template #actions>
         <AppButton variant="secondary" @click="logoutOpen = false">{{ t('common.cancel') }}</AppButton>
         <AppButton variant="danger" @click="logout">{{ t('auth.logout') }}</AppButton>

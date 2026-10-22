@@ -31,7 +31,7 @@ const langs = computed(() => props.card.languages.filter((l) => l !== 'ko'))
           {{ t(`domain.area.${card.areaCode}`) }} · {{ t(`domain.category.${card.category}`) }}
         </p>
       </button>
-      <label v-if="variant !== 'compact'" class="check t-body-14" :class="{ 'check--disabled': compareDisabled && !compareChecked }">
+      <label v-if="variant !== 'compact'" class="check hit t-body-14" :class="{ 'check--disabled': compareDisabled && !compareChecked }">
         <input type="checkbox" :checked="compareChecked" :disabled="compareDisabled && !compareChecked" @change="emit('compare')" />
         <span class="box" aria-hidden="true"><AppIcon v-if="compareChecked" name="check" :size="14" /></span>
         {{ t('explore.compare') }}

@@ -49,9 +49,9 @@ function goBack() {
 .bar__icon {
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
-  margin: 0 -4px;
+  width: 44px;
+  height: 44px;
+  margin: 0 -10px; /* 터치 영역 44, 아이콘 위치는 그대로 */
   border: 0;
   border-radius: var(--radius-sm);
   background: none;

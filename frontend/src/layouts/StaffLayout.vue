@@ -53,6 +53,9 @@ const items = computed<NavItem[]>(() => {
       return []
   }
 })
+function onMenuFocusOut(e: FocusEvent) {
+  if (!(e.currentTarget as HTMLElement).contains(e.relatedTarget as Node | null)) menuOpen.value = false
+}
 const isActive = (item: NavItem) => (item.exact ? route.path === item.to : route.path.startsWith(item.to))
 const initial = computed(() => auth.user?.name?.slice(0, 1) ?? '')
 
@@ -85,14 +88,16 @@ async function logout() {
         <AppIcon name="bell" />
         <span v-if="notifications.unread" class="bell__dot" />
       </RouterLink>
-      <div class="user">
+      <!-- 사용자 메뉴: ESC 또는 포커스가 메뉴 밖으로 나가면(바깥 클릭 포함) 닫힘 -->
+      <div class="user" @keydown.esc="menuOpen = false" @focusout="onMenuFocusOut">
         <button type="button" class="user__btn" :aria-expanded="menuOpen" @click="menuOpen = !menuOpen">
           <span class="avatar t-caption-12-sb">{{ initial }}</span>
           <span class="t-body-14-sb">{{ auth.user?.name }}</span>
           <AppIcon name="chevron-down" :size="16" />
         </button>
         <div v-if="menuOpen" class="user__menu">
-          <button type="button" class="t-body-14" @click="logout">{{ t('auth.logout') }}</button>
+          <!-- mousedown.prevent: 클릭으로 포커스가 옮겨 가며 focusout 으로 메뉴가 먼저 닫히는 것(Safari) 방지 -->
+          <button type="button" class="t-body-14" @mousedown.prevent @click="logout">{{ t('auth.logout') }}</button>
         </div>
       </div>
     </header>

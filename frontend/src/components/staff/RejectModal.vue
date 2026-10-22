@@ -14,6 +14,17 @@ const props = defineProps<{ open: boolean; reservation: Reservation | null; busy
 const emit = defineEmits<{ close: []; submit: [body: RejectRequest] }>()
 const { t } = useI18n()
 
+// 네이티브 <dialog> + showModal(): ESC·포커스 가두기·뒤 화면 비활성·포커스 복귀. 제출 중(busy)에는 닫지 않음
+const el = ref<HTMLDialogElement | null>(null)
+watch([() => props.open && !!props.reservation, el], ([open, d]) => {
+  if (!d) return
+  if (open && !d.open) d.showModal()
+  else if (!open && d.open) d.close()
+})
+function requestClose() {
+  if (!props.busy) emit('close')
+}
+
 const PRESETS = ['slotTaken', 'doctorChange', 'needsConsult', 'other'] as const
 const preset = ref<(typeof PRESETS)[number] | null>(null)
 const detail = ref('')
@@ -51,12 +62,12 @@ function submit() {
 </script>
 
 <template>
-  <Teleport to="body">
-    <div v-if="open && reservation" class="scrim" @click.self="emit('close')">
-      <section class="modal" role="dialog" aria-modal="true" :aria-label="t('staff.reject.title')">
+  <!-- 바깥(::backdrop) 클릭은 dialog 자신이 target -->
+  <dialog ref="el" class="modal" :aria-label="t('staff.reject.title')" @cancel.prevent="requestClose" @click.self="requestClose">
+    <template v-if="reservation">
         <header class="head">
           <h2 class="t-title-18">{{ t('staff.reject.title') }}</h2>
-          <button type="button" class="x" :aria-label="t('common.close')" @click="emit('close')"><AppIcon name="x" /></button>
+          <button type="button" class="x" :aria-label="t('common.close')" :disabled="busy" @click="requestClose"><AppIcon name="x" /></button>
         </header>
         <div class="body">
           <p class="t-caption-13 secondary">{{ reservation.customer?.name }} · {{ reservation.procedure.name }} · {{ fmtDateTime(reservation.slot.startAt) }}</p>
@@ -92,17 +103,17 @@ function submit() {
           <p class="notice t-caption-13"><AppIcon name="info" :size="16" />{{ t('staff.reject.notice') }}</p>
         </div>
         <footer class="foot">
-          <AppButton variant="ghost" @click="emit('close')">{{ t('common.cancel') }}</AppButton>
+          <AppButton variant="ghost" :disabled="busy" @click="requestClose">{{ t('common.cancel') }}</AppButton>
           <AppButton variant="danger" block :disabled="!reason" :loading="busy" @click="submit">{{ t('staff.reject.submit') }}</AppButton>
         </footer>
-      </section>
-    </div>
-  </Teleport>
+    </template>
+  </dialog>
 </template>
 
 <style scoped>
-.scrim { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; background: rgb(0 0 0 / 45%); }
-.modal { display: flex; flex-direction: column; width: 560px; max-height: 90dvh; border-radius: var(--radius-xl); background: var(--surface-sheet); box-shadow: var(--shadow-dialog); }
+.modal::backdrop { background: rgb(0 0 0 / 45%); }
+.modal { width: 560px; max-width: calc(100% - 32px); max-height: 90dvh; padding: 0; border: 0; color: inherit; border-radius: var(--radius-xl); background: var(--surface-sheet); box-shadow: var(--shadow-dialog); }
+.modal[open] { display: flex; flex-direction: column; }
 .head { display: flex; align-items: center; justify-content: space-between; padding: var(--space-20) var(--space-20) var(--space-8); }
 .x { border: 0; background: none; color: var(--icon-default); }
 .body { display: flex; flex-direction: column; gap: var(--space-16); padding: var(--space-8) var(--space-20) var(--space-16); overflow-y: auto; }

@@ -42,13 +42,13 @@ const AVATAR: Partial<Record<typeof props.sender, IconName>> = {
     <span class="avatar"><AppIcon :name="AVATAR[sender] ?? 'sparkles'" :size="18" /></span>
     <div class="other__content">
       <span v-if="name" class="name t-caption-12-sb">{{ name }}</span>
-      <p v-if="sender === 'typing'" class="bubble bubble--typing" :aria-label="$t('chat.typing')">
+      <p v-if="sender === 'typing'" class="bubble bubble--typing" role="status" :aria-label="$t('chat.typing')">
         <i /><i /><i />
       </p>
       <p v-else-if="sender === 'error'" class="bubble bubble--error t-body-14">
         <AppIcon name="alert-triangle" :size="16" />
         <span>{{ text }}</span>
-        <button v-if="!noRetry" type="button" class="retry t-caption-12-sb" @click="$emit('retry')">
+        <button v-if="!noRetry" type="button" class="retry hit t-caption-12-sb" @click="$emit('retry')">
           <AppIcon name="refresh-cw" :size="14" />{{ $t('common.retry') }}
         </button>
       </p>

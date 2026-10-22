@@ -240,6 +240,11 @@ async function decide(approved: boolean, editedArgs: Record<string, unknown> | n
 }
 const approve = (editedArgs: Record<string, unknown> | null = null) => decide(true, editedArgs)
 const reject = () => decide(false)
+// 지난 답변의 병원 카드 "이 병원과 대화": 승인 대기 중엔 store.send 가 무시하므로 이유를 알려 준다
+function chatWithHospital(id: number) {
+  if (conv.pendingAction) return showToast(t('chat.input.approvalPending'), 'info')
+  if (!conv.streaming) void conv.send(null, { type: 'SELECT_HOSPITAL', hospitalId: id })
+}
 async function compareCards(cards: { id: number; name: string }[]) {
   if (busy.value || !cards.length) return
   // 버튼 문구 그대로 보낸다. 계약서에 비교 action 이 없어 병원 이름을 붙여 agent 가 대상을 알게 함 ("3곳 비교하기: A, B, C")
@@ -480,7 +485,7 @@ watch(
       <AppIcon name="sparkles" :size="16" />
       <span class="t-caption-12 secondary">{{ t('chat.topic.label') }}</span>
       <strong class="topic-bar__name t-caption-13">{{ topicLabel(conv.topic) }}</strong>
-      <button v-if="!busy" type="button" class="topic-bar__change t-caption-12" @click="pickingTopic = true">
+      <button v-if="!busy" type="button" class="topic-bar__change hit t-caption-12" @click="pickingTopic = true">
         {{ t('chat.topic.change') }}<AppIcon name="chevron-right" :size="14" />
       </button>
     </div>
@@ -497,13 +502,14 @@ watch(
     <div v-else-if="loading" class="messages" role="status" :aria-label="t('common.loading')" aria-busy="true">
       <span class="bone bone--ai" /><span class="bone bone--user" /><span class="bone bone--ai bone--short" />
     </div>
-    <div v-else ref="scroller" class="messages" aria-live="polite">
+    <!-- role=log(정중한 실시간 영역) + 답변 중 aria-busy: 토큰마다 다시 읽지 않고 답변이 끝난 뒤 한 번 읽음 -->
+    <div v-else ref="scroller" class="messages" role="log" :aria-busy="conv.streaming">
       <!-- 병원 대화: 메인 대화에서 이어받은 조건 (D-20) -->
       <section v-if="isHospital && conv.parentConversationId && conditionChips.length" class="inherit">
         <p class="inherit__head t-caption-12-sb">
           <AppIcon name="sparkles" :size="14" />
           <span>{{ t('chat.inherited') }}</span>
-          <RouterLink :to="`/chat/${conv.parentConversationId}`" class="link">{{ t('chat.backToMain') }}</RouterLink>
+          <RouterLink :to="`/chat/${conv.parentConversationId}`" class="link hit">{{ t('chat.backToMain') }}</RouterLink>
         </p>
         <div class="inherit__tags">
           <AppBadge v-for="c in conditionChips" :key="c.key" tag>{{ c.value }}</AppBadge>
@@ -539,7 +545,7 @@ watch(
                 <button
                   v-if="cm.translationStatus === 'FAILED'"
                   type="button"
-                  class="status status--failed t-caption-12-sb"
+                  class="status status--failed hit t-caption-12-sb"
                   @click="consult.retryTranslation(cm)"
                 >
                   <AppIcon name="alert-triangle" :size="14" />{{ myStatus(cm) }}
@@ -550,7 +556,7 @@ watch(
               </ChatBubble>
               <ChatBubble v-else sender="counselor" :name="t('chat.counselor')" :text="cm.translatedText ?? cm.originalText">
                 <p v-if="shownOriginal.has(cm.id) && !untranslated(cm)" class="original t-caption-12">{{ cm.originalText }}</p>
-                <button v-if="!untranslated(cm)" type="button" class="status t-caption-11" @click="toggleOriginal(cm.id)">
+                <button v-if="!untranslated(cm)" type="button" class="status hit t-caption-11" @click="toggleOriginal(cm.id)">
                   <AppIcon name="languages" :size="14" />
                   {{ shownOriginal.has(cm.id) ? t('chat.human.hideOriginal') : t('chat.human.autoTranslated') }}
                 </button>
@@ -582,7 +588,7 @@ watch(
               :cards="m.cards"
               :procedure-name="procedureName(conv.conditions?.procedureCode ?? null)"
               @open="(id) => router.push(`/hospitals/${id}`)"
-              @chat="(id) => conv.send(null, { type: 'SELECT_HOSPITAL', hospitalId: id })"
+              @chat="chatWithHospital"
             />
             <div v-if="i === lastCardsIndex" class="inset row-actions">
               <AppButton variant="outline" size="s" :disabled="busy" @click="compareCards(m.cards)">
@@ -621,7 +627,7 @@ watch(
       <!-- C4-T 피부 고민 선택 (여러 개) -->
       <section v-if="showConcerns" class="inset concerns">
         <div class="chips">
-          <AppChip v-for="c in SKIN_CONCERNS" :key="c" :selected="concerns.includes(c)" @click="toggleConcern(c)">
+          <AppChip v-for="c in SKIN_CONCERNS" :key="c" :selected="concerns.includes(c)" :aria-pressed="concerns.includes(c)" @click="toggleConcern(c)">
             {{ t(`chat.concern.items.${c}`) }}
           </AppChip>
         </div>
@@ -648,7 +654,7 @@ watch(
           <span class="t-body-14-sb brand">{{ t('chat.relaxCount', { n: o.expectedCount }) }}</span>
           <AppIcon name="chevron-right" :size="18" />
         </button>
-        <button type="button" class="link t-caption-13" :aria-expanded="editingConditionsAt === 'relax'" @click="toggleConditions('relax')">
+        <button type="button" class="link hit t-caption-13" :aria-expanded="editingConditionsAt === 'relax'" @click="toggleConditions('relax')">
           {{ t('chat.relaxManual') }}
         </button>
         <div v-if="editingConditionsAt === 'relax'" class="chips">
@@ -748,17 +754,18 @@ watch(
     </footer>
 
     <EvidenceSheet :open="!!evidence" :sources="evidence ?? []" @close="evidence = null" />
-    <AppDialog :open="cancelRequestOpen" :title="t('reservations.cancelTitle')" :body="t('reservations.cancelBody')">
+    <AppDialog :open="cancelRequestOpen" @close="cancellingRequest || (cancelRequestOpen = false)" :title="t('reservations.cancelTitle')" :body="t('reservations.cancelBody')">
       <template #actions>
         <AppButton variant="secondary" :disabled="cancellingRequest" @click="cancelRequestOpen = false">{{ t('reservations.keep') }}</AppButton>
         <AppButton variant="danger" :loading="cancellingRequest" @click="cancelRequested">{{ t('chat.requested.cancel') }}</AppButton>
       </template>
     </AppDialog>
-    <AppDialog :open="infoOpen" :title="t('chat.info.title')" :body="t('chat.info.body')">
+    <AppDialog :open="infoOpen" @close="infoOpen = false" :title="t('chat.info.title')" :body="t('chat.info.body')">
       <template #actions><AppButton @click="infoOpen = false">{{ t('common.confirm') }}</AppButton></template>
     </AppDialog>
     <AppDialog
       :open="endConsultOpen"
+      @close="endingConsult || (endConsultOpen = false)"
       :title="consultStatus === 'WAITING' ? t('chat.human.cancelTitle') : t('chat.human.endTitle')"
       :body="consultStatus === 'WAITING' ? t('chat.human.cancelBody') : t('chat.human.endBody')"
     >
@@ -775,7 +782,7 @@ watch(
 <style scoped>
 .chat { display: flex; flex-direction: column; height: 100dvh; }
 .ellipsis { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.icon-btn { display: grid; place-items: center; border: 0; background: none; color: var(--icon-default); }
+.icon-btn { display: grid; place-items: center; width: 44px; height: 44px; border: 0; background: none; color: var(--icon-default); }
 .conditions {
   display: flex;
   gap: var(--space-8);

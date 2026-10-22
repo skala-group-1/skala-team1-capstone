@@ -18,7 +18,9 @@ from uuid import uuid4
 from zoneinfo import ZoneInfo
 
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
+from langchain_openai import ChatOpenAI
 
+from app.config import get_settings
 from app.graph.state import AgentState
 from app.harness.instructions import load_prompt
 from app.harness.loop import MAX_TURNS
@@ -26,7 +28,7 @@ from app.mcp_client.client import get_tools
 from aftercare.nodes.load_aftercare_context import INTRO
 from aftercare.nodes.red_flag import has_warning_sign, safety_reply
 from concierge.nodes.actions import HANDOFF, prepare_action
-from concierge.nodes.hospital_agent import HANDOFF_PROPOSAL_TOOL, _action_finished, _model, requests_counselor_form
+from concierge.nodes.hospital_agent import HANDOFF_PROPOSAL_TOOL, _action_finished, requests_counselor_form
 from concierge.nodes.hospital_reply import message_text, patient_reply
 from concierge.nodes.load_hospital_context import selected_hospital, tool_data
 
@@ -47,6 +49,18 @@ NO_DOCUMENT = {
     "zh": "未找到该项目的术后护理指南。如对恢复或注意事项有疑问请随时提问，具体指示请向医院确认。",
     "ja": "この施術のアフターケアガイドが見つかりませんでした。回復や注意事項について気軽にご質問ください。正確な指示は病院にご確認ください。",
 }
+
+
+def _model():
+    """Aftercare uses its own model setting (AFTERCARE_MODEL); other agents keep LLM_PRIMARY_MODEL."""
+    settings = get_settings()
+    if not settings.openai_api_key:
+        raise ValueError("OPENAI_API_KEY is required for aftercare conversations")
+    # gpt-5.4-mini rejects function tools together with reasoning on Chat Completions,
+    # so the aftercare model talks to the Responses API.
+    options = {"reasoning": {"effort": settings.llm_reasoning_effort}} if settings.llm_reasoning_effort else {}
+    return ChatOpenAI(model=settings.aftercare_model, api_key=settings.openai_api_key, use_responses_api=True,
+                      output_version="v0", timeout=60, max_retries=1, **options)
 
 
 def _locale(state):

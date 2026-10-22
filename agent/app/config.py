@@ -28,6 +28,8 @@ class Settings(BaseSettings):
     llm_reasoning_effort: str | None = "low"
     llm_fast_model: str = "gpt-5-nano"
     llm_fallback_model: str = "gpt-5-nano"
+    # 사후관리 대화(aftercare/)만 쓰는 모델. 번역·요약 품질 때문에 nano 대신 mini
+    aftercare_model: str = "gpt-5.4-mini"
     embedding_model: str = "text-embedding-3-small"
 
     # LangSmith (선택)

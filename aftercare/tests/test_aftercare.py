@@ -228,6 +228,17 @@ async def test_rejected_handoff_keeps_localized_reply(monkeypatch):
     model.ainvoke.assert_not_awaited()
 
 
+def test_aftercare_uses_its_own_model(monkeypatch):
+    from app.config import get_settings
+    monkeypatch.setenv("OPENAI_API_KEY", "test")
+    monkeypatch.setenv("AFTERCARE_MODEL", "gpt-5.4-mini")
+    get_settings.cache_clear()
+    try:
+        assert agent._model().model_name == "gpt-5.4-mini"
+    finally:
+        get_settings.cache_clear()
+
+
 # ---------------------------------------------------------------- routing and queue
 
 def test_aftercare_mode_routes_to_subgraph():

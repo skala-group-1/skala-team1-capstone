@@ -26,6 +26,7 @@ const ko: typeof en = {
     signup: '회원가입',
     logout: '로그아웃',
     loginFailed: '이메일 또는 비밀번호가 맞지 않아요',
+    sessionExpired: '로그인이 만료됐어요. 다시 로그인해 주세요',
     loginTitle: '다시 만나서 반가워요',
     loginBody: '이메일로 로그인하면 이전 대화와 예약을 이어서 볼 수 있어요.',
     loginFoot: '로그인하면 병원 탐색·비교, AI 상담, 예약을 모두 이용할 수 있어요.',
@@ -44,6 +45,8 @@ const ko: typeof en = {
       email: "이메일 형식이 아니에요 (예: name{'@'}example.com)",
       password: '8자 이상, 영문과 숫자를 함께 써 주세요',
       duplicated: '이미 가입된 이메일이에요',
+      required: '필수 항목이에요',
+      invalid: '입력한 내용을 다시 확인해 주세요',
     },
   },
   nav: { home: '홈', explore: '탐색', ai: 'AI', reservations: '예약', me: '내 정보', label: '주 메뉴' },
@@ -268,6 +271,7 @@ const ko: typeof en = {
     today: '오늘',
     yesterday: '어제',
     readAll: '모두 읽음',
+    unread: '읽지 않음',
     emptyTitle: '알림이 없어요',
     emptyBody: '예약 상태 변경과 상담원 입장 소식이 여기에 와요.',
     types: {
@@ -293,6 +297,7 @@ const ko: typeof en = {
     actions: { visit: '방문 안내 보기', alternatives: '대안 시간 보기', review: '요청 확인하기', inbox: '문의함 열기', chat: '병원 대화창 열기' },
   },
   me: {
+    logoutConfirm: '로그아웃할까요?',
     title: '내 정보',
     language: '언어',
     languageNote: 'AI 답변 · 알림 · 화면 언어예요',

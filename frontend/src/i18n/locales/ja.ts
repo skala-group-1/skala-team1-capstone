@@ -25,6 +25,7 @@ const ja: typeof en = {
     signup: '新規登録',
     logout: 'ログアウト',
     loginFailed: 'メールアドレスまたはパスワードが正しくありません',
+    sessionExpired: 'ログインの有効期限が切れました。もう一度ログインしてください',
     loginTitle: 'おかえりなさい',
     loginBody: 'ログインすると、以前の会話と予約の続きが見られます。',
     loginFoot: 'ログインすると病院の検索・比較、AI相談、予約をすべて利用できます。',
@@ -43,6 +44,8 @@ const ja: typeof en = {
       email: "メールアドレスの形式ではありません（例：name{'@'}example.com）",
       password: '8文字以上で、英字と数字を含めてください',
       duplicated: 'このメールアドレスはすでに登録されています',
+      required: '必須項目です',
+      invalid: '入力内容をもう一度ご確認ください',
     },
   },
   nav: { home: 'ホーム', explore: '探す', ai: 'AI', reservations: '予約', me: 'マイページ', label: 'メインメニュー' },
@@ -267,6 +270,7 @@ const ja: typeof en = {
     today: '今日',
     yesterday: '昨日',
     readAll: 'すべて既読',
+    unread: '未読',
     emptyTitle: 'お知らせはありません',
     emptyBody: '予約状況の変更や相談員の入室がここに届きます。',
     types: {
@@ -292,6 +296,7 @@ const ja: typeof en = {
     actions: { visit: '来院案内を見る', alternatives: '提案時間を見る', review: 'リクエストを確認', inbox: '相談一覧を開く', chat: '病院チャットを開く' },
   },
   me: {
+    logoutConfirm: 'ログアウトしますか？',
     title: 'マイページ',
     language: '言語',
     languageNote: 'AIの回答・お知らせ・画面の言語です',

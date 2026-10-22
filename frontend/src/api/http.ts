@@ -58,10 +58,18 @@ http.interceptors.response.use(
         await refreshAccessToken()
         return http(config)
       } catch (refreshError) {
-        session.setToken(null)
-        session.emitLoggedOut()
+        // refresh 가 401(만료·폐기)일 때만 로그아웃. 네트워크 오류·5xx(서버 재시작 등)는 세션을 유지하고 이번 요청만 실패
+        if (axios.isAxiosError(refreshError) && refreshError.response?.status === 401) {
+          session.setToken(null)
+          session.emitLoggedOut()
+        }
         return Promise.reject(refreshError)
       }
+    }
+    // 토큰을 보냈는데 UNAUTHENTICATED(위조·손상) → 만료와 같이 처리
+    if (error.response?.status === 401 && code === 'UNAUTHENTICATED' && session.getToken()) {
+      session.setToken(null)
+      session.emitLoggedOut()
     }
     // TODO(fe): 403 ACCESS_DENIED → "권한 없음" 화면/토스트 (권한 판단은 backend, 「인증·인가 설계」 5장)
     // TODO(fe): 5xx·네트워크 오류 공통 토스트 + traceId 표시 (12-1: 모든 응답에 X-Trace-Id)

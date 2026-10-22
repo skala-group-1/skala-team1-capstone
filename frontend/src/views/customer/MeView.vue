@@ -12,6 +12,7 @@ import { fmtDate, fmtTime } from '@/utils/format'
 import TopAppBar from '@/components/ui/TopAppBar.vue'
 import AppIcon from '@/components/ui/AppIcon.vue'
 import AppButton from '@/components/ui/AppButton.vue'
+import AppDialog from '@/components/ui/AppDialog.vue'
 import type { Conversation, Locale } from '@/types/contract'
 
 const router = useRouter()
@@ -43,7 +44,9 @@ async function pick(l: Locale) {
     showToast(t('common.error'), 'error')
   }
 }
+const logoutOpen = ref(false)
 async function logout() {
+  logoutOpen.value = false
   await auth.logout()
   await router.replace('/login')
 }
@@ -97,8 +100,14 @@ onMounted(async () => {
         <p v-else class="t-body-14 muted empty">{{ t('me.noHistory') }}</p>
       </section>
 
-      <AppButton variant="danger" size="l" block @click="logout">{{ t('auth.logout') }}</AppButton>
+      <AppButton variant="danger" size="l" block @click="logoutOpen = true">{{ t('auth.logout') }}</AppButton>
     </div>
+    <AppDialog :open="logoutOpen" :title="t('me.logoutConfirm')">
+      <template #actions>
+        <AppButton variant="secondary" @click="logoutOpen = false">{{ t('common.cancel') }}</AppButton>
+        <AppButton variant="danger" @click="logout">{{ t('auth.logout') }}</AppButton>
+      </template>
+    </AppDialog>
   </div>
 </template>
 

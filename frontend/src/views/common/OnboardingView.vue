@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // 「화면 목록」 C1 언어 선택 → 온보딩 소개 (Figma 1:5710 · 1:5777). 다 보면 localStorage 'onboarded' → 재방문 시 건너뜀
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { setLocale } from '@/i18n'
 import AppButton from '@/components/ui/AppButton.vue'
@@ -9,6 +9,7 @@ import AppIcon, { type IconName } from '@/components/ui/AppIcon.vue'
 import type { Locale } from '@/types/contract'
 
 const router = useRouter()
+const route = useRoute()
 const { t, locale } = useI18n()
 
 const step = ref<'language' | 'intro'>('language')
@@ -38,7 +39,8 @@ function next() {
 }
 function finish(to: '/signup' | '/login') {
   localStorage.setItem('onboarded', '1')
-  void router.replace(to)
+  // 공유 링크 목적지(redirect)를 로그인·가입으로 이어 넘김
+  void router.replace({ path: to, query: route.query.redirect ? { redirect: route.query.redirect } : {} })
 }
 </script>
 

@@ -20,6 +20,8 @@ const { t } = useI18n()
 const email = ref(import.meta.env.DEV ? 'customer.zh1@demo.local' : '')
 const password = ref(import.meta.env.DEV ? 'Passw0rd!' : '')
 const errorMessage = ref<string | null>(null)
+/** 이메일·비밀번호가 틀린 경우만 두 칸을 빨갛게 (네트워크·서버 오류는 폼 아래 안내) */
+const wrongCredentials = ref(false)
 const submitting = ref(false)
 
 async function submit() {
@@ -31,7 +33,8 @@ async function submit() {
     await router.replace(redirect ?? auth.home)
   } catch (e) {
     const err = toApiError(e)
-    errorMessage.value = err?.code === 'INVALID_CREDENTIALS' || !err ? t('auth.loginFailed') : err.message
+    wrongCredentials.value = err?.code === 'INVALID_CREDENTIALS'
+    errorMessage.value = wrongCredentials.value ? t('auth.loginFailed') : err?.message || t('common.error')
   } finally {
     submitting.value = false
   }
@@ -46,22 +49,23 @@ async function submit() {
         <h1 class="t-title-22">{{ t('auth.loginTitle') }}</h1>
         <p class="t-body-14 sub">{{ t('auth.loginBody') }}</p>
       </div>
-      <TextField v-model="email" :label="t('auth.email')" type="email" autocomplete="username" :invalid="!!errorMessage" required />
+      <TextField v-model="email" :label="t('auth.email')" type="email" autocomplete="username" :invalid="wrongCredentials" required />
       <TextField
         v-model="password"
         :label="t('auth.password')"
         type="password"
         autocomplete="current-password"
-        :error="errorMessage"
+        :error="wrongCredentials ? errorMessage : null"
         required
       >
         <template #error-icon><AppIcon name="alert-triangle" :size="14" /></template>
       </TextField>
+      <p v-if="errorMessage && !wrongCredentials" class="form-error t-caption-12" role="alert">{{ errorMessage }}</p>
       <AppButton type="submit" size="l" block :loading="submitting" :disabled="!email || !password">
         {{ t('auth.login') }}
       </AppButton>
       <p class="links t-caption-13">
-        <RouterLink to="/signup" class="brand">{{ t('auth.signup') }}</RouterLink>
+        <RouterLink :to="{ path: '/signup', query: route.query.redirect ? { redirect: route.query.redirect } : {} }" class="brand">{{ t('auth.signup') }}</RouterLink>
       </p>
       <p class="foot t-caption-12">{{ t('auth.loginFoot') }}</p>
     </form>
@@ -75,5 +79,6 @@ async function submit() {
 .sub { color: var(--text-secondary); }
 .links { text-align: center; }
 .brand { color: var(--text-brand); }
+.form-error { color: var(--status-danger); }
 .foot { margin-top: auto; color: var(--text-tertiary); }
 </style>

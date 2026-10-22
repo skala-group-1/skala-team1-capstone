@@ -25,6 +25,7 @@ export default {
     signup: 'Sign up',
     logout: 'Log out',
     loginFailed: 'Email or password is incorrect',
+    sessionExpired: 'Your session has expired. Please log in again',
     loginTitle: 'Welcome back',
     loginBody: 'Log in to continue your chats and bookings.',
     loginFoot: 'Log in to explore and compare clinics, chat with AI and book.',
@@ -43,6 +44,8 @@ export default {
       email: "Not a valid email (e.g. name{'@'}example.com)",
       password: 'Use at least 8 characters with letters and numbers',
       duplicated: 'This email is already registered',
+      required: 'This field is required',
+      invalid: 'Please check what you entered',
     },
   },
   nav: { home: 'Home', explore: 'Explore', ai: 'AI', reservations: 'Bookings', me: 'Me', label: 'Main menu' },
@@ -267,6 +270,7 @@ export default {
     today: 'Today',
     yesterday: 'Yesterday',
     readAll: 'Mark all read',
+    unread: 'Unread',
     emptyTitle: 'No notifications',
     emptyBody: 'Booking updates and counselor messages will appear here.',
     types: {
@@ -292,6 +296,7 @@ export default {
     actions: { visit: 'See visit guide', alternatives: 'See suggested times', review: 'Review request', inbox: 'Open inbox', chat: 'Open clinic chat' },
   },
   me: {
+    logoutConfirm: 'Log out?',
     title: 'Me',
     language: 'Language',
     languageNote: 'Used for AI answers, notifications and the app',

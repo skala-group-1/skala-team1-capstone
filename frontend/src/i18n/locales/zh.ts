@@ -25,6 +25,7 @@ const zh: typeof en = {
     signup: '注册',
     logout: '退出登录',
     loginFailed: '邮箱或密码不正确',
+    sessionExpired: '登录已过期，请重新登录',
     loginTitle: '欢迎回来',
     loginBody: '登录后可继续查看之前的对话和预约。',
     loginFoot: '登录后即可使用医院探索与比较、AI 咨询和预约。',
@@ -43,6 +44,8 @@ const zh: typeof en = {
       email: "邮箱格式不正确（例：name{'@'}example.com）",
       password: '请输入至少 8 位，包含字母和数字',
       duplicated: '该邮箱已注册',
+      required: '此项为必填项',
+      invalid: '请再次确认输入内容',
     },
   },
   nav: { home: '首页', explore: '探索', ai: 'AI', reservations: '预约', me: '我的', label: '主菜单' },
@@ -267,6 +270,7 @@ const zh: typeof en = {
     today: '今天',
     yesterday: '昨天',
     readAll: '全部已读',
+    unread: '未读',
     emptyTitle: '暂无通知',
     emptyBody: '预约状态变化和咨询师加入的消息会显示在这里。',
     types: {
@@ -292,6 +296,7 @@ const zh: typeof en = {
     actions: { visit: '查看就诊指南', alternatives: '查看建议时间', review: '查看请求', inbox: '打开咨询列表', chat: '打开医院对话' },
   },
   me: {
+    logoutConfirm: '要退出登录吗？',
     title: '我的',
     language: '语言',
     languageNote: '用于 AI 回答、通知和界面',

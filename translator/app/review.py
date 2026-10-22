@@ -5,7 +5,8 @@
 - review.translate 큐가 아직 없으면(backend 가 먼저 배포되지 않음) 리뷰만 건너뛰고 백그라운드에서 다시 붙는다.
   → 채팅·요약 번역 기동을 막지 않는다.
 - 원문 언어는 LLM 이 아니라 문자 종류로 감지한다 (호출 1회 유지, 결과가 항상 같음).
-- 번역 전후 숫자가 다르면 그 언어는 보내지 않는다 (화면에는 원문이 보인다).
+- 번역 전후 숫자가 다르면 경고 로그만 남기고 보낸다 (채팅의 NUMBER_MISMATCH 와 같은 기준.
+  "4만 원" → "40,000 won" 처럼 맞는 번역도 숫자 표기가 달라질 수 있어서 버리지 않는다).
 """
 
 import asyncio
@@ -103,8 +104,7 @@ async def translate_review(msg: ReviewTranslate) -> ReviewTranslated:
         if not text:
             continue
         if numbers_mismatch(msg.text, text):
-            log.warning("review %s: %s translation dropped (NUMBER_MISMATCH)", msg.review_id, lang)
-            continue
+            log.warning("review %s: %s translation has different numbers (NUMBER_MISMATCH)", msg.review_id, lang)
         translations[lang] = text
     return ReviewTranslated(review_id=msg.review_id, ok=True, detected_lang=source, translations=translations)
 

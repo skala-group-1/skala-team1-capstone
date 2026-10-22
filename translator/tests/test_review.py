@@ -1,4 +1,4 @@
-"""리뷰 번역: 문자 종류로 원문 언어 감지, 원문 언어 제외 3개 언어, 숫자 불일치 언어 제외, 큐가 없어도 기동."""
+"""리뷰 번역: 문자 종류로 원문 언어 감지, 원문 언어 제외 3개 언어, 숫자 표기가 달라도 저장, 큐가 없어도 기동."""
 
 import json
 
@@ -34,11 +34,12 @@ async def test_source_language_detected_and_excluded(fake_llm):
     assert "from Korean into English, Simplified Chinese, Japanese" in llm.calls[0]
 
 
-async def test_number_mismatch_language_dropped(fake_llm):
-    fake_llm(ReviewTranslation(ko="30만 원이었어요", zh="价格是30万韩元。", ja="40万ウォンでした。"))
-    out = await translate_review(ReviewTranslate(review_id=2, text="It cost 300000 won, 30만.", from_="en"))
-    assert "ja" not in out.translations
-    assert set(out.translations) <= {"ko", "zh"}
+async def test_number_format_difference_is_kept(fake_llm, caplog):
+    # "4만 원" → "40,000 won" 은 맞는 번역이므로 버리지 않는다 (경고 로그만)
+    fake_llm(ReviewTranslation(en="It was only 40,000 won.", zh="只要4万韩元。", ja="4万ウォンでした。"))
+    out = await translate_review(ReviewTranslate(review_id=2, text="4만 원이라 부담 없었어요.", from_="ko"))
+    assert set(out.translations) == {"en", "zh", "ja"}
+    assert "NUMBER_MISMATCH" in caplog.text
 
 
 async def test_glossary_terms_injected_per_target(fake_llm):

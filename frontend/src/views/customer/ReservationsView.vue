@@ -15,6 +15,8 @@ import AppBadge, { RESERVATION_TONE } from '@/components/ui/AppBadge.vue'
 import AppChip from '@/components/ui/AppChip.vue'
 import AppButton from '@/components/ui/AppButton.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
+import AppDialog from '@/components/ui/AppDialog.vue'
+import { toApiError } from '@/api'
 import type { Reservation } from '@/types/contract'
 
 const router = useRouter()
@@ -25,7 +27,11 @@ const tab = ref<'all' | 'active' | 'past'>('all')
 const loading = ref(true)
 const failed = ref(false)
 
-const isActive = (r: Reservation) => r.status === 'PENDING' || (r.status === 'CONFIRMED' && new Date(r.slot.startAt).getTime() > now.value)
+// 대안 시간이 온 반려 건은 고객이 고를 일이 남아 있으므로 진행 중
+const isActive = (r: Reservation) =>
+  r.status === 'PENDING' ||
+  (r.status === 'REJECTED' && r.alternatives.length > 0) ||
+  (r.status === 'CONFIRMED' && new Date(r.slot.startAt).getTime() > now.value)
 const list = computed(() =>
   store.mine.filter((r) => (tab.value === 'all' ? true : tab.value === 'active' ? isActive(r) : !isActive(r))),
 )
@@ -49,9 +55,23 @@ async function load() {
 // 병원이 승인·반려하거나 만료되면 목록 갱신 (로딩 표시 없이)
 useNotificationRefresh(['RESERVATION_CONFIRMED', 'RESERVATION_REJECTED', 'RESERVATION_EXPIRED', 'RESERVATION_CANCELLED'], () => store.loadMine())
 
-async function cancel(r: Reservation) {
-  await store.cancel(r.id)
-  showToast(t('chat.requested.cancelled'))
+// 요청 취소는 슬롯이 풀리는 되돌릴 수 없는 동작 → 확인 후 실행, 처리 중엔 다시 못 누름
+const cancelTarget = ref<Reservation | null>(null)
+const cancelling = ref(false)
+async function cancel() {
+  const r = cancelTarget.value
+  if (!r || cancelling.value) return
+  cancelling.value = true
+  try {
+    await store.cancel(r.id)
+    showToast(t('chat.requested.cancelled'))
+  } catch (e) {
+    showToast(toApiError(e)?.message || t('common.error'), 'error')
+    await store.loadMine().catch(() => undefined)
+  } finally {
+    cancelling.value = false
+    cancelTarget.value = null
+  }
 }
 onMounted(load)
 </script>
@@ -68,8 +88,11 @@ onMounted(load)
     <EmptyState v-if="failed" icon="alert-triangle" tone="danger" :title="t('reservations.loadFailed')">
       <AppButton variant="secondary" icon="refresh-cw" @click="load">{{ t('common.retry') }}</AppButton>
     </EmptyState>
+    <div v-else-if="loading" class="skeleton-list" role="status" :aria-label="t('common.loading')" aria-busy="true">
+      <span v-for="i in 3" :key="i" class="bone" style="height: 120px" />
+    </div>
     <EmptyState
-      v-else-if="!loading && !list.length"
+      v-else-if="!list.length"
       icon="calendar"
       :title="t('reservations.emptyTitle')"
       :description="t('reservations.emptyBody')"
@@ -94,7 +117,7 @@ onMounted(load)
           <footer class="card__foot t-caption-12">
             <template v-if="r.status === 'PENDING'">
               <span class="muted">{{ t('reservations.pendingNote') }}</span>
-              <button type="button" class="act" @click="cancel(r)">{{ t('chat.requested.cancel') }}</button>
+              <button type="button" class="act" @click="cancelTarget = r">{{ t('chat.requested.cancel') }}</button>
             </template>
             <template v-else-if="r.status === 'REJECTED'">
               <span class="danger">{{ t('reservations.rejectedNote', { n: r.alternatives.length }) }}</span>
@@ -113,6 +136,13 @@ onMounted(load)
         </article>
       </li>
     </ul>
+
+    <AppDialog :open="!!cancelTarget" :title="t('reservations.cancelTitle')" :body="t('reservations.cancelBody')">
+      <template #actions>
+        <AppButton variant="secondary" :disabled="cancelling" @click="cancelTarget = null">{{ t('reservations.keep') }}</AppButton>
+        <AppButton variant="danger" :loading="cancelling" @click="cancel">{{ t('chat.requested.cancel') }}</AppButton>
+      </template>
+    </AppDialog>
   </div>
 </template>
 

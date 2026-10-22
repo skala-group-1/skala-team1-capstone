@@ -93,6 +93,9 @@ async function cancel() {
     await store.cancel(r.value.id)
     r.value = { ...r.value, status: 'CANCELLED' }
     showToast(t('reservations.cancelled'))
+  } catch (e) {
+    showToast(toApiError(e)?.message || t('common.error'), 'error')
+    await load()
   } finally {
     busy.value = false
   }
@@ -132,7 +135,10 @@ useNotificationRefresh(['RESERVATION_CONFIRMED', 'RESERVATION_REJECTED', 'RESERV
       <AppButton variant="secondary" icon="refresh-cw" @click="load">{{ t('common.retry') }}</AppButton>
     </EmptyState>
 
-    <template v-else-if="r">
+    <div v-else-if="!r" class="skeleton-list" role="status" :aria-label="t('common.loading')" aria-busy="true">
+      <span class="bone" style="height: 160px" /><span class="bone" style="height: 120px" />
+    </div>
+    <template v-else>
       <div class="body">
         <!-- 요약 카드 -->
         <section class="card">
@@ -153,6 +159,7 @@ useNotificationRefresh(['RESERVATION_CONFIRMED', 'RESERVATION_REJECTED', 'RESERV
           <p v-if="r.status === 'REJECTED'" class="t-caption-13 struck">
             <AppIcon name="calendar" :size="14" /><s>{{ t('reservations.requestedTime', { at: fmtDateTime(r.slot.startAt) }) }}</s>
           </p>
+          <p class="t-caption-12 muted">{{ t('booking.kstNote') }}</p>
           <dl v-if="r.status !== 'REJECTED'" class="kv">
             <div v-if="r.status !== 'CONFIRMED'"><dt>{{ t('booking.procedure') }}</dt><dd>{{ r.procedure.name }}</dd></div>
             <div v-if="r.status !== 'CONFIRMED'"><dt>{{ t('reservations.wishTime') }}</dt><dd>{{ fmtDateTime(r.slot.startAt) }}</dd></div>
@@ -260,8 +267,8 @@ useNotificationRefresh(['RESERVATION_CONFIRMED', 'RESERVATION_REJECTED', 'RESERV
     <ReviewSheet v-if="r" :open="reviewOpen" :reservation="r" @close="reviewOpen = false" @done="onReviewed" />
     <AppDialog :open="confirmCancel" :title="t('reservations.cancelTitle')" :body="t('reservations.cancelBody')">
       <template #actions>
-        <AppButton variant="secondary" @click="confirmCancel = false">{{ t('common.cancel') }}</AppButton>
-        <AppButton variant="primary" @click="cancel">{{ t('reservations.cancel') }}</AppButton>
+        <AppButton variant="secondary" @click="confirmCancel = false">{{ t('reservations.keep') }}</AppButton>
+        <AppButton variant="danger" @click="cancel">{{ r?.status === 'PENDING' ? t('chat.requested.cancel') : t('reservations.cancel') }}</AppButton>
       </template>
     </AppDialog>
   </div>

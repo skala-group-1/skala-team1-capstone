@@ -456,7 +456,7 @@ async def test_concern_response_does_not_force_search_filters():
     model = ScriptedModel(AIMessage(response))
     result = await run_coordinator({"user": {"locale": "ko"}, "messages": [HumanMessage(
         "주름 개선이 고민이야")]}, model, business_loader=loader)
-    assert result == {"draft": response}
+    assert result == {"draft": response, "suggestions": []}
     assert not any(b.get("tool_choice") for b in model.bindings)
     loader.assert_not_awaited()
 
@@ -563,7 +563,7 @@ async def test_medical_tool_reports_missing_sources_and_preserves_prior_search(m
         "conditions": {"areas": []}, "candidates": [{"id": 17}],
         "messages": [HumanMessage("효과와 위험을 알려줘")]}, model)
     assert "经过核实" in result["draft"] and "恢复快" not in result["draft"]
-    assert set(result) == {"draft"}
+    assert set(result) == {"draft", "suggestions"}
     assert len(model.history) == 1
 
 

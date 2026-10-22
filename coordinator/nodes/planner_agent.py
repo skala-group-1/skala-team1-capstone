@@ -15,6 +15,7 @@ from langgraph.graph import END, START, StateGraph
 from app.graph.state import AgentState
 from app.harness.instructions import load_prompt
 from coordinator.nodes.coordinator_tools import make_coordinator_tools
+from coordinator.nodes.suggest_choices import clean_choices, suggest_choices, suggest_client
 
 # Marks LLM runs whose tokens are safe to stream to the user as they generate.
 USER_ANSWER_TAG = "user-facing-answer"
@@ -122,7 +123,7 @@ def unavailable(state, reason):
             "candidates": [], "summary": None, "selected_hospital_id": None}
 
 
-async def run_coordinator(state, model=None, *, business_loader=None):
+async def run_coordinator(state, model=None, *, business_loader=None, suggest_model=None):
     """Return a State update. Caller owns message history and merges updates."""
     state = dict(state)
     action = state.get("action") or {}
@@ -164,6 +165,8 @@ async def run_coordinator(state, model=None, *, business_loader=None):
             options["reasoning_effort"] = settings.llm_reasoning_effort
         model = ChatOpenAI(model=settings.llm_primary_model, api_key=key, timeout=30,
                            max_retries=1, tags=[USER_ANSWER_TAG], **options)
+        if suggest_model is None:
+            suggest_model = suggest_client()
     # Copy State so internal ToolMessages never leak into caller-owned history.
     graph, results = build_coordinator(model, business_loader=business_loader, initial_state=dict(state))
     try:
@@ -215,6 +218,7 @@ async def run_coordinator(state, model=None, *, business_loader=None):
         update["draft"] = (introductions.get(locale, introductions["en"]) + "\n\n"
             + "\n".join(f"{index}. {name}" for index, name in enumerate(names, 1))
             + "\n\n" + questions.get(locale, questions["en"]))
+        update["suggestions"] = clean_choices(names)
     elif (update.get("missing") and not results.get("failed")
             and not results.get("consultation_unavailable")
             and not output["messages"][-1].content):
@@ -225,8 +229,14 @@ async def run_coordinator(state, model=None, *, business_loader=None):
             names = [c["name"] for c in choices if c.get("name")]
             if names:
                 update["draft"] += "\n" + " / ".join(names)
+                update["suggestions"] = clean_choices(names)
     if results.get("failed"):
         update.update(unavailable(state, "LOOKUP_FAILED"))
+        update["suggestions"] = []
+    elif not update.get("suggestions") and suggest_model is not None:
+        locale = (state.get("user") or {}).get("locale", "en")
+        update["suggestions"] = await suggest_choices(update.get("draft"), locale, suggest_model)
+    update.setdefault("suggestions", [])
     if "topic" in state:
         update["topic"] = state["topic"]
     if "topic" in results:

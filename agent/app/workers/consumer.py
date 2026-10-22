@@ -18,6 +18,7 @@ from app.workers.events import SseEvent, TERMINAL_EVENTS, camel, state_events
 from app.workers.messages import AiTaskEvent, AiTaskRequested, AiTaskResume, Queue
 from coordinator.nodes.coordinator_tools import prepare_handoff_summary
 from coordinator.nodes.planner_agent import USER_ANSWER_TAG
+from coordinator.nodes.suggest_choices import clean_choices
 
 logger = logging.getLogger(__name__)
 handoff_logger = logging.getLogger("uvicorn.error.handoff")
@@ -206,7 +207,7 @@ class HospitalWorker:
                         "mode": conv.mode, "selected_hospital_id": conv.hospital_id,
                         "parent_conversation_id": conv.parent_conversation_id,
                         "messages": [HumanMessage(content=msg.message, id=msg.task_id)] if msg.message else [],
-                        "draft": None, "citations": [], "pending_action": None,
+                        "draft": None, "citations": [], "pending_action": None, "suggestions": [],
                         "opened_conversation": None, "memory_proposal": None,
                         "verify_passed": None, "verify_attempts": 0,
                     }
@@ -306,6 +307,7 @@ class HospitalWorker:
             await self._emit(msg, record, SseEvent.TOKEN, {"text": last.content}, trace_id)
         await self._emit(msg, record, SseEvent.DONE, {
             "answer": last.content, "sources": camel(result.get("citations") or []),
+            "suggestions": clean_choices(result.get("suggestions") or []),
         }, trace_id)
 
 

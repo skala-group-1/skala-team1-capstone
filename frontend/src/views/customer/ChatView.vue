@@ -534,7 +534,7 @@ watch(
         <ChatBubble v-else-if="m.role === 'counselor'" sender="counselor" :name="t('chat.counselor')" :text="m.text" />
         <div v-else class="group">
           <ChatBubble :sender="isHospital ? 'agent' : 'ai'" :name="assistantName" :text="m.text">
-            <AppChip v-if="m.sources.length" type="evidence" @click="evidence = m.sources">
+            <AppChip v-if="m.sources.length && !aftercare" type="evidence" @click="evidence = m.sources">
               {{ t('chat.evidenceCount', { n: m.sources.length }) }}
             </AppChip>
           </ChatBubble>

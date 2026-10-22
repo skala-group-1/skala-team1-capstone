@@ -3,6 +3,8 @@ package com.skala.capstone.reservation;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -36,6 +38,12 @@ public final class ReservationDtos {
 	public record AcceptAlternativeRequest(@NotNull Long slotId) {
 	}
 
+	/** 리뷰 작성. 병원·시술·작성자 속성(연령대·성별·국적)·언어는 예약과 프로필에서 서버가 채운다 */
+	public record CreateReviewRequest(
+			@NotNull @Min(1) @Max(5) Integer rating,
+			@NotBlank @Size(min = 10, max = 1000) String content) {
+	}
+
 	public record HospitalRef(long id, String name) {
 	}
 
@@ -46,7 +54,7 @@ public final class ReservationDtos {
 	public record Reservation(long id, String status, String source, HospitalRef hospital, Slot slot,
 			Procedure procedure, PriceOption priceOption, OffsetDateTime holdExpiresAt, String rejectReason,
 			List<Slot> alternatives, CustomerRef customer, String note, OffsetDateTime createdAt,
-			OffsetDateTime decidedAt) {
+			OffsetDateTime decidedAt, boolean reviewable, Long reviewId) {
 	}
 
 	public record HospitalDashboard(long todayReservations, long pendingReservations, long activeConsultations,

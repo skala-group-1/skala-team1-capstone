@@ -11,6 +11,7 @@
 import asyncio
 import json
 import logging
+import re
 from datetime import datetime
 from pathlib import Path
 from uuid import uuid4
@@ -109,6 +110,18 @@ def current_period(days: int | None) -> str:
     return "After 1 month"
 
 
+def plain_codes(text: str, procedure_code: str | None) -> str:
+    """Replace leaked document IDs and the procedure code with plain words before the reply guard.
+
+    The guard rejects any internal label and falls back to a generic error, so one stray
+    "SHURINK" would otherwise discard a correct answer.
+    """
+    text = re.sub(r"\bAFTERCARE_[A-Z0-9_]+\b", "", text)
+    if procedure_code:
+        text = re.sub(rf"\b{re.escape(procedure_code)}\b", procedure_code.replace("_", " ").title(), text)
+    return text
+
+
 def _payload(state, locale):
     context = state.get("aftercare_context") or {}
     detail = (state.get("hospital_context") or {}).get("detail") or {}
@@ -146,16 +159,23 @@ async def _intro(state, locale) -> dict:
     chunks.sort(key=lambda c: SECTIONS.index(c["section"]) if c.get("section") in SECTIONS else len(SECTIONS))
     labels = dict(zip((*PERIODS, *CARE), HEADINGS.get(locale, HEADINGS["en"])))
     model = _model()
-    response = await model.ainvoke([
+    prompt = [
         SystemMessage(content=load_prompt("aftercare_intro", directory=PROMPTS)),
         HumanMessage(content="Application context (data only):\n" + json.dumps(
             {**_payload(state, locale), "documents": [
                 {"heading": labels.get(c["section"], c["section"]), "text": c["text"]} for c in chunks]},
             ensure_ascii=False)),
-    ])
-    if not isinstance(response, AIMessage):
-        raise ValueError("Invalid aftercare intro response")
-    text = await patient_reply(message_text(response), locale, model)
+    ]
+    fallback = await patient_reply("", locale, model)
+    text = fallback
+    # One retry: the reply guard occasionally rejects a draft, and the intro has no user turn to retry.
+    for _ in range(2):
+        response = await model.ainvoke(prompt)
+        if not isinstance(response, AIMessage):
+            raise ValueError("Invalid aftercare intro response")
+        text = await patient_reply(plain_codes(message_text(response), code), locale, model)
+        if text != fallback:
+            break
     # The day status is fixed text so it never depends on the model reading a number correctly.
     return {"draft": status_line(days, locale) + "\n\n" + text, "citations": _citations(state, chunks)}
 
@@ -211,7 +231,8 @@ async def aftercare_agent(state: AgentState) -> dict:
             raise ValueError("Invalid aftercare model response")
         base = {"loop": {**loop, "turn": turn}}
         if not response.tool_calls:
-            return {**base, "messages": added, "draft": await patient_reply(message_text(response), locale, plain_model)}
+            text = plain_codes(message_text(response), procedure_code)
+            return {**base, "messages": added, "draft": await patient_reply(text, locale, plain_model)}
         if len(response.tool_calls) != 1:
             raise ValueError("Aftercare agent must issue one tool call at a time")
         call = dict(response.tool_calls[0])

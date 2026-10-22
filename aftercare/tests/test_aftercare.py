@@ -114,6 +114,26 @@ def test_status_line_and_sections_follow_the_day():
     assert all(len(h) == 8 for h in agent.HEADINGS.values())
 
 
+def test_plain_codes_removes_internal_labels():
+    from concierge.nodes.hospital_reply import internal_labels
+    text = agent.plain_codes("After SHURINK see AFTERCARE_SHURINK. JAW_BOTOX stays.", "SHURINK")
+    assert "SHURINK" not in text and "Shurink" in text
+    assert agent.plain_codes("JAW_BOTOX day", "JAW_BOTOX") == "Jaw Botox day"
+    assert not internal_labels(agent.plain_codes("SHURINK", "SHURINK"))
+
+
+async def test_intro_retries_once_when_reply_guard_rejects(monkeypatch):
+    chunk = {"chunk_id": "a", "doc_id": "AFTERCARE_JAW_BOTOX", "title": "t", "section": "Days 1–3",
+             "text": "Avoid pressing.", "score": 1, "uri": "doc://AFTERCARE_JAW_BOTOX#days-1-3"}
+    monkeypatch.setattr(agent, "get_tools", AsyncMock(return_value=[tool("rag_search_procedure_docs", {"chunks": [chunk]})]))
+    replies = iter(["", "", "턱 보톡스 안내"])  # fallback probe, rejected draft, accepted draft
+    monkeypatch.setattr(agent, "patient_reply", AsyncMock(side_effect=lambda text, *a: "FALLBACK" if not next(replies) else "턱 보톡스 안내"))
+    model = fake_model(monkeypatch, [AIMessage(content="x"), AIMessage(content="y")])
+    update = await agent.aftercare_agent(base_state(messages=[], action={"type": "AFTERCARE_INTRO", "reservationId": 16}))
+    assert update["draft"].endswith("턱 보톡스 안내")
+    assert model.ainvoke.await_count == 2
+
+
 @pytest.mark.parametrize("days, period", [
     (None, "Before procedure"), (0, "Procedure day"), (1, "Days 1–3"), (3, "Days 1–3"),
     (4, "Days 4–7"), (8, "Weeks 2–4"), (30, "Weeks 2–4"), (31, "After 1 month"),

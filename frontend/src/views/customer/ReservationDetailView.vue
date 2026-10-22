@@ -21,6 +21,7 @@ import AppButton from '@/components/ui/AppButton.vue'
 import AppDialog from '@/components/ui/AppDialog.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
 import ReviewSheet from '@/components/booking/ReviewSheet.vue'
+import AftercareCard from '@/components/aftercare/AftercareCard.vue'
 import type { HospitalDetail, Reservation, Review } from '@/types/contract'
 
 const route = useRoute()
@@ -212,6 +213,7 @@ useNotificationRefresh(['RESERVATION_CONFIRMED', 'RESERVATION_REJECTED', 'RESERV
           </div>
         </section>
         <p v-if="r.status === 'CONFIRMED'" class="t-caption-12 muted">{{ t('reservations.visit.policy') }}</p>
+        <AftercareCard v-if="r.status === 'CONFIRMED'" :reservation-id="r.id" />
 
         <!-- 확정 → 리뷰 쓰기 / 작성 완료 (취소하면 리뷰는 병원 목록에서 숨겨지므로 카드도 안 보임) -->
         <section v-if="r.reviewable" class="card">

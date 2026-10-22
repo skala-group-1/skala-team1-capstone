@@ -1,5 +1,6 @@
 """Real LangGraph streams with deterministic model/tools; no live LLM or DB claims."""
 
+import asyncio
 from datetime import datetime, timedelta, timezone
 from unittest.mock import AsyncMock
 
@@ -69,6 +70,35 @@ async def test_actual_messages_stream_tokens_are_incremental_and_private_drafts_
     assert [e.seq for e in output] == list(range(1, len(output) + 1))
     assert output[-1].data["answer"] == "hello"
     assert "PRIVATE" not in str([e.data for e in output])
+
+
+async def test_tagged_model_inside_nested_coordinator_graph_streams_tokens():
+    """run_coordinator invokes a request-local graph inside the planner node; its
+    user-facing model is tagged so its tokens stream before respond re-emits them."""
+    from coordinator.nodes.planner_agent import USER_ANSWER_TAG
+    tagged = FakeListChatModel(responses=["hello"], tags=[USER_ANSWER_TAG])
+
+    inner = StateGraph(AgentState)
+
+    async def main(state):
+        return {"messages": [await tagged.ainvoke(state["messages"])]}
+
+    inner.add_node("main", main)
+    inner.add_edge(START, "main")
+    inner.add_edge("main", END)
+    coordinator = inner.compile(checkpointer=False)
+
+    async def plan(state):
+        output = await asyncio.wait_for(coordinator.ainvoke({"messages": state["messages"]}), 10)
+        return {"draft": output["messages"][-1].content}
+
+    worker, publisher = worker_for([
+        ("planner", plan), ("respond", lambda s: {"messages": [AIMessage(content=s["draft"])]}),
+    ])
+    await worker.handle(request())
+    output = events(publisher)
+    assert [e.data["text"] for e in output if e.event == "TOKEN"] == list("hello")
+    assert output[-1].data["answer"] == "hello"
 
 
 async def test_main_action_and_all_contract_state_events():

@@ -234,7 +234,7 @@ watch(id, () => {
           </div>
           <p v-if="!p.options.length" class="t-body-14 warn">{{ t('common.needsCheck') }}</p>
         </article>
-        <p class="t-caption-12 muted">{{ t('hospital.priceNote', { date: hospital.verifiedAt ?? t('domain.priceUnverified') }) }}</p>
+        <p class="t-caption-12 muted">{{ t('hospital.priceNote', { date: hospital.verifiedAt ? fmtDate(hospital.verifiedAt, { weekday: false, year: true }) : t('domain.priceUnverified') }) }}</p>
       </section>
 
       <!-- 의료진 -->
@@ -274,7 +274,7 @@ watch(id, () => {
           </div>
           <ul class="bars">
             <li v-for="b in ageBars" :key="b.k" class="t-caption-12">
-              <span class="muted">{{ t('hospital.age', { age: b.k }) }}</span>
+              <span class="muted">{{ t('hospital.age', { age: b.k.replace(/s$/, '') }) }}</span>
               <span class="age-bar"><i :style="{ width: `${b.pct}%` }" /></span>
               <span class="muted">{{ b.v }}</span>
             </li>
@@ -294,7 +294,7 @@ watch(id, () => {
             <span class="t-caption-12 muted">{{ fmtDate(r.createdAt, { weekday: false, year: true }) }}</span>
           </header>
           <p class="t-caption-12 muted">
-            {{ t('hospital.age', { age: r.ageGroup }) }} · {{ t(`signup.genders.${r.gender}`) }}<template v-if="r.reviewerNationality"> · {{ new Intl.DisplayNames([locale], { type: 'region' }).of(r.reviewerNationality) }}</template>
+            {{ t('hospital.age', { age: r.ageGroup.replace(/s$/, '') }) }} · {{ t(`signup.genders.${r.gender}`) }}<template v-if="r.reviewerNationality"> · {{ new Intl.DisplayNames([locale], { type: 'region' }).of(r.reviewerNationality) }}</template>
           </p>
           <p class="t-body-14">{{ r.translatedContent && !showingOriginal.includes(r.id) ? r.translatedContent : r.content }}</p>
           <p class="t-caption-11 muted">
@@ -347,7 +347,7 @@ watch(id, () => {
             <div><dt>{{ t('hospital.phone') }}</dt><dd><a v-if="hospital.phone" :href="`tel:${hospital.phone}`">{{ hospital.phone }}</a><template v-else>—</template></dd></div>
           </dl>
         </article>
-        <p class="t-caption-12 muted">{{ t('hospital.verified', { date: hospital.verifiedAt ?? t('domain.priceUnverified') }) }}</p>
+        <p class="t-caption-12 muted">{{ t('hospital.verified', { date: hospital.verifiedAt ? fmtDate(hospital.verifiedAt, { weekday: false, year: true }) : t('domain.priceUnverified') }) }}</p>
       </section>
 
       <footer class="bottom">

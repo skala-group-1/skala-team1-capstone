@@ -147,7 +147,7 @@ export default {
     consultLang: 'Consultation language',
     koOnlyInterp: 'Korean consultation · interpreter available',
     koOnly: 'Korean consultation only',
-    age: '{age}',
+    age: '{age}s',
     noReviews: 'No reviews yet',
     noProcReviews: 'No reviews for this procedure yet',
     moreReviews: 'Show more reviews',

@@ -136,11 +136,12 @@ watch(text, () => (suggestOpen.value = true))
       <h1 class="t-title-22">{{ t('nav.explore') }}</h1>
       <div class="searchbox">
         <AppIcon name="search" :size="20" />
-        <input v-model="text" class="t-body-15" :placeholder="t('home.searchPlaceholder')" :aria-label="t('home.searchPlaceholder')" @focus="suggestOpen = true" />
+        <input v-model="text" class="t-body-15" :placeholder="t('home.searchPlaceholder')" :aria-label="t('home.searchPlaceholder')" @focus="suggestOpen = true" @blur="suggestOpen = false" @keydown.esc="suggestOpen = false" />
         <button v-if="text" type="button" :aria-label="t('explore.clear')" @click="clearText"><AppIcon name="x" :size="18" /></button>
         <ul v-if="suggestOpen && suggestions.length" class="suggest" role="listbox">
           <li v-for="p in suggestions" :key="p.code">
-            <button type="button" role="option" class="t-body-14" @click="pickProcedure(p.code)">{{ p.name }}</button>
+            <!-- mousedown.prevent: 입력창 blur 로 목록이 먼저 닫혀 클릭이 사라지지 않게 -->
+            <button type="button" role="option" class="t-body-14" @mousedown.prevent @click="pickProcedure(p.code)">{{ p.name }}</button>
           </li>
         </ul>
       </div>

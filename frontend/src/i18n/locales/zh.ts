@@ -147,7 +147,7 @@ const zh: typeof en = {
     consultLang: '咨询语言',
     koOnlyInterp: '韩语咨询 · 可安排翻译',
     koOnly: '仅韩语咨询',
-    age: '{age}',
+    age: '{age}多岁',
     noReviews: '暂无评价',
     noProcReviews: '该项目暂无评价',
     moreReviews: '查看更多评价',

@@ -147,7 +147,7 @@ const ja: typeof en = {
     consultLang: '相談言語',
     koOnlyInterp: '韓国語相談 · 通訳手配可',
     koOnly: '韓国語相談のみ',
-    age: '{age}',
+    age: '{age}代',
     noReviews: 'まだ口コミがありません',
     noProcReviews: 'この施術の口コミはまだありません',
     moreReviews: '口コミをもっと見る',

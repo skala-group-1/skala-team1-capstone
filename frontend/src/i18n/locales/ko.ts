@@ -148,7 +148,7 @@ const ko: typeof en = {
     consultLang: '상담 언어',
     koOnlyInterp: '한국어 상담 · 통역 연결 가능',
     koOnly: '한국어 상담만 가능',
-    age: '{age}',
+    age: '{age}대',
     noReviews: '아직 리뷰가 없어요',
     noProcReviews: '이 시술 리뷰가 아직 없어요',
     moreReviews: '리뷰 더보기',

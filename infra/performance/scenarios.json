@@ -1,0 +1,5 @@
+[
+  {"id":"topic_en","locale":"en","message":"Find procedures for my skin concerns","action":{"type":"SELECT_TOPIC","topic":"SKIN_CONCERN"},"expected":"Ask which skin concern the user has; do not require hospital location/budget first."},
+  {"id":"clarify_zh","locale":"zh","message":"我想了解双眼皮手术，但还没有决定具体方式。请先询问我需要澄清的信息，不要替我选择手术方式。","expected":"Ask for clarification without inventing a chosen procedure, medical recommendation or guaranteed effect."},
+  {"id":"search_ja","locale":"ja","message":"2026年11月9日から11月13日まで、江南で埋没法の二重まぶた施術を調べたいです。予算は200万ウォン以下、日本語相談、口コミ件数の多い順に病院を表示してください。予約はしないでください。","expected":"Read-only hospital search; preserve date, budget, language and requested review-count sorting; do not book."}
+]

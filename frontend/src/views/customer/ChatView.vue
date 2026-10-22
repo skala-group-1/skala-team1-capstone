@@ -20,6 +20,7 @@ import AppChip from '@/components/ui/AppChip.vue'
 import AppButton from '@/components/ui/AppButton.vue'
 import AppDialog from '@/components/ui/AppDialog.vue'
 import AppBanner from '@/components/ui/AppBanner.vue'
+import EmptyState from '@/components/ui/EmptyState.vue'
 import HospitalCarousel from '@/components/chat/HospitalCarousel.vue'
 import ChatBubble from '@/components/chat/ChatBubble.vue'
 import ApprovalCard from '@/components/chat/ApprovalCard.vue'
@@ -51,6 +52,8 @@ const approving = ref(false)
 const requested = ref<Reservation | null>(null)
 const shownOriginal = ref(new Set<number>())
 const startingConversation = ref(false)
+/** 대화를 불러오지 못함 (네트워크·서버 오류) → 재시도 화면 */
+const loadFailed = ref(false)
 
 // ─── 모드 ───
 const isHospital = computed(() => conv.mode !== 'MAIN')
@@ -181,7 +184,7 @@ const placeholder = computed(() => {
   if (conv.pendingAction) return t('chat.input.approvalPending')
   return isHospital.value ? t('chat.input.agent') : t('chat.input.ai')
 })
-const canSend = computed(() => input.value.trim().length > 0 && (isHuman.value ? !!consult.current : !busy.value))
+const canSend = computed(() => input.value.trim().length > 0 && (isHuman.value ? !!consult.current : !busy.value) && !loadFailed.value)
 async function submit() {
   const text = input.value.trim()
   if (!text || !canSend.value) return
@@ -267,12 +270,14 @@ function saveMemory() {
 // ─── 진입·전환 ───
 async function enter() {
   const id = route.params.conversationId as string | undefined
+  loadFailed.value = false
   try {
     if (id) {
       if (conv.conversationId !== id) await conv.load(id)
       else {
         await conv.refresh(id)
-        if (conv.consultationId) await consult.open(conv.consultationId)
+        // 상담을 못 불러와도 대화 자체는 보여 준다
+        if (conv.consultationId) await consult.open(conv.consultationId).catch(() => undefined)
       }
     } else {
       const hospitalId = route.query.hospitalId ? Number(route.query.hospitalId) : null
@@ -287,10 +292,16 @@ async function enter() {
       // 홈 AI 입력창·비교표 "AI에게 물어보기"에서 넘어온 첫 질문
       if (q) await conv.send(q)
     }
-  } catch {
-    // 대화를 못 불러오면 새 메인 대화로
-    const created = await conv.open()
-    await router.replace(`/chat/${created.id}`)
+  } catch (e) {
+    // 없는 대화·남의 대화 링크만 새 메인 대화로. 그 밖의 오류(네트워크·5xx)는 재시도 화면 (상담 중 대화를 잃지 않게)
+    const code = toApiError(e)?.code
+    if (code !== 'NOT_FOUND' && code !== 'ACCESS_DENIED') return void (loadFailed.value = true)
+    try {
+      const created = await conv.open()
+      await router.replace(`/chat/${created.id}`)
+    } catch {
+      loadFailed.value = true
+    }
   }
 }
 onMounted(() => {
@@ -394,7 +405,10 @@ watch(
       </AppChip>
     </div>
 
-    <div ref="scroller" class="messages" aria-live="polite">
+    <EmptyState v-if="loadFailed" class="load-failed" icon="alert-triangle" tone="danger" :title="t('common.error')">
+      <AppButton variant="secondary" icon="refresh-cw" @click="enter">{{ t('common.retry') }}</AppButton>
+    </EmptyState>
+    <div v-else ref="scroller" class="messages" aria-live="polite">
       <!-- 병원 대화: 메인 대화에서 이어받은 조건 (D-20) -->
       <section v-if="isHospital && conv.parentConversationId && conditionChips.length" class="inherit">
         <p class="inherit__head t-caption-12-sb">
@@ -722,6 +736,7 @@ watch(
 .status--failed { color: var(--status-danger); }
 .original { max-width: 264px; padding: var(--space-8) var(--space-12); border-radius: var(--radius-sm); background: var(--bg-muted); color: var(--text-secondary); }
 
+.load-failed { flex: 1; }
 .dock { flex: none; border-top: 1px solid var(--border-default); background: var(--bg-default); padding-bottom: env(safe-area-inset-bottom); }
 .quick { display: flex; gap: var(--space-8); padding: var(--space-12) var(--space-16) 0; }
 .input { display: flex; align-items: flex-end; gap: var(--space-8); padding: 10px var(--space-12); }

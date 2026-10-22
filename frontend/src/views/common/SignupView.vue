@@ -7,6 +7,7 @@ import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import { toApiError } from '@/api'
 import { setLocale } from '@/i18n'
+import { seoulDate } from '@/utils/format'
 import TopAppBar from '@/components/ui/TopAppBar.vue'
 import TextField from '@/components/ui/TextField.vue'
 import AppButton from '@/components/ui/AppButton.vue'
@@ -28,6 +29,8 @@ const form = reactive({
 })
 const touched = reactive<Record<string, boolean>>({})
 const serverErrors = ref<Record<string, string>>({})
+/** 표시할 칸이 없는 서버 오류(locale 등) → 폼 위에 서버 문구 */
+const formError = ref<string | null>(null)
 const submitting = ref(false)
 
 // ISO 3166-1 alpha-2. 국가명은 브라우저 Intl 로 현재 언어에 맞춰 표시
@@ -53,17 +56,22 @@ const clientErrors = computed(() => ({
 const valid = computed(
   () => !clientErrors.value.email && !clientErrors.value.password && form.name.trim() && form.birthDate && form.gender && form.nationality,
 )
-function errorOf(field: 'email' | 'password' | 'name' | 'birthDate' | 'nationality') {
+type Field = 'email' | 'password' | 'name' | 'birthDate' | 'gender' | 'nationality'
+const FIELDS: Field[] = ['email', 'password', 'name', 'birthDate', 'gender', 'nationality']
+function errorOf(field: Field) {
   if (serverErrors.value[field]) return serverErrors.value[field]
   if (!touched[field]) return null
-  return field === 'email' || field === 'password' ? clientErrors.value[field] : null
+  if (field === 'email' || field === 'password') return clientErrors.value[field]
+  return String(form[field]).trim() ? null : t('signup.errors.required')
 }
 
 async function submit() {
-  Object.assign(touched, { email: true, password: true })
+  // 버튼을 막아 두는 대신, 누르면 빈 칸·잘못된 칸을 모두 보여 준다
+  for (const f of FIELDS) touched[f] = true
   if (!valid.value) return
   submitting.value = true
   serverErrors.value = {}
+  formError.value = null
   try {
     await auth.signup({ ...form, email: form.email.trim(), name: form.name.trim(), gender: form.gender as Gender })
     // 가입 때 고른 언어가 계정 언어 → 온보딩에서 고른 언어(localePicked)로 덮어쓰지 않게 지운다
@@ -73,8 +81,14 @@ async function submit() {
   } catch (e) {
     const err = toApiError(e)
     if (err?.code === 'EMAIL_DUPLICATED') serverErrors.value = { email: t('signup.errors.duplicated') }
-    else if (err?.details.fields?.length) serverErrors.value = Object.fromEntries(err.details.fields.map((f) => [f.field, f.reason]))
-    else serverErrors.value = { email: err?.message ?? t('common.error') }
+    else if (err?.details.fields?.length) {
+      // reason 은 backend 영어 원문 → 칸별 번역 문구로. 칸이 없는 필드(locale 등)는 서버 메시지(사용자 locale)를 폼 위에
+      const shown = err.details.fields.filter((f) => FIELDS.includes(f.field as Field))
+      serverErrors.value = Object.fromEntries(
+        shown.map((f) => [f.field, f.field === 'email' || f.field === 'password' ? t(`signup.errors.${f.field}`) : t('signup.errors.invalid')]),
+      )
+      if (shown.length < err.details.fields.length) formError.value = err.message
+    } else formError.value = err?.message || t('common.error')
   } finally {
     submitting.value = false
   }
@@ -85,6 +99,7 @@ async function submit() {
   <div class="page">
     <TopAppBar :title="t('auth.signup')" back="/login" />
     <form id="signup" class="content" novalidate @submit.prevent="submit">
+      <p v-if="formError" class="form-error t-caption-12" role="alert">{{ formError }}</p>
       <TextField
         v-model="form.email"
         :label="t('auth.email')"
@@ -103,7 +118,7 @@ async function submit() {
         @focusout="touched.password = true"
       />
       <TextField v-model="form.name" :label="t('signup.name')" autocomplete="name" :error="errorOf('name')" />
-      <TextField v-model="form.birthDate" :label="t('signup.birthDate')" type="date" :error="errorOf('birthDate')" />
+      <TextField v-model="form.birthDate" :label="t('signup.birthDate')" type="date" :max="seoulDate()" autocomplete="bday" :error="errorOf('birthDate')" />
       <div class="group">
         <span class="t-caption-13 label">{{ t('signup.gender') }}</span>
         <div class="chips" role="radiogroup" :aria-label="t('signup.gender')">
@@ -111,6 +126,7 @@ async function submit() {
             {{ t(`signup.genders.${g}`) }}
           </AppChip>
         </div>
+        <p v-if="errorOf('gender')" class="form-error t-caption-12" role="alert">{{ errorOf('gender') }}</p>
       </div>
       <TextField
         v-model="form.nationality"
@@ -122,7 +138,7 @@ async function submit() {
       <TextField v-model="form.locale" :label="t('signup.locale')" :options="localeOptions" :hint="t('signup.localeHint')" />
     </form>
     <footer class="bottom">
-      <AppButton type="submit" form="signup" size="l" block :loading="submitting" :disabled="!valid">{{ t('signup.submit') }}</AppButton>
+      <AppButton type="submit" form="signup" size="l" block :loading="submitting">{{ t('signup.submit') }}</AppButton>
     </footer>
   </div>
 </template>
@@ -133,6 +149,7 @@ async function submit() {
 .group { display: flex; flex-direction: column; gap: var(--space-6); }
 .label { color: var(--text-secondary); }
 .chips { display: flex; gap: var(--space-8); }
+.form-error { color: var(--status-danger); }
 .bottom {
   position: sticky;
   bottom: 0;

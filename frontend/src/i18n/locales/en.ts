@@ -44,6 +44,8 @@ export default {
       email: "Not a valid email (e.g. name{'@'}example.com)",
       password: 'Use at least 8 characters with letters and numbers',
       duplicated: 'This email is already registered',
+      required: 'This field is required',
+      invalid: 'Please check what you entered',
     },
   },
   nav: { home: 'Home', explore: 'Explore', ai: 'AI', reservations: 'Bookings', me: 'Me', label: 'Main menu' },
@@ -293,6 +295,7 @@ export default {
     actions: { visit: 'See visit guide', alternatives: 'See suggested times', review: 'Review request', inbox: 'Open inbox', chat: 'Open clinic chat' },
   },
   me: {
+    logoutConfirm: 'Log out?',
     title: 'Me',
     language: 'Language',
     languageNote: 'Used for AI answers, notifications and the app',

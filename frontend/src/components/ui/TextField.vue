@@ -16,6 +16,8 @@ defineProps<{
   hint?: string
   options?: { value: string; label: string }[]
   required?: boolean
+  /** date 입력 최댓값 (생년월일: 오늘) */
+  max?: string
 }>()
 const id = useId()
 </script>
@@ -37,6 +39,7 @@ const id = useId()
         :placeholder="placeholder"
         :autocomplete="autocomplete"
         :required="required"
+        :max="max"
         :aria-invalid="!!error || invalid"
         :aria-describedby="error || hint ? `${id}-msg` : undefined"
       />

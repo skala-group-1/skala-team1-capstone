@@ -45,6 +45,8 @@ const ko: typeof en = {
       email: "이메일 형식이 아니에요 (예: name{'@'}example.com)",
       password: '8자 이상, 영문과 숫자를 함께 써 주세요',
       duplicated: '이미 가입된 이메일이에요',
+      required: '필수 항목이에요',
+      invalid: '입력한 내용을 다시 확인해 주세요',
     },
   },
   nav: { home: '홈', explore: '탐색', ai: 'AI', reservations: '예약', me: '내 정보', label: '주 메뉴' },
@@ -294,6 +296,7 @@ const ko: typeof en = {
     actions: { visit: '방문 안내 보기', alternatives: '대안 시간 보기', review: '요청 확인하기', inbox: '문의함 열기', chat: '병원 대화창 열기' },
   },
   me: {
+    logoutConfirm: '로그아웃할까요?',
     title: '내 정보',
     language: '언어',
     languageNote: 'AI 답변 · 알림 · 화면 언어예요',

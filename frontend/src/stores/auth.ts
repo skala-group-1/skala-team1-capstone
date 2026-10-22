@@ -60,12 +60,10 @@ export const useAuthStore = defineStore('auth', {
       // TODO(fe): 가입 후 자동 로그인할지 /login 으로 보낼지 결정 (「인증·인가 설계」에 명시 없음)
       return authApi.signup(body)
     },
+    /** 서버 로그아웃이 실패해도(오프라인 등) 화면은 로그아웃 — 이 브라우저의 토큰·상태는 지운다 */
     async logout() {
-      try {
-        await authApi.logout()
-      } finally {
-        this.clear()
-      }
+      await authApi.logout().catch(() => undefined)
+      this.clear()
     },
     /**
      * 고객: 로그인 전 온보딩에서 고른 언어가 있으면 계정 언어보다 우선 → 계정에 1번 저장하고 지운다.

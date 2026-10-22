@@ -30,6 +30,8 @@ import TripPlanCard from '@/components/chat/TripPlanCard.vue'
 import TopicCarousel from '@/components/chat/TopicCarousel.vue'
 import ProcedureInfoCard from '@/components/chat/ProcedureInfoCard.vue'
 import AftercareHeader from '@/components/aftercare/AftercareHeader.vue'
+import AftercareClosed from '@/components/aftercare/AftercareClosed.vue'
+import { isAftercareClosed } from '@/api/aftercare'
 import { useAftercareRoom } from '@/composables/useAftercareRoom'
 import { SKIN_CONCERNS } from '@/types/contract'
 import type { ChatMessage, Conditions, ConsultTopic, ConversationMessage, Locale, ProcedureInfo, Reservation, SkinConcern, Source } from '@/types/contract'
@@ -660,6 +662,7 @@ watch(
       <AppButton variant="ghost" block :disabled="approving" @click="reject()">{{ t('chat.consent.decline') }}</AppButton>
       <p class="t-caption-12 muted center">{{ t('chat.consent.note') }}</p>
     </footer>
+    <AftercareClosed v-else-if="aftercare && isAftercareClosed(aftercare)" />
     <footer v-else class="dock">
       <div v-if="isHospital && !isHuman && !pending && !conv.streaming" class="quick">
         <AppButton variant="outline" block @click="conv.send(t('chat.requestCounselor'))">{{ t('chat.connectCounselor') }}</AppButton>

@@ -1,19 +1,17 @@
 <script setup lang="ts">
-// 사후관리 채팅 상단: 시술명 · 시술 일시 · 시술 후 N일째
+// 사후관리 채팅 상단: 시술명 · 시술 일시 · 시술 D-n / 당일 / 시술 후 N일째 (예약이 끝났으면 안내 종료)
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { AftercareConversation } from '@/api/aftercare'
-import { daysSinceProcedure } from '@/composables/useAftercareRoom'
+import { aftercareDayLabel } from '@/composables/useAftercareRoom'
+import { isAftercareClosed } from '@/api/aftercare'
 import { fmtDateTime } from '@/utils/format'
 import AppIcon from '@/components/ui/AppIcon.vue'
 
 const props = defineProps<{ room: AftercareConversation }>()
 const { t } = useI18n()
-const day = computed(() => {
-  const n = daysSinceProcedure(props.room.startAt)
-  if (n == null) return t('aftercare.before')
-  return n === 0 ? t('aftercare.dayZero') : t('aftercare.day', { n })
-})
+const day = computed(() =>
+  isAftercareClosed(props.room) ? t('aftercare.closedBadge') : aftercareDayLabel(t, props.room.daysFromProcedure))
 </script>
 
 <template>

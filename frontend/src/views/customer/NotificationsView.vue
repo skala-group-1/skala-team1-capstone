@@ -28,6 +28,7 @@ const META: Record<NotificationType, { icon: IconName; tone: string }> = {
   CONSULTATION_REQUESTED: { icon: 'message-circle', tone: 'info' },
   CONSULTATION_ACCEPTED: { icon: 'headphones', tone: 'info' },
   CONSULTATION_CLOSED: { icon: 'message-circle', tone: 'muted' },
+  AFTERCARE_MESSAGE: { icon: 'file-text', tone: 'success' },
 }
 const today = seoulDate()
 const yesterday = seoulDate(new Date(Date.now() - 86400000))
@@ -62,6 +63,8 @@ function target(n: Notification): { to: string; label: string } | null {
       return { to: '/counselor', label: t('notifications.actions.inbox') }
     case 'CONSULTATION_ACCEPTED':
       return n.payload.conversationId ? { to: `/chat/${n.payload.conversationId}`, label: t('notifications.actions.chat') } : null
+    case 'AFTERCARE_MESSAGE':
+      return n.payload.conversationId ? { to: `/chat/${n.payload.conversationId}`, label: t('notifications.actions.aftercare') } : null
     default:
       return null
   }

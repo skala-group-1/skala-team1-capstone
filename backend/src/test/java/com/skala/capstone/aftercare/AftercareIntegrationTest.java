@@ -143,6 +143,35 @@ class AftercareIntegrationTest extends IntegrationTest {
 		}
 	}
 
+	/** 운영자 버튼(=매일 스케줄러 작업): 방이 없던 확정 예약 13 에도 방을 만들고 안내, 같은 날 두 번째 실행은 건너뜀 */
+	@Test
+	void operatorSendsDailyGuidesOncePerDay() throws Exception {
+		jdbc.sql("""
+				UPDATE app.slots SET start_at = date_trunc('minute', now()) + interval '2 days 3 minutes',
+				    end_at = date_trunc('minute', now()) + interval '2 days 33 minutes'
+				WHERE id = (SELECT slot_id FROM app.reservations WHERE id = 13)
+				""").update();
+		mvc.perform(post("/api/ops/aftercare/daily-guides").header(HttpHeaders.AUTHORIZATION,
+				accessToken("customer.en2@demo.local"))).andExpect(status().isForbidden());
+
+		String operator = accessToken("operator@demo.local");
+		JsonNode first = body(mvc.perform(post("/api/ops/aftercare/daily-guides").header(HttpHeaders.AUTHORIZATION, operator))
+				.andExpect(status().isOk()).andReturn());
+		assertThat(first.get("checked").asInt()).isPositive();
+		UUID room = jdbc.sql("SELECT conversation_id FROM app.aftercare_rooms WHERE reservation_id = 13")
+				.query(UUID.class).single();
+		assertThat(guideCount(room)).isEqualTo(1);
+		String task = jdbc.sql("SELECT id::text FROM app.ai_tasks WHERE conversation_id = :c").param("c", room)
+				.query(String.class).single();
+		JsonNode sent = receiveFrom(Queues.AI_TASK_REQUESTED, b -> task.equals(b.path("taskId").asText()));
+		assertThat(sent.at("/action/type").asText()).isEqualTo("AFTERCARE_INTRO");
+		assertThat(sent.at("/user/role").asText()).isEqualTo("CUSTOMER");
+
+		mvc.perform(post("/api/ops/aftercare/daily-guides").header(HttpHeaders.AUTHORIZATION, operator))
+				.andExpect(status().isOk());
+		assertThat(guideCount(room)).isEqualTo(1);
+	}
+
 	private long guideCount(UUID conversationId) {
 		return jdbc.sql("""
 				SELECT count(*) FROM app.ai_tasks WHERE conversation_id = :c

@@ -31,3 +31,9 @@ export const aftercareApi = {
 /** 안내를 받을 수 있는 예약 상태 */
 export const AFTERCARE_ACTIVE: ReservationStatus[] = ['PENDING', 'CONFIRMED']
 export const isAftercareClosed = (room: AftercareConversation) => !AFTERCARE_ACTIVE.includes(room.reservationStatus)
+
+/** 운영자: 지금 오늘의 시술 관리 안내 보내기 (매일 정해진 시간 스케줄러와 같은 작업) */
+export const aftercareOpsApi = {
+  sendDailyGuides: () =>
+    http.post<{ checked: number; requested: number }>('/ops/aftercare/daily-guides').then((r) => r.data),
+}

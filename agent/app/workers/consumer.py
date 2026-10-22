@@ -8,7 +8,7 @@ from uuid import UUID
 from zoneinfo import ZoneInfo
 
 import aio_pika
-from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
+from langchain_core.messages import AIMessage, AIMessageChunk, HumanMessage, ToolMessage
 from langgraph.types import Command
 from pydantic import ValidationError
 
@@ -17,6 +17,7 @@ from app.mcp_client.client import mcp_request_context
 from app.workers.events import SseEvent, TERMINAL_EVENTS, camel, state_events
 from app.workers.messages import AiTaskEvent, AiTaskRequested, AiTaskResume, Queue
 from coordinator.nodes.coordinator_tools import summarizer_handoff_summary
+from coordinator.nodes.planner_agent import USER_ANSWER_TAG
 
 logger = logging.getLogger(__name__)
 handoff_logger = logging.getLogger("uvicorn.error.handoff")
@@ -241,8 +242,12 @@ class HospitalWorker:
         ):
             if mode == "messages":
                 message, metadata = chunk
-                # Internal drafts may fail verification or contain tool-call reasoning.
-                if (metadata.get("langgraph_node") == "respond" and isinstance(message, AIMessage)
+                # Internal drafts may fail verification or contain tool-call reasoning:
+                # only the respond node and models tagged as user-facing may stream.
+                # Chunk-only keeps full state messages replayed by nodes out of TOKEN.
+                public = (metadata.get("langgraph_node") == "respond"
+                          or USER_ANSWER_TAG in (metadata.get("tags") or []))
+                if (public and isinstance(message, AIMessageChunk)
                         and not message.tool_calls and isinstance(message.content, str) and message.content):
                     streamed += message.content
                     await self._emit(msg, record, SseEvent.TOKEN, {"text": message.content}, trace_id)

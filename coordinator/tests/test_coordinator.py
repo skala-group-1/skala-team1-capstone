@@ -11,20 +11,14 @@ from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 from langchain_core.tools import tool
 
 from coordinator.nodes.coordinator_tools import make_coordinator_tools, load_business_tools
-from coordinator.nodes.planner_agent import ReplyReview, run_coordinator, chat_with_mock_hospitals
+from coordinator.nodes.planner_agent import run_coordinator, chat_with_mock_hospitals
 
 
 class ScriptedModel:
-    def __init__(self, *replies, review="reply"):
+    def __init__(self, *replies):
         self.replies = iter(replies)
         self.history = []
         self.bindings = []
-        self.reviewer = AsyncMock()
-        self.reviewer.ainvoke.return_value = ReplyReview(route=review)
-
-    def with_structured_output(self, schema):
-        assert schema is ReplyReview
-        return self.reviewer
 
     def bind_tools(self, tools, **kwargs):
         self.bindings.append(kwargs)
@@ -203,6 +197,27 @@ async def test_provider_exception_never_exposes_message():
     result = await run_coordinator({"messages": [HumanMessage("Reservations")]}, model, business_loader=loader)
     assert "SECRET" not in str(result) + str(model.history)
     assert result["draft"] == "Unable to complete this request. Please try again later."
+
+
+@pytest.mark.asyncio
+async def test_internal_model_uses_light_reasoning_and_streaming_tag(monkeypatch):
+    from app.config import get_settings
+    import langchain_openai
+
+    captured = {}
+
+    class CaptureOnly:
+        def __init__(self, **kwargs):
+            captured.update(kwargs)
+            raise RuntimeError("Construction captured; no API call")
+
+    monkeypatch.setattr(get_settings(), "openai_api_key", "test-key")
+    monkeypatch.setattr(get_settings(), "llm_reasoning_effort", "low")
+    monkeypatch.setattr(langchain_openai, "ChatOpenAI", CaptureOnly)
+    with pytest.raises(RuntimeError):
+        await run_coordinator({"user": {"locale": "ko"}, "messages": []})
+    assert captured["reasoning_effort"] == "low"
+    assert "user-facing-answer" in captured["tags"]
 
 
 @pytest.mark.asyncio
@@ -490,14 +505,37 @@ async def test_raw_procedure_is_normalized_and_required_search_uses_retained_fil
 
 
 @pytest.mark.asyncio
-async def test_medical_prose_requires_sources_and_preserves_prior_search():
-    model = ScriptedModel(AIMessage("恢复快"), review="procedure_consultation")
-    result = await run_coordinator({"user": {"locale": "zh"},
-        "conditions": {"areas": []}, "candidates": [{"id": 17}],
-        "messages": [HumanMessage("효과와 위험을 알려줘")]}, model)
-    assert "经过核实" in result["draft"] and "恢复快" not in result["draft"]
-    assert set(result) == {"draft"}
-    model.reviewer.ainvoke.assert_awaited_once()
+async def test_same_turn_lookups_run_concurrently():
+    """Each tool waits for the other to start: sequential execution would stall."""
+    started = {"hours": asyncio.Event(), "slots": asyncio.Event()}
+
+    @tool
+    async def business_get_hospital_detail(hospital_id: int):
+        """Hours boundary."""
+        started["hours"].set()
+        await asyncio.wait_for(started["slots"].wait(), 5)
+        return {"id": hospital_id, "name": "Clinic", "open_hours": [], "verified_at": None}
+
+    @tool
+    async def business_get_available_slots(hospital_id: int, procedure_code: str,
+                                           date_from: str, date_to: str):
+        """Slots boundary."""
+        started["slots"].set()
+        await asyncio.wait_for(started["hours"].wait(), 5)
+        return {"slots": []}
+
+    loader = AsyncMock(return_value=[business_get_hospital_detail, business_get_available_slots])
+    model = ScriptedModel(AIMessage(content="", tool_calls=[
+        {"name": "hospital_lookup", "args": {"operation": "hours",
+            "arguments": {"hospital_id": 17}}, "id": "one"},
+        {"name": "hospital_lookup", "args": {"operation": "slots",
+            "arguments": {"hospital_id": 17, "procedure_code": "JAW_BOTOX",
+                          "date_from": "2026-10-22", "date_to": "2026-10-24"}}, "id": "two"},
+    ]), AIMessage(content="Hours and slots checked."))
+    result = await run_coordinator({"messages": [HumanMessage("Hours and slots for clinic 17")]},
+                                   model, business_loader=loader)
+    assert result["draft"] == "Hours and slots checked."
+    assert started["hours"].is_set() and started["slots"].is_set()
 
 
 @pytest.mark.asyncio

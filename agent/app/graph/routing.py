@@ -22,6 +22,8 @@ def route_after_guard(state: AgentState) -> str:
     if mode == "HOSPITAL":
         # D-20: 병원 대화창(새 thread)은 처음부터 HOSPITAL 모드
         return "hospital_subgraph"
+    if mode == "AFTERCARE":
+        return "aftercare_subgraph"
     if any(f in GUARD_FLAGS for f in state.get("guard_flags") or []):
         return "guard_reply"
     if state.get("intent") == "SELECT":

@@ -41,7 +41,7 @@ class TaskUser(CamelModel):
 
 
 class TaskConversation(CamelModel):
-    mode: Literal["MAIN", "HOSPITAL", "HUMAN"]
+    mode: Literal["MAIN", "HOSPITAL", "HUMAN", "AFTERCARE"]
     hospital_id: int | None = Field(default=None, gt=0)
     parent_conversation_id: str | None = None
 

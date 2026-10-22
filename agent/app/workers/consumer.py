@@ -168,25 +168,27 @@ class HospitalWorker:
                     })
                 else:
                     conv = msg.conversation
-                    if not conv or conv.mode not in ("MAIN", "HOSPITAL"):
+                    if not conv or conv.mode not in ("MAIN", "HOSPITAL", "AFTERCARE"):
                         raise ValueError("Expected an AI conversation")
-                    if conv.mode == "HOSPITAL" and not conv.hospital_id:
+                    if conv.mode in ("HOSPITAL", "AFTERCARE") and not conv.hospital_id:
                         raise ValueError("Missing hospital")
                     if not msg.action and not (msg.message or "").strip():
                         raise ValueError("Expected message or action")
                     if conv.mode == "HOSPITAL" and msg.action:
                         raise ValueError("Unsupported hospital action")
+                    if conv.mode == "AFTERCARE" and msg.action and msg.action.get("type") != "AFTERCARE_INTRO":
+                        raise ValueError("Unsupported aftercare action")
                     if snapshot.next:
                         raise ValueError("Conversation is waiting for an earlier task")
                     selected = snapshot.values.get("selected_hospital_id")
                     # Backend rejects HUMAN tasks; older queued HOSPITAL tasks must stay rejected.
-                    returning = (snapshot.values.get("mode") == "HUMAN" and conv.mode == "HOSPITAL"
+                    returning = (snapshot.values.get("mode") == "HUMAN" and conv.mode in ("HOSPITAL", "AFTERCARE")
                                  and owner == msg.user.id and selected == conv.hospital_id
                                  and snapshot.created_at is not None
                                  and msg.requested_at > datetime.fromisoformat(snapshot.created_at))
                     if snapshot.values.get("mode", conv.mode) != conv.mode and not returning:
                         raise ValueError("Conversation mode mismatch")
-                    if conv.mode == "HOSPITAL" and selected is not None and selected != conv.hospital_id:
+                    if conv.mode in ("HOSPITAL", "AFTERCARE") and selected is not None and selected != conv.hospital_id:
                         raise ValueError("Conversation hospital mismatch")
                     payload = {
                         "task_id": msg.task_id, "conversation_id": msg.conversation_id,

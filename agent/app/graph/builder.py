@@ -8,6 +8,7 @@ from langgraph.graph import END, START, StateGraph
 from app.graph import routing
 from app.graph.state import AgentState
 from app.nodes.respond import respond
+from aftercare.graph import build_aftercare_subgraph
 from concierge.nodes import execute_action as action_module
 from concierge.nodes.approval import approval
 from concierge.nodes.execute_action import execute_action
@@ -67,6 +68,7 @@ def build_main_graph() -> StateGraph:
     g.add_node("memory_propose", memory_propose)
     g.add_node("respond", respond)
     g.add_node("hospital_subgraph", build_hospital_subgraph().compile())
+    g.add_node("aftercare_subgraph", build_aftercare_subgraph().compile())
 
     g.add_edge(START, "load_memory")
     g.add_edge("load_memory", "guard_input")
@@ -75,6 +77,7 @@ def build_main_graph() -> StateGraph:
         "open_hospital_conversation": "open_hospital_conversation",
         "extract_conditions": "extract_conditions",
         "hospital_subgraph": "hospital_subgraph",
+        "aftercare_subgraph": "aftercare_subgraph",
         "end": END,
     })
     g.add_conditional_edges("extract_conditions", routing.route_after_extract,
@@ -85,7 +88,7 @@ def build_main_graph() -> StateGraph:
     g.add_conditional_edges("verify", routing.route_after_verify,
                             {"planner_agent": "planner_agent", "memory_propose": "memory_propose"})
     g.add_edge("memory_propose", "respond")
-    for node in ("guard_reply", "ask_clarify", "open_hospital_conversation", "hospital_subgraph"):
+    for node in ("guard_reply", "ask_clarify", "open_hospital_conversation", "hospital_subgraph", "aftercare_subgraph"):
         g.add_edge(node, "respond")
     g.add_edge("respond", END)
     return g

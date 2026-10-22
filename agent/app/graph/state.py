@@ -10,7 +10,7 @@ from typing import Annotated, Literal, TypedDict
 from langchain_core.messages import AnyMessage
 from langgraph.graph.message import add_messages
 
-Mode = Literal["MAIN", "HOSPITAL", "HUMAN"]
+Mode = Literal["MAIN", "HOSPITAL", "HUMAN", "AFTERCARE"]
 
 # 「공통 계약서」 2장 Intent (agent 내부). PLAN 은 「AI Agent 설계」 9-1 v2 분기에 등장
 INTENTS = ("SEARCH", "INFO", "PLAN", "SELECT", "HOSPITAL_QA", "BOOK", "HANDOFF", "OTHER")
@@ -64,6 +64,7 @@ class AgentState(TypedDict, total=False):
     # 병원 서브에이전트 내부 상태. 외부 DTO/큐 계약에는 포함하지 않는다.
     hospital_context: dict             # hospital_id 및 MCP에서 읽은 기본정보·의사·가격
     hospital_booking: dict             # 사용자가 선택한 procedure_code, date, time
+    aftercare_context: dict            # 사후관리 대화의 예약·시술·시술일 (aftercare/)
 
     # Queue/task context and UI event outputs (internal only).
     task_id: str

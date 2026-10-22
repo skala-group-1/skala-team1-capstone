@@ -65,3 +65,13 @@ uv run pytest -q
 `test_approved_actions.py`는 mock MCP와 실제 LangGraph interrupt/resume으로 승인 전
 0회·승인 후 1회·거절 0회, 인자 변조 차단, 중복 키, 오류·요약 실패·동의 검증을 확인합니다.
 실제 업무 DB 예약/취소/상담 검증은 별도 승인된 데이터 범위에서 수행해야 합니다.
+
+## 메인 → 병원 인계 로그
+
+로컬 `.env`에서 `HANDOFF_DEBUG_LOG=true`로 설정하고 agent를 재생성하면
+서버 터미널에 `MAIN_TO_HOSPITAL` JSON 로그가 출력됩니다.
+`docker logs -f skala-hospital-chat-agent-1`로 확인할 수 있습니다.
+로그에는 실제 저장한 병원 대화 ID, 병원 ID, 조건, 인계 요약이 포함됩니다.
+`initialized`는 새 상태 저장, `summary_refreshed`는 요약 갱신,
+`preserved`는 기존 상태 유지(승인 대기 포함)를 뜻합니다.
+사용자 발언 원문을 포함하므로 기본값은 false이며, 확인 후 다시 끕니다.

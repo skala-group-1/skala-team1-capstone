@@ -264,7 +264,8 @@ async def test_booking_tool_requires_recorded_choices_and_current_matching_slot(
     model = model_setup(monkeypatch, [
         *premature,
         call(agent.COLLECT, {"procedure_code": "JAW_BOTOX", "date": "2026-10-22", "time": "10:00"}, id="preferences"),
-        call("business_get_available_slots", {"hospital_id": 7, "procedure_code": "JAW_BOTOX"}),
+        call("business_get_available_slots", {"hospital_id": 7, "procedure_code": "JAW_BOTOX",
+                                              "date_from": "2026-10-22", "date_to": "2026-10-22"}),
         call(agent.BOOK, {"hospital_id": 7, "slot_id": 12, "procedure_code": "JAW_BOTOX"}),
     ])
     update = await agent.hospital_agent(state)

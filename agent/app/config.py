@@ -55,6 +55,8 @@ class Settings(BaseSettings):
 
     # 서버
     agent_port: int = 8000
+    # Local debugging only: includes the original user statements in the handoff.
+    handoff_debug_log: bool = False
 
 
 @lru_cache

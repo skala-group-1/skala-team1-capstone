@@ -111,6 +111,18 @@ async def prepare_action(state, call):
         query = {"hospital_id": hospital_id, "procedure_code": args["procedure_code"]}
         doctors = (await lookup("business_list_doctors", query))["doctors"]
         prices = (await lookup("business_get_price_options", query))["options"]
+        if args.get("price_option_id") is None:
+            if len(prices) == 1:
+                # A unique current option is unambiguous. Persist it in the
+                # proposal so the displayed price and approved request agree.
+                args["price_option_id"] = prices[0]["id"]
+            elif len(prices) > 1:
+                raise ValueError(
+                    "Multiple price options exist. Read business_get_price_options, "
+                    "show their product/dose, price and VAT, and ask the patient to "
+                    "choose unless they already explicitly chose one. Then propose "
+                    "the reservation with that price_option_id. Do not choose the "
+                    "first or cheapest option automatically.")
         booking = state.get("hospital_booking") or {}
         slots = await lookup("business_get_available_slots", {
             **query, "date_from": booking["date"], "date_to": booking["date"],

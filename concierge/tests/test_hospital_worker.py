@@ -264,7 +264,10 @@ async def test_new_checkpoint_keeps_returned_human_mode_and_consultation():
 
 
 @pytest.mark.parametrize("pending", [False, True])
-async def test_reopening_child_refreshes_summary_but_preserves_history_and_interrupt(pending):
+async def test_reopening_child_refreshes_summary_but_preserves_history_and_interrupt(pending, monkeypatch, caplog):
+    import json
+    monkeypatch.setattr("app.workers.consumer.get_settings", lambda: SimpleNamespace(handoff_debug_log=True))
+    caplog.set_level("INFO", logger="uvicorn.error.handoff")
     worker, publisher = opening_worker(pending=pending)
     await worker.graph.aupdate_state(CHILD_CONFIG, {
         "conditions": {"procedure_code": "SAVED"}, "summary": "Saved summary",
@@ -286,6 +289,30 @@ async def test_reopening_child_refreshes_summary_but_preserves_history_and_inter
         assert reopened.values["conditions"] == saved.values["conditions"]
         assert not reopened.next
     assert len([e for e in events(publisher) if e.event == "CONVERSATION_OPENED"]) == 2
+    records = [json.loads(r.getMessage().split("MAIN_TO_HOSPITAL ", 1)[1])
+               for r in caplog.records if "MAIN_TO_HOSPITAL " in r.getMessage()]
+    assert records[0]["outcome"] == ("preserved" if pending else "summary_refreshed")
+    assert records[-1]["summary"] == reopened.values["summary"]
+    assert records[-1]["conditions"] == reopened.values["conditions"]
+
+
+@pytest.mark.parametrize("enabled", [False, True])
+async def test_handoff_console_logging_is_opt_in(enabled, monkeypatch, caplog):
+    import json
+    monkeypatch.setattr("app.workers.consumer.get_settings", lambda: SimpleNamespace(handoff_debug_log=enabled))
+    caplog.set_level("INFO", logger="uvicorn.error.handoff")
+    worker, publisher = opening_worker()
+    await worker.handle(selection_request())
+    assert events(publisher)[-1].event == "DONE"
+    records = [r.getMessage() for r in caplog.records if "MAIN_TO_HOSPITAL " in r.getMessage()]
+    assert len(records) == int(enabled)
+    if enabled:
+        payload = json.loads(records[0].split("MAIN_TO_HOSPITAL ", 1)[1])
+        assert payload["outcome"] == "initialized"
+        assert payload["sourceConversationId"] == PARENT
+        assert payload["hospitalConversationId"] == CHILD
+        assert payload["conditions"] == CONDITIONS
+        assert payload["summary"] == "Selected from search results"
 
 
 @pytest.mark.parametrize("changes", [

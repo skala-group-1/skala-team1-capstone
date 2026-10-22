@@ -21,6 +21,7 @@ from app.mcp_client.tools import DESTRUCTIVE_TOOLS, HOSPITAL_READ_TOOLS
 from concierge.nodes.actions import BOOK, HANDOFF, prepare_action
 from concierge.nodes.load_hospital_context import selected_hospital, tool_data
 from concierge.nodes.hospital_reply import message_text, patient_reply
+from concierge.nodes.calendar_dates import request_calendar, clarification, validate_slot_dates, availability_only, slot_reply
 
 logger = logging.getLogger(__name__)
 COLLECT = "record_booking_preferences"
@@ -143,6 +144,9 @@ async def hospital_agent(state: AgentState) -> dict:
     if context.get("hospital_id") != hospital_id:
         raise ValueError("Load the selected hospital context before running the agent")
     messages = list(state.get("messages") or [])
+    today = datetime.now(ZoneInfo("Asia/Seoul")).date()
+    latest_user = next((m for m in reversed(messages) if isinstance(m, HumanMessage)), None)
+    calendar_scope = request_calendar(latest_user.content, today) if latest_user and isinstance(latest_user.content, str) else {}
     names = HOSPITAL_READ_TOOLS if _action_finished(messages) else (*HOSPITAL_READ_TOOLS, *DESTRUCTIVE_TOOLS)
     tools = [tool for tool in await get_tools(names) if tool.name in names]
     allowed = {tool.name for tool in tools}
@@ -157,6 +161,15 @@ async def hospital_agent(state: AgentState) -> dict:
         call["args"] = pending["args"]
         return {"pending_action": pending, "draft": None,
                 "messages": [AIMessage(content="", tool_calls=[call])]}
+    if calendar_scope.get("clarify") and messages and isinstance(messages[-1], HumanMessage):
+        return {"draft": clarification(calendar_scope, (state.get("user") or {}).get("locale", "en"))}
+    if (isinstance(latest, ToolMessage) and latest.status == "success" and latest_user
+            and isinstance(latest_user.content, str) and availability_only(latest_user.content)):
+        calls = [c for m in messages if isinstance(m, AIMessage) for c in m.tool_calls
+                 if c["id"] == latest.tool_call_id and c["name"] == "business_get_available_slots"]
+        if calls:
+            return {"draft": slot_reply(calls[-1]["args"], tool_data(latest),
+                                       (state.get("user") or {}).get("locale", "en"))}
     plain_model = _model()
     added = []
     booking = dict(state.get("hospital_booking") or {})
@@ -168,7 +181,8 @@ async def hospital_agent(state: AgentState) -> dict:
         payload = {
             "hospital_id": hospital_id,
             "mode": state.get("mode"),
-            "today": datetime.now(ZoneInfo("Asia/Seoul")).date().isoformat(),
+            "today": today.isoformat(),
+            "calendar_scope": calendar_scope,
             "locale": (state.get("user") or {}).get("locale", "en"),
             "hospital_context": context,
             "conditions": state.get("conditions") or {},
@@ -215,6 +229,8 @@ async def hospital_agent(state: AgentState) -> dict:
                 # model-generated null/another ID expand the conversation scope.
                 if "hospital_id" in tool.args:
                     args["hospital_id"] = hospital_id
+                if call["name"] == "business_get_available_slots":
+                    validate_slot_dates(args, calendar_scope)
                 if call["name"] == BOOK:
                     _validate_booking(args, booking, messages, hospital_id)
                 call["args"] = args

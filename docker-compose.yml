@@ -160,6 +160,7 @@ services:
     environment:
       OPENAI_API_KEY: ${OPENAI_API_KEY:?Set OPENAI_API_KEY in .env}
       LLM_PRIMARY_MODEL: ${LLM_PRIMARY_MODEL:-gpt-5-nano}
+      HANDOFF_DEBUG_LOG: ${HANDOFF_DEBUG_LOG:-false}
       LLM_FAST_MODEL: ${LLM_FAST_MODEL:-gpt-5-nano}
       LLM_FALLBACK_MODEL: ${LLM_FALLBACK_MODEL:-gpt-5-nano}
       DATABASE_URL: ${DATABASE_URL:?Set agent DATABASE_URL in .env}

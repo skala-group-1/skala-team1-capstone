@@ -407,7 +407,7 @@ const ko: typeof en = {
       title: '이 대화 안내',
       body: '여신 AI는 병원을 추천하거나 순위를 매기지 않고, 의료 판단도 하지 않아요. 가격·시간은 병원이 제공한 정보만 보여 드려요.',
     },
-    approval: { request: '예약 요청하기', cancelReservation: '예약 취소하기', edit: '수정', note: '병원에 남길 메모', notePlaceholder: '예: 오후 방문만 가능해요' },
+    approval: { request: '예약 요청하기', dismiss: '지금은 안 할게요', cancelReservation: '예약 취소하기', edit: '수정', note: '병원에 남길 메모', notePlaceholder: '예: 오후 방문만 가능해요' },
     summary: {
       title: '상담 요청 요약',
       titleCount: '상담 요청 요약 · 질문 {n}개',

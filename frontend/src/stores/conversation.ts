@@ -59,6 +59,8 @@ export const useConversationStore = defineStore('conversation', {
     /** CONVERSATION_OPENED 수신 시 화면이 이 값을 보고 /chat/:id 로 이동 */
     openedConversation: null as SseEventMap['CONVERSATION_OPENED'] | null,
     unsubscribe: null as (() => void) | null,
+    /** SSE 가 끊겨 재연결 중 ("재연결 중" 배너) */
+    reconnecting: false,
     /** 재시도용 마지막 입력 (Edge ② 응답 실패 → 같은 message 로 다시 POST) */
     lastInput: null as { message: string | null; action: TaskAction | null } | null,
     /** 승인한 변경 작업 (DONE 후 예약 요청 완료 카드 표시용) */
@@ -170,6 +172,8 @@ export const useConversationStore = defineStore('conversation', {
         throw e
       }
       this.approvedAction = approved ? (this.pendingAction?.action ?? null) : null
+      // 승인 뒤 실패를 "다시 시도"하면 처음 질문이 다시 가므로 재시도 대상에서 뺀다
+      this.lastInput = null
       this.pendingAction = null
       // 이미 받은 이벤트(승인 카드까지)는 다시 받지 않도록 마지막 seq 이후부터
       this.subscribe(this.taskId, this.lastSeq)
@@ -193,6 +197,12 @@ export const useConversationStore = defineStore('conversation', {
           onError: () => {
             if (cancelled) return
             this.error = { code: 'AI_UNAVAILABLE', message: '', traceId: '' }
+            // 반쯤 받은 답변·진행 칩이 오류 말풍선과 같이 남지 않게
+            this.draft = ''
+            this.activeTools = []
+          },
+          onReconnecting: (r) => {
+            if (!cancelled) this.reconnecting = r
           },
           onClose: () => {
             if (cancelled) return

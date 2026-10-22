@@ -14,12 +14,16 @@ export interface StreamHandlers {
   /** 모든 이벤트. conversation 스토어의 reducer 로 넘긴다 */
   onEvent: (e: SseEvent) => void
   onError?: (err: unknown) => void
+  /** 네트워크가 끊겨 재시도 중이면 true, 다시 열리면 false ("재연결 중" 배너용) */
+  onReconnecting?: (reconnecting: boolean) => void
   /** 종료 이벤트 수신 또는 abort 후 */
   onClose?: () => void
 }
 
 class FatalSseError extends Error {}
 class RefreshedError extends Error {}
+/** 네트워크 오류 재시도 상한 — 넘으면 멈추고 onError (끝없이 타이핑 표시만 도는 것 방지) */
+const MAX_RETRIES = 5
 
 /**
  * 반환값을 호출하면 구독 해제.
@@ -29,6 +33,7 @@ export function streamTask(taskId: Uuid, handlers: StreamHandlers, fromSeq: numb
   const ctrl = new AbortController()
   let lastSeq: string | undefined = fromSeq != null ? String(fromSeq) : undefined
   let refreshedOnce = false
+  let retries = 0
 
   const headers = (): Record<string, string> => {
     const h: Record<string, string> = { 'Accept-Language': session.getLocale() }
@@ -46,7 +51,11 @@ export function streamTask(taskId: Uuid, handlers: StreamHandlers, fromSeq: numb
       openWhenHidden: true,
       headers: headers(),
       async onopen(res) {
-        if (res.ok && res.headers.get('content-type')?.includes(EventStreamContentType)) return
+        if (res.ok && res.headers.get('content-type')?.includes(EventStreamContentType)) {
+          retries = 0
+          handlers.onReconnecting?.(false)
+          return
+        }
         if (res.status === 401 && !refreshedOnce) {
           // 토큰 만료 → refresh 후 새 헤더로 다시 연다 (catch 에서 run() 재호출)
           refreshedOnce = true
@@ -68,6 +77,8 @@ export function streamTask(taskId: Uuid, handlers: StreamHandlers, fromSeq: numb
       onerror(err) {
         // Fatal·Refreshed 는 라이브러리 재시도를 멈추고 catch 로 보낸다. 그 외(네트워크)는 기본 재시도
         if (err instanceof FatalSseError || err instanceof RefreshedError) throw err
+        if (++retries > MAX_RETRIES) throw err
+        handlers.onReconnecting?.(true)
       },
       onclose() {
         // 서버가 종료 이벤트 없이 닫으면 재연결 시도
@@ -75,6 +86,7 @@ export function streamTask(taskId: Uuid, handlers: StreamHandlers, fromSeq: numb
       },
     }).catch((err) => {
       if (err instanceof RefreshedError && !ctrl.signal.aborted) return run()
+      handlers.onReconnecting?.(false)
       if (!ctrl.signal.aborted) handlers.onError?.(err)
     })
 

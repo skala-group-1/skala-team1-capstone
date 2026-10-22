@@ -5,6 +5,7 @@ Real LLM + existing mock Business MCP; no RAG, bookings or hospital connection.
 """
 import asyncio
 import json
+import logging
 from datetime import datetime
 from pathlib import Path
 from typing import Literal
@@ -17,6 +18,8 @@ from pydantic import BaseModel
 from app.graph.state import AgentState
 from app.harness.instructions import load_prompt
 from coordinator.nodes.coordinator_tools import make_coordinator_tools
+
+log = logging.getLogger(__name__)
 
 
 class ReplyReview(BaseModel):
@@ -102,7 +105,18 @@ def build_coordinator(model, *, business_loader=None, initial_state=None):
                 reply = AIMessage(content=notices.get(context["locale"], notices["en"]))
             elif review.route == "clarify_concern":
                 if attempt:
-                    results["failed"] = True
+                    # A second reviewer disagreement is not an agent outage. Keep the
+                    # conversation moving with a safe, localized question rather than
+                    # replacing the answer with the generic unavailable message.
+                    follow_ups = {
+                        "ko": "말씀하신 고민을 이해했어요. 특정 시술을 정해 두셨다면 시술명을 알려 주세요. 병원별 가격과 예약 조건을 찾아볼게요. 아직 정하지 못하셨다면 원하는 변화를 더 말씀해 주세요.",
+                        "en": "I understand what you're looking for. If you have a procedure in mind, tell me its name and I can look up hospital prices and booking conditions. If not, tell me a little more about the change you want.",
+                        "zh": "我了解您的想法。如果您已考虑某种项目，请告诉我项目名称，我可以查询各医院的价格和预约条件。如果还没决定，也可以多说一些您希望改善的地方。",
+                        "ja": "ご希望は分かりました。気になる施術が決まっていれば、施術名を教えてください。病院ごとの料金と予約条件を調べます。まだ決まっていなければ、希望する変化をもう少し教えてください。",
+                    }
+                    reply = AIMessage(content=follow_ups.get(context["locale"], follow_ups["en"]))
+                    results["skip_required_search"] = True
+                    log.warning("Planner clarification review repeated; returning localized follow-up")
                     break
                 # Repair an ignored question or unsolicited medical draft, then review it again.
                 reply = await model.ainvoke(messages + [SystemMessage(content=
@@ -129,7 +143,8 @@ def build_coordinator(model, *, business_loader=None, initial_state=None):
                 if not reply.tool_calls:
                     results["failed"] = True
             break
-        if (not reply.tool_calls and "conditions" in results and not results.get("missing")
+        if (not reply.tool_calls and not results.get("skip_required_search")
+                and "conditions" in results and not results.get("missing")
                 and not results.get("evidence") and not results.get("failed")):
             reply = AIMessage(content="", tool_calls=[{"name": "hospital_lookup",
                 "args": {"operation": "search", "arguments": {}}, "id": "required-search"}])

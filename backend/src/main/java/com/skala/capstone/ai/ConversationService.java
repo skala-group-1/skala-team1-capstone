@@ -61,7 +61,13 @@ public class ConversationService {
 			Optional<Row> existing = rows("user_id = :u AND selected_hospital_id = :h AND mode IN ('HOSPITAL','HUMAN')",
 					user.id(), hospitalId).stream().findFirst();
 			if (existing.isPresent()) {
-				return new Created(toDto(existing.get(), locale, false), false);
+				Row row = existing.get();
+				if (parent != null) {
+					jdbc.sql("UPDATE app.conversations SET parent_conversation_id = :p, conditions = CAST(:c AS jsonb) WHERE id = :id")
+							.param("p", parentId).param("c", parent.conditions()).param("id", row.id()).update();
+					return new Created(toDto(require(row.id()), locale, false), false);
+				}
+				return new Created(toDto(row, locale, false), false);
 			}
 		}
 		UUID id = UUID.randomUUID();

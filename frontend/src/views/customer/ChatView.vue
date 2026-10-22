@@ -269,7 +269,8 @@ async function enter() {
         await conv.refresh(id)
         if (conv.consultationId) await consult.open(conv.consultationId)
       }
-      if (conv.mode === 'HOSPITAL' && conv.parentConversationId && !conv.messages.length) {
+      if (conv.mode === 'HOSPITAL' && conv.parentConversationId
+        && (route.query.handoff === '1' || !conv.messages.length)) {
         const conditions = conv.conditions
         const date = conditions?.dateFrom
           ? [conditions.dateFrom, conditions.dateTo].filter(Boolean).map((d) => fmtDate(d!, { weekday: false })).join('–')
@@ -281,6 +282,7 @@ async function enter() {
           ? t('chat.handoffGreeting', { context })
           : t('chat.helloAgent', { hospital: conv.hospital?.name ?? '' })
         conv.messages.push({ role: 'assistant', text, sources: [], cards: [], createdAt: new Date().toISOString() })
+        if (route.query.handoff === '1') await router.replace(`/chat/${id}`)
       }
     } else {
       const hospitalId = route.query.hospitalId ? Number(route.query.hospitalId) : null
@@ -311,7 +313,7 @@ watch(
   (o) => {
     if (o) {
       conv.openedConversation = null
-      void router.push(`/chat/${o.conversationId}`)
+      void router.push({ path: `/chat/${o.conversationId}`, query: { handoff: '1' } })
     }
   },
 )

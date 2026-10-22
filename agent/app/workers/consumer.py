@@ -16,7 +16,7 @@ from app.config import get_settings
 from app.mcp_client.client import mcp_request_context
 from app.workers.events import SseEvent, TERMINAL_EVENTS, camel, state_events
 from app.workers.messages import AiTaskEvent, AiTaskRequested, AiTaskResume, Queue
-from coordinator.nodes.coordinator_tools import summarizer_handoff_summary
+from coordinator.nodes.coordinator_tools import prepare_handoff_summary
 
 logger = logging.getLogger(__name__)
 # Keep the existing namespace so deployed task receipts survive this upgrade.
@@ -89,9 +89,16 @@ class HospitalWorker:
                     or existing.get("mode") not in ("HOSPITAL", "HUMAN")):
                 raise ValueError("Child checkpoint identity mismatch")
             # Refresh the handoff without touching hospital history or an active approval.
-            if (not snapshot.next and existing.get("mode") == opened["mode"] == "HOSPITAL"
-                    and state.get("summary") and existing.get("summary") != state["summary"]):
-                await self.graph.aupdate_state(config, {"summary": state["summary"]}, as_node="respond")
+            if not snapshot.next and existing.get("mode") == opened["mode"] == "HOSPITAL":
+                context = {
+                    "summary": state.get("summary"),
+                    "conditions": opened.get("conditions") or state.get("conditions") or {},
+                    "parent_conversation_id": opened.get("parent_conversation_id"),
+                }
+                changed = {key: value for key, value in context.items()
+                           if value is not None and existing.get(key) != value}
+                if changed:
+                    await self.graph.aupdate_state(config, changed, as_node="respond")
             return
         conditions = opened["conditions"]
         if conditions is not None and not isinstance(conditions, dict):
@@ -186,7 +193,7 @@ class HospitalWorker:
                                     or parent.values.get("mode") != "MAIN"):
                                 raise ValueError("Parent conversation identity mismatch")
                             conditions = parent.values.get("conditions") or {}
-                            prepared = await summarizer_handoff_summary(parent.values, conv.hospital_id,
+                            prepared = prepare_handoff_summary(parent.values, conv.hospital_id,
                                 [{"id": conv.hospital_id}], conditions)
                             payload.update({"conditions": conditions, "summary": prepared["summary"]})
             except (ValueError, TypeError, KeyError) as exc:

@@ -442,6 +442,18 @@ async def test_concern_response_does_not_force_search_filters():
 
 
 @pytest.mark.asyncio
+async def test_repeated_clarification_review_returns_safe_follow_up_instead_of_error():
+    loader = AsyncMock()
+    model = ScriptedModel(AIMessage("Which procedure?"), AIMessage("What else would you like?"),
+                          review="clarify_concern")
+    result = await run_coordinator({"user": {"locale": "ko"}, "messages": [
+        HumanMessage("목선 정리") ]}, model, business_loader=loader)
+    assert "시술명을 알려 주세요" in result["draft"]
+    assert "요청을 처리하지 못했습니다" not in result["draft"]
+    loader.assert_not_awaited()
+
+
+@pytest.mark.asyncio
 async def test_normalization_failure_keeps_explicit_filters_and_blocks_hallucinated_final():
     loader = AsyncMock(side_effect=RuntimeError("Bearer SECRET"))
     fields = {"procedure_code": "매몰 쌍꺼풀", "budget_max_krw": 2000000, "consult_language": "zh"}

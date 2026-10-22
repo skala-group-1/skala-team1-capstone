@@ -1,0 +1,10 @@
+{
+  "choice": "埋没法二重",
+  "post_count": 1,
+  "message_matches": true,
+  "conversation_id": "23bcab7c-82a6-4b0c-881f-d2ec3acac90b",
+  "task_id": "6a05b3c1-7453-4ed3-ba9e-64be1138d7f6",
+  "http_status": 202,
+  "source": "real browser / real API, no response mocks",
+  "checked_at": "2026-10-22T18:00:46+0900"
+}

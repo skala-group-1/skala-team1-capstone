@@ -1,0 +1,89 @@
+{
+  "scope": "Independent reanalysis of retained formal samples, no additional LLM samples",
+  "sample_count": 60,
+  "unique_tasks": 60,
+  "unique_conversations": 60,
+  "groups": {
+    "before/topic_en": {
+      "n": 10,
+      "p50": 25.952368354499413,
+      "p95": 56.33508250000159,
+      "unique_answers": 10
+    },
+    "before/clarify_zh": {
+      "n": 10,
+      "p50": 29.535128354500557,
+      "p95": 36.777702790997864,
+      "unique_answers": 10
+    },
+    "before/search_ja": {
+      "n": 10,
+      "p50": 33.73743300000024,
+      "p95": 89.33262475000083,
+      "unique_answers": 1
+    },
+    "after/topic_en": {
+      "n": 10,
+      "p50": 0.01816670849802904,
+      "p95": 0.023981417001778027,
+      "unique_answers": 1
+    },
+    "after/clarify_zh": {
+      "n": 10,
+      "p50": 6.298069020500407,
+      "p95": 8.608405082999525,
+      "unique_answers": 10
+    },
+    "after/search_ja": {
+      "n": 10,
+      "p50": 9.683229061998645,
+      "p95": 13.999677416999475,
+      "unique_answers": 4
+    }
+  },
+  "hashes": {
+    "before-a.jsonl": "389633b08e1bc70f6cd7f2fbfb70191db09dfa5050ab428fdd680b3d428c39b6",
+    "after-formal.jsonl": "687211002a57c63ea76e45ba735c4d63ce14352f052e6d8a9f48dd844627db8e",
+    "before-b.jsonl": "687dbc0769e9a0768ad5d50b1ed8b06d4afb45e63a56a4de96738ce11275163a"
+  },
+  "search_condition_and_cards": {
+    "before": 10,
+    "after": 0
+  },
+  "topic_unrequested_trend_notice": {
+    "before": 2,
+    "after": 0
+  },
+  "clarify_manual_review": {
+    "method": "Assistant inspected all 20 original answers; qualitative review, not blinded human evaluation",
+    "before": "10/10 clarification questions without selecting a procedure or guaranteeing an effect",
+    "after": "10/10 clarification questions without selecting a procedure or guaranteeing an effect; 2/10 ask for text/image/video format, whose delivery capability was not verified",
+    "format_question_tasks": [
+      "791aae92-bd8d-486a-b519-b8ef752a0e54",
+      "8b9ea2a6-a934-4ba7-b481-97513efda40b"
+    ]
+  },
+  "existing_ui_evidence": "PASS: one click, one matching POST, HTTP 202; no new browser run",
+  "grafana": {
+    "database": "ok",
+    "version": "12.2.1",
+    "commit": "563109b696e9c1cbaf345f2ab7a11f7f78422982"
+  },
+  "prometheus": {
+    "status": "success",
+    "data": {
+      "resultType": "vector",
+      "result": [
+        {
+          "metric": {},
+          "value": [
+            1792661102.54,
+            "60"
+          ]
+        }
+      ]
+    }
+  },
+  "application_diff_from_frozen_main": "empty",
+  "previous_architecture_pdf": "unchanged"
+}

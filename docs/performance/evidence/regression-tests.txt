@@ -1,0 +1,6 @@
+2026-10-22 Asia/Seoul
+Application source: 3a8f4ed (no application changes in measurement branches)
+Command (cwd agent/):
+uv run --frozen pytest tests/test_worker_delivery.py ../coordinator/tests/test_topic_flow.py ../coordinator/tests/test_suggest_choices.py -q
+Result: 31 passed in 0.24s
+Scope: existing isolated regression tests; not the complete acceptance/quality evaluation set.

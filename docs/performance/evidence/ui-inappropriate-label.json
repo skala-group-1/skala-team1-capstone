@@ -1,0 +1,10 @@
+{
+  "choice": "区域",
+  "post_count": 1,
+  "message_matches": true,
+  "conversation_id": "be717996-59df-4156-ac3a-61f4549cb333",
+  "task_id": "1da5cd47-fbe4-4263-b0d0-79519522e1c5",
+  "http_status": 202,
+  "source": "real browser / real API, no response mocks",
+  "checked_at": "2026-10-22T17:58:36+0900"
+}

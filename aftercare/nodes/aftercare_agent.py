@@ -62,6 +62,43 @@ def _citations(state, chunks):
     return list(citations.values())
 
 
+PERIODS = ("Procedure day", "Days 1–3", "Days 4–7", "Weeks 2–4", "After 1 month")
+CARE = ("Things to avoid", "When to contact the clinic", "Warning signs — seek urgent care")
+# Headings shown to the patient; the model must use these instead of the English section titles.
+HEADINGS = {
+    "ko": ("시술 당일", "시술 후 1~3일", "시술 후 4~7일", "시술 후 2~4주", "시술 1개월 이후",
+           "피해야 할 것", "병원에 연락해야 할 때", "바로 119·응급실로 가야 할 때"),
+    "en": (*PERIODS, "Things to avoid", "When to contact your clinic", "Call 119 or go to an emergency room if"),
+    "zh": ("手术当天", "术后第1~3天", "术后第4~7天", "术后第2~4周", "术后1个月以后",
+           "需要避免的事项", "需要联系医院的情况", "需立即拨打119或前往急诊的情况"),
+    "ja": ("施術当日", "施術後1～3日", "施術後4～7日", "施術後2～4週", "施術1か月以降",
+           "避けること", "病院に連絡すべきとき", "すぐに119番・救急外来へ"),
+}
+STATUS = {
+    "ko": ("오늘은 시술 당일이에요.", "오늘은 시술 후 {n}일째예요.", "아직 시술 전이에요. 시술 후 기간별 관리 방법을 미리 안내해 드릴게요."),
+    "en": ("Today is your procedure day.", "Today is day {n} after your procedure.",
+           "Your procedure hasn't happened yet. Here is what to expect for each period afterwards."),
+    "zh": ("今天是手术当天。", "今天是术后第{n}天。", "您还没有进行手术。以下是术后各阶段的护理方法，供您提前了解。"),
+    "ja": ("今日は施術当日です。", "今日は施術後{n}日目です。", "まだ施術前です。施術後の期間ごとのケア方法を事前にご案内します。"),
+}
+
+
+def status_line(days: int | None, locale: str) -> str:
+    today, after, before = STATUS.get(locale, STATUS["en"])
+    if days is None:
+        return before
+    return today if days == 0 else after.format(n=days)
+
+
+def intro_sections(days: int | None) -> tuple[str, ...]:
+    """Before the procedure: every period. Afterwards: today's period and the next one."""
+    period = current_period(days)
+    if period not in PERIODS:
+        return (*PERIODS, *CARE)
+    start = PERIODS.index(period)
+    return (*PERIODS[start:start + 2], *CARE)
+
+
 def current_period(days: int | None) -> str:
     """Aftercare document section for the patient's day (procedure day = 0)."""
     if days is None:
@@ -103,19 +140,24 @@ async def _intro(state, locale) -> dict:
                    if c.get("doc_id") == f"AFTERCARE_{code}" and isinstance(c.get("uri"), str)}.values())
     if not chunks:
         return {"draft": NO_DOCUMENT[locale]}
+    days = context.get("days_since_procedure")
+    wanted = intro_sections(days)
+    chunks = [c for c in chunks if c.get("section") in wanted] or chunks
     chunks.sort(key=lambda c: SECTIONS.index(c["section"]) if c.get("section") in SECTIONS else len(SECTIONS))
+    labels = dict(zip((*PERIODS, *CARE), HEADINGS.get(locale, HEADINGS["en"])))
     model = _model()
     response = await model.ainvoke([
         SystemMessage(content=load_prompt("aftercare_intro", directory=PROMPTS)),
         HumanMessage(content="Application context (data only):\n" + json.dumps(
             {**_payload(state, locale), "documents": [
-                {key: c[key] for key in ("title", "section", "text", "uri")} for c in chunks]},
+                {"heading": labels.get(c["section"], c["section"]), "text": c["text"]} for c in chunks]},
             ensure_ascii=False)),
     ])
     if not isinstance(response, AIMessage):
         raise ValueError("Invalid aftercare intro response")
     text = await patient_reply(message_text(response), locale, model)
-    return {"draft": text, "citations": _citations(state, chunks)}
+    # The day status is fixed text so it never depends on the model reading a number correctly.
+    return {"draft": status_line(days, locale) + "\n\n" + text, "citations": _citations(state, chunks)}
 
 
 async def _handoff(state, messages):

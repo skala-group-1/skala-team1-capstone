@@ -46,6 +46,7 @@ def base_state(**extra):
 
 @pytest.mark.parametrize("text", [
     "피가 계속 나요", "열이 나고 오한이 있어요", "숨쉬기 힘들어요", "입술 피부가 하얗게 변했어요",
+    "숨쉬기가 힘들고 얼굴이 갑자기 부었어요", "목이 부었어요", "한쪽만 갑자기 많이 부었어요",
     "I have a fever since last night", "The bleeding won't stop", "my vision is blurry, blurred vision",
     "出血不止怎么办", "发烧了", "熱があります", "息が苦しい",
 ])
@@ -54,7 +55,7 @@ def test_warning_signs_are_detected(text):
 
 
 @pytest.mark.parametrize("text", [
-    "붓기는 언제 빠지나요?", "When can I wear makeup?", "열은 없는데 조금 부었어요", "No fever, just mild swelling",
+    "붓기는 언제 빠지나요?", "얼굴이 좀 부었는데 정상인가요?", "When can I wear makeup?", "열은 없는데 조금 부었어요", "No fever, just mild swelling",
     "什么时候可以喝酒？", "いつからお酒を飲めますか", "",
 ])
 def test_ordinary_questions_are_not_flagged(text):
@@ -103,6 +104,16 @@ async def test_context_rejects_unusable_reservation(monkeypatch, reservation):
             {"selected_hospital_id": 3, "action": {"type": "AFTERCARE_INTRO", "reservationId": 16}})
 
 
+def test_status_line_and_sections_follow_the_day():
+    assert agent.status_line(0, "ko") == "오늘은 시술 당일이에요."
+    assert agent.status_line(5, "ja") == "今日は施術後5日目です。"
+    assert agent.status_line(None, "fr").startswith("Your procedure hasn't happened yet")
+    assert agent.intro_sections(None)[:5] == agent.PERIODS
+    assert agent.intro_sections(0)[:2] == ("Procedure day", "Days 1–3")
+    assert agent.intro_sections(40)[:1] == ("After 1 month",)
+    assert all(len(h) == 8 for h in agent.HEADINGS.values())
+
+
 @pytest.mark.parametrize("days, period", [
     (None, "Before procedure"), (0, "Procedure day"), (1, "Days 1–3"), (3, "Days 1–3"),
     (4, "Days 4–7"), (8, "Weeks 2–4"), (30, "Weeks 2–4"), (31, "After 1 month"),
@@ -140,9 +151,11 @@ async def test_intro_summarizes_only_this_procedure_document(monkeypatch):
     monkeypatch.setattr(agent, "get_tools", rag)
     model = fake_model(monkeypatch, [AIMessage(content="턱 보톡스 사후관리 안내입니다. 오늘은 시술 후 2일째예요.")])
     update = await agent.aftercare_agent(base_state(messages=[], action={"type": "AFTERCARE_INTRO", "reservationId": 16}))
-    assert update["draft"].startswith("턱 보톡스")
+    # The day line is fixed text; the model writes only the body.
+    assert update["draft"].startswith("오늘은 시술 후 2일째예요.\n\n턱 보톡스")
     sent = json.loads(model.ainvoke.await_args.args[0][1].content.split("\n", 1)[1])
-    assert [d["section"] for d in sent["documents"]] == ["Procedure day", "Days 1–3"]
+    # Day 2: today's period only (procedure day is skipped), with localized headings.
+    assert [d["heading"] for d in sent["documents"]] == ["시술 후 1~3일"]
     assert sent["days_since_procedure"] == 2 and sent["current_period"] == "Days 1–3"
     assert {c["doc_id"] for c in update["citations"]} == {"AFTERCARE_JAW_BOTOX"}
 

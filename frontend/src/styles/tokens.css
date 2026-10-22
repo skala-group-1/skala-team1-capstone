@@ -26,7 +26,7 @@
   /* text · icon */
   --text-primary: #1a1b1f;
   --text-secondary: #5c5f67;
-  --text-tertiary: #7c7f88;
+  --text-tertiary: #6b6e77; /* 흰·subtle·brand-subtle 배경 모두 대비 4.5:1 이상 (작은 글씨 WCAG AA) */
   --text-disabled: #a3a6ae;
   --text-inverse: #ffffff;
   --text-brand: #bf0f6e;
@@ -89,6 +89,16 @@
   --shadow-sheet: 0 -4px 24px rgb(0 0 0 / 12%);
   --shadow-toast: 0 4px 16px rgb(0 0 0 / 16%);
   --shadow-dialog: 0 12px 40px rgb(0 0 0 / 16%);
+}
+
+/* 일본어·중국어 화면은 그 언어 글꼴을 한국어 글꼴보다 앞에 (같은 한자가 한국식 글자꼴로 보이지 않게). html lang 은 i18n 이 설정 */
+:lang(ja) {
+  --font-sans: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN',
+    'Noto Sans JP', 'Yu Gothic', system-ui, sans-serif;
+}
+:lang(zh-Hans) {
+  --font-sans: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC',
+    'Microsoft YaHei', system-ui, sans-serif;
 }
 
 /* 텍스트 스타일 (Figma Text Styles 13개) */

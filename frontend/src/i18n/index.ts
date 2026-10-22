@@ -31,11 +31,18 @@ export const i18n = createI18n({
 })
 for (const l of SUPPORTED) i18n.global.mergeLocaleMessage(l, aftercareMessages[l])
 session.setLocale(i18n.global.locale.value as Locale)
+applyDocumentLocale(i18n.global.locale.value as Locale)
+
+/** <html lang>(스크린리더 발음·글꼴 분기)과 탭 제목을 화면 언어로. 중국어는 간체 zh-Hans */
+function applyDocumentLocale(locale: Locale) {
+  document.documentElement.lang = locale === 'zh' ? 'zh-Hans' : locale
+  document.title = i18n.global.t('app.brand')
+}
 
 export function setLocale(locale: Locale) {
   i18n.global.locale.value = locale
   session.setLocale(locale)
   localStorage.setItem('locale', locale)
-  document.documentElement.lang = locale
+  applyDocumentLocale(locale)
 }
 // TODO(fe): 날짜·금액 포맷 (Intl.DateTimeFormat Asia/Seoul, priceKrw 는 원 단위 정수 — 통화 변환 없음 「공통 계약서」 1장)

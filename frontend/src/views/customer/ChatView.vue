@@ -497,7 +497,8 @@ watch(
     <div v-else-if="loading" class="messages" role="status" :aria-label="t('common.loading')" aria-busy="true">
       <span class="bone bone--ai" /><span class="bone bone--user" /><span class="bone bone--ai bone--short" />
     </div>
-    <div v-else ref="scroller" class="messages" aria-live="polite">
+    <!-- role=log(정중한 실시간 영역) + 답변 중 aria-busy: 토큰마다 다시 읽지 않고 답변이 끝난 뒤 한 번 읽음 -->
+    <div v-else ref="scroller" class="messages" role="log" :aria-busy="conv.streaming">
       <!-- 병원 대화: 메인 대화에서 이어받은 조건 (D-20) -->
       <section v-if="isHospital && conv.parentConversationId && conditionChips.length" class="inherit">
         <p class="inherit__head t-caption-12-sb">
@@ -621,7 +622,7 @@ watch(
       <!-- C4-T 피부 고민 선택 (여러 개) -->
       <section v-if="showConcerns" class="inset concerns">
         <div class="chips">
-          <AppChip v-for="c in SKIN_CONCERNS" :key="c" :selected="concerns.includes(c)" @click="toggleConcern(c)">
+          <AppChip v-for="c in SKIN_CONCERNS" :key="c" :selected="concerns.includes(c)" :aria-pressed="concerns.includes(c)" @click="toggleConcern(c)">
             {{ t(`chat.concern.items.${c}`) }}
           </AppChip>
         </div>

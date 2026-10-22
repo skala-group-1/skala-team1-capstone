@@ -42,7 +42,7 @@ const AVATAR: Partial<Record<typeof props.sender, IconName>> = {
     <span class="avatar"><AppIcon :name="AVATAR[sender] ?? 'sparkles'" :size="18" /></span>
     <div class="other__content">
       <span v-if="name" class="name t-caption-12-sb">{{ name }}</span>
-      <p v-if="sender === 'typing'" class="bubble bubble--typing" :aria-label="$t('chat.typing')">
+      <p v-if="sender === 'typing'" class="bubble bubble--typing" role="status" :aria-label="$t('chat.typing')">
         <i /><i /><i />
       </p>
       <p v-else-if="sender === 'error'" class="bubble bubble--error t-body-14">

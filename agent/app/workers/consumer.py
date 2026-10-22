@@ -19,6 +19,7 @@ from app.workers.messages import AiTaskEvent, AiTaskRequested, AiTaskResume, Que
 from coordinator.nodes.coordinator_tools import summarizer_handoff_summary
 
 logger = logging.getLogger(__name__)
+handoff_logger = logging.getLogger("uvicorn.error.handoff")
 # Keep the existing namespace so deployed task receipts survive this upgrade.
 TASK_NAMESPACE = ("hospital_worker", "tasks")
 TASK_TIMEOUT_SECONDS = 120
@@ -42,6 +43,21 @@ class HospitalWorker:
         self.publish = publish
         # shortcut: one worker process, add distributed thread locks before scaling replicas.
         self.lock = asyncio.Lock()
+
+    def _log_handoff(self, msg, conversation_id, saved, outcome):
+        if not get_settings().handoff_debug_log:
+            return
+        # JSON escapes user-supplied newlines/control characters. Log only the
+        # context actually saved, never credentials or the full graph state.
+        handoff_logger.info("MAIN_TO_HOSPITAL %s", json.dumps({
+            "outcome": outcome, "taskId": msg.task_id,
+            "sourceConversationId": msg.conversation_id,
+            "hospitalConversationId": conversation_id,
+            "hospitalId": saved.get("selected_hospital_id"),
+            "mode": saved.get("mode"),
+            "conditions": saved.get("conditions") or {},
+            "summary": saved.get("summary"),
+        }, ensure_ascii=False))
 
     async def _emit(self, msg, record, event, data, trace_id):
         record["seq"] += 1
@@ -89,9 +105,13 @@ class HospitalWorker:
                     or existing.get("mode") not in ("HOSPITAL", "HUMAN")):
                 raise ValueError("Child checkpoint identity mismatch")
             # Refresh the handoff without touching hospital history or an active approval.
+            outcome = "preserved"
             if (not snapshot.next and existing.get("mode") == opened["mode"] == "HOSPITAL"
                     and state.get("summary") and existing.get("summary") != state["summary"]):
                 await self.graph.aupdate_state(config, {"summary": state["summary"]}, as_node="respond")
+                existing = {**existing, "summary": state["summary"]}
+                outcome = "summary_refreshed"
+            self._log_handoff(msg, conversation_id, existing, outcome)
             return
         conditions = opened["conditions"]
         if conditions is not None and not isinstance(conditions, dict):
@@ -107,6 +127,8 @@ class HospitalWorker:
             "consultation_id": opened["consultation_id"],
             "conditions": conditions or {}, "summary": state.get("summary"),
         }, as_node="respond")
+        saved = await self.graph.aget_state(config)
+        self._log_handoff(msg, conversation_id, saved.values, "initialized")
 
     async def handle(self, msg, trace_id=""):
         async with self.lock:

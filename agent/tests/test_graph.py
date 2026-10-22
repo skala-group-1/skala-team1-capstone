@@ -80,7 +80,8 @@ def booking_graph(monkeypatch):
         return {"options": []}
 
     async def slots(hospital_id: int, procedure_code: str, date_from: str, date_to: str):
-        return {"slots": [{"id": 12, "start_at": "2026-10-22T10:00:00+09:00", "status": "AVAILABLE", "doctor_id": 11}]}
+        return {"slots": [{"id": 12, "start_at": "2026-10-22T10:00:00+09:00",
+                           "end_at": "2026-10-22T10:30:00+09:00", "status": "AVAILABLE", "doctor_id": 11}]}
 
     async def booking(hospital_id: int, slot_id: int, procedure_code: str):
         raise AssertionError("Mutation must only execute through the approval boundary")

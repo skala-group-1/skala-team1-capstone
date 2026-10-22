@@ -18,6 +18,7 @@ import subprocess
 import sys
 from collections import Counter
 from generate import sample_faq_documents
+from seed_extras import SLOT_DAYS, validate_review_translations
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 errors = []
@@ -139,7 +140,7 @@ def validate_data(d, meta):
         st = dt.datetime.fromisoformat(s["start_at"])
         check(10 <= st.hour and dt.datetime.fromisoformat(s["end_at"]).hour * 60 +
               dt.datetime.fromisoformat(s["end_at"]).minute <= 18 * 60, "slot %d outside 10-18" % s["id"])
-        check(0 <= (st.date() - base).days < 21, "slot %d outside 21-day window" % s["id"])
+        check(0 <= (st.date() - base).days < SLOT_DAYS, "slot %d outside %d-day window" % (s["id"], SLOT_DAYS))
         check((s["hospital_id"], s["start_at"]) not in seen, "slot %d duplicate time" % s["id"])
         seen.add((s["hospital_id"], s["start_at"]))
         check((s["status"] == "HELD") == (s["hold_expires_at"] is not None), "slot %d hold_expires_at" % s["id"])
@@ -330,6 +331,7 @@ def main():
 
     data, meta = load(args.out)
     cand = validate_data(data, meta)
+    validate_review_translations(data, check)
     validate_sql(args.out, data)
     docs = validate_rag(args.rag, data)
     if args.psql:

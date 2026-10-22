@@ -16,7 +16,7 @@ python3 validate.py                                               # 검증 (FK·
 
 | 옵션 | 기본값 | 설명 |
 | --- | --- | --- |
-| `--base-date` | 오늘(KST) | 슬롯·예약·리뷰 날짜의 기준일. 슬롯은 기준일부터 21일치 |
+| `--base-date` | 오늘(KST) | 슬롯·예약·리뷰 날짜의 기준일. 슬롯은 기준일부터 40일치 (2026-10-22 기준 11/30까지) |
 | `--seed` | 42 | 난수 시드 |
 | `--out` | `out/` | JSON·SQL 출력 위치 |
 | `--rag-out` | `rag_docs/hospitals/` | 병원 FAQ 문서 출력 위치 |
@@ -58,9 +58,10 @@ data/mock/
 | procedures | 18 | SKIN 10, SURGERY 8 |
 | doctors | 159 | 병원당 2~4명 (1~3번 병원은 4명) |
 | price_options | 678 | 병원당 시술 5~10개, 시술당 옵션 1~3개 |
-| slots | 14,244 | 21일 × 30분 단위, 10:00~18:00 안에서 영업시간과 겹치는 구간만 생성. 약 30~50%는 BOOKED |
+| slots | 26,928 | 40일 × 30분 단위, 10:00~18:00 안에서 영업시간과 겹치는 구간만 생성. 약 30~50%는 BOOKED. 1~14,244번(21일치)은 기존 그대로, 22일째부터는 `seed_extras.py`가 별도 난수로 뒤에 추가 |
 | reservations | 20 | PENDING 6, CONFIRMED 7, REJECTED 4, CANCELLED 3 |
 | reviews | 2,111 | 병원당 5~80개, 평점은 긍정 쪽으로 치우침 (평균 약 4.1) |
+| review_translations | 6,333 | 리뷰마다 원문 외 3개 언어. 템플릿 문장 번역(`seed_extras.py`)으로 생성, LLM 미사용 |
 | glossary | 66 | 한·영·중·일 용어 |
 | conversations | 2 | 아래 상담 2건과 연결된 HUMAN 모드 대화 |
 | consultations | 2 | 1번 병원: WAITING 1건(일본어), ACTIVE 1건(중국어) |

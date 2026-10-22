@@ -101,8 +101,10 @@ const timeline = computed(() => {
   const c = consult.current
   if (c && c.id === conv.consultationId) {
     // 로컬은 Z, 서버는 +09:00 이라 문자열 비교 대신 Date.parse
+    // 상담을 연결한 AI 답변("상담사 연결을 요청했어요")은 상담 생성 직후에 끝나므로 시각만 보면 블록 아래로 간다
+    // → 상담 뒤 사용자가 AI 에게 처음 말한 메시지 앞에 블록을 둔다 (연결 답변은 블록 위, 상담 종료 후 대화는 아래)
     const at = Date.parse(c.createdAt)
-    const k = conv.messages.findIndex((m) => Date.parse(m.createdAt) > at)
+    const k = conv.messages.findIndex((m) => m.role === 'user' && Date.parse(m.createdAt) > at)
     rows.splice(k < 0 ? rows.length : k, 0, { i: -1 })
   }
   return rows

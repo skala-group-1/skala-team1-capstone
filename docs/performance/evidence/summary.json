@@ -1,0 +1,136 @@
+{
+  "statistics": {
+    "before": {
+      "topic_en": {
+        "n": 10,
+        "verify_events": 10,
+        "duplicate_events": 0,
+        "unavailable": 0,
+        "cards": 0,
+        "choices": 0,
+        "trend_notice": 2,
+        "elapsed_s": {
+          "p50": 25.952368354499413,
+          "p95": 56.33508250000159
+        },
+        "first_token_s": {
+          "p50": 25.948295604499435,
+          "p95": 56.33240550000119
+        },
+        "accepted_s": {
+          "p50": 0.003907541498847422,
+          "p95": 0.005162166002264712
+        }
+      },
+      "clarify_zh": {
+        "n": 10,
+        "verify_events": 10,
+        "duplicate_events": 0,
+        "unavailable": 0,
+        "cards": 0,
+        "choices": 0,
+        "trend_notice": 0,
+        "elapsed_s": {
+          "p50": 29.535128354500557,
+          "p95": 36.777702790997864
+        },
+        "first_token_s": {
+          "p50": 29.53260733299976,
+          "p95": 36.77419220799857
+        },
+        "accepted_s": {
+          "p50": 0.005326582999259699,
+          "p95": 0.008950375002314104
+        }
+      },
+      "search_ja": {
+        "n": 10,
+        "verify_events": 10,
+        "duplicate_events": 0,
+        "unavailable": 0,
+        "cards": 10,
+        "choices": 0,
+        "trend_notice": 0,
+        "elapsed_s": {
+          "p50": 33.73743300000024,
+          "p95": 89.33262475000083
+        },
+        "first_token_s": {
+          "p50": 33.733792125000036,
+          "p95": 89.32982279200223
+        },
+        "accepted_s": {
+          "p50": 0.006539521000377135,
+          "p95": 0.00932791599916527
+        }
+      }
+    },
+    "after": {
+      "topic_en": {
+        "n": 10,
+        "verify_events": 0,
+        "duplicate_events": 0,
+        "unavailable": 0,
+        "cards": 0,
+        "choices": 0,
+        "trend_notice": 0,
+        "elapsed_s": {
+          "p50": 0.01816670849802904,
+          "p95": 0.023981417001778027
+        },
+        "first_token_s": {
+          "p50": 0.017188542000440066,
+          "p95": 0.02301491700200131
+        },
+        "accepted_s": {
+          "p50": 0.0035954169998149155,
+          "p95": 0.007637417002115399
+        }
+      },
+      "clarify_zh": {
+        "n": 10,
+        "verify_events": 0,
+        "duplicate_events": 0,
+        "unavailable": 0,
+        "cards": 0,
+        "choices": 1,
+        "trend_notice": 0,
+        "elapsed_s": {
+          "p50": 6.298069020500407,
+          "p95": 8.608405082999525
+        },
+        "first_token_s": {
+          "p50": 4.834164229501766,
+          "p95": 7.120723457999702
+        },
+        "accepted_s": {
+          "p50": 0.002472812499036081,
+          "p95": 0.005370957998820813
+        }
+      },
+      "search_ja": {
+        "n": 10,
+        "verify_events": 0,
+        "duplicate_events": 0,
+        "unavailable": 4,
+        "cards": 1,
+        "choices": 4,
+        "trend_notice": 0,
+        "elapsed_s": {
+          "p50": 9.683229061998645,
+          "p95": 13.999677416999475
+        },
+        "first_token_s": {
+          "p50": 9.68129512449923,
+          "p95": 13.99848587499946
+        },
+        "accepted_s": {
+          "p50": 0.005416791000243393,
+          "p95": 0.011014416999387322
+        }
+      }
+    }
+  },
+  "scope": "controlled agent-version comparison; fixed current backend/MCP/data",
+  "sample": 60
+}

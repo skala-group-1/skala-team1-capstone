@@ -1,0 +1,19 @@
+{
+  "task_id": "5d240b94-2747-4aee-88ca-bc8d53b6dfb9",
+  "streams": [
+    [
+      {
+        "id": "4",
+        "event": "DONE"
+      }
+    ],
+    [
+      {
+        "id": "4",
+        "event": "DONE"
+      }
+    ]
+  ],
+  "stored_task_unchanged": true,
+  "scope": "Two GET replays of a completed task. No queue redelivery/crash/race injection."
+}

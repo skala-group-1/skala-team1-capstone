@@ -1,0 +1,32 @@
+[
+  {
+    "id": "OBS-01",
+    "status": "OBSERVED_NOT_FIXED",
+    "finding": "Same Japanese search input: after 10 runs -> 1 result-card response, 4 unavailable notices, 5 clarification responses. DONE does not imply task success.",
+    "evidence": "after-formal.jsonl"
+  },
+  {
+    "id": "OBS-02",
+    "status": "OBSERVED_NOT_FIXED",
+    "finding": "The one after response returning cards omitted consultLanguage=ja; returned IDs [1,12,39,7,41] instead of the before [1,7]. Root cause not isolated.",
+    "evidence": "search-condition-audit.json"
+  },
+  {
+    "id": "OBS-03",
+    "status": "DOCUMENTATION_CORRECTED",
+    "finding": "Outer verify was an always-pass placeholder; internal ReplyReview was the actual LLM review. SSE VERIFY counts are not LLM review call counts.",
+    "evidence": "commit-map.md"
+  },
+  {
+    "id": "OBS-04",
+    "status": "OBSERVED_NOT_FIXED",
+    "finding": "Before topic entry included an unsolicited trend-data limitation in one captured response; after topic entry uses a fixed topic-specific greeting.",
+    "evidence": "before-a.jsonl"
+  },
+  {
+    "id": "OBS-05",
+    "status": "OBSERVED_NOT_FIXED",
+    "finding": "A real browser run generated the label 区域 (region) for an open-ended location question. Clicking sent the exact text once, but the label was not a useful answer to that question. Chip transport and chip appropriateness are separate.",
+    "evidence": "ui-inappropriate-label.json"
+  }
+]

@@ -1,0 +1,601 @@
+[
+  {
+    "version": "before",
+    "repeat": 1,
+    "task_id": "59d88e81-6776-4911-9bd9-3f8da0d68d7f",
+    "conditions": {
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateTo": "2026-11-13",
+      "sortBy": "REVIEW_COUNT",
+      "dateFrom": "2026-11-09",
+      "budgetMaxKrw": 2000000,
+      "procedureCode": "DOUBLE_EYELID_NONINCISION",
+      "consultLanguage": "ja"
+    },
+    "card_ids": [
+      1,
+      7
+    ],
+    "answer": "条件に合う病院が2件見つかりました。口コミ数順に表示します。下のカードをご覧ください。",
+    "expected_conditions": {
+      "procedureCode": "DOUBLE_EYELID_NONINCISION",
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateFrom": "2026-11-09",
+      "dateTo": "2026-11-13",
+      "budgetMaxKrw": 2000000,
+      "consultLanguage": "ja",
+      "sortBy": "REVIEW_COUNT"
+    },
+    "conditions_match": true
+  },
+  {
+    "version": "before",
+    "repeat": 2,
+    "task_id": "be530142-0001-4c28-b98e-26081c073623",
+    "conditions": {
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateTo": "2026-11-13",
+      "sortBy": "REVIEW_COUNT",
+      "dateFrom": "2026-11-09",
+      "budgetMaxKrw": 2000000,
+      "procedureCode": "DOUBLE_EYELID_NONINCISION",
+      "consultLanguage": "ja"
+    },
+    "card_ids": [
+      1,
+      7
+    ],
+    "answer": "条件に合う病院が2件見つかりました。口コミ数順に表示します。下のカードをご覧ください。",
+    "expected_conditions": {
+      "procedureCode": "DOUBLE_EYELID_NONINCISION",
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateFrom": "2026-11-09",
+      "dateTo": "2026-11-13",
+      "budgetMaxKrw": 2000000,
+      "consultLanguage": "ja",
+      "sortBy": "REVIEW_COUNT"
+    },
+    "conditions_match": true
+  },
+  {
+    "version": "before",
+    "repeat": 3,
+    "task_id": "c018d040-39a8-4aec-97a9-dd06a77e4351",
+    "conditions": {
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateTo": "2026-11-13",
+      "sortBy": "REVIEW_COUNT",
+      "dateFrom": "2026-11-09",
+      "budgetMaxKrw": 2000000,
+      "procedureCode": "DOUBLE_EYELID_NONINCISION",
+      "consultLanguage": "ja"
+    },
+    "card_ids": [
+      1,
+      7
+    ],
+    "answer": "条件に合う病院が2件見つかりました。口コミ数順に表示します。下のカードをご覧ください。",
+    "expected_conditions": {
+      "procedureCode": "DOUBLE_EYELID_NONINCISION",
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateFrom": "2026-11-09",
+      "dateTo": "2026-11-13",
+      "budgetMaxKrw": 2000000,
+      "consultLanguage": "ja",
+      "sortBy": "REVIEW_COUNT"
+    },
+    "conditions_match": true
+  },
+  {
+    "version": "before",
+    "repeat": 4,
+    "task_id": "9ac48b04-4ac5-4980-9296-4fd6775ea68c",
+    "conditions": {
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateTo": "2026-11-13",
+      "sortBy": "REVIEW_COUNT",
+      "dateFrom": "2026-11-09",
+      "budgetMaxKrw": 2000000,
+      "procedureCode": "DOUBLE_EYELID_NONINCISION",
+      "consultLanguage": "ja"
+    },
+    "card_ids": [
+      1,
+      7
+    ],
+    "answer": "条件に合う病院が2件見つかりました。口コミ数順に表示します。下のカードをご覧ください。",
+    "expected_conditions": {
+      "procedureCode": "DOUBLE_EYELID_NONINCISION",
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateFrom": "2026-11-09",
+      "dateTo": "2026-11-13",
+      "budgetMaxKrw": 2000000,
+      "consultLanguage": "ja",
+      "sortBy": "REVIEW_COUNT"
+    },
+    "conditions_match": true
+  },
+  {
+    "version": "before",
+    "repeat": 5,
+    "task_id": "50e7993e-20fc-4fc9-8c93-50148515fe83",
+    "conditions": {
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateTo": "2026-11-13",
+      "sortBy": "REVIEW_COUNT",
+      "dateFrom": "2026-11-09",
+      "budgetMaxKrw": 2000000,
+      "procedureCode": "DOUBLE_EYELID_NONINCISION",
+      "consultLanguage": "ja"
+    },
+    "card_ids": [
+      1,
+      7
+    ],
+    "answer": "条件に合う病院が2件見つかりました。口コミ数順に表示します。下のカードをご覧ください。",
+    "expected_conditions": {
+      "procedureCode": "DOUBLE_EYELID_NONINCISION",
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateFrom": "2026-11-09",
+      "dateTo": "2026-11-13",
+      "budgetMaxKrw": 2000000,
+      "consultLanguage": "ja",
+      "sortBy": "REVIEW_COUNT"
+    },
+    "conditions_match": true
+  },
+  {
+    "version": "after",
+    "repeat": 1,
+    "task_id": "0ac6d5a6-4fb9-4153-893b-84fcec2c9c53",
+    "conditions": {},
+    "card_ids": [],
+    "answer": "処理できませんでした。後ほど再度お試しください。",
+    "expected_conditions": {
+      "procedureCode": "DOUBLE_EYELID_NONINCISION",
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateFrom": "2026-11-09",
+      "dateTo": "2026-11-13",
+      "budgetMaxKrw": 2000000,
+      "consultLanguage": "ja",
+      "sortBy": "REVIEW_COUNT"
+    },
+    "conditions_match": false
+  },
+  {
+    "version": "after",
+    "repeat": 2,
+    "task_id": "c4126e3a-502a-4ebe-b04a-f5f6e48424e6",
+    "conditions": {
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateTo": "2026-11-13",
+      "sortBy": "REVIEW_COUNT",
+      "dateFrom": "2026-11-09",
+      "budgetMaxKrw": 2000000,
+      "procedureCode": "DOUBLE_EYELID_NONINCISION"
+    },
+    "card_ids": [
+      1,
+      12,
+      39,
+      7,
+      41
+    ],
+    "answer": "条件に合う病院が5件見つかりました。口コミ数順に表示します。下のカードをご覧ください。",
+    "expected_conditions": {
+      "procedureCode": "DOUBLE_EYELID_NONINCISION",
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateFrom": "2026-11-09",
+      "dateTo": "2026-11-13",
+      "budgetMaxKrw": 2000000,
+      "consultLanguage": "ja",
+      "sortBy": "REVIEW_COUNT"
+    },
+    "conditions_match": false
+  },
+  {
+    "version": "after",
+    "repeat": 3,
+    "task_id": "7d73229f-441a-42b2-b6c6-70cb1172a755",
+    "conditions": {
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateTo": "2026-11-13",
+      "sortBy": "REVIEW_COUNT",
+      "dateFrom": "2026-11-09",
+      "budgetMaxKrw": 2000000,
+      "consultLanguage": "ja"
+    },
+    "card_ids": [],
+    "answer": "入力された名前に関連する登録済みの施術が見つかりました。名前が似ていても同じ施術や効果を意味するわけではありません。\n\n1. 埋没法二重\n\nどの施術で病院を探しましょうか？番号か名前で選んでください。",
+    "expected_conditions": {
+      "procedureCode": "DOUBLE_EYELID_NONINCISION",
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateFrom": "2026-11-09",
+      "dateTo": "2026-11-13",
+      "budgetMaxKrw": 2000000,
+      "consultLanguage": "ja",
+      "sortBy": "REVIEW_COUNT"
+    },
+    "conditions_match": false
+  },
+  {
+    "version": "after",
+    "repeat": 4,
+    "task_id": "3c64dbae-ea06-4015-b7b7-14ef173822f2",
+    "conditions": {
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateTo": "2026-11-13",
+      "sortBy": "REVIEW_COUNT",
+      "dateFrom": "2026-11-09",
+      "budgetMaxKrw": 2000000,
+      "consultLanguage": "ja"
+    },
+    "card_ids": [],
+    "answer": "入力された名前に関連する登録済みの施術が見つかりました。名前が似ていても同じ施術や効果を意味するわけではありません。\n\n1. 埋没法二重\n\nどの施術で病院を探しましょうか？番号か名前で選んでください。",
+    "expected_conditions": {
+      "procedureCode": "DOUBLE_EYELID_NONINCISION",
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateFrom": "2026-11-09",
+      "dateTo": "2026-11-13",
+      "budgetMaxKrw": 2000000,
+      "consultLanguage": "ja",
+      "sortBy": "REVIEW_COUNT"
+    },
+    "conditions_match": false
+  },
+  {
+    "version": "after",
+    "repeat": 5,
+    "task_id": "32b58198-5cb9-4f1b-82d9-b55e5086f729",
+    "conditions": {},
+    "card_ids": [],
+    "answer": "処理できませんでした。後ほど再度お試しください。",
+    "expected_conditions": {
+      "procedureCode": "DOUBLE_EYELID_NONINCISION",
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateFrom": "2026-11-09",
+      "dateTo": "2026-11-13",
+      "budgetMaxKrw": 2000000,
+      "consultLanguage": "ja",
+      "sortBy": "REVIEW_COUNT"
+    },
+    "conditions_match": false
+  },
+  {
+    "version": "after",
+    "repeat": 6,
+    "task_id": "e7f809e0-3665-4b4a-ab3d-80e317aab076",
+    "conditions": {
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateTo": "2026-11-13",
+      "sortBy": "REVIEW_COUNT",
+      "dateFrom": "2026-11-09",
+      "budgetMaxKrw": 2000000,
+      "procedureCode": "DOUBLE_EYELID_NONINCISION",
+      "consultLanguage": "ja"
+    },
+    "card_ids": [],
+    "answer": "処理できませんでした。後ほど再度お試しください。",
+    "expected_conditions": {
+      "procedureCode": "DOUBLE_EYELID_NONINCISION",
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateFrom": "2026-11-09",
+      "dateTo": "2026-11-13",
+      "budgetMaxKrw": 2000000,
+      "consultLanguage": "ja",
+      "sortBy": "REVIEW_COUNT"
+    },
+    "conditions_match": true
+  },
+  {
+    "version": "after",
+    "repeat": 7,
+    "task_id": "ed1e17ff-60a1-4e60-ab1a-df7cfc85b1af",
+    "conditions": {
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateTo": "2026-11-13",
+      "sortBy": "REVIEW_COUNT",
+      "dateFrom": "2026-11-09",
+      "budgetMaxKrw": 2000000,
+      "consultLanguage": "ja"
+    },
+    "card_ids": [],
+    "answer": "入力された名前に関連する登録済みの施術が見つかりました。名前が似ていても同じ施術や効果を意味するわけではありません。\n\n1. 埋没法二重\n\nどの施術で病院を探しましょうか？番号か名前で選んでください。",
+    "expected_conditions": {
+      "procedureCode": "DOUBLE_EYELID_NONINCISION",
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateFrom": "2026-11-09",
+      "dateTo": "2026-11-13",
+      "budgetMaxKrw": 2000000,
+      "consultLanguage": "ja",
+      "sortBy": "REVIEW_COUNT"
+    },
+    "conditions_match": false
+  },
+  {
+    "version": "after",
+    "repeat": 8,
+    "task_id": "801fa2dc-8833-4dc8-b960-dfcfd2669480",
+    "conditions": {
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateTo": "2026-11-13",
+      "sortBy": "REVIEW_COUNT",
+      "dateFrom": "2026-11-09",
+      "budgetMaxKrw": 2000000
+    },
+    "card_ids": [],
+    "answer": "埋没法の具体的な名称を教えてください。例として「埋没法（매몰법）」の他に「ミニ埋没」「二重ラインの針孔法」など、医院検索に反映できる正式名称をお願いします。予約は行いません。",
+    "expected_conditions": {
+      "procedureCode": "DOUBLE_EYELID_NONINCISION",
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateFrom": "2026-11-09",
+      "dateTo": "2026-11-13",
+      "budgetMaxKrw": 2000000,
+      "consultLanguage": "ja",
+      "sortBy": "REVIEW_COUNT"
+    },
+    "conditions_match": false
+  },
+  {
+    "version": "after",
+    "repeat": 9,
+    "task_id": "84b2dcd0-c744-4c51-8754-921811ee5748",
+    "conditions": {
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateTo": "2026-11-13",
+      "sortBy": "REVIEW_COUNT",
+      "dateFrom": "2026-11-09",
+      "budgetMaxKrw": 2000000,
+      "consultLanguage": "ja"
+    },
+    "card_ids": [],
+    "answer": "入力された名前に関連する登録済みの施術が見つかりました。名前が似ていても同じ施術や効果を意味するわけではありません。\n\n1. 埋没法二重\n\nどの施術で病院を探しましょうか？番号か名前で選んでください。",
+    "expected_conditions": {
+      "procedureCode": "DOUBLE_EYELID_NONINCISION",
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateFrom": "2026-11-09",
+      "dateTo": "2026-11-13",
+      "budgetMaxKrw": 2000000,
+      "consultLanguage": "ja",
+      "sortBy": "REVIEW_COUNT"
+    },
+    "conditions_match": false
+  },
+  {
+    "version": "after",
+    "repeat": 10,
+    "task_id": "3fd2b376-bf11-4438-96eb-4892e676f4b0",
+    "conditions": {},
+    "card_ids": [],
+    "answer": "処理できませんでした。後ほど再度お試しください。",
+    "expected_conditions": {
+      "procedureCode": "DOUBLE_EYELID_NONINCISION",
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateFrom": "2026-11-09",
+      "dateTo": "2026-11-13",
+      "budgetMaxKrw": 2000000,
+      "consultLanguage": "ja",
+      "sortBy": "REVIEW_COUNT"
+    },
+    "conditions_match": false
+  },
+  {
+    "version": "before",
+    "repeat": 6,
+    "task_id": "9f90f74b-36ca-465d-b321-df66740d7050",
+    "conditions": {
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateTo": "2026-11-13",
+      "sortBy": "REVIEW_COUNT",
+      "dateFrom": "2026-11-09",
+      "budgetMaxKrw": 2000000,
+      "procedureCode": "DOUBLE_EYELID_NONINCISION",
+      "consultLanguage": "ja"
+    },
+    "card_ids": [
+      1,
+      7
+    ],
+    "answer": "条件に合う病院が2件見つかりました。口コミ数順に表示します。下のカードをご覧ください。",
+    "expected_conditions": {
+      "procedureCode": "DOUBLE_EYELID_NONINCISION",
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateFrom": "2026-11-09",
+      "dateTo": "2026-11-13",
+      "budgetMaxKrw": 2000000,
+      "consultLanguage": "ja",
+      "sortBy": "REVIEW_COUNT"
+    },
+    "conditions_match": true
+  },
+  {
+    "version": "before",
+    "repeat": 7,
+    "task_id": "132932e0-543c-4687-8ee1-c1362682909b",
+    "conditions": {
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateTo": "2026-11-13",
+      "sortBy": "REVIEW_COUNT",
+      "dateFrom": "2026-11-09",
+      "budgetMaxKrw": 2000000,
+      "procedureCode": "DOUBLE_EYELID_NONINCISION",
+      "consultLanguage": "ja"
+    },
+    "card_ids": [
+      1,
+      7
+    ],
+    "answer": "条件に合う病院が2件見つかりました。口コミ数順に表示します。下のカードをご覧ください。",
+    "expected_conditions": {
+      "procedureCode": "DOUBLE_EYELID_NONINCISION",
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateFrom": "2026-11-09",
+      "dateTo": "2026-11-13",
+      "budgetMaxKrw": 2000000,
+      "consultLanguage": "ja",
+      "sortBy": "REVIEW_COUNT"
+    },
+    "conditions_match": true
+  },
+  {
+    "version": "before",
+    "repeat": 8,
+    "task_id": "ed4db859-3c60-451d-a606-ffebb05ab31c",
+    "conditions": {
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateTo": "2026-11-13",
+      "sortBy": "REVIEW_COUNT",
+      "dateFrom": "2026-11-09",
+      "budgetMaxKrw": 2000000,
+      "procedureCode": "DOUBLE_EYELID_NONINCISION",
+      "consultLanguage": "ja"
+    },
+    "card_ids": [
+      1,
+      7
+    ],
+    "answer": "条件に合う病院が2件見つかりました。口コミ数順に表示します。下のカードをご覧ください。",
+    "expected_conditions": {
+      "procedureCode": "DOUBLE_EYELID_NONINCISION",
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateFrom": "2026-11-09",
+      "dateTo": "2026-11-13",
+      "budgetMaxKrw": 2000000,
+      "consultLanguage": "ja",
+      "sortBy": "REVIEW_COUNT"
+    },
+    "conditions_match": true
+  },
+  {
+    "version": "before",
+    "repeat": 9,
+    "task_id": "2c1d6666-244b-4c21-95aa-50a225c35248",
+    "conditions": {
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateTo": "2026-11-13",
+      "sortBy": "REVIEW_COUNT",
+      "dateFrom": "2026-11-09",
+      "budgetMaxKrw": 2000000,
+      "procedureCode": "DOUBLE_EYELID_NONINCISION",
+      "consultLanguage": "ja"
+    },
+    "card_ids": [
+      1,
+      7
+    ],
+    "answer": "条件に合う病院が2件見つかりました。口コミ数順に表示します。下のカードをご覧ください。",
+    "expected_conditions": {
+      "procedureCode": "DOUBLE_EYELID_NONINCISION",
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateFrom": "2026-11-09",
+      "dateTo": "2026-11-13",
+      "budgetMaxKrw": 2000000,
+      "consultLanguage": "ja",
+      "sortBy": "REVIEW_COUNT"
+    },
+    "conditions_match": true
+  },
+  {
+    "version": "before",
+    "repeat": 10,
+    "task_id": "fb1b0e8f-e22e-4789-bf1c-44d73dcf7868",
+    "conditions": {
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateTo": "2026-11-13",
+      "sortBy": "REVIEW_COUNT",
+      "dateFrom": "2026-11-09",
+      "budgetMaxKrw": 2000000,
+      "procedureCode": "DOUBLE_EYELID_NONINCISION",
+      "consultLanguage": "ja"
+    },
+    "card_ids": [
+      1,
+      7
+    ],
+    "answer": "条件に合う病院が2件見つかりました。口コミ数順に表示します。下のカードをご覧ください。",
+    "expected_conditions": {
+      "procedureCode": "DOUBLE_EYELID_NONINCISION",
+      "areas": [
+        "GANGNAM"
+      ],
+      "dateFrom": "2026-11-09",
+      "dateTo": "2026-11-13",
+      "budgetMaxKrw": 2000000,
+      "consultLanguage": "ja",
+      "sortBy": "REVIEW_COUNT"
+    },
+    "conditions_match": true
+  }
+]

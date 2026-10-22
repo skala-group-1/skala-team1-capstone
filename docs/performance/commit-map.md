@@ -22,3 +22,12 @@
 동일 문장을 의도적으로 재질문한 경우를 구분한다. 동일 문장 자체는 중복 판단 근거가 아니다.
 기존 worker는 완료 task 결과를 재전송하며 coordinator는 턴 내 동일 도구/인자를 제한한다.
 이 구현의 존재만으로 모든 경합·재시작 상황의 멱등성을 보장한다고 쓰지 않는다.
+
+## 검증 루프의 정확한 구분
+
+`179b685`의 coordinator/nodes/verify.py는 항상 passed=True를 반환하는 자리표시자이며 LLM을 호출하지 않는다.
+실제 검수 LLM은 coordinator/nodes/planner_agent.py의 ReplyReview 경로에 있으며, 재작성 후 재검수가 가능하다.
+따라서 SSE VERIFY 이벤트 수는 내부 검수 LLM 호출 횟수가 아니다. 바깥 verify 삭제 자체를 수십 초 개선 원인으로 설명하지 않는다.
+선택지 FE 구현 커밋은 `f36aba9`이며 agent 전송 커밋 `09bf6a7`과 함께 설명한다.
+
+측정 중 원격 main이 `5cc408c`(frontend polish)로 전진한 것을 확인했다. 실험 도중 코드를 섞지 않고 `3a8f4ed`를 고정했다. 후속 main 전체의 성능이라고 일반화하지 않는다.

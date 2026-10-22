@@ -1,0 +1,77 @@
+{
+  "datasources": {
+    "prometheus": {
+      "details": {
+        "application": "Prometheus",
+        "features": {
+          "rulerApiEnabled": false
+        }
+      },
+      "message": "Successfully queried the Prometheus API.",
+      "status": "OK"
+    },
+    "loki": {
+      "message": "Data source successfully connected.",
+      "status": "OK"
+    }
+  },
+  "services": [
+    "agent",
+    "backend",
+    "business-mcp",
+    "frontend",
+    "postgres",
+    "rabbitmq",
+    "rag-mcp",
+    "summarizer",
+    "translator"
+  ],
+  "prometheus_targets": [
+    {
+      "discoveredLabels": {
+        "__address__": "measurements:9100",
+        "__metrics_path__": "/metrics",
+        "__scheme__": "http",
+        "__scrape_interval__": "5s",
+        "__scrape_timeout__": "5s",
+        "job": "measurements"
+      },
+      "labels": {
+        "instance": "measurements:9100",
+        "job": "measurements"
+      },
+      "scrapePool": "measurements",
+      "scrapeUrl": "http://measurements:9100/metrics",
+      "globalUrl": "http://measurements:9100/metrics",
+      "lastError": "",
+      "lastScrape": "2026-10-22T08:56:32.708773759Z",
+      "lastScrapeDuration": 0.005374125,
+      "health": "up",
+      "scrapeInterval": "5s",
+      "scrapeTimeout": "5s"
+    },
+    {
+      "discoveredLabels": {
+        "__address__": "localhost:9090",
+        "__metrics_path__": "/metrics",
+        "__scheme__": "http",
+        "__scrape_interval__": "5s",
+        "__scrape_timeout__": "5s",
+        "job": "prometheus"
+      },
+      "labels": {
+        "instance": "localhost:9090",
+        "job": "prometheus"
+      },
+      "scrapePool": "prometheus",
+      "scrapeUrl": "http://localhost:9090/metrics",
+      "globalUrl": "http://dcd2031f718c:9090/metrics",
+      "lastError": "",
+      "lastScrape": "2026-10-22T08:56:35.571623302Z",
+      "lastScrapeDuration": 0.002278167,
+      "health": "up",
+      "scrapeInterval": "5s",
+      "scrapeTimeout": "5s"
+    }
+  ]
+}

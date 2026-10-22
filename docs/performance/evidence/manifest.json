@@ -1,0 +1,104 @@
+{
+  "after_commit": "3a8f4ed3a4471be9e05268280da1be44b1acde16",
+  "baseline_agent_commit": "179b685f86edaf3a510ec9ef44c1a1deac405bce",
+  "host": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "cpu": "Apple M5",
+  "memory_bytes": "17179869184",
+  "comparison": "fixed current backend/MCP/data; replace agent image only",
+  "prompts": {
+    "before": {
+      "agent/prompts/translate_chat.md": "43d3ddec8624bd8bca6308ec458e104c22ffdb589f6f1821864c7e08b306197a",
+      "agent/prompts/summarize_handoff.md": "1a4a41d3e18b0300a5e5fa244326079c99cd547fb775d9f6c8357947a4d3b11f",
+      "agent/prompts/system_base.md": "169b9c9dd4842fc0f483da45012b9602d557e8611f1a59ac286bf28df9e4e146",
+      "coordinator/prompts/rag_answer.md": "8d92ec4d0f2da8826926b14939ccbfebf18383cbc5fad0317aa3e664302ab284",
+      "coordinator/prompts/extract_conditions.md": "c31781374aaf25a3cc28155c15c42c47727925a1f92559fb06a82bbcc1eda4ec",
+      "coordinator/prompts/ask_clarify.md": "cf11c55c7c1f7710e64386e9b32819a6fa3992bb5ead5490f5ccb15c1db430a1",
+      "coordinator/prompts/coordinator.md": "78c851792f3e5fd5b590466327f0314a3c8f8e55b395562463f702c281a752fd",
+      "coordinator/prompts/guard_input.md": "eb22aea4c292e3cf672d88373e64383f30492880585c008b296b097606ef187c",
+      "concierge/prompts/hospital_agent.md": "80282c71f9e32381a40f6725883fc576acdd6f48023634d1fda65a93008fdf0b"
+    },
+    "after": {
+      "agent/prompts/translate_chat.md": "43d3ddec8624bd8bca6308ec458e104c22ffdb589f6f1821864c7e08b306197a",
+      "agent/prompts/summarize_handoff.md": "1a4a41d3e18b0300a5e5fa244326079c99cd547fb775d9f6c8357947a4d3b11f",
+      "agent/prompts/system_base.md": "169b9c9dd4842fc0f483da45012b9602d557e8611f1a59ac286bf28df9e4e146",
+      "coordinator/prompts/procedure_search.md": "d35b82af97f26b9086638be63abb900ff038cde1392d94620fe9f9a01b7ef63b",
+      "coordinator/prompts/suggest_choices.md": "ed766df6368561ddce604ee1ab23854e50a598f14f8ec314b3b93aa1c50b8969",
+      "coordinator/prompts/rag_answer.md": "8d92ec4d0f2da8826926b14939ccbfebf18383cbc5fad0317aa3e664302ab284",
+      "coordinator/prompts/extract_conditions.md": "c31781374aaf25a3cc28155c15c42c47727925a1f92559fb06a82bbcc1eda4ec",
+      "coordinator/prompts/ask_clarify.md": "cf11c55c7c1f7710e64386e9b32819a6fa3992bb5ead5490f5ccb15c1db430a1",
+      "coordinator/prompts/coordinator.md": "37d8cdec3025103a8e0d6cbf6d463d0ec79729b880e53827e698823b90586f00",
+      "coordinator/prompts/guard_input.md": "eb22aea4c292e3cf672d88373e64383f30492880585c008b296b097606ef187c",
+      "concierge/prompts/hospital_agent.md": "3bf83409aa0738c56d2db681061ac8643a9392dca3681e485e5247358394ed4e"
+    }
+  },
+  "data_sha256": {
+    "data/mock/out/_meta.json": "a5f88a8c27ec6b2f548043012a46a3171ac15139ac8d8dc24266c8c081255623",
+    "data/mock/out/price_options.json": "88f2a93e63032d6c207feb6e20d4c650b3822da5617b5628f33a69ce28aad070",
+    "data/mock/out/hospitals.json": "c3a5f46968b13d67008474732e42e41dc5e27dfe358e55beedaa4ccbb1146e61",
+    "data/mock/out/conversations.json": "2eefbd3204da17923169bad4e63706feb3be6be58720aa6463e9b45d2a859bf5",
+    "data/mock/out/reviews.json": "9012be9e10822a042ef5725c91eb778460e803e7aefb4028820551807739b537",
+    "data/mock/out/slots.json": "bcca9f65233a4598c2966cf22f845ebc1c55b4d8ffbea967be348afa610e2a71",
+    "data/mock/out/refresh_tokens.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "data/mock/out/doctors.json": "cce02a231ca1286ca705598ebaa4fadda03f902866a7560b382803ba39267bcb",
+    "data/mock/out/chat_messages.json": "e16a236e8c3483830f44da7e230d6ecf3060910cb0e2ba8ef589b47fd26ad795",
+    "data/mock/out/users.json": "b9160e540d624627fdc9fe2b30e02d028ea3653a0416aa522a011ce9aaff3bb1",
+    "data/mock/out/review_translations.json": "44a99ddb32352e74377c3ee835f4f3db338e96700b1a66bf3083c980063b83c4",
+    "data/mock/out/procedures.json": "d1e9fae36691f5e289fd299dbe0404d3c763374f3a91343c1a3ac070fd0ce1d8",
+    "data/mock/out/glossary.json": "c106d42af035cb8f8b7c43c94a6759d4139a1edbcf15ccc05e6f9976f7f9f3d7",
+    "data/mock/out/reservations.json": "917813514a6d444c11efc125e05da70d63d98377c7bd209d8a08f1a7463bfa23",
+    "data/mock/out/notifications.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "data/mock/out/consultations.json": "8363eaf2e77a6d6a329bd8354cdb023a7a45b713760af8a9e806d412348ef61d",
+    "data/mock/out/ai_tasks.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "data/mock/out/audit_logs.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+  },
+  "formal_design": "before 5 repeats -> after warmup 1 + after 10 -> before warmup 1 + before 5; each repeat 3 scenarios; isolated new conversations; concurrency 1; monitoring on throughout",
+  "excluded": "after-pilot, before-pilot, exploratory/after-a and *-warmup; exploratory included image download period",
+  "images": {
+    "capstone-perf-agent:before": "sha256:83a580dc3c75cd731189643e3567e2f041644875a3dd6c7221f0a4d370ef5fa2",
+    "skala-team1-capstone-agent:latest": "sha256:5edc33684676b4fdb61c983166f4f4f93e603b209bd1a42ce45c70211d4c9772",
+    "skala-team1-capstone-backend:latest": "sha256:50c1588b14ae5a21399f84d0a9c04f0e811b75dd93571a22f32f382997f1a9f7",
+    "skala-team1-capstone-business-mcp:latest": "sha256:a7b0670ab325a701ab25ac882aa8af09d8a010cf7728fbbefbec4501c9150aea",
+    "skala-team1-capstone-rag-mcp:latest": "sha256:c1f340db3763f3fc71544d544f23e6f1fd248c2bd403a00143da87d4e146dffa"
+  },
+  "docker_resources": {
+    "cpus": 10,
+    "memory_bytes": 8321515520
+  },
+  "documents": {
+    "/Users/KoDuBeom/Desktop/skala/week15/deliverables/architecture-report/AI_Service_Architecture_Report.pdf": {
+      "sha256": "adf623af3725d7d1e51c1378e682df369d7d1ef47831b7511334eae999d85df0",
+      "bytes": 3326279
+    },
+    "/Users/KoDuBeom/Desktop/skala/week15/deliverables/service-design-report/제출용/판교1반_1조_다국어상담서비스-설계서.pdf": {
+      "sha256": "0dc1fb876591ad8917108e2c60219e1382085798ba707eba9a323e0d98c29f69",
+      "bytes": 1452878
+    },
+    "/Users/KoDuBeom/Desktop/skala/week15/deliverables/service-design-report/제출용/판교1반_1조_다국어상담서비스-검증.pdf": {
+      "sha256": "e9ad5173132ba2e6574aca3c9341e741c88a8c7f3140d2e1bcf9ba86d0c017e4",
+      "bytes": 863481
+    }
+  },
+  "runtime": {
+    "python": "3.12.15 (main, Oct 21 2026, 01:13:23) [GCC 14.2.0]",
+    "packages": {
+      "langgraph": "1.2.16",
+      "langchain-openai": "1.7.2",
+      "langgraph-checkpoint-postgres": "3.2.0",
+      "fastapi": "0.148.0"
+    }
+  },
+  "models": {
+    "primary": "gpt-5-nano (alias; resolved provider snapshot not instrumented)",
+    "before_main_reasoning": "not explicitly set",
+    "after_main_reasoning": "low",
+    "after_choices_reasoning": "minimal"
+  },
+  "lock_sha256": {
+    "before": "7a0e26bed4b20ae9a963546894e42bc5c32274905c1c326de0dc1b5f2bc14d95",
+    "after": "7a0e26bed4b20ae9a963546894e42bc5c32274905c1c326de0dc1b5f2bc14d95"
+  },
+  "source_contract": "Existing API/DTO implementation used; no new public API, enums, prompts, or message schemas.",
+  "remote_main_observed_later": "5cc408cdbeeaa561bc324919a5e4b0e7d37b0280",
+  "freeze_note": "Remote main advanced during work; measured code remains frozen at 3a8f4ed. Later frontend polish is not included.",
+  "ui_check": "After formal measurement, frontend additionally published on loopback port 80 to use the existing allowed origin http://localhost. No application/CORS config changed. API experiment still used 18080."
+}

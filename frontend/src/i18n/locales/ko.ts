@@ -386,7 +386,7 @@ const ko: typeof en = {
     connectCounselor: '상담원 연결',
     book: '예약하기',
     send: '보내기',
-    input: { ai: '여신 AI에게 물어보세요', agent: '병원에 궁금한 점을 물어보세요', waiting: '상담원에게 남길 메시지를 입력하세요', human: '메시지를 입력하세요' },
+    input: { ai: '여신 AI에게 물어보세요', agent: '병원에 궁금한 점을 물어보세요', waiting: '상담원에게 남길 메시지를 입력하세요', human: '메시지를 입력하세요', approvalPending: '위 카드에서 먼저 선택해 주세요' },
     cond: { label: '검색 조건', procedure: '시술', area: '지역', budget: '예산', language: '언어', date: '날짜', sort: '정렬' },
     info: {
       title: '이 대화 안내',
@@ -408,6 +408,7 @@ const ko: typeof en = {
       label: '개인정보 제공 동의 (필수)',
       desc: '상담을 위해 위 내용과 이름·국적·사용 언어를 {hospital} 상담원에게 제공해요.',
       submit: '상담원 연결 요청',
+      decline: '지금은 안 할게요',
       note: '요청하면 AI 답변은 멈추고 상담원이 이어서 답해요.',
     },
     requested: {

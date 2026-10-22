@@ -385,7 +385,7 @@ export default {
     connectCounselor: 'Talk to counselor',
     book: 'Book',
     send: 'Send',
-    input: { ai: 'Ask Yeoshin AI', agent: 'Ask the clinic anything', waiting: 'Leave a message for the counselor', human: 'Type a message' },
+    input: { ai: 'Ask Yeoshin AI', agent: 'Ask the clinic anything', waiting: 'Leave a message for the counselor', human: 'Type a message', approvalPending: 'Please choose an option on the card above first' },
     cond: { label: 'Search conditions', procedure: 'Procedure', area: 'Area', budget: 'Budget', language: 'Language', date: 'Dates', sort: 'Sort' },
     info: {
       title: 'About this chat',
@@ -407,6 +407,7 @@ export default {
       label: 'I agree to share my information (required)',
       desc: 'For the consultation, the summary above and your name, nationality and language will be shared with the {hospital} counselor.',
       submit: 'Request a counselor',
+      decline: 'Not now',
       note: 'Once requested, the AI stops answering and a counselor takes over.',
     },
     requested: {

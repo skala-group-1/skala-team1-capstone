@@ -164,8 +164,12 @@ function pickTopic(topic: ConsultTopic) {
 const concerns = ref<SkinConcern[]>([])
 const addingConcern = ref(false)
 const lastProcIndex = computed(() => conv.messages.map((m) => !!m.procedures?.length).lastIndexOf(true))
+// 고민 칩은 주제를 막 고른 직후(마지막 사용자 말이 주제 선택)에만. 고민을 고른 뒤 AI 가 되물어도 다시 띄우지 않는다
+const justPickedConcernTopic = computed(
+  () => conv.messages.filter((m) => m.role === 'user').at(-1)?.text === topicLabel('SKIN_CONCERN'),
+)
 const showConcerns = computed(
-  () => conv.topic === 'SKIN_CONCERN' && !busy.value && !pickingTopic.value && (addingConcern.value || lastProcIndex.value < 0),
+  () => conv.topic === 'SKIN_CONCERN' && !busy.value && !pickingTopic.value && (addingConcern.value || justPickedConcernTopic.value),
 )
 function toggleConcern(c: SkinConcern) {
   concerns.value = concerns.value.includes(c) ? concerns.value.filter((x) => x !== c) : [...concerns.value, c]
@@ -567,7 +571,7 @@ watch(
             {{ t(`chat.concern.items.${c}`) }}
           </AppChip>
         </div>
-        <AppButton size="s" :disabled="!concerns.length" @click="submitConcerns">{{ t('chat.concern.done', { n: concerns.length }) }}</AppButton>
+        <AppButton size="s" :disabled="!concerns.length" @click="submitConcerns">{{ concerns.length ? t('chat.concern.done', { n: concerns.length }) : t('chat.concern.pick') }}</AppButton>
         <p class="t-caption-12 muted">{{ t('chat.concern.note') }}</p>
       </section>
       <TopicCarousel v-if="showTopics" @pick="pickTopic" />

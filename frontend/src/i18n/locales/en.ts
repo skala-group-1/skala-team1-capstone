@@ -342,6 +342,7 @@ export default {
     },
     concern: {
       done: 'Done ({n} selected)',
+      pick: 'Choose your concerns',
       note: 'This is procedure info, not a diagnosis. You can also describe it in words.',
       disclaimer: 'Suitability and results are decided by the doctor at the clinic.',
       find: 'Find clinics for this | Find clinics for these {n}',

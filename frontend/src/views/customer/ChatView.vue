@@ -659,7 +659,7 @@ watch(
     <footer v-else class="dock">
       <div v-if="isHospital && !isHuman && !pending && !conv.streaming" class="quick">
         <AppButton variant="outline" block @click="conv.send(t('chat.requestCounselor'))">{{ t('chat.connectCounselor') }}</AppButton>
-        <AppButton block @click="router.push(`/hospitals/${conv.hospital?.id}/book`)">{{ t('chat.book') }}</AppButton>
+        <AppButton v-if="conv.mode !== 'AFTERCARE'" block @click="router.push(`/hospitals/${conv.hospital?.id}/book`)">{{ t('chat.book') }}</AppButton>
       </div>
       <div v-if="canEndConsult" class="quick">
         <AppButton variant="outline" block @click="endConsultOpen = true">

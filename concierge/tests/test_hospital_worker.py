@@ -151,7 +151,7 @@ async def test_standalone_graph_returns_draft_without_main_agent(monkeypatch):
     graph = compile_hospital_chat(MemorySaver(), store)
     publisher = AsyncMock()
     await HospitalWorker(graph, store, publisher).handle(request())
-    assert events(publisher)[-1].data == {"answer": "병원 1 안내", "sources": []}
+    assert events(publisher)[-1].data == {"answer": "병원 1 안내", "sources": [], "suggestions": []}
 
 
 async def test_lifespan_starts_and_closes_worker(monkeypatch):

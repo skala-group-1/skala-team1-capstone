@@ -76,3 +76,4 @@ class AgentState(TypedDict, total=False):
     relax_options: list[dict]
     trip_summary: str
     optional_conditions_asked: bool
+    suggestions: list[str]             # DONE.suggestions 선택지 칩 (최대 4, 사용자 언어). 선택형 질문이 아니면 []

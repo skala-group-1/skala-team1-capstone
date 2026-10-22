@@ -120,6 +120,7 @@ async def test_main_action_and_all_contract_state_events():
             "memory_proposal": {"fields": {"preferred_areas": ["GANGNAM"]}, "message": "Save?"},
             "verify_passed": True, "verify_attempts": 0,
             "citations": [{"doc_id": "faq", "title": "Title", "section": "visit", "uri": "doc://faq/sections/visit", "snippet": "Text"}],
+            "suggestions": ["매몰법", "절개법"],
         }
 
     worker, publisher = worker_for([("plan", plan), ("respond", lambda s: {"messages": [AIMessage(content="Answer")]})])
@@ -135,6 +136,7 @@ async def test_main_action_and_all_contract_state_events():
     assert output["MEMORY_PROPOSAL"]["fields"]["preferredAreas"] == ["GANGNAM"]
     assert output["VERIFY"] == {"passed": True, "attempts": 0}
     assert output["DONE"]["sources"][0]["docId"] == "faq"
+    assert output["DONE"]["suggestions"] == ["매몰법", "절개법"]
 
 
 async def test_restart_approval_edit_and_duplicate_resume_only_execute_once():

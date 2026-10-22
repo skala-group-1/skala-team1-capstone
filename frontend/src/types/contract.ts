@@ -49,7 +49,7 @@ export type SortBy = 'REVIEW_COUNT' | 'RATING' | 'PRICE' | 'DISTANCE'
 export type SlotStatus = 'AVAILABLE' | 'HELD' | 'BOOKED'
 export type ReservationStatus = 'PENDING' | 'CONFIRMED' | 'REJECTED' | 'EXPIRED' | 'CANCELLED'
 export type ReservationSource = 'AI' | 'DIRECT'
-export type ConversationMode = 'MAIN' | 'HOSPITAL' | 'HUMAN'
+export type ConversationMode = 'MAIN' | 'HOSPITAL' | 'HUMAN' | 'AFTERCARE'
 export type AiTaskStatus = 'QUEUED' | 'RUNNING' | 'WAITING_APPROVAL' | 'DONE' | 'FAILED'
 export type ConsultationStatus = 'WAITING' | 'ACTIVE' | 'CLOSED'
 export type TranslationStatus = 'PENDING' | 'DONE' | 'FAILED'
@@ -64,6 +64,7 @@ export type NotificationType =
   | 'CONSULTATION_REQUESTED'
   | 'CONSULTATION_ACCEPTED'
   | 'CONSULTATION_CLOSED'
+  | 'AFTERCARE_MESSAGE'
 
 export const AREA_CODES: readonly AreaCode[] = ['GANGNAM', 'SINSA', 'APGUJEONG', 'CHEONGDAM', 'MYEONGDONG', 'HONGDAE', 'JAMSIL']
 export const SORT_BY: readonly SortBy[] = ['REVIEW_COUNT', 'RATING', 'PRICE', 'DISTANCE']
@@ -83,6 +84,8 @@ export type ErrorCode =
   | 'INVALID_STATE_TRANSITION'
   | 'CONSENT_REQUIRED'
   | 'TASK_NOT_WAITING_APPROVAL'
+  | 'REVIEW_NOT_ALLOWED'
+  | 'REVIEW_ALREADY_EXISTS'
   | 'UNKNOWN_PROCEDURE'
   | 'INTERNAL_ERROR'
   | 'AI_UNAVAILABLE'
@@ -224,9 +227,13 @@ export interface Review {
   ageGroup: string
   gender: Gender
   reviewerNationality: string
+  /** 원문 언어 */
   lang: Locale
+  /** 원문 */
   content: string
   createdAt: IsoDateTime
+  /** 보는 사람 언어 번역본 (같은 언어이거나 아직 번역 전이면 null) */
+  translatedContent: string | null
 }
 
 export interface HospitalDetail {
@@ -311,6 +318,18 @@ export interface Reservation {
   note: string | null
   createdAt: IsoDateTime
   decidedAt: IsoDateTime | null
+  /** 리뷰를 쓸 수 있는지 (CONFIRMED 이고 아직 안 씀). 판단은 backend */
+  reviewable: boolean
+  /** 이 예약으로 쓴 리뷰 id (없으면 null) */
+  reviewId: number | null
+}
+
+/** POST /api/reservations/{id}/review. 병원·시술·작성자 속성·언어는 서버가 채운다 */
+export interface CreateReviewRequest {
+  /** 1~5 */
+  rating: number
+  /** 10~1000자 */
+  content: string
 }
 
 export interface RejectRequest {
@@ -558,7 +577,8 @@ export interface SseEventMap {
   MEMORY_PROPOSAL: { fields: AiProfile; message: string }
   PROCEDURE_INFO: { procedures: ProcedureInfo[] }
   VERIFY: { passed: boolean; attempts: number }
-  DONE: { answer: string; sources: Source[] }
+  /** suggestions: answer 가 고르라고 물을 때의 선택지 칩 (최대 4, 사용자 locale). 이전 agent 는 안 보낼 수 있음 */
+  DONE: { answer: string; sources: Source[]; suggestions?: string[] }
   FAILED: { code: ErrorCode; message: string; traceId: Uuid }
 }
 export type SseEventName = keyof SseEventMap

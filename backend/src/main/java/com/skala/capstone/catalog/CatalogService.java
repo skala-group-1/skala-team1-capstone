@@ -471,18 +471,37 @@ public class CatalogService {
 	}
 
 	public PageResponse<Review> reviews(long hospitalId, String lang, int page, int size) {
+		return reviews(hospitalId, lang, null, page, size, null);
+	}
+
+	public PageResponse<Review> reviews(long hospitalId, String lang, int page, int size, String viewerLocale) {
+		return reviews(hospitalId, lang, null, page, size, viewerLocale);
+	}
+
+	/** viewerLocale 이 있으면 그 언어 번역본을 translatedContent 로 붙인다 (내부 API 는 원문만). procedureCode 로 시술 필터 */
+	public PageResponse<Review> reviews(long hospitalId, String lang, String procedureCode, int page, int size,
+			String viewerLocale) {
 		requireHospital(hospitalId);
-		String where = " WHERE hospital_id = :id" + (lang != null ? " AND lang = :lang" : "");
+		// 취소된 예약으로 쓴 리뷰는 숨긴다 (hospital_review_stats 뷰와 같은 조건, V103)
+		String where = " WHERE reviews.hospital_id = :id" + (lang != null ? " AND reviews.lang = :lang" : "")
+				+ (procedureCode != null ? " AND reviews.procedure_code = :procedure" : "")
+				+ " AND NOT EXISTS (SELECT 1 FROM app.reservations x WHERE x.id = reviews.reservation_id"
+				+ " AND x.status = 'CANCELLED')";
 		Map<String, Object> params = new LinkedHashMap<>();
 		params.put("id", hospitalId);
 		if (lang != null) {
 			params.put("lang", lang);
 		}
+		if (procedureCode != null) {
+			params.put("procedure", procedureCode);
+		}
 		long total = jdbc.sql("SELECT count(*) FROM app.reviews" + where).params(params).query(Long.class).single();
 		params.put("limit", size);
 		params.put("offset", (long) page * size);
-		List<Review> items = jdbc.sql("SELECT * FROM app.reviews" + where
-				+ " ORDER BY created_at DESC, id DESC LIMIT :limit OFFSET :offset").params(params)
+		params.put("viewer", viewerLocale == null ? "" : viewerLocale);
+		List<Review> items = jdbc.sql("SELECT reviews.*, t.content AS translated_content FROM app.reviews"
+				+ " LEFT JOIN app.review_translations t ON t.review_id = reviews.id AND t.lang = :viewer" + where
+				+ " ORDER BY reviews.created_at DESC, reviews.id DESC LIMIT :limit OFFSET :offset").params(params)
 				.query((rs, i) -> new Review(
 						rs.getLong("id"),
 						rs.getString("procedure_code"),
@@ -492,7 +511,8 @@ public class CatalogService {
 						rs.getString("reviewer_nationality"),
 						rs.getString("lang"),
 						rs.getString("content"),
-						Times.kst(rs.getObject("created_at", OffsetDateTime.class)))).list();
+						Times.kst(rs.getObject("created_at", OffsetDateTime.class)),
+						rs.getString("translated_content"))).list();
 		return new PageResponse<>(items, page, size, total);
 	}
 

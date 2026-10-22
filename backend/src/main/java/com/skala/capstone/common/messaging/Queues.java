@@ -6,8 +6,8 @@ import java.util.List;
  * RabbitMQ 큐 이름 (12 계약서 7장, 16 명세 10장). 라우팅 키 = 큐 이름, exchange 는 하나(capstone.direct).
  *
  * <pre>
- * backend → agent : ai.task.requested, ai.task.resume, chat.translate, summary.translate
- * agent → backend : ai.task.event, chat.translated, summary.translated
+ * backend → agent : ai.task.requested, ai.task.resume, chat.translate, summary.translate, review.translate
+ * agent → backend : ai.task.event, chat.translated, summary.translated, review.translated
  * backend → backend: notify (알림 저장·푸시)
  * </pre>
  */
@@ -28,6 +28,10 @@ public final class Queues {
 	public static final String SUMMARY_TRANSLATED = "summary.translated";
 	public static final String SUMMARY_TRANSLATE_DLQ = "summary.translate.dlq";
 
+	public static final String REVIEW_TRANSLATE = "review.translate";
+	public static final String REVIEW_TRANSLATED = "review.translated";
+	public static final String REVIEW_TRANSLATE_DLQ = "review.translate.dlq";
+
 	public static final String NOTIFY = "notify";
 	public static final String NOTIFY_DLQ = "notify.dlq";
 
@@ -36,7 +40,7 @@ public final class Queues {
 
 	/** 실패 시 5초·15초 뒤 다시 처리할 수 있도록 지연 재시도 큐를 두는 작업 큐들 */
 	public static final List<String> RETRYABLE = List.of(AI_TASK_REQUESTED, AI_TASK_RESUME, CHAT_TRANSLATE,
-			SUMMARY_TRANSLATE, NOTIFY);
+			SUMMARY_TRANSLATE, REVIEW_TRANSLATE, NOTIFY);
 
 	private Queues() {
 	}
@@ -55,6 +59,7 @@ public final class Queues {
 			case AI_TASK_REQUESTED, AI_TASK_RESUME -> AI_TASK_DLQ;
 			case CHAT_TRANSLATE -> CHAT_TRANSLATE_DLQ;
 			case SUMMARY_TRANSLATE -> SUMMARY_TRANSLATE_DLQ;
+			case REVIEW_TRANSLATE -> REVIEW_TRANSLATE_DLQ;
 			case NOTIFY -> NOTIFY_DLQ;
 			default -> null;
 		};

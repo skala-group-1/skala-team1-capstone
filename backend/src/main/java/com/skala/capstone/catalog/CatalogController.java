@@ -87,13 +87,14 @@ public class CatalogController {
 		return catalog.slots(id, procedure, dateFrom, dateTo, doctorId, limit, RequestLocale.resolve(request));
 	}
 
-	@Operation(summary = "리뷰 목록 (최신순, lang 필터)")
+	@Operation(summary = "리뷰 목록 (최신순, lang·시술 필터)")
 	@GetMapping("/hospitals/{id}/reviews")
 	public PageResponse<Review> reviews(@PathVariable long id,
 			@RequestParam(required = false) String lang,
+			@RequestParam(required = false) String procedure,
 			@RequestParam(defaultValue = "0") @Min(0) int page,
-			@RequestParam(defaultValue = "20") @Min(1) @Max(50) int size) {
-		return catalog.reviews(id, lang, page, size);
+			@RequestParam(defaultValue = "20") @Min(1) @Max(50) int size, HttpServletRequest request) {
+		return catalog.reviews(id, lang, procedure, page, size, RequestLocale.resolve(request));
 	}
 
 	@Operation(summary = "병원 비교 (최대 3곳, 한 시술 기준)")

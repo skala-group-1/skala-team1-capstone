@@ -50,8 +50,10 @@ public final class CatalogDtos {
 			Map<String, Long> byGender) {
 	}
 
+	/** content·lang 은 원문. translatedContent 는 보는 사람 언어 번역본 (같은 언어이거나 번역 전이면 null) */
 	public record Review(long id, String procedureCode, int rating, String ageGroup, String gender,
-			String reviewerNationality, String lang, String content, OffsetDateTime createdAt) {
+			String reviewerNationality, String lang, String content, OffsetDateTime createdAt,
+			String translatedContent) {
 	}
 
 	public record CompareRequest(

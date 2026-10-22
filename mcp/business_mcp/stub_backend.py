@@ -83,10 +83,11 @@ class StubBackendClient:
             raise errors.not_found("Hospital", hospital_id, "Use an id from business_search_hospitals results.")
         return h
 
-    async def get_hospital_reviews(self, ctx, hospital_id, lang, page, size):
+    async def get_hospital_reviews(self, ctx, hospital_id, lang, page, size, procedure_code=None):
         self._hospital(hospital_id)
         reviews = [r for r in self.reviews if r["hospital_id"] == hospital_id
-                   and (lang is None or r["lang"] == lang)]
+                   and (lang is None or r["lang"] == lang)
+                   and (procedure_code is None or r["procedure_code"] == procedure_code)]
         reviews.sort(key=lambda r: (r["created_at"], r["id"]), reverse=True)
         return {"items": reviews[page * size:(page + 1) * size],
                 "page": page, "size": size, "total": len(reviews)}

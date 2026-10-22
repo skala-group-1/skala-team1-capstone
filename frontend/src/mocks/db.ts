@@ -13,6 +13,7 @@ import doctorsJson from '@mock/doctors.json'
 import priceOptionsJson from '@mock/price_options.json'
 import slotsJson from '@mock/slots.json'
 import reviewsJson from '@mock/reviews.json'
+import reviewTranslationsJson from '@mock/review_translations.json'
 import type {
   AreaCode,
   Doctor,
@@ -109,14 +110,30 @@ type ReviewRow = {
   lang: string
   content: string
   created_at: string
+  /** 고객이 예약에서 쓴 리뷰만 (seed 리뷰는 없음) */
+  reservation_id?: number
+  /** 예약이 취소되면 true → 목록·집계에서 제외 (backend V103 과 같은 규칙) */
+  hidden?: boolean
 }
 export const reviews = (reviewsJson as ReviewRow[]).sort((a, b) => b.created_at.localeCompare(a.created_at))
 /** app.hospital_review_stats 뷰와 같은 집계 (건수·평균·연령대·성별) */
 const statsCache = new Map<number, ReviewStats>()
+/** 새 리뷰는 최신순 맨 앞에 넣고 그 병원 집계를 다시 계산하게 한다 */
+export function addReview(row: ReviewRow) {
+  reviews.unshift(row)
+  statsCache.delete(row.hospital_id)
+}
+/** 예약 취소 → 그 예약으로 쓴 리뷰를 숨긴다 (삭제하지 않음) */
+export function hideReviewOf(reservationId: number) {
+  const row = reviews.find((r) => r.reservation_id === reservationId)
+  if (!row) return
+  row.hidden = true
+  statsCache.delete(row.hospital_id)
+}
 export function reviewStats(hospitalId: number): ReviewStats {
   let s = statsCache.get(hospitalId)
   if (!s) {
-    const rows = reviews.filter((r) => r.hospital_id === hospitalId)
+    const rows = reviews.filter((r) => r.hospital_id === hospitalId && !r.hidden)
     const count = (key: 'age_group' | 'gender') => rows.reduce<Record<string, number>>((m, r) => ((m[r[key]] = (m[r[key]] ?? 0) + 1), m), {})
     s = {
       reviewCount: rows.length,
@@ -128,7 +145,11 @@ export function reviewStats(hospitalId: number): ReviewStats {
   }
   return s
 }
-export function toReview(r: ReviewRow): Review {
+/** app.review_translations: (리뷰 id, 언어) → 번역본 */
+const reviewTranslations = new Map(
+  (reviewTranslationsJson as { review_id: number; lang: string; content: string }[]).map((t) => [`${t.review_id}:${t.lang}`, t.content]),
+)
+export function toReview(r: ReviewRow, viewer?: Locale): Review {
   return {
     id: r.id,
     procedureCode: r.procedure_code as ProcedureCode,
@@ -139,6 +160,7 @@ export function toReview(r: ReviewRow): Review {
     lang: r.lang as Locale,
     content: r.content,
     createdAt: r.created_at,
+    translatedContent: viewer ? (reviewTranslations.get(`${r.id}:${viewer}`) ?? null) : null,
   }
 }
 

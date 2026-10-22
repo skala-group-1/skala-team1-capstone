@@ -171,6 +171,27 @@ class CatalogIntegrationTest extends IntegrationTest {
 	}
 
 	@Test
+	void reviewsAreFilteredByProcedureBeforePaging() throws Exception {
+		JsonNode all = body(mvc.perform(get("/internal/hospitals/1/reviews")
+				.header("X-Service-Token", app.serviceToken()).header("X-Acting-User-Id", "3")
+				.param("size", "50"))
+				.andExpect(status().isOk()).andReturn());
+		String code = all.get("items").get(0).get("procedureCode").asText();
+		JsonNode filtered = body(mvc.perform(get("/internal/hospitals/1/reviews")
+				.header("X-Service-Token", app.serviceToken()).header("X-Acting-User-Id", "3")
+				.param("procedureCode", code).param("size", "10"))
+				.andExpect(status().isOk()).andReturn());
+		assertThat(filtered.get("total").asLong()).isGreaterThan(0).isLessThanOrEqualTo(all.get("total").asLong());
+		for (JsonNode r : filtered.get("items")) {
+			assertThat(r.get("procedureCode").asText()).isEqualTo(code);
+		}
+		JsonNode pub = body(mvc.perform(get("/api/hospitals/1/reviews").header(HttpHeaders.AUTHORIZATION, zhCustomer)
+				.param("procedure", code).param("size", "10"))
+				.andExpect(status().isOk()).andReturn());
+		assertThat(pub.get("total")).isEqualTo(filtered.get("total"));
+	}
+
+	@Test
 	void internalReviewsMatchPublicReviewsAndRequireServiceAuthentication() throws Exception {
 		JsonNode expected = body(mvc.perform(get("/api/hospitals/1/reviews")
 				.header(HttpHeaders.AUTHORIZATION, zhCustomer).param("lang", "zh").param("size", "3"))

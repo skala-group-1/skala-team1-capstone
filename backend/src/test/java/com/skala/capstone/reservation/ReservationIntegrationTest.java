@@ -231,7 +231,99 @@ class ReservationIntegrationTest extends IntegrationTest {
 		}
 	}
 
+	@Test
+	void reviewOnlyForOwnConfirmedReservationOnce() throws Exception {
+		String owner = accessToken("customer.ko1@demo.local");
+		FreeSlot s = takeFreeSlot(3);
+		long id = body(create(owner, UUID.randomUUID().toString(), s).andExpect(status().isCreated()).andReturn())
+				.get("id").asLong();
+		Map<String, Object> review = Map.of("rating", 4, "content", "  상담이 친절했고 통역도 정확했어요.  ");
+
+		// PENDING → 아직 못 쓴다
+		JsonNode pending = body(mvc.perform(get("/api/reservations/{id}", id).header(HttpHeaders.AUTHORIZATION, owner))
+				.andExpect(status().isOk()).andReturn());
+		assertThat(pending.get("reviewable").asBoolean()).isFalse();
+		writeReview(owner, id, review).andExpect(status().isConflict())
+				.andExpect(jsonPath("$.code").value("REVIEW_NOT_ALLOWED"));
+
+		mvc.perform(post("/api/hospital-admin/reservations/{id}/approve", id)
+				.header(HttpHeaders.AUTHORIZATION, accessToken("admin.h3@demo.local")))
+				.andExpect(status().isOk());
+		JsonNode confirmed = body(mvc.perform(get("/api/reservations/{id}", id).header(HttpHeaders.AUTHORIZATION, owner))
+				.andExpect(status().isOk()).andReturn());
+		assertThat(confirmed.get("reviewable").asBoolean()).isTrue();
+		assertThat(confirmed.get("reviewId").isNull()).isTrue();
+
+		// 남의 예약 → 403, 입력 검증 → 400
+		writeReview(accessToken("customer.zh1@demo.local"), id, review).andExpect(status().isForbidden());
+		writeReview(owner, id, Map.of("rating", 6, "content", "short"))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.code").value("VALIDATION_FAILED"));
+
+		JsonNode created = body(writeReview(owner, id, review).andExpect(status().isCreated()).andReturn());
+		long reviewId = created.get("id").asLong();
+		assertThat(created.get("rating").asInt()).isEqualTo(4);
+		assertThat(created.get("procedureCode").asText()).isEqualTo(s.procedureCode());
+		assertThat(created.get("content").asText()).isEqualTo("상담이 친절했고 통역도 정확했어요.");
+		assertThat(created.get("createdAt").asText()).endsWith("+09:00");
+
+		// 저장 후 translator 에 번역 요청 (원문·작성자 화면 언어)
+		JsonNode request = receiveFrom(com.skala.capstone.common.messaging.Queues.REVIEW_TRANSLATE,
+				m -> m.get("reviewId").asLong() == reviewId);
+		assertThat(request.get("text").asText()).isEqualTo("상담이 친절했고 통역도 정확했어요.");
+		assertThat(request.get("from").asText()).isEqualTo("ko");
+
+		// DB: 예약·병원·작성자 프로필(1997-07-14, F, KR, ko)에서 채워진 값
+		Map<String, Object> row = jdbc.sql("SELECT * FROM app.reviews WHERE id = :id").param("id", reviewId)
+				.query().singleRow();
+		assertThat(row.get("reservation_id")).isEqualTo(id);
+		assertThat(row.get("hospital_id")).isEqualTo(3L);
+		assertThat(row.get("user_id")).isEqualTo(14L);
+		assertThat(row.get("age_group")).isEqualTo("20s");
+		assertThat(row.get("gender")).isEqualTo("F");
+		assertThat(row.get("reviewer_nationality")).isEqualTo("KR");
+		assertThat(row.get("lang")).isEqualTo("ko");
+
+		JsonNode after = body(mvc.perform(get("/api/reservations/{id}", id).header(HttpHeaders.AUTHORIZATION, owner))
+				.andExpect(status().isOk()).andReturn());
+		assertThat(after.get("reviewable").asBoolean()).isFalse();
+		assertThat(after.get("reviewId").asLong()).isEqualTo(reviewId);
+
+		// 예약당 1회
+		writeReview(owner, id, review).andExpect(status().isConflict())
+				.andExpect(jsonPath("$.code").value("REVIEW_ALREADY_EXISTS"));
+
+		// 병원 리뷰 목록(최신순) 맨 위에 보인다
+		mvc.perform(get("/api/hospitals/{id}/reviews", 3).param("lang", "ko").header(HttpHeaders.AUTHORIZATION, owner))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.items[0].id").value(reviewId));
+
+		// 예약을 취소하면 리뷰는 남지만 목록·통계에서 숨겨진다
+		long countBefore = reviewCount(3);
+		mvc.perform(post("/api/reservations/{id}/cancel", id).header(HttpHeaders.AUTHORIZATION, owner))
+				.andExpect(status().isOk());
+		assertThat(count("SELECT count(*) FROM app.reviews WHERE id = " + reviewId)).isEqualTo(1);
+		assertThat(reviewCount(3)).isEqualTo(countBefore - 1);
+		JsonNode list = body(mvc.perform(get("/api/hospitals/{id}/reviews", 3).param("lang", "ko").param("size", "50")
+				.header(HttpHeaders.AUTHORIZATION, owner)).andExpect(status().isOk()).andReturn());
+		list.get("items").forEach(item -> assertThat(item.get("id").asLong()).isNotEqualTo(reviewId));
+		JsonNode cancelled = body(mvc.perform(get("/api/reservations/{id}", id).header(HttpHeaders.AUTHORIZATION, owner))
+				.andExpect(status().isOk()).andReturn());
+		assertThat(cancelled.get("reviewable").asBoolean()).isFalse();
+	}
+
+	private long reviewCount(long hospitalId) {
+		return jdbc.sql("SELECT review_count FROM app.hospital_review_stats WHERE hospital_id = :h")
+				.param("h", hospitalId).query(Long.class).single();
+	}
+
 	// ------------------------------------------------------------------ helpers
+
+	private org.springframework.test.web.servlet.ResultActions writeReview(String token, long reservationId,
+			Map<String, Object> body) throws Exception {
+		return mvc.perform(post("/api/reservations/{id}/review", reservationId).header(HttpHeaders.AUTHORIZATION, token)
+				.contentType(MediaType.APPLICATION_JSON).content(json(body)));
+	}
 
 	private org.springframework.test.web.servlet.ResultActions create(String token, String key, FreeSlot s)
 			throws Exception {

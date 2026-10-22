@@ -10,6 +10,7 @@ import en from './locales/en'
 import zh from './locales/zh'
 import ja from './locales/ja'
 import ko from './locales/ko'
+import { aftercareMessages } from './aftercare'
 import { session } from '@/api/session'
 import type { Locale } from '@/types/contract'
 
@@ -28,6 +29,7 @@ export const i18n = createI18n({
   fallbackLocale: 'en',
   messages: { en, zh, ja, ko },
 })
+for (const l of SUPPORTED) i18n.global.mergeLocaleMessage(l, aftercareMessages[l])
 session.setLocale(i18n.global.locale.value as Locale)
 
 export function setLocale(locale: Locale) {

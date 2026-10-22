@@ -15,7 +15,7 @@ from app.graph import routing
 from app.graph.builder import build_hospital_subgraph, build_main_graph, compile_graph
 
 MAIN_NODES = {"load_memory", "guard_input", "guard_reply", "open_hospital_conversation", "extract_conditions",
-              "ask_clarify", "planner_agent", "tools", "verify", "memory_propose", "respond", "hospital_subgraph"}
+              "ask_clarify", "planner_agent", "tools", "memory_propose", "respond", "hospital_subgraph"}
 HOSPITAL_NODES = {"load_hospital_context", "hospital_agent", "hospital_tools", "approval", "execute_action"}
 
 
@@ -23,6 +23,7 @@ def test_mermaid_contains_all_nodes():
     main = build_main_graph().compile().get_graph().draw_mermaid()
     hospital = build_hospital_subgraph().compile().get_graph().draw_mermaid()
     assert all(n in main for n in MAIN_NODES)
+    assert "verify" not in build_main_graph().nodes
     assert all(n in hospital for n in HOSPITAL_NODES)
 
 
@@ -37,7 +38,7 @@ def test_missing_conditions_goes_to_ask_clarify(config, monkeypatch):
     assert r["messages"][-1].content == "Which procedure and dates?"
 
 
-def test_full_conditions_goes_through_planner_and_verify(config, monkeypatch):
+def test_full_conditions_goes_through_planner_to_response(config, monkeypatch):
     from app.graph import builder
 
     monkeypatch.setattr(builder, "planner_agent", lambda state: {"draft": "Hospital facts checked."})
@@ -80,7 +81,8 @@ def booking_graph(monkeypatch):
         return {"options": []}
 
     async def slots(hospital_id: int, procedure_code: str, date_from: str, date_to: str):
-        return {"slots": [{"id": 12, "start_at": "2026-10-22T10:00:00+09:00", "status": "AVAILABLE", "doctor_id": 11}]}
+        return {"slots": [{"id": 12, "start_at": "2026-10-22T10:00:00+09:00",
+                           "end_at": "2026-10-22T10:30:00+09:00", "status": "AVAILABLE", "doctor_id": 11}]}
 
     async def booking(hospital_id: int, slot_id: int, procedure_code: str):
         raise AssertionError("Mutation must only execute through the approval boundary")
@@ -158,7 +160,9 @@ async def test_hospital_booking_rejected(booking_graph, config):
     assert not r.get("__interrupt__")
 
 
-def test_verify_retries_once():
-    assert routing.route_after_verify({"verify_passed": False, "verify_attempts": 1}) == "planner_agent"
-    assert routing.route_after_verify({"verify_passed": False, "verify_attempts": 2}) == "memory_propose"
-    assert routing.route_after_verify({"verify_passed": True, "verify_attempts": 0}) == "memory_propose"
+def test_planner_routes_to_memory_or_tools_without_verify():
+    assert routing.route_after_planner({"messages": [AIMessage("Answer")]}) == "memory_propose"
+    message = AIMessage(content="", tool_calls=[{
+        "name": "business_search_hospitals", "args": {}, "id": "lookup",
+    }])
+    assert routing.route_after_planner({"messages": [message]}) == "tools"

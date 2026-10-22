@@ -118,6 +118,46 @@ async def test_replayed_proposal_uses_stable_key(monkeypatch):
     assert (await actions.prepare_action(s, c))["args"]["idempotency_key"] != a["args"]["idempotency_key"]
 
 
+@pytest.mark.parametrize("explicit_null", [False, True])
+async def test_unique_price_is_filled_in_card_and_approved_request(monkeypatch, explicit_null):
+    args = {"slot_id": 12, "procedure_code": "JAW_BOTOX"}
+    if explicit_null:
+        args["price_option_id"] = None
+    s = await prepared(monkeypatch, args=args)
+    mutation = AsyncMock(return_value={"id": 30, "status": "PENDING", "hospital": {"id": 7}})
+    monkeypatch.setattr(execution, "lookup", mutation)
+    g, config = graph(), {"configurable": {"thread_id": "auto-price"}}
+    result = await g.ainvoke(s, config)
+    card = result["__interrupt__"][0].value
+    assert card["args"]["price_option_id"] == 5
+    assert "150,000 KRW" in str(card["display"])
+    mutation.assert_not_awaited()
+    await g.ainvoke(Command(resume={"approved": True}), config)
+    assert mutation.call_args.args[1]["price_option_id"] == 5
+
+
+@pytest.mark.parametrize("selected", [None, 6, 999])
+async def test_multiple_prices_require_selection_and_preserve_selected_option(monkeypatch, selected):
+    original = mock_reads(monkeypatch)
+    async def lookup(name, args):
+        if name == "business_get_price_options":
+            return {"options": [
+                {"id": 5, "price_krw": 150000, "vat_included": False},
+                {"id": 6, "price_krw": 250000, "vat_included": True},
+            ]}
+        return await original(name, args)
+    monkeypatch.setattr(actions, "lookup", lookup)
+    c = call(args={"slot_id": 12, "procedure_code": "JAW_BOTOX", "price_option_id": selected})
+    if selected != 6:
+        with pytest.raises(ValueError, match="Multiple price options|could not be verified"):
+            await actions.prepare_action(state(), c)
+    else:
+        pending = await actions.prepare_action(state(), c)
+        assert pending["args"]["price_option_id"] == 6
+        assert "250,000 KRW" in str(pending["display"])
+        assert "150,000 KRW" not in str(pending["display"])
+
+
 async def test_mcp_retries_receive_same_idempotency_key(monkeypatch):
     s = await prepared(monkeypatch)
     s["pending_action"]["approved"] = True

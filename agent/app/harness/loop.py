@@ -6,7 +6,6 @@
 MAX_TURNS = 8                 # planner_agent / hospital_agent 루프 최대 턴
 MAX_TASK_SECONDS = 120        # 작업 1개 최대 시간
 MAX_SAME_TOOL_CALLS = 3       # 같은 도구 + 같은 인자 반복 허용 횟수 (get_available_slots 는 병원마다 인자가 다름)
-MAX_VERIFY_ATTEMPTS = 1       # verify(Critic) 불일치 시 재생성 최대 횟수 (「AI Agent 설계」 9-3)
 
 
 def new_loop_state(started_at: float) -> dict:

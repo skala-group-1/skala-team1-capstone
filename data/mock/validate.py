@@ -18,6 +18,7 @@ import subprocess
 import sys
 from collections import Counter
 from generate import sample_faq_documents
+from seed_extras import SLOT_DAYS, validate_review_translations
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 errors = []
@@ -139,7 +140,7 @@ def validate_data(d, meta):
         st = dt.datetime.fromisoformat(s["start_at"])
         check(10 <= st.hour and dt.datetime.fromisoformat(s["end_at"]).hour * 60 +
               dt.datetime.fromisoformat(s["end_at"]).minute <= 18 * 60, "slot %d outside 10-18" % s["id"])
-        check(0 <= (st.date() - base).days < 21, "slot %d outside 21-day window" % s["id"])
+        check(0 <= (st.date() - base).days < SLOT_DAYS, "slot %d outside %d-day window" % (s["id"], SLOT_DAYS))
         check((s["hospital_id"], s["start_at"]) not in seen, "slot %d duplicate time" % s["id"])
         seen.add((s["hospital_id"], s["start_at"]))
         check((s["status"] == "HELD") == (s["hold_expires_at"] is not None), "slot %d hold_expires_at" % s["id"])
@@ -185,7 +186,7 @@ def validate_data(d, meta):
     # reviews
     per_h = Counter(r["hospital_id"] for r in d["reviews"])
     for h in d["hospitals"]:
-        check(5 <= per_h[h["id"]] <= 80, "hospital %d has %d reviews" % (h["id"], per_h[h["id"]]))
+        check(20 <= per_h[h["id"]] <= 320, "hospital %d has %d reviews" % (h["id"], per_h[h["id"]]))
     for r in d["reviews"]:
         check(r["hospital_id"] in H and r["procedure_code"] in offered[r["hospital_id"]], "review %d FK" % r["id"])
         check(1 <= r["rating"] <= 5 and r["age_group"] in ("20s", "30s", "40s", "50s") and
@@ -266,7 +267,7 @@ def validate_sql(out, data):
 
 
 def validate_rag(rag, data):
-    want = {"GUIDE": 18, "TRAVEL": 1, "PREP": 1, "AFTERCARE": 1, "FAQ": 1, "HOSPITAL_FAQ": 100}
+    want = {"GUIDE": 18, "TRAVEL": 1, "PREP": 19, "AFTERCARE": 19, "FAQ": 1, "HOSPITAL_FAQ": 100}
     expected_samples = sample_faq_documents(data["hospitals"])
     got = Counter()
     ids = set()
@@ -297,6 +298,8 @@ def validate_rag(rag, data):
                 for sec in ("Overview", "How it works", "Procedure steps", "Recovery & downtime",
                             "Common side effects", "Before your visit", "Questions to ask your doctor"):
                     check("\n## %s\n" % sec in text, "%s: missing section %s" % (fn, sec))
+            if fm.get("doc_type") in ("AFTERCARE", "PREP") and fm.get("procedure_code") != "null":
+                check(fm.get("procedure_code") in procs, "%s: procedure_code" % fn)
             if fm.get("doc_type") == "HOSPITAL_FAQ":
                 check(int(fm.get("hospital_id", 0)) in {h["id"] for h in data["hospitals"]}, "%s: hospital_id" % fn)
                 if is_sample:
@@ -330,6 +333,7 @@ def main():
 
     data, meta = load(args.out)
     cand = validate_data(data, meta)
+    validate_review_translations(data, check)
     validate_sql(args.out, data)
     docs = validate_rag(args.rag, data)
     if args.psql:

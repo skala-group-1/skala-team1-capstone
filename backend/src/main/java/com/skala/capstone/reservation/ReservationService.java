@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -14,12 +15,15 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.skala.capstone.catalog.CatalogDtos.Review;
 import com.skala.capstone.catalog.CatalogDtos.Slot;
 import com.skala.capstone.catalog.CatalogService;
+import com.skala.capstone.catalog.ReviewTranslations;
 import com.skala.capstone.common.config.AppProperties;
 import com.skala.capstone.common.error.ApiException;
 import com.skala.capstone.common.error.ErrorCode;
@@ -32,6 +36,7 @@ import com.skala.capstone.common.web.PageResponse;
 import com.skala.capstone.common.web.Times;
 import com.skala.capstone.notification.NotificationService;
 import com.skala.capstone.reservation.ReservationDtos.CreateReservationRequest;
+import com.skala.capstone.reservation.ReservationDtos.CreateReviewRequest;
 import com.skala.capstone.reservation.ReservationDtos.CustomerRef;
 import com.skala.capstone.reservation.ReservationDtos.HospitalDashboard;
 import com.skala.capstone.reservation.ReservationDtos.HospitalRef;
@@ -60,15 +65,17 @@ public class ReservationService {
 	private final AuditLogger audit;
 	private final ReservationExpiry expiry;
 	private final AppProperties app;
+	private final ReviewTranslations reviewTranslations;
 
 	public ReservationService(JdbcClient jdbc, CatalogService catalog, NotificationService notifications,
-			AuditLogger audit, ReservationExpiry expiry, AppProperties app) {
+			AuditLogger audit, ReservationExpiry expiry, AppProperties app, ReviewTranslations reviewTranslations) {
 		this.jdbc = jdbc;
 		this.catalog = catalog;
 		this.notifications = notifications;
 		this.audit = audit;
 		this.expiry = expiry;
 		this.app = app;
+		this.reviewTranslations = reviewTranslations;
 	}
 
 	/** 생성 결과: created=false 면 같은 멱등키의 기존 예약을 돌려준 것 (HTTP 200) */
@@ -79,7 +86,8 @@ public class ReservationService {
 	record Row(long id, long userId, long hospitalId, long slotId, String procedureCode, Long priceOptionId,
 			String status, String source, UUID idempotencyKey, String note, String rejectReason,
 			List<Long> alternativeSlotIds, OffsetDateTime holdExpiresAt, OffsetDateTime createdAt,
-			OffsetDateTime decidedAt, String customerName, String customerNationality, String customerLocale) {
+			OffsetDateTime decidedAt, String customerName, String customerNationality, String customerLocale,
+			Long reviewId) {
 	}
 
 	// ------------------------------------------------------------------ 생성
@@ -311,6 +319,61 @@ public class ReservationService {
 				row.procedureCode(), row.priceOptionId(), row.note()), row.source(), locale);
 	}
 
+	// ------------------------------------------------------------------ 리뷰
+
+	/**
+	 * 리뷰 작성: 본인의 CONFIRMED 예약만, 예약당 1회. 병원·시술은 예약에서, 연령대·성별·국적은 프로필에서 채운다.
+	 * 동시에 두 번 요청하면 reservation_id UNIQUE 인덱스가 한 건만 남긴다.
+	 */
+	@Transactional
+	public Review writeReview(CurrentUser user, long id, CreateReviewRequest req, String locale) {
+		Row row = requireRow(id);
+		if (user.role() != Role.CUSTOMER || row.userId() != user.id()) {
+			throw new ApiException(ErrorCode.ACCESS_DENIED);
+		}
+		if (!"CONFIRMED".equals(row.status())) {
+			throw new ApiException(ErrorCode.REVIEW_NOT_ALLOWED, Map.of("status", row.status()));
+		}
+		if (row.reviewId() != null) {
+			throw new ApiException(ErrorCode.REVIEW_ALREADY_EXISTS, Map.of("reviewId", row.reviewId()));
+		}
+		Review review;
+		try {
+			review = jdbc.sql("""
+					INSERT INTO app.reviews (hospital_id, user_id, procedure_code, rating, age_group, gender,
+					    reviewer_nationality, lang, content, reservation_id)
+					SELECT :h, u.id, :p, :rating, :age, u.gender, u.nationality, :lang, :content, :rid
+					FROM app.users u WHERE u.id = :u
+					RETURNING *
+					""").param("h", row.hospitalId()).param("p", row.procedureCode()).param("rating", req.rating())
+					.param("age", ageGroup(user.id())).param("lang", locale).param("content", req.content().trim())
+					.param("rid", id).param("u", user.id())
+					.query((rs, i) -> new Review(rs.getLong("id"), rs.getString("procedure_code"), rs.getInt("rating"),
+							rs.getString("age_group"), rs.getString("gender"), rs.getString("reviewer_nationality"),
+							rs.getString("lang"), rs.getString("content"),
+							Times.kst(rs.getObject("created_at", OffsetDateTime.class)), null))
+					.single();
+		} catch (DuplicateKeyException e) {
+			throw new ApiException(ErrorCode.REVIEW_ALREADY_EXISTS);
+		}
+		long reviewId = review.id();
+		reviewTranslations.requestAfterCommit(reviewId, review.content(), review.lang());
+		AfterCommit.run(() -> audit.log(user, "REVIEW_CREATED", "reservation:" + id,
+				Map.of("reviewId", reviewId, "rating", req.rating())));
+		return review;
+	}
+
+	/** 생년월일 → '20s'~'50s' (reviews.age_group CHECK 범위 밖이거나 생일이 없으면 null) */
+	private String ageGroup(long userId) {
+		LocalDate birth = jdbc.sql("SELECT birth_date FROM app.users WHERE id = :id").param("id", userId)
+				.query(LocalDate.class).optional().orElse(null);
+		if (birth == null) {
+			return null;
+		}
+		int age = Period.between(birth, LocalDate.now(Times.SEOUL)).getYears();
+		return age >= 20 && age < 60 ? (age / 10 * 10) + "s" : null;
+	}
+
 	// ------------------------------------------------------------------ 내부 도우미
 
 	private void releaseSlot(long slotId) {
@@ -378,10 +441,12 @@ public class ReservationService {
 
 	private List<Row> rows(String where, Map<String, Object> params, String orderBy, String limit) {
 		String sql = """
-				SELECT r.*, u.name AS customer_name, u.nationality AS customer_nationality, u.locale AS customer_locale
+				SELECT r.*, u.name AS customer_name, u.nationality AS customer_nationality, u.locale AS customer_locale,
+				    rv.id AS review_id
 				FROM app.reservations r
 				JOIN app.users u ON u.id = r.user_id
 				JOIN app.slots s ON s.id = r.slot_id
+				LEFT JOIN app.reviews rv ON rv.reservation_id = r.id
 				WHERE """ + " " + where + orderBy + (limit == null ? "" : limit);
 		return jdbc.sql(sql).params(params).query((rs, i) -> row(rs)).list();
 	}
@@ -394,7 +459,8 @@ public class ReservationService {
 				Times.kst(rs.getObject("hold_expires_at", OffsetDateTime.class)),
 				Times.kst(rs.getObject("created_at", OffsetDateTime.class)),
 				Times.kst(rs.getObject("decided_at", OffsetDateTime.class)),
-				rs.getString("customer_name"), rs.getString("customer_nationality"), rs.getString("customer_locale"));
+				rs.getString("customer_name"), rs.getString("customer_nationality"), rs.getString("customer_locale"),
+				(Long) rs.getObject("review_id"));
 	}
 
 	private Reservation toDto(Row r, String locale, boolean includeCustomer) {
@@ -408,7 +474,8 @@ public class ReservationService {
 				"REJECTED".equals(r.status()) ? catalog.slotsByIds(r.alternativeSlotIds(), locale) : List.of(),
 				includeCustomer ? new CustomerRef(r.userId(), Masking.name(r.customerName()), r.customerNationality(),
 						r.customerLocale()) : null,
-				r.note(), r.createdAt(), r.decidedAt());
+				r.note(), r.createdAt(), r.decidedAt(),
+				"CONFIRMED".equals(r.status()) && r.reviewId() == null, r.reviewId());
 	}
 
 	record SlotRow(long id, long hospitalId, OffsetDateTime startAt, List<String> doctorSpecialties) {

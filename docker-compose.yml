@@ -160,8 +160,13 @@ services:
     environment:
       OPENAI_API_KEY: ${OPENAI_API_KEY:?Set OPENAI_API_KEY in .env}
       LLM_PRIMARY_MODEL: ${LLM_PRIMARY_MODEL:-gpt-5-nano}
+      HANDOFF_DEBUG_LOG: ${HANDOFF_DEBUG_LOG:-false}
+      PROCEDURE_SEARCH_MODEL: ${PROCEDURE_SEARCH_MODEL:-gpt-4.1-mini}
+      PROCEDURE_SEARCH_TIMEOUT_SECONDS: ${PROCEDURE_SEARCH_TIMEOUT_SECONDS:-45}
+      PROCEDURE_SEARCH_DOMAINS: ${PROCEDURE_SEARCH_DOMAINS:-aad.org,asds.net,plasticsurgery.org,nhs.uk,fda.gov,mayoclinic.org,clevelandclinic.org}
       LLM_FAST_MODEL: ${LLM_FAST_MODEL:-gpt-5-nano}
       LLM_FALLBACK_MODEL: ${LLM_FALLBACK_MODEL:-gpt-5-nano}
+      AFTERCARE_MODEL: ${AFTERCARE_MODEL:-gpt-5.4-mini}
       DATABASE_URL: ${DATABASE_URL:?Set agent DATABASE_URL in .env}
       RABBITMQ_URL: amqp://${RABBITMQ_DEFAULT_USER:-guest}:${RABBITMQ_DEFAULT_PASS:-guest}@rabbitmq:5672/
       USE_FAKE_TOOLS: "false"

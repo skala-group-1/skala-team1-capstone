@@ -10,6 +10,7 @@ import AppChip from '@/components/ui/AppChip.vue'
 import AppBadge from '@/components/ui/AppBadge.vue'
 import AppIcon from '@/components/ui/AppIcon.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
+import AftercareOpsCard from '@/components/aftercare/AftercareOpsCard.vue'
 import type { AuditLog, OpsAiTask, Page } from '@/types/contract'
 
 const route = useRoute()
@@ -59,6 +60,7 @@ watch(auditOnly, () => void load())
   <div class="page">
     <EmptyState v-if="failed" icon="alert-triangle" tone="danger" :title="t('staff.loadFailed')" />
     <template v-else>
+      <AftercareOpsCard v-if="!auditOnly" />
       <section v-if="!auditOnly" class="section">
         <header>
           <h1 class="t-title-22">{{ t('staff.ops.failedTitle') }}</h1>
@@ -102,7 +104,7 @@ watch(auditOnly, () => void load())
           </div>
           <div v-for="l in logs?.items ?? []" :key="l.id" class="tr tr--logs t-body-14">
             <span>{{ ts(l.createdAt) }}</span>
-            <span class="mono">{{ l.traceId.slice(0, 10) }}</span>
+            <span class="mono">{{ l.traceId?.slice(0, 10) ?? '—' }}</span>
             <span>{{ l.actorRole ?? '—' }}</span>
             <span>{{ l.action }}</span>
             <span class="ellipsis">{{ l.target }}</span>

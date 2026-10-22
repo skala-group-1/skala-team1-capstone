@@ -1,5 +1,6 @@
 """Real LangGraph streams with deterministic model/tools; no live LLM or DB claims."""
 
+import asyncio
 from datetime import datetime, timedelta, timezone
 from unittest.mock import AsyncMock
 
@@ -71,6 +72,35 @@ async def test_actual_messages_stream_tokens_are_incremental_and_private_drafts_
     assert "PRIVATE" not in str([e.data for e in output])
 
 
+async def test_tagged_model_inside_nested_coordinator_graph_streams_tokens():
+    """run_coordinator invokes a request-local graph inside the planner node; its
+    user-facing model is tagged so its tokens stream before respond re-emits them."""
+    from coordinator.nodes.planner_agent import USER_ANSWER_TAG
+    tagged = FakeListChatModel(responses=["hello"], tags=[USER_ANSWER_TAG])
+
+    inner = StateGraph(AgentState)
+
+    async def main(state):
+        return {"messages": [await tagged.ainvoke(state["messages"])]}
+
+    inner.add_node("main", main)
+    inner.add_edge(START, "main")
+    inner.add_edge("main", END)
+    coordinator = inner.compile(checkpointer=False)
+
+    async def plan(state):
+        output = await asyncio.wait_for(coordinator.ainvoke({"messages": state["messages"]}), 10)
+        return {"draft": output["messages"][-1].content}
+
+    worker, publisher = worker_for([
+        ("planner", plan), ("respond", lambda s: {"messages": [AIMessage(content=s["draft"])]}),
+    ])
+    await worker.handle(request())
+    output = events(publisher)
+    assert [e.data["text"] for e in output if e.event == "TOKEN"] == list("hello")
+    assert output[-1].data["answer"] == "hello"
+
+
 async def test_main_action_and_all_contract_state_events():
     def plan(state):
         assert state["action"] == {"type": "SET_SORT", "sortBy": "RATING"}
@@ -100,7 +130,7 @@ async def test_main_action_and_all_contract_state_events():
     assert output["TRIP_PLAN"]["arrivalDate"] == "2026-10-22"
     assert output["TRIP_PLAN"]["plans"][0]["bufferDays"] == 2
     assert output["CONVERSATION_OPENED"] == {
-        "conversationId": "c6d49de7-d0ab-4c99-a0d7-ec0880ac4995", "hospitalId": 1,
+        "conversationId": "c6d49de7-d0ab-4c99-a0d7-ec0880ac4995", "hospitalId": 1, "summary": None,
     }
     assert output["MEMORY_PROPOSAL"]["fields"]["preferredAreas"] == ["GANGNAM"]
     assert output["VERIFY"] == {"passed": True, "attempts": 0}
@@ -330,3 +360,31 @@ async def test_scaffold_cannot_report_success_after_approval(monkeypatch):
     with pytest.raises(NotImplementedError):
         await builder.execute_approved_action({"pending_action": {"approved": True}})
     execute.assert_not_awaited()
+
+
+@pytest.mark.parametrize('mode,pending', [('HOSPITAL', False), ('HOSPITAL', True), ('HUMAN', False)])
+async def test_handoff_merge_refreshes_context_and_logs_saved_state(mode, pending):
+    from types import SimpleNamespace
+    from unittest.mock import Mock
+    child = '00000000-0000-0000-0000-000000000073'
+    old = {'conversation_id': child, 'user': {'user_id': 1}, 'mode': mode,
+           'selected_hospital_id': 7, 'summary': 'old', 'conditions': {'areas': ['GANGNAM']},
+           'messages': [AIMessage('Keep hospital history')]}
+    new = {**old, 'summary': 'new', 'conditions': {'areas': [], 'date_from': '2026-10-24'},
+           'parent_conversation_id': 'thread'}
+    graph = AsyncMock()
+    graph.aget_state.side_effect = [SimpleNamespace(values=old, next=('approval',) if pending else (),
+        config={'configurable': {'checkpoint_id': 'saved'}}), SimpleNamespace(values=new)]
+    worker = HospitalWorker(graph, InMemoryStore(), AsyncMock())
+    worker._log_handoff = Mock()
+    await worker._initialize_child(request(), {'conversation_id': child, 'hospital_id': 7,
+        'mode': mode, 'conditions': new['conditions'], 'parent_conversation_id': 'thread'},
+        {'selected_hospital_id': 7, 'summary': 'new'})
+    if mode == 'HOSPITAL' and not pending:
+        graph.aupdate_state.assert_awaited_once_with({'configurable': {'thread_id': child}},
+            {'summary': 'new', 'conditions': new['conditions'], 'parent_conversation_id': 'thread'},
+            as_node='respond')
+        assert worker._log_handoff.call_args.args[2:] == (new, 'context_refreshed')
+    else:
+        graph.aupdate_state.assert_not_awaited()
+        assert worker._log_handoff.call_args.args[2:] == (old, 'preserved')

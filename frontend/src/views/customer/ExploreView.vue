@@ -41,6 +41,19 @@ const nameFilter = computed(() => {
   return q && q !== procedureName(search.query.procedure).toLowerCase() && !suggestions.value.length ? q : ''
 })
 const visible = computed(() => (nameFilter.value ? search.results.filter((h) => h.name.toLowerCase().includes(nameFilter.value)) : search.results))
+const hasMore = computed(() => search.results.length < search.total)
+async function loadMore() {
+  await search.loadMore().catch(() => showToast(t('common.error'), 'error'))
+}
+// 병원 이름 검색은 API 파라미터가 없어 받아온 목록에서 거른다 → 이름을 치면 남은 페이지를 모두 불러와 전체에서 찾게 한다
+// ponytail: 최대 5페이지(100곳)까지만. 병원이 더 많아지면 서버 이름 검색 파라미터 필요 (공통 계약서 문의)
+watch(nameFilter, async (q) => {
+  for (let i = 0; q && hasMore.value && i < 5; i++) {
+    const before = search.results.length
+    await loadMore()
+    if (search.results.length === before) break // 실패하면 멈춤 (토스트 1번)
+  }
+})
 
 const filterChips = computed(() => {
   const q = search.query
@@ -153,7 +166,7 @@ watch(text, () => (suggestOpen.value = true))
     </EmptyState>
 
     <!-- Edge ⑤ 0건 (D-36) -->
-    <section v-else-if="loadedOnce && !visible.length" class="no-result">
+    <section v-else-if="loadedOnce && !search.loading && !visible.length" class="no-result">
       <EmptyState icon="search" :title="t('explore.emptyTitle')" :description="t('explore.emptyBody')" />
       <button v-for="l in loosen" :key="l.key" type="button" class="loosen" @click="applyLoosen(l.key)">
         <span class="t-body-14-sb">{{ l.label }}</span>
@@ -187,6 +200,9 @@ watch(text, () => (suggestOpen.value = true))
           @open="router.push(`/hospitals/${h.id}`)"
           @compare="search.toggleCompare(h.id)"
         />
+        <AppButton v-if="hasMore && !nameFilter" variant="secondary" block :loading="search.loading" @click="loadMore">
+          {{ t('explore.more', { n: search.total - search.results.length }) }}
+        </AppButton>
       </div>
     </template>
 

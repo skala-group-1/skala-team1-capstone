@@ -21,6 +21,9 @@ import type {
   Uuid,
 } from '@/types/contract'
 
+/** load() 요청 순번 — 마지막 요청의 응답만 반영 */
+let loadSeq = 0
+
 export const useConversationStore = defineStore('conversation', {
   state: () => ({
     conversationId: null as Uuid | null,
@@ -49,6 +52,8 @@ export const useConversationStore = defineStore('conversation', {
     relaxOptions: [] as SseEventMap['RESULT_CARDS']['relaxOptions'],
     pendingAction: null as PendingAction | null,
     tripPlan: null as SseEventMap['TRIP_PLAN'] | null,
+    /** 마지막 답변의 선택지 칩 (DONE.suggestions). 탭하면 문구를 message 로 보냄 */
+    suggestions: [] as string[],
     memoryProposal: null as { fields: AiProfile; message: string } | null,
     error: null as SseEventMap['FAILED'] | null,
     /** CONVERSATION_OPENED 수신 시 화면이 이 값을 보고 /chat/:id 로 이동 */
@@ -79,7 +84,10 @@ export const useConversationStore = defineStore('conversation', {
     },
     /** 기존 대화 불러오기 (/chat/:conversationId 진입) */
     async load(conversationId: Uuid) {
+      const seq = ++loadSeq
       const conv = await aiApi.conversation(conversationId)
+      // A→B 로 빨리 넘어가면 늦게 온 A 응답은 버린다
+      if (seq !== loadSeq) return conv
       this.unsubscribe?.()
       this.$reset()
       this.conversationId = conv.id
@@ -131,6 +139,7 @@ export const useConversationStore = defineStore('conversation', {
       this.relaxOptions = []
       this.tripPlan = null
       this.memoryProposal = null
+      this.suggestions = []
       this.streaming = true
       try {
         const { taskId } = await aiApi.createTask({ conversationId: this.conversationId, message, action })
@@ -150,7 +159,16 @@ export const useConversationStore = defineStore('conversation', {
     /** 승인 카드 (C4-2 / C4-3): 확인·수정·취소 → 같은 taskId 스트림 계속 */
     async approve(approved: boolean, editedArgs: Record<string, unknown> | null = null, reason: string | null = null) {
       if (!this.taskId) return
-      await aiApi.approve(this.taskId, { approved, editedArgs, reason })
+      try {
+        await aiApi.approve(this.taskId, { approved, editedArgs, reason })
+      } catch (e) {
+        // 이미 처리됐거나 만료된 승인 → 카드를 내리고 서버 상태로 다시 맞춘다
+        if ((e as { response?: { data?: { code?: string } } }).response?.data?.code === 'TASK_NOT_WAITING_APPROVAL') {
+          this.pendingAction = null
+          await this.restoreActiveTask()
+        }
+        throw e
+      }
       this.approvedAction = approved ? (this.pendingAction?.action ?? null) : null
       this.pendingAction = null
       // 이미 받은 이벤트(승인 카드까지)는 다시 받지 않도록 마지막 seq 이후부터
@@ -235,6 +253,7 @@ export const useConversationStore = defineStore('conversation', {
           break
         case 'DONE':
           this.pushAssistant(e.data.answer, e.data.sources)
+          this.suggestions = (e.data.suggestions ?? []).slice(0, 4)
           break
         case 'FAILED':
           this.error = e.data

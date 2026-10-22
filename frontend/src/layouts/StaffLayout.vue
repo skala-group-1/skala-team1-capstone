@@ -8,11 +8,13 @@ import AppIcon, { type IconName } from '@/components/ui/AppIcon.vue'
 import AppToast from '@/components/ui/AppToast.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationStore } from '@/stores/notification'
+import { useConsultationStore } from '@/stores/consultation'
 import { catalogApi } from '@/api'
 import type { HospitalDetail } from '@/types/contract'
 
 const auth = useAuthStore()
 const notifications = useNotificationStore()
+const consultations = useConsultationStore()
 const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
@@ -32,7 +34,8 @@ const items = computed<NavItem[]>(() => {
   switch (auth.role) {
     case 'COUNSELOR':
       return [
-        { to: '/counselor', icon: 'message-circle', label: t('staff.nav.inbox') },
+        // 문의함 배지 = 대기 중 상담 수 (문의함이 불러온 목록 기준)
+        { to: '/counselor', icon: 'message-circle', label: t('staff.nav.inbox'), count: consultations.inbox.filter((c) => c.status === 'WAITING').length },
         { to: '/me', icon: 'user', label: t('staff.nav.me') },
       ]
     case 'HOSPITAL_ADMIN':

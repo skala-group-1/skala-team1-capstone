@@ -4,6 +4,7 @@
 // - 확정 → 방문 안내 (1:4684, 지도 링크 D-34)
 // - 만료 → 다시 요청하기 (Edge ⑥ 1:7576, D-37: 같은 슬롯이 비었는지 확인 → C8 확인 시트에 같은 조건)
 // - 승인 대기 → 홀드 타이머 · 요청 취소
+// - 확정 → 리뷰 쓰기 (예약당 1회, reviewable/reviewId 는 backend 가 계산)
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -19,7 +20,9 @@ import AppBadge, { RESERVATION_TONE } from '@/components/ui/AppBadge.vue'
 import AppButton from '@/components/ui/AppButton.vue'
 import AppDialog from '@/components/ui/AppDialog.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
-import type { HospitalDetail, Reservation } from '@/types/contract'
+import ReviewSheet from '@/components/booking/ReviewSheet.vue'
+import AftercareCard from '@/components/aftercare/AftercareCard.vue'
+import type { HospitalDetail, Reservation, Review } from '@/types/contract'
 
 const route = useRoute()
 const router = useRouter()
@@ -33,6 +36,7 @@ const failed = ref(false)
 const altId = ref<number | null>(null)
 const busy = ref(false)
 const confirmCancel = ref(false)
+const reviewOpen = ref(false)
 /** 만료: 같은 슬롯이 아직 비었는지 (GET slots 그날) */
 const slotStillOpen = ref<boolean | null>(null)
 
@@ -89,6 +93,9 @@ async function cancel() {
     await store.cancel(r.value.id)
     r.value = { ...r.value, status: 'CANCELLED' }
     showToast(t('reservations.cancelled'))
+  } catch (e) {
+    showToast(toApiError(e)?.message || t('common.error'), 'error')
+    await load()
   } finally {
     busy.value = false
   }
@@ -102,6 +109,14 @@ function requestAgain() {
   if (x.note) query.note = x.note
   if (slotStillOpen.value) query.slot = String(x.slot.id)
   void router.push({ path: `/hospitals/${x.hospital.id}/book`, query })
+}
+function onReviewed(review: Review) {
+  reviewOpen.value = false
+  if (r.value) r.value = { ...r.value, reviewable: false, reviewId: review.id }
+  showToast(t('reservations.review.done'))
+}
+function openReviews() {
+  if (r.value) void router.push({ path: `/hospitals/${r.value.hospital.id}`, query: { tab: 'reviews' } })
 }
 function openHospitalChat() {
   if (r.value) void router.push({ path: '/chat', query: { hospitalId: r.value.hospital.id } })
@@ -120,7 +135,10 @@ useNotificationRefresh(['RESERVATION_CONFIRMED', 'RESERVATION_REJECTED', 'RESERV
       <AppButton variant="secondary" icon="refresh-cw" @click="load">{{ t('common.retry') }}</AppButton>
     </EmptyState>
 
-    <template v-else-if="r">
+    <div v-else-if="!r" class="skeleton-list" role="status" :aria-label="t('common.loading')" aria-busy="true">
+      <span class="bone" style="height: 160px" /><span class="bone" style="height: 120px" />
+    </div>
+    <template v-else>
       <div class="body">
         <!-- 요약 카드 -->
         <section class="card">
@@ -141,6 +159,7 @@ useNotificationRefresh(['RESERVATION_CONFIRMED', 'RESERVATION_REJECTED', 'RESERV
           <p v-if="r.status === 'REJECTED'" class="t-caption-13 struck">
             <AppIcon name="calendar" :size="14" /><s>{{ t('reservations.requestedTime', { at: fmtDateTime(r.slot.startAt) }) }}</s>
           </p>
+          <p class="t-caption-12 muted">{{ t('booking.kstNote') }}</p>
           <dl v-if="r.status !== 'REJECTED'" class="kv">
             <div v-if="r.status !== 'CONFIRMED'"><dt>{{ t('booking.procedure') }}</dt><dd>{{ r.procedure.name }}</dd></div>
             <div v-if="r.status !== 'CONFIRMED'"><dt>{{ t('reservations.wishTime') }}</dt><dd>{{ fmtDateTime(r.slot.startAt) }}</dd></div>
@@ -201,6 +220,18 @@ useNotificationRefresh(['RESERVATION_CONFIRMED', 'RESERVATION_REJECTED', 'RESERV
           </div>
         </section>
         <p v-if="r.status === 'CONFIRMED'" class="t-caption-12 muted">{{ t('reservations.visit.policy') }}</p>
+        <AftercareCard v-if="r.status === 'CONFIRMED' || r.status === 'PENDING'" :reservation-id="r.id" />
+
+        <!-- 확정 → 리뷰 쓰기 / 작성 완료 (취소하면 리뷰는 병원 목록에서 숨겨지므로 카드도 안 보임) -->
+        <section v-if="r.reviewable" class="card">
+          <h2 class="t-body-16-sb">{{ t('reservations.review.title') }}</h2>
+          <p class="t-caption-13 secondary">{{ t('reservations.review.body') }}</p>
+          <AppButton variant="outline" icon="star" block @click="reviewOpen = true">{{ t('reservations.review.write') }}</AppButton>
+        </section>
+        <section v-else-if="r.status === 'CONFIRMED' && r.reviewId" class="card reviewed">
+          <p class="row-between t-body-14-sb"><AppIcon name="check" :size="18" />{{ t('reservations.review.written') }}</p>
+          <button type="button" class="btn-link t-caption-13" @click="openReviews">{{ t('reservations.review.see') }}</button>
+        </section>
 
         <!-- 만료 → 진행 기록 + 다시 요청 -->
         <template v-if="r.status === 'EXPIRED'">
@@ -233,10 +264,11 @@ useNotificationRefresh(['RESERVATION_CONFIRMED', 'RESERVATION_REJECTED', 'RESERV
       </footer>
     </template>
 
+    <ReviewSheet v-if="r" :open="reviewOpen" :reservation="r" @close="reviewOpen = false" @done="onReviewed" />
     <AppDialog :open="confirmCancel" :title="t('reservations.cancelTitle')" :body="t('reservations.cancelBody')">
       <template #actions>
-        <AppButton variant="secondary" @click="confirmCancel = false">{{ t('common.cancel') }}</AppButton>
-        <AppButton variant="primary" @click="cancel">{{ t('reservations.cancel') }}</AppButton>
+        <AppButton variant="secondary" @click="confirmCancel = false">{{ t('reservations.keep') }}</AppButton>
+        <AppButton variant="danger" @click="cancel">{{ r?.status === 'PENDING' ? t('chat.requested.cancel') : t('reservations.cancel') }}</AppButton>
       </template>
     </AppDialog>
   </div>
@@ -265,6 +297,7 @@ useNotificationRefresh(['RESERVATION_CONFIRMED', 'RESERVATION_REJECTED', 'RESERV
 .guide { display: flex; gap: var(--space-8); color: var(--icon-default); }
 .guide > span { display: flex; flex-direction: column; color: var(--text-primary); }
 .btns { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-8); }
+.reviewed .row-between { color: var(--status-success); }
 .btn-link { display: grid; place-items: center; height: 36px; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--bg-default); color: var(--text-primary); }
 .timeline { display: flex; flex-direction: column; gap: var(--space-12); margin: 0; padding: 0 0 0 var(--space-16); list-style: none; }
 .timeline li { position: relative; display: flex; flex-direction: column; }

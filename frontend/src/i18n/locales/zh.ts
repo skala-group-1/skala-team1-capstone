@@ -88,6 +88,7 @@ const zh: typeof en = {
     selected: '已选 {n} 家',
     maxThree: '最多可比较 3 家',
     compareGo: '比较',
+    more: '查看更多（还有 {n} 家）',
     compareNeedsProcedure: '比较价格前请先选择项目',
     filter: {
       title: '筛选',

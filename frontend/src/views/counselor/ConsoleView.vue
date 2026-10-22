@@ -128,8 +128,8 @@ onMounted(async () => {
   await loadInbox()
   await openSelected()
 })
-// 새 상담 요청이 오면 문의함 갱신 (열어 둔 채팅은 그대로)
-useNotificationRefresh(['CONSULTATION_REQUESTED'], loadInbox)
+// 새 상담 요청·수락·종료 알림이 오면 문의함 갱신 (열어 둔 채팅은 그대로)
+useNotificationRefresh(['CONSULTATION_REQUESTED', 'CONSULTATION_ACCEPTED', 'CONSULTATION_CLOSED'], loadInbox)
 // 상담방을 바꾸면 쓰던 답장은 그 상담에 임시 저장하고 새 방 것을 꺼낸다 (다른 고객에게 잘못 보내지 않게)
 const drafts = new Map<number, string>()
 watch(selectedId, (id, prev) => {

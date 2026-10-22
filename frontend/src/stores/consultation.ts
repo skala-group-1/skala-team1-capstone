@@ -105,6 +105,7 @@ export const useConsultationStore = defineStore('consultation', {
         if (this.current) {
           this.current.status = e.data.status
           this.current.counselorId = e.data.counselorId
+          this.syncInbox(this.current)
         }
         return
       }
@@ -121,9 +122,16 @@ export const useConsultationStore = defineStore('consultation', {
     },
     async accept(id: number) {
       this.current = await counselorApi.accept(id)
+      this.syncInbox(this.current)
     },
     async finish(id: number) {
       this.current = await counselorApi.close(id)
+      this.syncInbox(this.current)
+    },
+    /** 열어 둔 상담의 상태 변화를 문의함 목록에도 반영 (목록이 '진행'에 남지 않게) */
+    syncInbox(c: Consultation) {
+      const i = this.inbox.findIndex((x) => x.id === c.id)
+      if (i >= 0) this.inbox[i] = { ...this.inbox[i], status: c.status, counselorId: c.counselorId }
     },
     /** 고객 종료: 응답의 CLOSED 상태로 바꾸면 ChatView 가 병원 대화(AI)로 되돌린다 */
     async endByCustomer() {

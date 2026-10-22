@@ -109,10 +109,17 @@ type ReviewRow = {
   lang: string
   content: string
   created_at: string
+  /** 고객이 예약에서 쓴 리뷰만 (seed 리뷰는 없음) */
+  reservation_id?: number
 }
 export const reviews = (reviewsJson as ReviewRow[]).sort((a, b) => b.created_at.localeCompare(a.created_at))
 /** app.hospital_review_stats 뷰와 같은 집계 (건수·평균·연령대·성별) */
 const statsCache = new Map<number, ReviewStats>()
+/** 새 리뷰는 최신순 맨 앞에 넣고 그 병원 집계를 다시 계산하게 한다 */
+export function addReview(row: ReviewRow) {
+  reviews.unshift(row)
+  statsCache.delete(row.hospital_id)
+}
 export function reviewStats(hospitalId: number): ReviewStats {
   let s = statsCache.get(hospitalId)
   if (!s) {

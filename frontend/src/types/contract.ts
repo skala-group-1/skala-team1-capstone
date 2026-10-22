@@ -83,6 +83,8 @@ export type ErrorCode =
   | 'INVALID_STATE_TRANSITION'
   | 'CONSENT_REQUIRED'
   | 'TASK_NOT_WAITING_APPROVAL'
+  | 'REVIEW_NOT_ALLOWED'
+  | 'REVIEW_ALREADY_EXISTS'
   | 'UNKNOWN_PROCEDURE'
   | 'INTERNAL_ERROR'
   | 'AI_UNAVAILABLE'
@@ -311,6 +313,18 @@ export interface Reservation {
   note: string | null
   createdAt: IsoDateTime
   decidedAt: IsoDateTime | null
+  /** 리뷰를 쓸 수 있는지 (CONFIRMED 이고 아직 안 씀). 판단은 backend */
+  reviewable: boolean
+  /** 이 예약으로 쓴 리뷰 id (없으면 null) */
+  reviewId: number | null
+}
+
+/** POST /api/reservations/{id}/review. 병원·시술·작성자 속성·언어는 서버가 채운다 */
+export interface CreateReviewRequest {
+  /** 1~5 */
+  rating: number
+  /** 10~1000자 */
+  content: string
 }
 
 export interface RejectRequest {

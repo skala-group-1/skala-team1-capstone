@@ -1,0 +1,22 @@
+# Merge with the repository Compose; a separate project owns fresh DB/queue volumes.
+services:
+  backend:
+    image: skala-team1-capstone-backend:latest
+    ports: !override ["127.0.0.1:18080:8080"]
+  frontend:
+    image: skala-team1-capstone-frontend:latest
+    ports: !override ["127.0.0.1:18081:80"]
+  agent:
+    image: skala-team1-capstone-agent:latest
+  db-access:
+    image: skala-team1-capstone-db-access:latest
+  business-mcp:
+    image: skala-team1-capstone-business-mcp:latest
+  rag-index:
+    image: skala-team1-capstone-rag-index:latest
+  rag-mcp:
+    image: skala-team1-capstone-rag-mcp:latest
+  translator:
+    image: skala-team1-capstone-translator:latest
+  summarizer:
+    image: skala-team1-capstone-summarizer:latest

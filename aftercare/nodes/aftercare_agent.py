@@ -258,6 +258,11 @@ async def aftercare_agent(state: AgentState) -> dict:
         return {"draft": state["draft"]}
     hospital_id = selected_hospital(state)
     locale = _locale(state)
+    if (isinstance(latest, HumanMessage) and isinstance(latest.content, str)
+            and has_warning_sign(latest.content)):
+        # Safety first, even when the reservation has ended.
+        detail = (state.get("hospital_context") or {}).get("detail") or {}
+        return {"draft": safety_reply(locale, detail.get("name"), detail.get("phone"))}
     if (state.get("aftercare_context") or {}).get("closed"):
         return {"draft": CLOSED[locale]}
     action = (state.get("action") or {}).get("type")
@@ -268,9 +273,6 @@ async def aftercare_agent(state: AgentState) -> dict:
     if isinstance(latest, HumanMessage) and isinstance(latest.content, str):
         if not finished and requests_counselor_form(latest.content):
             return await _handoff(state, messages)
-        if has_warning_sign(latest.content):
-            detail = (state.get("hospital_context") or {}).get("detail") or {}
-            return {"draft": safety_reply(locale, detail.get("name"), detail.get("phone"))}
 
     names = AFTERCARE_READ_TOOLS if finished else (*AFTERCARE_READ_TOOLS, HANDOFF)
     tools = [tool for tool in await get_tools(names) if tool.name in names]

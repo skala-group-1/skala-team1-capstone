@@ -230,6 +230,9 @@ async def test_closed_reservation_gets_fixed_reply(monkeypatch):
     update = await agent.aftercare_agent(state)
     assert update == {"draft": agent.CLOSED["ko"]}
     model.ainvoke.assert_not_awaited()
+    # A warning sign still gets the safety reply after the reservation has ended.
+    state["messages"] = [HumanMessage("피가 계속 나요")]
+    assert "119" in (await agent.aftercare_agent(state))["draft"]
 
 
 async def test_intro_without_document_does_not_call_model(monkeypatch):

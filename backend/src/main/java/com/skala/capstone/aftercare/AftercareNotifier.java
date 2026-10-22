@@ -3,6 +3,8 @@ package com.skala.capstone.aftercare;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
@@ -17,6 +19,7 @@ import com.skala.capstone.notification.NotificationService;
 @Component
 public class AftercareNotifier {
 
+	private static final Logger log = LoggerFactory.getLogger(AftercareNotifier.class);
 	static final String TYPE = "AFTERCARE_MESSAGE";
 
 	private final JdbcClient jdbc;
@@ -32,6 +35,15 @@ public class AftercareNotifier {
 		if (done.watched()) {
 			return;
 		}
+		try {
+			notifyIfAftercare(done);
+		} catch (RuntimeException e) {
+			// 알림 실패가 AI 작업 이벤트 처리(답변 저장·SSE 중계)를 막으면 안 된다
+			log.warn("aftercare notification failed for task {}: {}", done.taskId(), e.getMessage());
+		}
+	}
+
+	private void notifyIfAftercare(AiTaskDone done) {
 		jdbc.sql("""
 				SELECT t.user_id, a.conversation_id, a.reservation_id, r.procedure_code
 				FROM app.ai_tasks t

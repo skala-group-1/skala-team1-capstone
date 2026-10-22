@@ -26,6 +26,7 @@ import com.skala.capstone.catalog.CatalogService;
 import com.skala.capstone.common.error.ApiException;
 import com.skala.capstone.common.error.ErrorCode;
 import com.skala.capstone.common.security.CurrentUser;
+import com.skala.capstone.common.security.Role;
 import com.skala.capstone.common.web.Times;
 import com.skala.capstone.reservation.ReservationDtos.HospitalRef;
 
@@ -33,6 +34,7 @@ import com.skala.capstone.reservation.ReservationDtos.HospitalRef;
  * 시술 사후관리 대화방 (시술 전 준비 안내 포함).
  * - 승인 대기(PENDING)·확정(CONFIRMED) 예약 1건당 대화 1개 (mode AFTERCARE, selected_hospital_id = 예약 병원)
  * - 방을 열 때 그날 안내가 아직 없으면 AI 안내를 요청한다: 처음은 AFTERCARE_INTRO, 다른 날은 AFTERCARE_DAILY
+ * - 정해진 시간(AftercareDailyGuides)·운영자 버튼으로도 같은 하루 한 번 기준의 안내를 보낸다
  * - 예약이 반려·취소·만료되면 방과 기록은 남기고 새 안내는 요청하지 않는다
  * - 이후 질문은 기존 /api/ai/tasks 로 보낸다
  */
@@ -87,23 +89,63 @@ public class AftercareService {
 		if (r.userId() != user.id()) {
 			throw new ApiException(ErrorCode.ACCESS_DENIED);
 		}
-		Optional<UUID> existing = roomOf(reservationId);
-		boolean created = false;
-		if (existing.isEmpty()) {
-			if (!ACTIVE.contains(r.status())) {
-				throw new ApiException(ErrorCode.INVALID_STATE_TRANSITION, Map.of("from", r.status(), "to", "AFTERCARE"));
-			}
+		boolean created = roomOf(reservationId).isEmpty();
+		if (created && !ACTIVE.contains(r.status())) {
+			throw new ApiException(ErrorCode.INVALID_STATE_TRANSITION, Map.of("from", r.status(), "to", "AFTERCARE"));
+		}
+		Row room = ensureRoom(user.id(), r.hospitalId(), reservationId);
+		requestGuideIfDue(user, room);
+		return new Opened(toDto(room, locale), created);
+	}
+
+	public record DailyGuides(int checked, int requested) {
+	}
+
+	/**
+	 * 정해진 시간(스케줄러)·운영자 버튼용: 시술 7일 전 ~ 30일 후인 승인 대기·확정 예약에 그날 안내를 보낸다.
+	 * 방이 없으면 만들고, 오늘 이미 안내했거나 진행 중이면 건너뛴다 (방을 열 때와 같은 하루 한 번 기준).
+	 * 고객이 보고 있지 않으므로 답변이 끝나면 AftercareNotifier 가 알림을 보낸다.
+	 */
+	public DailyGuides sendDailyGuides() {
+		record Target(long reservationId, long userId, long hospitalId, String locale) {
+		}
+		List<Target> targets = jdbc.sql("""
+				SELECT r.id, r.user_id, r.hospital_id, u.locale
+				FROM app.reservations r
+				JOIN app.users u ON u.id = r.user_id
+				JOIN app.slots s ON s.id = r.slot_id
+				WHERE r.status IN ('PENDING','CONFIRMED')
+				  AND (s.start_at AT TIME ZONE 'Asia/Seoul')::date
+				      BETWEEN (now() AT TIME ZONE 'Asia/Seoul')::date - 30 AND (now() AT TIME ZONE 'Asia/Seoul')::date + 7
+				ORDER BY r.id
+				""").query((rs, i) -> new Target(rs.getLong("id"), rs.getLong("user_id"), rs.getLong("hospital_id"),
+						rs.getString("locale"))).list();
+		int requested = 0;
+		for (Target t : targets) {
 			try {
-				existing = Optional.of(tx.execute(status -> insert(user.id(), r.hospitalId(), reservationId)));
-				created = true;
+				Row room = ensureRoom(t.userId(), t.hospitalId(), t.reservationId());
+				if (requestGuideIfDue(new CurrentUser(t.userId(), Role.CUSTOMER, null, t.locale()), room)) {
+					requested++;
+				}
+			} catch (RuntimeException e) {
+				// 한 예약이 실패해도 나머지는 보낸다
+				log.warn("daily aftercare guide failed for reservation {}: {}", t.reservationId(), e.getMessage());
+			}
+		}
+		return new DailyGuides(targets.size(), requested);
+	}
+
+	/** 예약의 사후관리 방 (없으면 만든다. 동시에 만들어지면 먼저 만든 방을 쓴다) */
+	private Row ensureRoom(long userId, long hospitalId, long reservationId) {
+		Optional<UUID> existing = roomOf(reservationId);
+		if (existing.isEmpty()) {
+			try {
+				existing = Optional.of(tx.execute(status -> insert(userId, hospitalId, reservationId)));
 			} catch (DuplicateKeyException e) {
-				// 동시에 두 번 눌렀으면 먼저 만든 방을 쓴다
 				existing = roomOf(reservationId);
 			}
 		}
-		Row room = require(existing.orElseThrow(() -> ApiException.notFound("conversation")));
-		requestGuideIfDue(user, room);
-		return new Opened(toDto(room, locale), created);
+		return require(existing.orElseThrow(() -> ApiException.notFound("conversation")));
 	}
 
 	/** 내 사후관리 방 목록 (최신순) */
@@ -126,10 +168,11 @@ public class AftercareService {
 	/**
 	 * 하루 한 번(Asia/Seoul 날짜 기준) 그날 안내를 요청한다. 진행 중인 작업이 있거나, 상담사 연결 중이거나,
 	 * 예약이 끝났으면 요청하지 않는다. 큐 발행에 실패하면 다음에 방을 열 때 다시 시도된다.
+	 * 안내 작업을 만들었으면 true.
 	 */
-	private void requestGuideIfDue(CurrentUser user, Row room) {
+	private boolean requestGuideIfDue(CurrentUser user, Row room) {
 		if (!ACTIVE.contains(room.reservationStatus()) || !"AFTERCARE".equals(room.mode())) {
-			return;
+			return false;
 		}
 		GuideState state = jdbc.sql("""
 				SELECT EXISTS (SELECT 1 FROM app.ai_tasks WHERE conversation_id = :c) AS any_task,
@@ -144,15 +187,17 @@ public class AftercareService {
 						rs.getBoolean("guided_today")))
 				.single();
 		if (state.busy() || state.guidedToday()) {
-			return;
+			return false;
 		}
 		String type = state.anyTask() ? "AFTERCARE_DAILY" : "AFTERCARE_INTRO";
 		try {
 			tasks.create(user, new CreateTaskRequest(room.conversationId(), null,
 					Map.of("type", type, "reservationId", room.reservationId())));
+			return true;
 		} catch (ApiException e) {
 			// 방은 열어 주고, 고객이 질문하면 그때 답한다
 			log.warn("aftercare guide not requested for {}: {}", room.conversationId(), e.code());
+			return false;
 		}
 	}
 

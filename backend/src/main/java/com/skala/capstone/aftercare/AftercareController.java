@@ -1,6 +1,7 @@
 package com.skala.capstone.aftercare;
 
 import java.util.List;
+import java.util.Map;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.skala.capstone.aftercare.AftercareDtos.AftercareConversation;
+import com.skala.capstone.aftercare.AftercareService.DailyGuides;
+import com.skala.capstone.common.security.AuditLogger;
 import com.skala.capstone.common.security.CurrentUser;
 import com.skala.capstone.common.web.RequestLocale;
 
@@ -28,12 +31,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class AftercareController {
 
 	private final AftercareService aftercare;
+	private final AuditLogger audit;
 
-	public AftercareController(AftercareService aftercare) {
+	public AftercareController(AftercareService aftercare, AuditLogger audit) {
 		this.aftercare = aftercare;
+		this.audit = audit;
 	}
 
-	@Operation(summary = "확정 예약의 사후관리 대화방 열기. 새로 만들면 201 + AI 첫 안내 요청, 이미 있으면 200")
+	@Operation(summary = "승인 대기·확정 예약의 사후관리 대화방 열기. 새로 만들면 201, 이미 있으면 200. 그날 안내가 없으면 AI 안내 요청")
 	@PreAuthorize("hasRole('CUSTOMER')")
 	@PostMapping("/reservations/{id}/aftercare-conversation")
 	public ResponseEntity<AftercareConversation> open(@AuthenticationPrincipal CurrentUser user, @PathVariable long id,
@@ -47,5 +52,15 @@ public class AftercareController {
 	@GetMapping("/aftercare/conversations")
 	public List<AftercareConversation> mine(@AuthenticationPrincipal CurrentUser user, HttpServletRequest request) {
 		return aftercare.mine(user, RequestLocale.resolve(request));
+	}
+
+	@Operation(summary = "운영자: 지금 오늘의 시술 관리 안내 보내기 (매일 정해진 시간 스케줄러와 같은 작업, 이미 보낸 방은 건너뜀)")
+	@PreAuthorize("hasRole('OPERATOR')")
+	@PostMapping("/ops/aftercare/daily-guides")
+	public DailyGuides sendDailyGuides(@AuthenticationPrincipal CurrentUser user) {
+		DailyGuides result = aftercare.sendDailyGuides();
+		audit.log(user, "AFTERCARE_DAILY_GUIDES", "aftercare",
+				Map.of("checked", result.checked(), "requested", result.requested()));
+		return result;
 	}
 }

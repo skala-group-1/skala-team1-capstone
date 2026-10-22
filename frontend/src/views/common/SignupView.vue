@@ -2,7 +2,7 @@
 // 「화면 목록」 C2 회원가입 (Figma 1:5873, 고객만). 가입 성공 → 같은 계정으로 로그인 → 홈
 // 검증: 이메일 형식, 비밀번호 8자 이상 + 영문·숫자. 서버 오류 EMAIL_DUPLICATED(409) · VALIDATION_FAILED(details.fields)
 import { computed, reactive, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import { toApiError } from '@/api'
@@ -16,6 +16,7 @@ import type { Gender, Locale } from '@/types/contract'
 
 const auth = useAuthStore()
 const router = useRouter()
+const route = useRoute()
 const { t, locale } = useI18n()
 
 const form = reactive({
@@ -77,7 +78,8 @@ async function submit() {
     // 가입 때 고른 언어가 계정 언어 → 온보딩에서 고른 언어(localePicked)로 덮어쓰지 않게 지운다
     localStorage.removeItem('localePicked')
     await auth.login({ email: form.email.trim(), password: form.password })
-    await router.replace(auth.home)
+    const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : null
+    await router.replace(redirect ?? auth.home)
   } catch (e) {
     const err = toApiError(e)
     if (err?.code === 'EMAIL_DUPLICATED') serverErrors.value = { email: t('signup.errors.duplicated') }

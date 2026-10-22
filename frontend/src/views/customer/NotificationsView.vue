@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // 「화면 목록」 C10 알림 (Figma 1:6618): 날짜별 묶음, 안 읽은 것 강조, 모두 읽음, 종류별 바로가기. 실시간은 STOMP /user/queue/notifications
 // payload 는 {reservationId} 등 id 만 있어서 내 예약 목록으로 병원·시술·일시를 채움
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useNotificationStore } from '@/stores/notification'
@@ -11,6 +11,8 @@ import { fmtDate, fmtDateTime, fmtTime, seoulDate } from '@/utils/format'
 import TopAppBar from '@/components/ui/TopAppBar.vue'
 import AppIcon, { type IconName } from '@/components/ui/AppIcon.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
+import AppButton from '@/components/ui/AppButton.vue'
+import { showToast } from '@/composables/useToast'
 import type { Notification, NotificationType } from '@/types/contract'
 
 const router = useRouter()
@@ -74,8 +76,25 @@ async function open(n: Notification) {
   const to = target(n)?.to
   if (to) await router.push(to)
 }
+// 불러오는 중·실패를 "알림 없음"과 구분
+const loading = ref(true)
+const failed = ref(false)
+async function load() {
+  loading.value = true
+  failed.value = false
+  try {
+    await store.load()
+  } catch {
+    failed.value = true
+  } finally {
+    loading.value = false
+  }
+}
+async function readAll() {
+  await store.readAll().catch(() => showToast(t('common.error'), 'error'))
+}
 onMounted(() => {
-  void store.load().catch(() => undefined)
+  void load()
   if (auth.role === 'CUSTOMER') void reservations.loadMine().catch(() => undefined)
 })
 </script>
@@ -83,11 +102,17 @@ onMounted(() => {
 <template>
   <div class="page">
     <TopAppBar :title="t('notifications.title')" back />
-    <EmptyState v-if="!store.items.length" icon="bell" :title="t('notifications.emptyTitle')" :description="t('notifications.emptyBody')" />
+    <div v-if="loading && !store.items.length" class="skeleton-list" role="status" :aria-label="t('common.loading')" aria-busy="true">
+      <span v-for="i in 4" :key="i" class="bone" style="height: 64px" />
+    </div>
+    <EmptyState v-else-if="failed && !store.items.length" icon="alert-triangle" tone="danger" :title="t('common.error')">
+      <AppButton variant="secondary" icon="refresh-cw" @click="load">{{ t('common.retry') }}</AppButton>
+    </EmptyState>
+    <EmptyState v-else-if="!store.items.length" icon="bell" :title="t('notifications.emptyTitle')" :description="t('notifications.emptyBody')" />
     <template v-for="g in groups" :key="g.label">
       <header class="group t-caption-12">
         <span class="muted">{{ g.label }}</span>
-        <button v-if="g === groups[0] && store.unread" type="button" class="read-all" @click="store.readAll()">{{ t('notifications.readAll') }}</button>
+        <button v-if="g === groups[0] && store.unread" type="button" class="read-all" @click="readAll">{{ t('notifications.readAll') }}</button>
       </header>
       <ul class="list">
         <li v-for="n in g.items" :key="n.id">
@@ -95,7 +120,7 @@ onMounted(() => {
             <span class="icon-wrap" :class="`tone--${META[n.type].tone}`"><AppIcon :name="META[n.type].icon" :size="18" /></span>
             <span class="text">
               <span class="row">
-                <span class="t-body-14-sb">{{ t(`notifications.types.${n.type}`) }}</span>
+                <span class="t-body-14-sb">{{ t(`notifications.types.${n.type}`) }}<span v-if="!n.readAt" class="sr-only"> · {{ t('notifications.unread') }}</span></span>
                 <span class="t-caption-12 muted">{{ fmtTime(n.createdAt) }}</span>
               </span>
               <span v-if="detail(n)" class="t-caption-13 secondary">{{ detail(n) }}</span>

@@ -270,6 +270,7 @@ const ja: typeof en = {
     today: '今日',
     yesterday: '昨日',
     readAll: 'すべて既読',
+    unread: '未読',
     emptyTitle: 'お知らせはありません',
     emptyBody: '予約状況の変更や相談員の入室がここに届きます。',
     types: {

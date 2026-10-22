@@ -76,7 +76,9 @@ router.beforeEach(async (to) => {
   if (!auth.ready) await auth.bootstrap()
 
   // 첫 방문(언어·소개 안 봄)이면 C1 온보딩부터 (재방문 시 건너뜀)
-  if (!auth.isLoggedIn && to.path !== '/onboarding' && !localStorage.getItem('onboarded')) return '/onboarding'
+  // 공유 링크로 처음 온 경우 목적지를 redirect 로 들고 간다 (온보딩 → 로그인·가입 → 그 화면)
+  if (!auth.isLoggedIn && to.path !== '/onboarding' && !localStorage.getItem('onboarded'))
+    return { path: '/onboarding', query: to.fullPath !== '/' ? { redirect: to.fullPath } : {} }
   if (to.meta.public) {
     // 로그인 상태로 로그인·가입 화면에 오면 홈으로
     if (auth.isLoggedIn && (to.path === '/login' || to.path === '/signup')) return auth.home

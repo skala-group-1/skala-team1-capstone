@@ -270,6 +270,7 @@ const zh: typeof en = {
     today: '今天',
     yesterday: '昨天',
     readAll: '全部已读',
+    unread: '未读',
     emptyTitle: '暂无通知',
     emptyBody: '预约状态变化和咨询师加入的消息会显示在这里。',
     types: {

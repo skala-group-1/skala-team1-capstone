@@ -270,6 +270,7 @@ export default {
     today: 'Today',
     yesterday: 'Yesterday',
     readAll: 'Mark all read',
+    unread: 'Unread',
     emptyTitle: 'No notifications',
     emptyBody: 'Booking updates and counselor messages will appear here.',
     types: {

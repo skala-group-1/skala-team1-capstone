@@ -271,6 +271,7 @@ const ko: typeof en = {
     today: '오늘',
     yesterday: '어제',
     readAll: '모두 읽음',
+    unread: '읽지 않음',
     emptyTitle: '알림이 없어요',
     emptyBody: '예약 상태 변경과 상담원 입장 소식이 여기에 와요.',
     types: {

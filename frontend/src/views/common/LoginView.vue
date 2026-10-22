@@ -65,7 +65,7 @@ async function submit() {
         {{ t('auth.login') }}
       </AppButton>
       <p class="links t-caption-13">
-        <RouterLink to="/signup" class="brand">{{ t('auth.signup') }}</RouterLink>
+        <RouterLink :to="{ path: '/signup', query: route.query.redirect ? { redirect: route.query.redirect } : {} }" class="brand">{{ t('auth.signup') }}</RouterLink>
       </p>
       <p class="foot t-caption-12">{{ t('auth.loginFoot') }}</p>
     </form>

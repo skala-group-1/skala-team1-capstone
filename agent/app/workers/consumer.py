@@ -176,7 +176,7 @@ class HospitalWorker:
                         raise ValueError("Expected message or action")
                     if conv.mode == "HOSPITAL" and msg.action:
                         raise ValueError("Unsupported hospital action")
-                    if conv.mode == "AFTERCARE" and msg.action and msg.action.get("type") != "AFTERCARE_INTRO":
+                    if conv.mode == "AFTERCARE" and msg.action and msg.action.get("type") not in ("AFTERCARE_INTRO", "AFTERCARE_DAILY"):
                         raise ValueError("Unsupported aftercare action")
                     if snapshot.next:
                         raise ValueError("Conversation is waiting for an earlier task")

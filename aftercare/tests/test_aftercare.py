@@ -2,7 +2,7 @@
 
 import importlib
 import json
-from datetime import date
+from datetime import datetime
 from unittest.mock import AsyncMock
 
 import pytest
@@ -38,7 +38,7 @@ def base_state(**extra):
             "user": {"user_id": 1, "role": "CUSTOMER", "locale": "ko"},
             "hospital_context": {"hospital_id": 3, "detail": {"id": 3, "name": "강남 H3 의원", "phone": "02-123-4567"}},
             "aftercare_context": {"reservation_id": 16, "procedure_code": "JAW_BOTOX",
-                                  "start_at": RESERVATION["slot"]["start_at"], "days_since_procedure": 2},
+                                  "start_at": RESERVATION["slot"]["start_at"], "days_from_procedure": 2, "before_start": False},
             **extra}
 
 
@@ -70,10 +70,12 @@ def test_safety_reply_includes_hospital_phone_and_119():
 
 # ---------------------------------------------------------------- context
 
-def test_days_since_procedure():
-    assert context.days_since("2026-10-20T10:00:00+09:00", date(2026, 10, 22)) == 2
-    assert context.days_since("2026-10-22T18:00:00+09:00", date(2026, 10, 22)) == 0
-    assert context.days_since("2026-10-25T10:00:00+09:00", date(2026, 10, 22)) is None
+def test_days_from_procedure():
+    now = datetime(2026, 10, 22, 12, 0, tzinfo=context.SEOUL)
+    assert context.days_from("2026-10-20T10:00:00+09:00", now) == (2, False)
+    assert context.days_from("2026-10-22T18:00:00+09:00", now) == (0, True)
+    assert context.days_from("2026-10-22T09:00:00+09:00", now) == (0, False)
+    assert context.days_from("2026-10-25T10:00:00+09:00", now) == (-3, True)
 
 
 async def test_context_comes_from_own_confirmed_reservation(monkeypatch):
@@ -89,10 +91,21 @@ async def test_context_comes_from_own_confirmed_reservation(monkeypatch):
     # The reservation stays in state for later turns without an action.
     later = await context.load_aftercare_context({**state, **update, "action": None})
     assert later["aftercare_context"]["reservation_id"] == 16
+    assert later["aftercare_context"]["closed"] is False
+
+
+@pytest.mark.parametrize("status, closed", [("PENDING", False), ("CANCELLED", True), ("REJECTED", True), ("EXPIRED", True)])
+async def test_context_marks_finished_reservations_closed(monkeypatch, status, closed):
+    monkeypatch.setattr(context, "get_tools", AsyncMock(side_effect=lambda names: [
+        tool("business_get_my_reservations", {"reservations": [{**RESERVATION, "status": status}]}),
+        tool("business_get_hospital_detail", {"id": 3, "name": "H3"}),
+    ]))
+    update = await context.load_aftercare_context(
+        {"selected_hospital_id": 3, "action": {"type": "AFTERCARE_DAILY", "reservationId": 16}})
+    assert update["aftercare_context"]["closed"] is closed
 
 
 @pytest.mark.parametrize("reservation", [
-    {**RESERVATION, "status": "CANCELLED"},
     {**RESERVATION, "hospital": {"id": 9}},
     {**RESERVATION, "id": 99},
 ])
@@ -106,12 +119,17 @@ async def test_context_rejects_unusable_reservation(monkeypatch, reservation):
 
 def test_status_line_and_sections_follow_the_day():
     assert agent.status_line(0, "ko") == "오늘은 시술 당일이에요."
+    assert agent.status_line(0, "ko", before_start=True).startswith("오늘은 시술 당일이에요. 시술 전에")
     assert agent.status_line(5, "ja") == "今日は施術後5日目です。"
-    assert agent.status_line(None, "fr").startswith("Your procedure hasn't happened yet")
-    assert agent.intro_sections(None)[:5] == agent.PERIODS
+    assert agent.status_line(-1, "ko").startswith("내일이 시술일이에요.")
+    assert agent.status_line(-3, "fr").startswith("Your procedure is in 3 days.")
+    assert agent.intro_sections(-5, True) == ("One week before", "Two days before", *agent.PREP_CARE)
+    assert agent.intro_sections(-1, True) == ("The day before", "On the day", *agent.PREP_CARE)
+    assert agent.intro_sections(0, True) == ("On the day", *agent.PREP_CARE)
     assert agent.intro_sections(0)[:2] == ("Procedure day", "Days 1–3")
     assert agent.intro_sections(40)[:1] == ("After 1 month",)
     assert all(len(h) == 8 for h in agent.HEADINGS.values())
+    assert all(len(h) == 6 for h in agent.PREP_HEADINGS.values())
 
 
 def test_plain_codes_removes_internal_labels():
@@ -135,13 +153,14 @@ async def test_intro_retries_once_when_reply_guard_rejects(monkeypatch):
     assert model.ainvoke.await_count == 2
 
 
-@pytest.mark.parametrize("days, period", [
-    (None, "Before procedure"), (0, "Procedure day"), (1, "Days 1–3"), (3, "Days 1–3"),
-    (4, "Days 4–7"), (8, "Weeks 2–4"), (30, "Weeks 2–4"), (31, "After 1 month"),
+@pytest.mark.parametrize("days, before_start, period", [
+    (-9, True, "One week before"), (-2, True, "Two days before"), (-1, True, "The day before"),
+    (0, True, "On the day"), (0, False, "Procedure day"), (1, False, "Days 1–3"), (3, False, "Days 1–3"),
+    (4, False, "Days 4–7"), (8, False, "Weeks 2–4"), (30, False, "Weeks 2–4"), (31, False, "After 1 month"),
 ])
-def test_current_period_matches_document_sections(days, period):
-    assert agent.current_period(days) == period
-    assert period == "Before procedure" or period in agent.SECTIONS
+def test_current_period_matches_document_sections(days, before_start, period):
+    assert agent.current_period(days, before_start) == period
+    assert period in agent.SECTIONS or period in agent.PREP_SECTIONS
 
 
 # ---------------------------------------------------------------- agent
@@ -177,8 +196,40 @@ async def test_intro_summarizes_only_this_procedure_document(monkeypatch):
     sent = json.loads(model.ainvoke.await_args.args[0][1].content.split("\n", 1)[1])
     # Day 2: today's period only (procedure day is skipped), with localized headings.
     assert [d["heading"] for d in sent["documents"]] == ["시술 후 1~3일"]
-    assert sent["days_since_procedure"] == 2 and sent["current_period"] == "Days 1–3"
+    assert sent["days_from_procedure"] == 2 and sent["current_period"] == "Days 1–3"
+    assert sent["phase"] == "after_procedure" and sent["first_visit"] is True
     assert {c["doc_id"] for c in update["citations"]} == {"AFTERCARE_JAW_BOTOX"}
+
+
+async def test_daily_guide_before_procedure_uses_prep_document(monkeypatch):
+    chunks = [
+        {"chunk_id": "p1", "doc_id": "PREP_JAW_BOTOX", "title": "t", "section": "The day before",
+         "text": "Avoid alcohol.", "score": 1, "uri": "doc://PREP_JAW_BOTOX#the-day-before"},
+        {"chunk_id": "p2", "doc_id": "PREP_JAW_BOTOX", "title": "t", "section": "What to bring",
+         "text": "Passport.", "score": 1, "uri": "doc://PREP_JAW_BOTOX#what-to-bring"},
+        {"chunk_id": "a1", "doc_id": "AFTERCARE_JAW_BOTOX", "title": "t", "section": "Days 1–3",
+         "text": "Avoid pressing.", "score": 1, "uri": "doc://AFTERCARE_JAW_BOTOX#days-1-3"},
+    ]
+    rag = AsyncMock(return_value=[tool("rag_search_procedure_docs", {"chunks": chunks})])
+    monkeypatch.setattr(agent, "get_tools", rag)
+    model = fake_model(monkeypatch, [AIMessage(content="시술 전날\n- 술을 피하세요.")])
+    state = base_state(messages=[], action={"type": "AFTERCARE_DAILY", "reservationId": 16})
+    state["aftercare_context"] = {**state["aftercare_context"], "days_from_procedure": -1, "before_start": True}
+    update = await agent.aftercare_agent(state)
+    assert update["draft"].startswith("내일이 시술일이에요.")
+    sent = json.loads(model.ainvoke.await_args.args[0][1].content.split("\n", 1)[1])
+    assert [d["heading"] for d in sent["documents"]] == ["시술 전날", "준비물"]
+    assert sent["phase"] == "before_procedure" and sent["first_visit"] is False
+    assert {c["doc_id"] for c in update["citations"]} == {"PREP_JAW_BOTOX"}
+
+
+async def test_closed_reservation_gets_fixed_reply(monkeypatch):
+    model = fake_model(monkeypatch, [])
+    state = base_state(messages=[HumanMessage("붓기는 언제 빠지나요?")])
+    state["aftercare_context"] = {**state["aftercare_context"], "closed": True}
+    update = await agent.aftercare_agent(state)
+    assert update == {"draft": agent.CLOSED["ko"]}
+    model.ainvoke.assert_not_awaited()
 
 
 async def test_intro_without_document_does_not_call_model(monkeypatch):
@@ -281,6 +332,12 @@ async def test_worker_accepts_intro_without_message():
     await worker.handle(request())
     assert [c.args[0].event for c in publisher.await_args_list][-1] == "DONE"
     assert seen == {"mode": "AFTERCARE", "action": {"type": "AFTERCARE_INTRO", "reservationId": 16}, "hospital": 3}
+
+
+async def test_worker_accepts_daily_guide():
+    worker, publisher = worker_for(lambda state: {"messages": [AIMessage(content="안내")]})
+    await worker.handle(request(action={"type": "AFTERCARE_DAILY", "reservationId": 16}))
+    assert [c.args[0].event for c in publisher.await_args_list][-1] == "DONE"
 
 
 @pytest.mark.parametrize("changes", [

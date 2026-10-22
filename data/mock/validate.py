@@ -186,7 +186,7 @@ def validate_data(d, meta):
     # reviews
     per_h = Counter(r["hospital_id"] for r in d["reviews"])
     for h in d["hospitals"]:
-        check(5 <= per_h[h["id"]] <= 80, "hospital %d has %d reviews" % (h["id"], per_h[h["id"]]))
+        check(20 <= per_h[h["id"]] <= 320, "hospital %d has %d reviews" % (h["id"], per_h[h["id"]]))
     for r in d["reviews"]:
         check(r["hospital_id"] in H and r["procedure_code"] in offered[r["hospital_id"]], "review %d FK" % r["id"])
         check(1 <= r["rating"] <= 5 and r["age_group"] in ("20s", "30s", "40s", "50s") and

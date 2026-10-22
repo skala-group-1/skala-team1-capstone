@@ -35,24 +35,27 @@ def build_coordinator(model, *, business_loader=None, initial_state=None):
         source.update(state)
         context = {"locale": (state.get("user") or {}).get("locale") or "en",
                    "action": source.get("action"),
+                   "topic": results.get("topic", source.get("topic")),
                    "conditions": results.get("conditions", state.get("conditions", {})),
                    "today": datetime.now(ZoneInfo("Asia/Seoul")).date().isoformat(),
                    "candidates": results.get("hospitals", state.get("candidates", []))}
         messages = [
             SystemMessage(content=prompt),
             SystemMessage(content=json.dumps(context, ensure_ascii=False)), *state.get("messages", [])]
-        if results.get("consultation_unavailable"):
+        if results.get("consultation_unavailable") or results.get("procedure_answer"):
             return {"messages": [AIMessage(content="")]}
         if results.get("failed") or results.get("ambiguity"):
             return {"messages": [AIMessage(content="")]}
         if results.get("evidence") == "search":
             return {"messages": [AIMessage(content="")]}
-        if (results.get("conditions") and not results.get("missing") and not results.get("evidence")
+        if (results.get("topic", source.get("topic")) not in ("SKIN_CONCERN", "PROCEDURE_INFO", "RECOVERY")
+                and results.get("conditions") and not results.get("missing") and not results.get("evidence")
                 and results["conditions"] != (state.get("conditions") or {})):
             return {"messages": [AIMessage(content="", tool_calls=[{"name": "hospital_lookup",
                 "args": {"operation": "search", "arguments": {}}, "id": "required-search"}])]}
         reply = await bound.ainvoke(messages)
-        if (not reply.tool_calls and "conditions" in results and not results.get("missing")
+        if (results.get("topic", source.get("topic")) not in ("SKIN_CONCERN", "PROCEDURE_INFO", "RECOVERY")
+                and not reply.tool_calls and "conditions" in results and not results.get("missing")
                 and not results.get("evidence") and not results.get("failed")):
             reply = AIMessage(content="", tool_calls=[{"name": "hospital_lookup",
                 "args": {"operation": "search", "arguments": {}}, "id": "required-search"}])
@@ -64,6 +67,8 @@ def build_coordinator(model, *, business_loader=None, initial_state=None):
         async def run(call):
             try:
                 target = tool_map.get(call["name"])
+                if call["name"] == "procedure_consultation" and target:
+                    return await target.ainvoke(call["args"])
                 return await asyncio.wait_for(target.ainvoke(call["args"]), 20) if target else {"status": "unsupported"}
             except Exception as error:
                 # Never stringify provider errors: they can contain credentials.
@@ -121,6 +126,19 @@ async def run_coordinator(state, model=None, *, business_loader=None):
     """Return a State update. Caller owns message history and merges updates."""
     state = dict(state)
     action = state.get("action") or {}
+    if action.get("type") == "SELECT_TOPIC":
+        state["topic"] = action.get("topic")
+        if state["topic"] == "SKIN_CONCERN":
+            greetings = {
+                "ko": "어떤 피부 고민이 가장 신경 쓰이세요? 색소·잡티, 모공, 여드름 흉터처럼 고민되는 부분을 알려주세요.",
+                "en": "What skin concern bothers you most—for example, dark spots, pores, or acne scars?",
+                "zh": "您最在意哪方面的皮肤问题？例如色斑、毛孔或痘疤。",
+                "ja": "どのようなお肌の悩みが気になりますか？シミ、毛穴、ニキビ跡など、気になることを教えてください。",
+            }
+            locale = (state.get("user") or {}).get("locale") or "en"
+            return {"topic": state["topic"], "draft": greetings.get(locale, greetings["en"]), "missing": []}
+    elif action.get("type") == "FIND_BY_CONCERNS":
+        state["topic"] = "SKIN_CONCERN"
     if action.get("type") == "SET_SORT":
         from coordinator.nodes.coordinator_tools import ConditionPatch
         try:
@@ -161,6 +179,8 @@ async def run_coordinator(state, model=None, *, business_loader=None):
         update["draft"] = search_reply(state, results)
     if results.get("summary") and not results.get("failed"):
         update["draft"] = results["summary"]
+    if results.get("procedure_answer") and not results.get("failed"):
+        update = {"draft": results["procedure_answer"]}
     if results.get("consultation_unavailable") and not results.get("failed"):
         locale = (state.get("user") or {}).get("locale", "en")
         messages = {
@@ -179,12 +199,22 @@ async def run_coordinator(state, model=None, *, business_loader=None):
             update[field] = results[field]
     if results.get("ambiguity") and not results.get("failed"):
         locale = (state.get("user") or {}).get("locale", "en")
-        questions = {"ko": "어떤 시술을 알아보고 싶으세요? 아직 정하지 못했다면 말씀해 주세요.",
-                     "en": "Which procedure would you like to explore? It's okay if you're undecided.",
-                     "zh": "您想了解哪种项目？还没决定也没关系。",
-                     "ja": "どの施術を検討したいですか？まだ決まっていなくても大丈夫です。"}
-        update["draft"] = questions.get(locale, questions["en"]) + "\n" + " / ".join(
-            c["name"] for c in results["ambiguity"] if c.get("name"))
+        names = list(dict.fromkeys(c["name"] for c in results["ambiguity"] if c.get("name")))
+        introductions = {
+            "ko": "입력하신 이름과 관련된 등록 시술을 찾았어요. 이름이 비슷해도 같은 시술이나 효과를 뜻하지는 않아요.",
+            "en": "I found these registered procedures related to the name you entered. Similar names do not mean the same treatment or effects.",
+            "zh": "找到了与您输入的名称相关的已登记项目。名称相似不代表项目或效果相同。",
+            "ja": "入力された名前に関連する登録済みの施術が見つかりました。名前が似ていても同じ施術や効果を意味するわけではありません。",
+        }
+        questions = {
+            "ko": "어떤 시술로 병원을 찾아볼까요? 번호나 이름으로 선택해 주세요.",
+            "en": "Which procedure should I use to find hospitals? Please choose a number or name.",
+            "zh": "您想按哪个项目查找医院？请选择编号或名称。",
+            "ja": "どの施術で病院を探しましょうか？番号か名前で選んでください。",
+        }
+        update["draft"] = (introductions.get(locale, introductions["en"]) + "\n\n"
+            + "\n".join(f"{index}. {name}" for index, name in enumerate(names, 1))
+            + "\n\n" + questions.get(locale, questions["en"]))
     elif (update.get("missing") and not results.get("failed")
             and not results.get("consultation_unavailable")
             and not output["messages"][-1].content):
@@ -197,6 +227,10 @@ async def run_coordinator(state, model=None, *, business_loader=None):
                 update["draft"] += "\n" + " / ".join(names)
     if results.get("failed"):
         update.update(unavailable(state, "LOOKUP_FAILED"))
+    if "topic" in state:
+        update["topic"] = state["topic"]
+    if "topic" in results:
+        update["topic"] = results["topic"]
     return update
 
 
@@ -205,14 +239,14 @@ def search_reply(state, results):
     locale = (state.get("user") or {}).get("locale", "en")
     labels = {
         "en": ("Found {count} matching hospitals, sorted by {sort}. Browse the cards below.",
-               "No matches. Which filter would you like to change?", "Needs confirmation",
+               "No hospitals matched your current conditions. Would you like to change the dates or area, or explore information about other procedures for the same concern?", "Needs confirmation",
                ("review count", "rating", "price", "distance")),
         "zh": ("找到了{count}家符合条件的医院，按{sort}排序。请浏览下方卡片。",
-               "没有符合条件的医院。您想调整哪个条件？", "待确认", ("评论数", "评分", "价格", "距离")),
+               "目前没有找到符合这些条件的医院。您想调整日期或地区，还是了解针对同一困扰的其他项目？", "待确认", ("评论数", "评分", "价格", "距离")),
         "ja": ("条件に合う病院が{count}件見つかりました。{sort}順に表示します。下のカードをご覧ください。",
-               "条件に合う病院はありません。どの条件を変更しますか？", "要確認", ("口コミ数", "評価", "価格", "距離")),
+               "現在の条件に合う病院は見つかりませんでした。日程や地域を変更しますか？それとも、同じお悩みに関する別の施術の情報を調べますか？", "要確認", ("口コミ数", "評価", "価格", "距離")),
         "ko": ("조건에 맞는 병원 {count}곳을 찾았어요. {sort} 기준으로 보여드릴게요. 아래 카드를 확인해 주세요.",
-               "조건에 맞는 병원이 없습니다. 어떤 조건을 바꾸시겠어요?", "확인 필요", ("리뷰 수", "평점", "가격", "거리")),
+               "현재 조건에 맞는 병원을 찾지 못했어요. 날짜·지역을 바꿔볼까요, 아니면 같은 고민에 대해 알아볼 수 있는 다른 시술 정보도 비교해 드릴까요?", "확인 필요", ("리뷰 수", "평점", "가격", "거리")),
     }
     template, empty, unknown, sorts = labels.get(locale, labels["en"])
     hospitals = results.get("hospitals", [])

@@ -38,6 +38,7 @@ class AgentState(TypedDict, total=False):
     messages: Annotated[list[AnyMessage], add_messages]
     user: dict                        # user_id, role, locale (개인정보 X)
     mode: Mode
+    topic: str | None                 # Existing SELECT_TOPIC value, retained across turns.
     intent: str | None                # INTENTS 중 하나
     conditions: Conditions
     missing: list[str]                # 비어 있는 필수 조건

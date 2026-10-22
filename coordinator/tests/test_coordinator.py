@@ -72,7 +72,9 @@ async def test_intake_preserves_login_language_without_tools(locale):
 
 
 @pytest.mark.asyncio
-async def test_tool_a_round_trip_is_unavailable_not_invented_evidence():
+async def test_tool_a_round_trip_is_unavailable_not_invented_evidence(monkeypatch):
+    monkeypatch.setattr("coordinator.nodes.procedure_search.search_procedure",
+                        AsyncMock(return_value={"status": "external_search_unavailable"}))
     model = ScriptedModel(call("procedure_consultation", {"question": "Explain pico toning"}),
                           AIMessage(content="External search is not connected."))
     result = await run_coordinator({"messages": [HumanMessage("Explain pico toning")]}, model)
@@ -357,8 +359,9 @@ async def test_optional_filters_are_retained_then_explicitly_cleared():
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("locale, alternative", [("ko", "다른 시술"), ("en", "other procedures"), ("zh", "其他项目"), ("ja", "別の施術")])
 @pytest.mark.parametrize("mode", ["empty", "error", "missing_tool"])
-async def test_search_zero_or_failure_clears_stale_cards_without_relaxing(mode):
+async def test_search_zero_or_failure_clears_stale_cards_without_relaxing(mode, locale, alternative):
     @tool
     async def business_search_hospitals(procedure_code: str, areas: list[str], date_from: str, sort_by: str, limit: int):
         """Search boundary."""
@@ -369,13 +372,15 @@ async def test_search_zero_or_failure_clears_stale_cards_without_relaxing(mode):
     loader = AsyncMock(return_value=[] if mode == "missing_tool" else [business_search_hospitals])
     conditions = {"procedure_code": "JAW_BOTOX", "areas": ["GANGNAM"], "date_from": "2026-10-22", "sort_by": "PRICE"}
     model = ScriptedModel(call("hospital_lookup", {"operation": "search", "arguments": {}}), AIMessage(content="No matches / unavailable"))
-    result = await run_coordinator({"optional_conditions_asked": True, "conditions": conditions,
+    result = await run_coordinator({"user": {"locale": locale}, "optional_conditions_asked": True, "conditions": conditions,
                                    "candidates": [{"id": 99}], "selected_hospital_id": 99, "summary": "old"},
                                   model, business_loader=loader)
     assert result["candidates"] == [] and result["summary"] is None and result["selected_hospital_id"] is None
     assert result["conditions"] == conditions
     assert "SECRET" not in str(result) + str(model.history)
     loader.assert_awaited_once()
+    assert (alternative in result["draft"]) is (mode == "empty")
+    assert len(model.history) == 1
 
 
 @pytest.mark.asyncio
@@ -539,6 +544,19 @@ async def test_same_turn_lookups_run_concurrently():
 
 
 @pytest.mark.asyncio
+async def test_medical_tool_reports_missing_sources_and_preserves_prior_search(monkeypatch):
+    monkeypatch.setattr("coordinator.nodes.procedure_search.search_procedure",
+                        AsyncMock(return_value={"status": "external_search_unavailable"}))
+    model = ScriptedModel(call("procedure_consultation", {"question": "효과와 위험을 알려줘"}))
+    result = await run_coordinator({"user": {"locale": "zh"},
+        "conditions": {"areas": []}, "candidates": [{"id": 17}],
+        "messages": [HumanMessage("효과와 위험을 알려줘")]}, model)
+    assert "经过核实" in result["draft"] and "恢复快" not in result["draft"]
+    assert set(result) == {"draft"}
+    assert len(model.history) == 1
+
+
+@pytest.mark.asyncio
 @pytest.mark.parametrize("action", [{}, {"type": "SELECT_HOSPITAL", "hospitalId": 99},
                                     {"type": "SELECT_HOSPITAL", "hospitalId": True}])
 async def test_open_requires_explicit_current_candidate(action):
@@ -629,3 +647,49 @@ def test_search_reply_summarizes_cards_without_duplicate_details(locale, count, 
     reply = search_reply({"user": {"locale": locale}}, results)
     assert count in reply and sort in reply
     assert all(detail not in reply for detail in ("Clinic A", "Clinic B", "860000", "860,000"))
+
+
+@pytest.mark.asyncio
+async def test_plain_reply_needs_only_one_model_call():
+    model = ScriptedModel(AIMessage("어떤 피부 고민이 가장 신경 쓰이세요?"))
+    loader = AsyncMock()
+    result = await run_coordinator({"user": {"locale": "ko"},
+        "messages": [HumanMessage("아직 시술을 정하지 못했어요")]}, model, business_loader=loader)
+    assert result["draft"] == "어떤 피부 고민이 가장 신경 쓰이세요?"
+    assert len(model.history) == 1
+    loader.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize('locale', ['ko', 'en', 'zh', 'ja'])
+async def test_skin_topic_starts_counseling_without_model_or_search(locale):
+    model = ScriptedModel()
+    loader = AsyncMock()
+    result = await run_coordinator({'user': {'locale': locale},
+        'action': {'type': 'SELECT_TOPIC', 'topic': 'SKIN_CONCERN'},
+        'messages': [HumanMessage('피부 고민으로 시술 찾기')],
+        'conditions': {'procedure_code': 'JAW_BOTOX', 'areas': [], 'date_from': '2026-11-09'}},
+        model, business_loader=loader)
+    assert result['topic'] == 'SKIN_CONCERN'
+    assert result['draft'] and result['missing'] == []
+    assert not model.history
+    loader.assert_not_awaited()
+    if locale == 'ko':
+        assert '피부 고민' in result['draft']
+        assert not any(word in result['draft'] for word in ['병원', '지역', '날짜', '추천'])
+
+
+@pytest.mark.asyncio
+async def test_skin_counseling_does_not_auto_search_when_filters_change():
+    model = ScriptedModel(call('collect_conditions', {'fields': {'budget_max_krw': 200000}}),
+                          AIMessage('색소 고민이 어느 부위에 있으신가요?'))
+    loader = AsyncMock()
+    result = await run_coordinator({'user': {'locale': 'ko'}, 'topic': 'SKIN_CONCERN',
+        'messages': [HumanMessage('예산은 20만원인데 피부 미백에 대해 먼저 알고 싶어')],
+        'conditions': {'procedure_code': 'JAW_BOTOX', 'areas': [], 'date_from': '2026-11-09'}},
+        model, business_loader=loader)
+    assert result['topic'] == 'SKIN_CONCERN'
+    assert result['conditions']['budget_max_krw'] == 200000
+    assert result['draft'] == '색소 고민이 어느 부위에 있으신가요?'
+    assert json.loads(model.history[-1][1].content)['topic'] == 'SKIN_CONCERN'
+    loader.assert_not_awaited()

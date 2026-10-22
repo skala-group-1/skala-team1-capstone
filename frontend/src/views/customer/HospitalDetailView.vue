@@ -31,6 +31,7 @@ const category = ref<ProcedureCategory | 'ALL'>('ALL')
 const myLangOnly = ref(false)
 const reviews = ref<Review[]>([])
 const reviewTotal = ref(0)
+const reviewsState = ref<'loading' | 'error' | 'done' | null>(null)
 const reviewProc = ref<ProcedureCode | 'ALL'>('ALL')
 /** 번역본 대신 원문을 펼친 리뷰 id */
 const showingOriginal = ref<number[]>([])
@@ -107,9 +108,15 @@ async function load() {
   }
 }
 async function loadReviews() {
-  const page = await catalogApi.reviews(id.value, { page: 0, size: 50 }).catch(() => null)
-  reviews.value = page?.items ?? []
-  reviewTotal.value = page?.total ?? 0
+  reviewsState.value = 'loading'
+  try {
+    const page = await catalogApi.reviews(id.value, { page: 0, size: 50 })
+    reviews.value = page.items
+    reviewTotal.value = page.total
+    reviewsState.value = 'done'
+  } catch {
+    reviewsState.value = 'error'
+  }
 }
 async function copyAddress() {
   if (!hospital.value?.address) return
@@ -133,7 +140,15 @@ function booked(r: Reservation) {
 onMounted(load)
 // ?tab=reviews 로 바로 들어와도(예약 상세 → 병원 리뷰 보기) 불러오도록 immediate
 watch(tab, (v) => v === 'reviews' && !reviews.value.length && void loadReviews(), { immediate: true })
-watch(id, () => void load())
+// 다른 병원으로 넘어가면 이전 병원 정보·리뷰를 비우고 다시 불러온다
+watch(id, () => {
+  hospital.value = null
+  reviews.value = []
+  reviewTotal.value = 0
+  reviewsState.value = null
+  void load()
+  if (tab.value === 'reviews') void loadReviews()
+})
 </script>
 
 <template>
@@ -142,7 +157,10 @@ watch(id, () => void load())
     <EmptyState v-if="failed" icon="alert-triangle" tone="danger" :title="t('hospital.loadFailed')">
       <AppButton variant="secondary" icon="refresh-cw" @click="load">{{ t('common.retry') }}</AppButton>
     </EmptyState>
-    <template v-else-if="hospital">
+<div v-else-if="!hospital" class="skeleton-list" role="status" :aria-label="t('common.loading')" aria-busy="true">
+      <span class="bone" style="width: 60%; height: 20px" /><span class="bone" style="width: 40%" /><span class="bone" style="height: 120px" /><span class="bone" style="height: 120px" />
+    </div>
+    <template v-else>
       <header class="head">
         <h1 class="t-title-20">{{ hospital.name }}</h1>
         <p class="t-caption-13 muted">
@@ -262,7 +280,13 @@ watch(id, () => void load())
             </template>
           </p>
         </article>
-        <EmptyState v-if="!shownReviews.length" icon="star" :title="t('hospital.noReviews')" />
+        <div v-if="reviewsState === 'loading'" class="skeleton-list" role="status" :aria-label="t('common.loading')">
+          <span class="bone" style="height: 80px" /><span class="bone" style="height: 80px" />
+        </div>
+        <EmptyState v-else-if="reviewsState === 'error'" icon="alert-triangle" tone="danger" :title="t('common.error')">
+          <AppButton variant="secondary" icon="refresh-cw" @click="loadReviews">{{ t('common.retry') }}</AppButton>
+        </EmptyState>
+        <EmptyState v-else-if="!shownReviews.length" icon="star" :title="t('hospital.noReviews')" />
       </section>
 
       <!-- 정보 -->

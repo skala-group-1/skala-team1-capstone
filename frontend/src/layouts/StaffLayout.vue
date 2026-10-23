@@ -42,6 +42,7 @@ const items = computed<NavItem[]>(() => {
       return [
         { to: '/hospital-admin', icon: 'home', label: t('staff.nav.dashboard'), exact: true },
         { to: '/hospital-admin/reservations', icon: 'calendar', label: t('staff.nav.reservations') },
+        { to: '/hospital-admin/counselors', icon: 'headphones', label: t('counselorAdmin.nav') },
         { to: '/hospital-admin/hospital', icon: 'hospital', label: t('staff.nav.hospital') },
       ]
     case 'OPERATOR':

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>여신</title>
+  <rect width="64" height="64" rx="11" fill="#db1a82"/>
+  <path fill="#fff" d="M6.5 9.5C19 14 29 15 32 33C35 15 45 14 57.5 9.5C58 23 52 27 43 31C38 33.2 37.2 35.6 37.2 40V50C37.2 57 26.8 57 26.8 50V40C26.8 35.6 26 33.2 21 31C12 27 6 23 6.5 9.5Z"/>
+</svg>

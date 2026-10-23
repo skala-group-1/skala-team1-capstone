@@ -161,6 +161,7 @@ export function toReview(r: ReviewRow, viewer?: Locale): Review {
     content: r.content,
     createdAt: r.created_at,
     translatedContent: viewer ? (reviewTranslations.get(`${r.id}:${viewer}`) ?? null) : null,
+    reply: null,
   }
 }
 

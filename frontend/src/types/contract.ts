@@ -234,6 +234,16 @@ export interface Review {
   createdAt: IsoDateTime
   /** 보는 사람 언어 번역본 (같은 언어이거나 아직 번역 전이면 null) */
   translatedContent: string | null
+  /** 병원 답글 (없으면 null) */
+  reply: ReviewReply | null
+}
+export interface ReviewReply {
+  content: string
+  lang: Locale
+  /** 보는 사람 언어 번역 (같은 언어이거나 번역 전이면 null) */
+  translatedContent: string | null
+  createdAt: IsoDateTime
+  updatedAt: IsoDateTime
 }
 
 export interface HospitalDetail {
@@ -586,6 +596,46 @@ export interface UpdateCounselorRequest {
   name?: string
   languages?: Locale[]
   acceptingNew?: boolean
+}
+
+/** 병원관리자 리뷰 관리 (H5-D). 숨김은 운영팀 검토 없이 바로 (삭제 아님) */
+export type ReviewFilter = 'ALL' | 'UNREPLIED' | 'LOW' | 'HIDDEN'
+export type ReviewSort = 'LATEST' | 'RATING_LOW' | 'RATING_HIGH'
+export type HideReason = 'PRIVACY' | 'ABUSE' | 'FALSE_INFO' | 'SPAM' | 'OTHER'
+export interface AdminReview {
+  id: number
+  procedureCode: ProcedureCode | null
+  procedureName: string | null
+  rating: number
+  ageGroup: string | null
+  gender: Gender | null
+  reviewerNationality: string | null
+  lang: Locale
+  content: string
+  /** 관리자 언어 번역 (같은 언어이거나 번역 전이면 null) */
+  translatedContent: string | null
+  createdAt: IsoDateTime
+  reply: { content: string; lang: Locale; translations: Partial<Record<Locale, string>>; createdAt: IsoDateTime; updatedAt: IsoDateTime } | null
+  hidden: { reason: HideReason; detail: string | null; hiddenAt: IsoDateTime } | null
+}
+/** 숨기지 않은 리뷰 기준 (hidden 만 숨긴 수) */
+export interface ReviewSummary {
+  reviewCount: number
+  avgRating: number | null
+  /** '5'~'1' */
+  byRating: Record<string, number>
+  unreplied: number
+  lowRating: number
+  hidden: number
+  thisMonth: number
+}
+export interface AdminReviewPage extends Page<AdminReview> {
+  summary: ReviewSummary
+}
+export interface HideRequest {
+  reason: HideReason
+  /** OTHER 면 필수, 300자 */
+  detail?: string
 }
 
 // ─── 6. SSE 이벤트 payload ───────────────────────────────────

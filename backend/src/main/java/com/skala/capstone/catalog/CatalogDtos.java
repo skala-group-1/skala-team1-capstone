@@ -53,7 +53,12 @@ public final class CatalogDtos {
 	/** content·lang 은 원문. translatedContent 는 보는 사람 언어 번역본 (같은 언어이거나 번역 전이면 null) */
 	public record Review(long id, String procedureCode, int rating, String ageGroup, String gender,
 			String reviewerNationality, String lang, String content, OffsetDateTime createdAt,
-			String translatedContent) {
+			String translatedContent, ReviewReply reply) {
+	}
+
+	/** 병원 답글 (V106). translatedContent = 보는 사람 언어 번역 (같은 언어이거나 번역 전이면 null) */
+	public record ReviewReply(String content, String lang, String translatedContent, OffsetDateTime createdAt,
+			OffsetDateTime updatedAt) {
 	}
 
 	public record CompareRequest(

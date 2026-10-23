@@ -1,13 +1,16 @@
 // 「API·이벤트 명세」 2장 병원관리자 / 운영자
 import type {
+  AdminDoctor,
   AdminReview,
   AdminReviewPage,
   AuditLog,
   Counselor,
   CounselorRoster,
   CreateCounselorRequest,
+  DoctorRequest,
   HideRequest,
   HospitalDashboard,
+  HospitalInfo,
   IsoDate,
   Locale,
   OpsAiTask,
@@ -19,6 +22,7 @@ import type {
   ReviewFilter,
   ReviewSort,
   UpdateCounselorRequest,
+  UpdateHospitalRequest,
 } from '@/types/contract'
 import { http } from './http'
 
@@ -50,6 +54,12 @@ export const hospitalAdminApi = {
   /** 바로 숨김 (고객 목록·통계에서 빠짐). OTHER 는 detail 필수 */
   hideReview: (id: number, body: HideRequest) => http.post<AdminReview>(`/hospital-admin/reviews/${id}/hide`, body).then((r) => r.data),
   unhideReview: (id: number) => http.post<AdminReview>(`/hospital-admin/reviews/${id}/unhide`).then((r) => r.data),
+  /** 병원 정보 수정 (H3-E): 원본 값 + 의료진 + 고를 수 있는 시술 */
+  hospital: () => http.get<HospitalInfo>('/hospital-admin/hospital').then((r) => r.data),
+  /** 보낸 필드만, 바로 반영. 소개를 바꾸면 다른 언어는 번역됨 */
+  updateHospital: (body: UpdateHospitalRequest) => http.patch<HospitalInfo>('/hospital-admin/hospital', body).then((r) => r.data),
+  addDoctor: (body: DoctorRequest) => http.post<AdminDoctor>('/hospital-admin/hospital/doctors', body).then((r) => r.data),
+  updateDoctor: (id: number, body: DoctorRequest) => http.put<AdminDoctor>(`/hospital-admin/hospital/doctors/${id}`, body).then((r) => r.data),
 }
 
 export const opsApi = {

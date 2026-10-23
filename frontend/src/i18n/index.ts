@@ -13,6 +13,7 @@ import ko from './locales/ko'
 import { aftercareMessages } from './aftercare'
 import { counselorAdminMessages } from './counselorAdmin'
 import { reviewAdminMessages } from './reviewAdmin'
+import { hospitalEditMessages } from './hospitalEdit'
 import { session } from '@/api/session'
 import type { Locale } from '@/types/contract'
 import { storage } from '@/utils/storage'
@@ -35,6 +36,7 @@ export const i18n = createI18n({
 for (const l of SUPPORTED) i18n.global.mergeLocaleMessage(l, aftercareMessages[l])
 for (const l of SUPPORTED) i18n.global.mergeLocaleMessage(l, counselorAdminMessages[l])
 for (const l of SUPPORTED) i18n.global.mergeLocaleMessage(l, reviewAdminMessages[l])
+for (const l of SUPPORTED) i18n.global.mergeLocaleMessage(l, hospitalEditMessages[l])
 session.setLocale(i18n.global.locale.value as Locale)
 applyDocumentLocale(i18n.global.locale.value as Locale)
 

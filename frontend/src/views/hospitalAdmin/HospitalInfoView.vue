@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // 「화면 목록」 H3-D 병원 정보 (04 ④ 40:1030, /hospital-admin/hospital): 읽기 전용 — 기본 정보 · 진료 시간 · 의료진
-// 데이터: GET /api/hospitals/{token.hospitalId}. 수정은 운영팀 요청 (H-03 P1)
+// 데이터: GET /api/hospitals/{token.hospitalId}. 수정은 '정보 수정' → HospitalEditView (바로 반영)
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { catalogApi } from '@/api'
@@ -42,8 +42,11 @@ onMounted(load)
 <template>
   <div class="page">
     <header class="title">
-      <h1 class="t-title-22">{{ t('staff.nav.hospital') }}</h1>
-      <p class="t-body-14 secondary">{{ t('staff.hospital.sub') }}</p>
+      <div>
+        <h1 class="t-title-22">{{ t('staff.nav.hospital') }}</h1>
+        <p class="t-body-14 secondary">{{ t('hospitalEdit.viewSub') }}</p>
+      </div>
+      <AppButton icon="file-text" size="l" @click="$router.push('/hospital-admin/hospital/edit')">{{ t('hospitalEdit.edit') }}</AppButton>
     </header>
     <EmptyState v-if="failed" icon="alert-triangle" tone="danger" :title="t('staff.loadFailed')">
       <AppButton variant="secondary" icon="refresh-cw" @click="load">{{ t('common.retry') }}</AppButton>
@@ -88,7 +91,8 @@ onMounted(load)
 
 <style scoped>
 .page { display: flex; flex-direction: column; gap: var(--space-20); padding: var(--space-32); }
-.title { display: flex; flex-direction: column; gap: var(--space-4); }
+.title { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-16); }
+.title > div { display: flex; flex-direction: column; gap: var(--space-4); }
 .secondary { color: var(--text-secondary); }
 .muted { color: var(--text-tertiary); }
 .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-16); align-items: start; }

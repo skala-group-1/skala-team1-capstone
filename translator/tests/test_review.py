@@ -21,7 +21,15 @@ def test_messages_are_camel_case():
     assert msg.review_id == 7 and msg.from_ == "en"
     out = json.loads(ReviewTranslated(review_id=7, ok=True, detected_lang="ko",
                                       translations={"en": "x"}).to_json())
-    assert set(out) == {"reviewId", "ok", "detectedLang", "translations", "error"}
+    assert set(out) == {"reviewId", "ok", "detectedLang", "translations", "error", "kind"}
+    assert msg.kind == "REVIEW"                       # kind 없이 오던 기존 메시지는 리뷰로 본다
+
+
+async def test_reply_kind_uses_reply_prompt_and_is_echoed(fake_llm):
+    llm = fake_llm(ReviewTranslation(en="Thank you for your review.", zh="感谢您的评价。", ja="レビューありがとうございます。"))
+    out = await translate_review(ReviewTranslate(review_id=4, text="소중한 후기 감사합니다.", from_="ko", kind="REPLY"))
+    assert out.kind == "REPLY" and set(out.translations) == {"en", "zh", "ja"}
+    assert "clinic's reply to a patient review" in llm.calls[0]
 
 
 async def test_source_language_detected_and_excluded(fake_llm):
@@ -71,3 +79,10 @@ async def test_missing_queue_does_not_block_startup(monkeypatch):
     monkeypatch.setattr(review.asyncio, "create_task", lambda coro: scheduled.append(coro) or coro.close())
     await review.start_review_consumer(Connection())   # 예외 없이 돌아와야 채팅·요약 번역이 계속 뜬다
     assert len(scheduled) == 1
+
+
+async def test_hospital_kind_uses_introduction_prompt(fake_llm):
+    llm = fake_llm(ReviewTranslation(en="A clinic in Gangnam.", zh="位于江南的诊所。", ja="江南のクリニックです。"))
+    out = await translate_review(ReviewTranslate(review_id=1, text="강남에 있는 의원입니다.", from_="ko", kind="HOSPITAL"))
+    assert out.kind == "HOSPITAL"
+    assert "clinic's self-introduction" in llm.calls[0]

@@ -79,3 +79,10 @@ async def test_missing_queue_does_not_block_startup(monkeypatch):
     monkeypatch.setattr(review.asyncio, "create_task", lambda coro: scheduled.append(coro) or coro.close())
     await review.start_review_consumer(Connection())   # 예외 없이 돌아와야 채팅·요약 번역이 계속 뜬다
     assert len(scheduled) == 1
+
+
+async def test_hospital_kind_uses_introduction_prompt(fake_llm):
+    llm = fake_llm(ReviewTranslation(en="A clinic in Gangnam.", zh="位于江南的诊所。", ja="江南のクリニックです。"))
+    out = await translate_review(ReviewTranslate(review_id=1, text="강남에 있는 의원입니다.", from_="ko", kind="HOSPITAL"))
+    assert out.kind == "HOSPITAL"
+    assert "clinic's self-introduction" in llm.calls[0]

@@ -25,6 +25,7 @@ import com.skala.capstone.common.web.RequestLocale;
  *
  * 번역이 오기 전·실패 시에는 원문만 보인다. seed 리뷰 번역은 data/mock/seed_extras.py 가 미리 넣는다.
  * 병원 답글(V106)도 같은 큐로 보낸다: kind = REPLY → app.review_reply_translations (reviewId = 답글이 달린 리뷰).
+ * 병원 소개(병원 관리자 수정)도 같다: kind = HOSPITAL → app.hospitals.description_* (reviewId = 병원 id).
  */
 @Component
 public class ReviewTranslations {
@@ -34,6 +35,7 @@ public class ReviewTranslations {
 
 	public static final String KIND_REVIEW = "REVIEW";
 	public static final String KIND_REPLY = "REPLY";
+	public static final String KIND_HOSPITAL = "HOSPITAL";
 
 	/** backend → translator. from 은 작성자 화면 언어(참고용), translator 가 실제 언어를 감지한다. kind 는 그대로 돌려받는다 */
 	public record ReviewTranslate(long reviewId, String text, String from, List<String> to, String kind) {
@@ -64,6 +66,13 @@ public class ReviewTranslations {
 				() -> log.warn("reply translation request not sent for review {}", reviewId));
 	}
 
+	/** 병원 소개(한국어) 수정 후 다른 언어 번역 요청 */
+	public void requestHospitalAfterCommit(long hospitalId, String text, String from) {
+		publisher.publishAfterCommit(Queues.REVIEW_TRANSLATE,
+				new ReviewTranslate(hospitalId, text, from, LANGS, KIND_HOSPITAL),
+				() -> log.warn("hospital description translation request not sent for hospital {}", hospitalId));
+	}
+
 	@Transactional
 	@RabbitListener(queues = Queues.REVIEW_TRANSLATED)
 	public void onTranslated(ReviewTranslated msg) {
@@ -76,6 +85,10 @@ public class ReviewTranslations {
 		}
 		if (KIND_REPLY.equals(msg.kind())) {
 			storeReply(msg);
+			return;
+		}
+		if (KIND_HOSPITAL.equals(msg.kind())) {
+			storeHospital(msg);
 			return;
 		}
 		String source = RequestLocale.SUPPORTED.contains(msg.detectedLang()) ? msg.detectedLang() : null;
@@ -113,6 +126,17 @@ public class ReviewTranslations {
 					SELECT review_id, :lang, :content FROM app.review_replies WHERE review_id = :id
 					ON CONFLICT (review_id, lang) DO UPDATE SET content = EXCLUDED.content
 					""").param("id", msg.reviewId()).param("lang", lang).param("content", text.trim()).update();
+		});
+	}
+
+	/** 병원 소개 번역 저장. 컬럼 이름은 고정 목록(LANGS)에서만 고른다 */
+	private void storeHospital(ReviewTranslated msg) {
+		msg.translations().forEach((lang, text) -> {
+			if (!LANGS.contains(lang) || lang.equals(msg.detectedLang()) || text == null || text.isBlank()) {
+				return;
+			}
+			jdbc.sql("UPDATE app.hospitals SET description_" + lang + " = :text WHERE id = :id")
+					.param("text", text.trim()).param("id", msg.reviewId()).update();
 		});
 	}
 

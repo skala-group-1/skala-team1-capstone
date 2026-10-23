@@ -53,7 +53,10 @@ onMounted(() => {
 <template>
   <div class="page">
     <header class="bar">
-      <span class="logo">{{ t('app.brand') }}</span>
+      <span class="logo">
+        <img class="logo__mark" src="/favicon.svg" alt="" width="28" height="28" />
+        {{ t('app.brand') }}
+      </span>
       <RouterLink to="/notifications" class="bell" :aria-label="t('home.notifications')">
         <AppIcon name="bell" />
         <span v-if="notifications.unread" class="bell__dot" />
@@ -134,7 +137,8 @@ onMounted(() => {
 <style scoped>
 .page { display: flex; flex-direction: column; gap: var(--space-20); padding: 0 var(--space-16) var(--space-24); }
 .bar { display: flex; align-items: center; justify-content: space-between; height: var(--app-bar-h); margin: 0 4px; }
-.logo { font: 700 22px/30px var(--font-sans); letter-spacing: -0.3px; color: var(--brand-primary); }
+.logo { display: inline-flex; align-items: center; gap: var(--space-8); font: 700 22px/30px var(--font-sans); letter-spacing: -0.3px; color: var(--brand-primary); }
+.logo__mark { display: block; flex: none; }
 .bell { position: relative; color: var(--icon-default); }
 .bell__dot { position: absolute; top: 0; right: 1px; width: 8px; height: 8px; border: 1.5px solid var(--bg-default); border-radius: 50%; background: var(--status-danger-solid); }
 .hello { display: flex; flex-direction: column; gap: var(--space-2); margin-top: -8px; }

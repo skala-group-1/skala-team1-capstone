@@ -78,6 +78,7 @@ async function logout() {
   <div class="staff">
     <header class="top">
       <RouterLink :to="auth.home" class="brand">
+        <img class="brand__mark" src="/favicon.svg" alt="" width="28" height="28" />
         <span class="logo">{{ t('app.brand') }}</span>
         <span class="role t-caption-11">{{ auth.role ? t(`staff.role.${auth.role}`) : '' }}</span>
       </RouterLink>
@@ -150,6 +151,7 @@ async function logout() {
   border-bottom: 1px solid var(--border-default);
 }
 .brand { display: flex; align-items: center; gap: var(--space-8); }
+.brand__mark { display: block; flex: none; }
 .logo { font: 700 22px/30px var(--font-sans); letter-spacing: -0.3px; color: var(--brand-primary); }
 .role {
   padding: var(--space-2) var(--space-8);

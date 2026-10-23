@@ -59,7 +59,9 @@ public class NotificationService {
 
 	/** 병원 스태프(상담사 또는 병원관리자) 전원의 id */
 	public List<Long> hospitalStaff(long hospitalId, Role role) {
-		return jdbc.sql("SELECT id FROM app.users WHERE hospital_id = :h AND role = :r ORDER BY id")
+		// 비활성 계정과 새 문의 받기를 끈 상담사는 빼고 보낸다 (V105)
+		return jdbc.sql("SELECT id FROM app.users WHERE hospital_id = :h AND role = :r AND active"
+				+ " AND (role <> 'COUNSELOR' OR accepting_new) ORDER BY id")
 				.param("h", hospitalId).param("r", role.name()).query(Long.class).list();
 	}
 

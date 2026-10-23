@@ -137,9 +137,11 @@ public class ConsultationService {
 	/** 상담사 문의함: 자기 병원 상담만 (token.hospitalId), 최신순 */
 	@Transactional(readOnly = true)
 	public List<Consultation> inbox(CurrentUser counselor, String status, String locale) {
+		// 새 문의 받기를 끈 상담사(V105)에게는 대기 문의를 보여주지 않는다
 		var spec = jdbc.sql("SELECT id FROM app.consultations WHERE hospital_id = :h"
+				+ " AND (status <> 'WAITING' OR EXISTS (SELECT 1 FROM app.users u WHERE u.id = :me AND u.accepting_new))"
 				+ (status != null ? " AND status = :s" : "") + " ORDER BY created_at DESC, id DESC")
-				.param("h", counselor.hospitalId());
+				.param("h", counselor.hospitalId()).param("me", counselor.id());
 		if (status != null) {
 			spec = spec.param("s", status);
 		}
@@ -152,6 +154,10 @@ public class ConsultationService {
 		var p = requireCounselorOf(counselor, id);
 		if (!"WAITING".equals(p.status())) {
 			throw new ApiException(ErrorCode.INVALID_STATE_TRANSITION, Map.of("from", p.status(), "to", "ACTIVE"));
+		}
+		if (!jdbc.sql("SELECT active AND accepting_new FROM app.users WHERE id = :me").param("me", counselor.id())
+				.query(Boolean.class).single()) {
+			throw new ApiException(ErrorCode.ACCESS_DENIED);
 		}
 		int n = jdbc.sql("UPDATE app.consultations SET status = 'ACTIVE', counselor_id = :me WHERE id = :id AND status = 'WAITING'")
 				.param("me", counselor.id()).param("id", id).update();

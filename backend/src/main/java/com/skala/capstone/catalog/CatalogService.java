@@ -33,6 +33,7 @@ import com.skala.capstone.catalog.CatalogDtos.Procedure;
 import com.skala.capstone.catalog.CatalogDtos.ProcedureCandidate;
 import com.skala.capstone.catalog.CatalogDtos.ProcedureOptions;
 import com.skala.capstone.catalog.CatalogDtos.Review;
+import com.skala.capstone.catalog.CatalogDtos.ReviewReply;
 import com.skala.capstone.catalog.CatalogDtos.ReviewStats;
 import com.skala.capstone.catalog.CatalogDtos.SearchResult;
 import com.skala.capstone.catalog.CatalogDtos.Slot;
@@ -482,8 +483,9 @@ public class CatalogService {
 	public PageResponse<Review> reviews(long hospitalId, String lang, String procedureCode, int page, int size,
 			String viewerLocale) {
 		requireHospital(hospitalId);
-		// 취소된 예약으로 쓴 리뷰는 숨긴다 (hospital_review_stats 뷰와 같은 조건, V103)
-		String where = " WHERE reviews.hospital_id = :id" + (lang != null ? " AND reviews.lang = :lang" : "")
+		// 취소된 예약으로 쓴 리뷰와 병원이 숨긴 리뷰는 뺀다 (hospital_review_stats 뷰와 같은 조건, V103·V106)
+		String where = " WHERE reviews.hospital_id = :id AND reviews.hidden_at IS NULL"
+				+ (lang != null ? " AND reviews.lang = :lang" : "")
 				+ (procedureCode != null ? " AND reviews.procedure_code = :procedure" : "")
 				+ " AND NOT EXISTS (SELECT 1 FROM app.reservations x WHERE x.id = reviews.reservation_id"
 				+ " AND x.status = 'CANCELLED')";
@@ -499,8 +501,12 @@ public class CatalogService {
 		params.put("limit", size);
 		params.put("offset", (long) page * size);
 		params.put("viewer", viewerLocale == null ? "" : viewerLocale);
-		List<Review> items = jdbc.sql("SELECT reviews.*, t.content AS translated_content FROM app.reviews"
-				+ " LEFT JOIN app.review_translations t ON t.review_id = reviews.id AND t.lang = :viewer" + where
+		List<Review> items = jdbc.sql("SELECT reviews.*, t.content AS translated_content,"
+				+ " rp.content AS reply_content, rp.lang AS reply_lang, rp.created_at AS reply_created_at,"
+				+ " rp.updated_at AS reply_updated_at, rt.content AS reply_translated FROM app.reviews"
+				+ " LEFT JOIN app.review_translations t ON t.review_id = reviews.id AND t.lang = :viewer"
+				+ " LEFT JOIN app.review_replies rp ON rp.review_id = reviews.id"
+				+ " LEFT JOIN app.review_reply_translations rt ON rt.review_id = reviews.id AND rt.lang = :viewer" + where
 				+ " ORDER BY reviews.created_at DESC, reviews.id DESC LIMIT :limit OFFSET :offset").params(params)
 				.query((rs, i) -> new Review(
 						rs.getLong("id"),
@@ -512,7 +518,11 @@ public class CatalogService {
 						rs.getString("lang"),
 						rs.getString("content"),
 						Times.kst(rs.getObject("created_at", OffsetDateTime.class)),
-						rs.getString("translated_content"))).list();
+						rs.getString("translated_content"),
+						rs.getString("reply_content") == null ? null : new ReviewReply(rs.getString("reply_content"),
+								rs.getString("reply_lang"), rs.getString("reply_translated"),
+								Times.kst(rs.getObject("reply_created_at", OffsetDateTime.class)),
+								Times.kst(rs.getObject("reply_updated_at", OffsetDateTime.class))))).list();
 		return new PageResponse<>(items, page, size, total);
 	}
 

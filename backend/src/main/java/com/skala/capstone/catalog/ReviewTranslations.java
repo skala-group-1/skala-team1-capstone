@@ -24,6 +24,7 @@ import com.skala.capstone.common.web.RequestLocale;
  * </pre>
  *
  * 번역이 오기 전·실패 시에는 원문만 보인다. seed 리뷰 번역은 data/mock/seed_extras.py 가 미리 넣는다.
+ * 병원 답글(V106)도 같은 큐로 보낸다: kind = REPLY → app.review_reply_translations (reviewId = 답글이 달린 리뷰).
  */
 @Component
 public class ReviewTranslations {
@@ -31,13 +32,16 @@ public class ReviewTranslations {
 	private static final Logger log = LoggerFactory.getLogger(ReviewTranslations.class);
 	private static final List<String> LANGS = List.of("ko", "en", "zh", "ja");
 
-	/** backend → translator. from 은 작성자 화면 언어(참고용), translator 가 실제 언어를 감지한다 */
-	public record ReviewTranslate(long reviewId, String text, String from, List<String> to) {
+	public static final String KIND_REVIEW = "REVIEW";
+	public static final String KIND_REPLY = "REPLY";
+
+	/** backend → translator. from 은 작성자 화면 언어(참고용), translator 가 실제 언어를 감지한다. kind 는 그대로 돌려받는다 */
+	public record ReviewTranslate(long reviewId, String text, String from, List<String> to, String kind) {
 	}
 
 	/** translator → backend. translations: 감지한 원문 언어를 뺀 언어별 번역문 */
 	public record ReviewTranslated(Long reviewId, boolean ok, String detectedLang, Map<String, String> translations,
-			String error) {
+			String error, String kind) {
 	}
 
 	private final JdbcClient jdbc;
@@ -50,8 +54,14 @@ public class ReviewTranslations {
 
 	/** 리뷰 저장 트랜잭션이 커밋된 뒤 번역 요청 (발행 실패는 원문만 보일 뿐이라 로그만 남긴다) */
 	public void requestAfterCommit(long reviewId, String text, String from) {
-		publisher.publishAfterCommit(Queues.REVIEW_TRANSLATE, new ReviewTranslate(reviewId, text, from, LANGS),
+		publisher.publishAfterCommit(Queues.REVIEW_TRANSLATE, new ReviewTranslate(reviewId, text, from, LANGS, KIND_REVIEW),
 				() -> log.warn("review translation request not sent for review {}", reviewId));
+	}
+
+	/** 병원 답글 저장 후 번역 요청 */
+	public void requestReplyAfterCommit(long reviewId, String text, String from) {
+		publisher.publishAfterCommit(Queues.REVIEW_TRANSLATE, new ReviewTranslate(reviewId, text, from, LANGS, KIND_REPLY),
+				() -> log.warn("reply translation request not sent for review {}", reviewId));
 	}
 
 	@Transactional
@@ -61,7 +71,11 @@ public class ReviewTranslations {
 			return;
 		}
 		if (!msg.ok() || msg.translations() == null) {
-			log.warn("review {} translation failed: {}", msg.reviewId(), msg.error());
+			log.warn("review {} ({}) translation failed: {}", msg.reviewId(), msg.kind(), msg.error());
+			return;
+		}
+		if (KIND_REPLY.equals(msg.kind())) {
+			storeReply(msg);
 			return;
 		}
 		String source = RequestLocale.SUPPORTED.contains(msg.detectedLang()) ? msg.detectedLang() : null;
@@ -78,6 +92,25 @@ public class ReviewTranslations {
 			}
 			jdbc.sql("""
 					INSERT INTO app.review_translations (review_id, lang, content) VALUES (:id, :lang, :content)
+					ON CONFLICT (review_id, lang) DO UPDATE SET content = EXCLUDED.content
+					""").param("id", msg.reviewId()).param("lang", lang).param("content", text.trim()).update();
+		});
+	}
+
+	/** 답글 번역 저장. 그 사이 답글이 지워졌으면(FK 없음) 버린다 */
+	private void storeReply(ReviewTranslated msg) {
+		String source = RequestLocale.SUPPORTED.contains(msg.detectedLang()) ? msg.detectedLang() : null;
+		if (source != null) {
+			jdbc.sql("UPDATE app.review_replies SET lang = :lang WHERE review_id = :id").param("lang", source)
+					.param("id", msg.reviewId()).update();
+		}
+		msg.translations().forEach((lang, text) -> {
+			if (!LANGS.contains(lang) || lang.equals(source) || text == null || text.isBlank()) {
+				return;
+			}
+			jdbc.sql("""
+					INSERT INTO app.review_reply_translations (review_id, lang, content)
+					SELECT review_id, :lang, :content FROM app.review_replies WHERE review_id = :id
 					ON CONFLICT (review_id, lang) DO UPDATE SET content = EXCLUDED.content
 					""").param("id", msg.reviewId()).param("lang", lang).param("content", text.trim()).update();
 		});

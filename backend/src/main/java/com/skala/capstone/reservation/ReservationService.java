@@ -351,7 +351,7 @@ public class ReservationService {
 					.query((rs, i) -> new Review(rs.getLong("id"), rs.getString("procedure_code"), rs.getInt("rating"),
 							rs.getString("age_group"), rs.getString("gender"), rs.getString("reviewer_nationality"),
 							rs.getString("lang"), rs.getString("content"),
-							Times.kst(rs.getObject("created_at", OffsetDateTime.class)), null))
+							Times.kst(rs.getObject("created_at", OffsetDateTime.class)), null, null))
 					.single();
 		} catch (DuplicateKeyException e) {
 			throw new ApiException(ErrorCode.REVIEW_ALREADY_EXISTS);

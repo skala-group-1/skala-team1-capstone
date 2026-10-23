@@ -558,6 +558,36 @@ export interface HospitalDashboard {
   recentRequests: Reservation[]
 }
 
+/** 병원관리자 상담사 관리 (H4-D). 상담 언어는 ko·en·zh·ja */
+export interface Counselor {
+  id: number
+  name: string
+  email: string
+  languages: Locale[]
+  acceptingNew: boolean
+  active: boolean
+  activeConsultations: number
+  closedThisMonth: number
+  lastLoginAt: IsoDateTime | null
+  createdAt: IsoDateTime
+}
+export interface CounselorRoster {
+  items: Counselor[]
+  waitingConsultations: number
+}
+export interface CreateCounselorRequest {
+  name: string
+  email: string
+  password: string
+  languages: Locale[]
+}
+/** 보낸 필드만 바뀜. 이메일은 바꿀 수 없음 */
+export interface UpdateCounselorRequest {
+  name?: string
+  languages?: Locale[]
+  acceptingNew?: boolean
+}
+
 // ─── 6. SSE 이벤트 payload ───────────────────────────────────
 /** event 이름 → data 타입. SSE `id:` = seq (재연결 시 Last-Event-ID) */
 export interface SseEventMap {

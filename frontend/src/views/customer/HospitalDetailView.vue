@@ -15,6 +15,7 @@ import AppBadge from '@/components/ui/AppBadge.vue'
 import AppChip from '@/components/ui/AppChip.vue'
 import AppButton from '@/components/ui/AppButton.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
+import ReviewReplyBox from '@/components/ReviewReplyBox.vue'
 import BookingSheet, { type BookingInitial } from '@/components/booking/BookingSheet.vue'
 import type { HospitalDetail, ProcedureCategory, ProcedureCode, Reservation, Review } from '@/types/contract'
 
@@ -303,6 +304,7 @@ watch(id, () => {
               · <button type="button" class="review__toggle" @click="toggleOriginal(r.id)">{{ showingOriginal.includes(r.id) ? t('hospital.showTranslation') : t('hospital.showOriginal') }}</button>
             </template>
           </p>
+          <ReviewReplyBox v-if="r.reply" :reply="r.reply" />
         </article>
         <div v-if="reviewsState === 'loading'" class="skeleton-list" role="status" :aria-label="t('common.loading')">
           <span class="bone" style="height: 80px" /><span class="bone" style="height: 80px" />

@@ -59,6 +59,7 @@ const routes: RouteRecordRaw[] = [
   },
   { path: '/hospital-admin/counselors', component: () => import('@/views/hospitalAdmin/CounselorsView.vue'), meta: { roles: ['HOSPITAL_ADMIN'] } },
   { path: '/hospital-admin/reviews', component: () => import('@/views/hospitalAdmin/ReviewsView.vue'), meta: { roles: ['HOSPITAL_ADMIN'] } },
+  { path: '/hospital-admin/hospital/edit', component: () => import('@/views/hospitalAdmin/HospitalEditView.vue'), meta: { roles: ['HOSPITAL_ADMIN'] } },
   { path: '/hospital-admin/hospital', component: () => import('@/views/hospitalAdmin/HospitalInfoView.vue'), meta: { roles: ['HOSPITAL_ADMIN'] } },
 
   // 운영자 (P1)

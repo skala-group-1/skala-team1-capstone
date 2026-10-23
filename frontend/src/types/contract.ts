@@ -638,6 +638,48 @@ export interface HideRequest {
   detail?: string
 }
 
+/** 병원관리자 병원 정보 수정 (H3-E). locale 로 고르지 않은 원본 값. 바로 반영됨 */
+export interface DayHours {
+  open: string
+  close: string
+}
+export interface AdminDoctor {
+  id: number
+  nameKo: string
+  nameEn: string | null
+  /** 대표원장 · 원장 · 부원장 */
+  title: string | null
+  careerYears: number | null
+  languages: Locale[]
+  specialties: ProcedureCode[]
+}
+export interface HospitalInfo {
+  id: number
+  nameKo: string
+  nameEn: string
+  phone: string | null
+  addressKo: string | null
+  addressEn: string | null
+  descriptionKo: string | null
+  languages: Locale[]
+  hasInterpreter: boolean
+  /** mon~sun, 휴무는 null */
+  openHours: Record<Weekday, DayHours | null>
+  verifiedAt: IsoDate | null
+  doctors: AdminDoctor[]
+  procedures: { code: ProcedureCode; name: string }[]
+}
+/** 보낸 필드만 바뀜. openHours 는 7일 모두 */
+export type UpdateHospitalRequest = Partial<Pick<HospitalInfo, 'phone' | 'addressKo' | 'addressEn' | 'descriptionKo' | 'languages' | 'hasInterpreter' | 'openHours'>>
+export interface DoctorRequest {
+  nameKo: string
+  nameEn?: string | null
+  title: string
+  careerYears?: number | null
+  languages: Locale[]
+  specialties: ProcedureCode[]
+}
+
 // ─── 6. SSE 이벤트 payload ───────────────────────────────────
 /** event 이름 → data 타입. SSE `id:` = seq (재연결 시 Last-Event-ID) */
 export interface SseEventMap {

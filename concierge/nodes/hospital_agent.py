@@ -129,6 +129,24 @@ def requests_counselor_form(text: str) -> bool:
     )
 
 
+def _needs_policy_search(messages) -> bool:
+    latest = next((i for i in range(len(messages) - 1, -1, -1)
+                   if isinstance(messages[i], HumanMessage)), None)
+    if latest is None or not isinstance(messages[latest].content, str):
+        return False
+    text = messages[latest].content.lower()
+    policy = re.search(
+        r"\b(?:bookings?|reservations?|appointments?|approval|held|holds?|deposits?|refunds?|cancel(?:lation)?)\b|clinic[^\n]*decision"
+        r"|예약|취소|환불|预约|预订|取消|退款|定金|订金|予約|キャンセル|返金|手付金", text)
+    question = re.search(
+        r"[?？]|\b(?:how|what|when|policy|rules?|explain|tell me)\b"
+        r"|어떻게|얼마|규정|절차|방법|설명|怎么|如何|多久|多少|规定|说明|方法|説明", text)
+    return bool(policy and question) and not any(
+        call["name"] == "rag_search_hospital_docs"
+        for message in messages[latest + 1:] if isinstance(message, AIMessage)
+        for call in message.tool_calls)
+
+
 async def hospital_agent(state: AgentState) -> dict:
     if state.get("mode") == "HUMAN":
         return {}
@@ -207,6 +225,14 @@ async def hospital_agent(state: AgentState) -> dict:
             raise ValueError("Invalid hospital model response")
         base = {"hospital_booking": booking, "loop": {**loop, "turn": turn}}
         if not response.tool_calls:
+            if not _action_finished(messages) and _needs_policy_search(messages):
+                search = next((tool for tool in tools if tool.name == "rag_search_hospital_docs"), None)
+                if search is None or "hospital_id" not in search.args:
+                    raise ValueError("Hospital-scoped policy search is required")
+                # Reuse the read-only tool edge; action proposals still follow approval.
+                call = {"name": search.name, "args": {"query": latest_user.content, "hospital_id": hospital_id},
+                        "id": "policy-" + str(uuid4())}
+                return {**base, "messages": [*added, AIMessage(content="", tool_calls=[call])], "draft": None}
             text = await patient_reply(
                 message_text(response), payload["locale"], plain_model,
             )

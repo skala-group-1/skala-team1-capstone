@@ -12,6 +12,7 @@ import com.skala.capstone.auth.AuthDtos.UserSummary;
 import com.skala.capstone.common.error.ApiException;
 import com.skala.capstone.common.error.ErrorCode;
 import com.skala.capstone.common.security.AuditLogger;
+import com.skala.capstone.staff.StaffAccounts;
 import com.skala.capstone.user.User;
 import com.skala.capstone.user.UserRepository;
 
@@ -26,14 +27,16 @@ public class AuthService {
 	private final JwtProvider jwt;
 	private final RefreshTokenService refreshTokens;
 	private final AuditLogger audit;
+	private final StaffAccounts accounts;
 
 	public AuthService(UserRepository users, PasswordEncoder passwordEncoder, JwtProvider jwt,
-			RefreshTokenService refreshTokens, AuditLogger audit) {
+			RefreshTokenService refreshTokens, AuditLogger audit, StaffAccounts accounts) {
 		this.users = users;
 		this.passwordEncoder = passwordEncoder;
 		this.jwt = jwt;
 		this.refreshTokens = refreshTokens;
 		this.audit = audit;
+		this.accounts = accounts;
 		this.dummyHash = passwordEncoder.encode("timing-equalizer");
 	}
 
@@ -61,6 +64,12 @@ public class AuthService {
 					Map.of("email", AuditLogger.maskEmail(email)));
 			throw new ApiException(ErrorCode.INVALID_CREDENTIALS);
 		}
+		// 병원 관리자가 비활성으로 바꾼 상담사 (V105). 계정 존재 여부는 드러내지 않는다
+		if (!accounts.isActive(user.getId())) {
+			audit.log(user.getId(), user.getRole(), "LOGIN_BLOCKED_INACTIVE", "user:" + user.getId(), Map.of());
+			throw new ApiException(ErrorCode.INVALID_CREDENTIALS);
+		}
+		accounts.recordLogin(user.getId());
 		audit.log(user.getId(), user.getRole(), "LOGIN_SUCCESS", "user:" + user.getId(), Map.of());
 		return newSession(user, refreshTokens.issue(user.getId(), userAgent).rawToken());
 	}

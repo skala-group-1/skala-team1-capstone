@@ -43,8 +43,7 @@ docker compose exec postgres psql -U capstone -d capstone -c "select count(*) fr
   비밀번호의 URL 특수문자는 인코딩합니다. `db-access`는 기존 계정 비밀번호를 변경하지 않으며,
   기존 DB를 재사용한다면 해당 계정의 실제 비밀번호를 설정해야 합니다.
 - 소스를 수정한 뒤에는 `docker compose up -d --build`로 이미지를 갱신합니다.
-- 기동 성공과 기능 완성은 별도입니다. 현재 agent 웹 워커는 HOSPITAL 대화만 처리하며 MAIN 탐색,
-  승인 후 실제 예약 저장과 상담사 인계 연결은 후속 작업입니다.
+- 기동 성공과 기능 완성은 별도입니다. agent 워커는 MAIN·HOSPITAL·AFTERCARE 대화와 승인 재개를 처리합니다.
 - **DB 스키마·mock 데이터는 Flyway가 적재**합니다 (V1 schema → V2.. → V100 seed). `postgres`만 띄우면 DB가 비어 있습니다.
   - backend를 같이 띄우면 자동 적재: `docker compose up -d postgres rabbitmq backend`
   - **backend 없이 DB만 채우기** (agent·MCP·RAG 담당): `docker compose up -d postgres rabbitmq && docker compose run --rm db-seed`
@@ -66,6 +65,62 @@ docker compose exec postgres psql -U capstone -d capstone -c "select count(*) fr
 | 상담사 (병원 1~3) | `counselor.h1` `counselor.h2` `counselor.h3` @demo.local |
 | 병원관리자 (병원 1~3) | `admin.h1` `admin.h2` `admin.h3` @demo.local |
 | 운영자 | `operator@demo.local` |
+
+## 평가 결과
+
+Phase1 AI 코드 → 현재 AI 코드를 같은 입력·업무 서버·MCP·DB에서 비교했습니다. 숫자는 검증 결과서와 같습니다.
+
+| 항목 | Phase1 → 현재 | 기준 |
+| --- | --- | --- |
+| AI 품질 · 문항 충족 | 15/20 → 20/20 (75% → 100%) | 목표 85% 이상. 문항별 3회 중 2회 이상 필수조건 충족 |
+| AI 품질 · 응답 충족 | 46/60 → 58/60 (76.7% → 96.7%) | 120응답 개별 판정 |
+| 영어 피부 고민 첫 질문 · 완료 p95 | 24.665 → 0.068초 (중앙값 12.485 → 0.016초) | 목표 p95 20% 이상 단축. 각 10회, 동시성 1 |
+| 중국어 시술 방식 확인 · 완료 p95 | 23.568 → 5.141초 (중앙값 14.679 → 4.381초) | 같음 |
+| 기능 회귀 | 에이전트 451 · 업무 API 67 · MCP 56 · 번역 23 통과, 화면 검사 6건 통과 | 모델·외부 도구 응답 고정 |
+| 사후관리 위험 표현 분기 | 14/14 고정 안내, 일반 문의·부정 표현 8/8 일반 경로 | 고정 입력셋 |
+
+- 평가셋 v2.1: 고정 20문항(답 가능 15 · 답 불가 2 · 실패 유도 3, en 15 · zh 3 · ja 2), 병원 1 FAQ(`HOSPITAL_FAQ_001` v1), seed 42
+- 모델·프롬프트: `gpt-5-nano`, `P-PHASE1` → `P-FINAL-0.8` · 실행일 2026-10-23
+- 개선 내용: 예약 정책 질문의 병원 FAQ 조회 누락 수정(#91)으로 Q-08·09·10·17 개선, 첫 질문 고정 분기·추론 설정 조정·중복 검수 축소·병렬 도구·스트리밍으로 응답 시간 단축(#65)
+
+## 사용 기술 · 도구
+
+- Frontend Vue 3 + TypeScript + Pinia + vue-i18n / Backend Spring Boot 3 (Java 21) / AI Python · FastAPI · LangGraph · FastMCP
+- 저장소 PostgreSQL + pgvector, 큐 RabbitMQ, 실시간 SSE · STOMP, 모니터링 Prometheus · Grafana · Alloy · Loki (`infra/monitoring/`)
+- 모델: 메인·병원 대화 `gpt-5-nano`(reasoning low), 사전·사후관리 `gpt-5.4-mini`, 임베딩 `text-embedding-3-small`
+- AI 코딩 도구: [`AGENTS.md`](AGENTS.md)의 계층별 금지 규칙과 공통 계약을 따르도록 하고, 생성 코드는 테스트와 PR 리뷰로 확인한 뒤 병합
+
+## 데이터 출처
+
+- 업무 데이터(병원 50 · 시술 18 · 의사 159 · 가격 옵션 678 · 예약 가능 시간 26,928 · 후기 8,444 · 후기 번역 25,332)는
+  모두 `data/mock/generate.py`가 만든 **가상 데이터**입니다(seed 42). 실제 병원·개인정보는 없습니다.
+- RAG 문서 158개(`data/mock/rag_docs/`): 시술 가이드 18 · 공통 4 · 병원 FAQ 100 · 시술 전 준비 18 · 사후관리 18.
+  모두 팀이 작성하거나 생성한 가상 문서이며 본문에 `Fictional educational content. Not medical advice.`를 표시합니다.
+- 상세 생성 방법과 검증: [`data/mock/README.md`](data/mock/README.md)
+
+## Team & Contribution
+
+Phase 2(`phase1-end` 태그 이후) 병합 PR 기준입니다. 역할은 주담당이며 독점이 아닙니다.
+
+| 이름 | 역할 | 담당 모듈 · 문서 | 주요 PR |
+| --- | --- | --- | --- |
+| 마영창 | R4 Backend · R3 Data | 사후관리 에이전트·대화방·09시 안내, 준비·관리 RAG 문서 36개, 후기 작성·번역 워커·시술 필터, 병원관리자 상담사·리뷰·병원 정보 관리 | [#50](https://github.com/skala-group-1/skala-team1-capstone/pull/50) [#54](https://github.com/skala-group-1/skala-team1-capstone/pull/54) [#60](https://github.com/skala-group-1/skala-team1-capstone/pull/60) [#63](https://github.com/skala-group-1/skala-team1-capstone/pull/63) [#66](https://github.com/skala-group-1/skala-team1-capstone/pull/66) [#90](https://github.com/skala-group-1/skala-team1-capstone/pull/90) 외 (20건) |
+| 탁연우 | R5 Frontend · 발표자료 | `frontend/` 채팅·예약·상담·인증·직원 화면 UX와 접근성, 선택지 칩 표시, 발표자료 | [#57](https://github.com/skala-group-1/skala-team1-capstone/pull/57) [#64](https://github.com/skala-group-1/skala-team1-capstone/pull/64) [#67](https://github.com/skala-group-1/skala-team1-capstone/pull/67) [#77](https://github.com/skala-group-1/skala-team1-capstone/pull/77) 외 (12건) |
+| 고두범 | R1 PM · R6 검증 | `infra/performance/` 성능 측정, `infra/monitoring/`, `docs/performance/`, 예약 정책 FAQ 조회 수정, 데모 영상 | [#81](https://github.com/skala-group-1/skala-team1-capstone/pull/81) [#82](https://github.com/skala-group-1/skala-team1-capstone/pull/82) [#83](https://github.com/skala-group-1/skala-team1-capstone/pull/83) [#91](https://github.com/skala-group-1/skala-team1-capstone/pull/91) 외 (5건) |
+| 이준희 | R2 AI(흐름) | 메인 상담 흐름·유사 시술 탐색, 인계 로그·예약 가격·날짜 조회, 서비스 로고 | [#51](https://github.com/skala-group-1/skala-team1-capstone/pull/51) [#70](https://github.com/skala-group-1/skala-team1-capstone/pull/70) [#92](https://github.com/skala-group-1/skala-team1-capstone/pull/92) (3건) |
+| 신동주 | R2 AI(흐름) | 메인 에이전트 응답 속도 개선, 선택지(`DONE.suggestions`) 전송, 데모 영상 | [#65](https://github.com/skala-group-1/skala-team1-capstone/pull/65) [#78](https://github.com/skala-group-1/skala-team1-capstone/pull/78) (2건) |
+| 서정윤 | R2 AI(흐름) | 병원 진입 시 메인 상담 맥락 전달, 병원 대화 첫 안내 | [#73](https://github.com/skala-group-1/skala-team1-capstone/pull/73) (1건) |
+
+## 알려진 한계
+
+| 한계 | 원인 · 근거 | 다음 단계 |
+| --- | --- | --- |
+| 답 가능 45응답 중 출처 포함 15응답, 30응답은 `sources` 빈 배열 | 내용 판정과 출처 반환을 따로 집계했고, 출처 필수 검증이 없음 | 답 가능 응답의 출처 필수 검증 |
+| Q-17(예약금)·Q-18(효과 보장 요구)은 3회 중 1회 미충족 | 응답마다 안내 문구 생성이 달라짐 | 고정 안내 문구·재검증 |
+| 평가 범위가 병원 1곳 FAQ·20문항, 영어 위주 | 평가셋 v2.1 구성 | 다병원·다국어 평가셋 확장 |
+| 응답 시간은 대표 2입력·각 10회·동시성 1 | 부하·동시 요청은 측정하지 않음 | 동시 요청 부하 측정 |
+| 상담사 답변 초안·상담사 상태 관리·상담 품질 조회(TC-13~16)는 설계까지 | 이번 범위에서 업무 흐름·인수조건만 정의 | 구현 |
+| 가상 데이터 기반, 실제 병원 시스템 연동 없음 | 교육용 데모 | 실제 병원 자료 적용 전 검증 |
 
 ## 협업 규칙
 

@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <a href="https://www.youtube.com/watch?v=Jh-rIKw4PNs">▶ 데모 영상</a> ·
+  <a href="#demo">▶ 데모 영상</a> ·
   <a href="#why">기획 배경</a> ·
   <a href="#team">개발팀</a> ·
   <a href="#features">기능 시연</a> ·
@@ -47,17 +47,15 @@
 
 위 항목은 **구현 기능을 바탕으로 한 기대 가치**입니다. 실제 병원의 응대 시간 절감률, 상담→예약 전환율, 고객 만족도는 아직 측정하지 않았습니다. 이번 프로젝트에서는 AI 응답 품질·응답 시간·업무 흐름의 정합성을 검증했으며, 결과는 [검증 결과](#validation)에 정리했습니다.
 
+<a id="demo"></a>
+
 ## 🎬 Demo
 
-<div align="center">
+재생 버튼을 누르면 GitHub에서 전체 시연 영상(2분 49초)을 바로 볼 수 있습니다.
 
-[![여신 시연 영상 — AI 상담부터 병원 예약 승인까지](https://img.youtube.com/vi/Jh-rIKw4PNs/0.jpg)](https://www.youtube.com/watch?v=Jh-rIKw4PNs)
+https://github.com/user-attachments/assets/93d40f1f-49ce-4e80-88e5-1287cb6d0838
 
-**[📺 여신 시연 영상 보러가기](https://www.youtube.com/watch?v=Jh-rIKw4PNs)**
-
-썸네일이나 위 링크를 누르면 전체 시연 영상(2분 49초)이 열립니다.
-
-</div>
+[📺 유튜브에서 보기](https://www.youtube.com/watch?v=Jh-rIKw4PNs) · 아래 구간 링크를 누르면 유튜브의 해당 시점으로 이동합니다.
 
 | 구간 | 확인할 흐름 |
 | --- | --- |
@@ -96,8 +94,8 @@
 
 <table>
   <tr>
-    <th align="center">PM · 통합 · 검증</th>
-    <th align="center">Backend · Data</th>
+    <th align="center">PM · 통합 · 검증<br />인프라 · Business MCP 연동</th>
+    <th align="center">Backend · Data<br />MCP 초기 구축</th>
     <th align="center">Frontend · UI/UX</th>
   </tr>
   <tr>
@@ -106,7 +104,7 @@
     <td align="center"><a href="https://github.com/takyeonwoo"><img src="https://github.com/takyeonwoo.png?size=160" width="90" alt="탁연우 GitHub 프로필" /><br /><b>탁연우</b><br />takyeonwoo</a></td>
   </tr>
   <tr>
-    <th align="center">AI · 메인·병원 Agent<br />RAG · 응답 성능</th>
+    <th align="center">AI · 메인·병원 Agent<br />RAG MCP · 응답 성능</th>
     <th align="center">AI · 요약·번역 · 응답 성능</th>
     <th align="center">AI · 메인 상담 · 맥락 인계</th>
   </tr>
@@ -117,22 +115,20 @@
   </tr>
 </table>
 
-역할은 팀 발표자료와 회고를, 구현 내용은 **Phase 1·2의 병합 PR**을 기준으로 정리했습니다. 아키텍처와 기능 연결은 함께 검토했으며, 아래 담당은 독점 기여를 뜻하지 않습니다.
-
 | 팀원 | 주요 담당 및 구현 | 대표 PR |
 | --- | --- | --- |
-| **고두범** | 프로젝트 조율·통합 실행·검증<br />초기 Coordinator와 요약·번역 서비스 연결, MAIN/HOSPITAL 큐·승인 재개·상담 인계<br />성능 측정기·Prometheus/Grafana/Alloy/Loki, 평가 원자료·예약 정책 FAQ 조회 보완<br />데모 영상·발표 | [#21](https://github.com/skala-group-1/skala-team1-capstone/pull/21) [#22](https://github.com/skala-group-1/skala-team1-capstone/pull/22) [#25](https://github.com/skala-group-1/skala-team1-capstone/pull/25) [#28](https://github.com/skala-group-1/skala-team1-capstone/pull/28) [#30](https://github.com/skala-group-1/skala-team1-capstone/pull/30) [#81](https://github.com/skala-group-1/skala-team1-capstone/pull/81) [#82](https://github.com/skala-group-1/skala-team1-capstone/pull/82) [#91](https://github.com/skala-group-1/skala-team1-capstone/pull/91) [#93](https://github.com/skala-group-1/skala-team1-capstone/pull/93) |
-| **마영창** | Backend API·JWT 인증·권한·Flyway·mock 데이터 기반<br />예약 상태 전이·슬롯 점유·알림·SSE/STOMP·업무 MCP/Agent 초기 골격<br />사후관리 Agent·준비/관리 문서·09시 안내, 리뷰 작성·번역<br />병원관리자 상담사·리뷰·병원 정보 관리 | [#1](https://github.com/skala-group-1/skala-team1-capstone/pull/1) [#2](https://github.com/skala-group-1/skala-team1-capstone/pull/2) [#3](https://github.com/skala-group-1/skala-team1-capstone/pull/3) [#5](https://github.com/skala-group-1/skala-team1-capstone/pull/5) [#50](https://github.com/skala-group-1/skala-team1-capstone/pull/50) [#54](https://github.com/skala-group-1/skala-team1-capstone/pull/54) [#60](https://github.com/skala-group-1/skala-team1-capstone/pull/60) [#63](https://github.com/skala-group-1/skala-team1-capstone/pull/63) [#66](https://github.com/skala-group-1/skala-team1-capstone/pull/66) [#90](https://github.com/skala-group-1/skala-team1-capstone/pull/90) |
+| **고두범** | 프로젝트 조율·통합 실행·검증<br />**인프라 구성**: 9개 서비스 Docker Compose·기동 의존성·healthcheck, DB 계정·권한 분리·문서 색인 초기화<br />**Business MCP 연동**: 실제 Backend 연결, 병원 대화 생성·재사용, 일정·예약 충돌 응답 처리<br />초기 Coordinator와 요약·번역 서비스 연결, MAIN/HOSPITAL 큐·승인 재개·상담 인계<br />**성능·모니터링**: 성능 측정기·Prometheus/Grafana/Alloy/Loki, 평가 원자료·예약 정책 FAQ 조회 보완<br />데모 영상·발표 | [#21](https://github.com/skala-group-1/skala-team1-capstone/pull/21) [#22](https://github.com/skala-group-1/skala-team1-capstone/pull/22) [#25](https://github.com/skala-group-1/skala-team1-capstone/pull/25) [#26](https://github.com/skala-group-1/skala-team1-capstone/pull/26) [#28](https://github.com/skala-group-1/skala-team1-capstone/pull/28) [#30](https://github.com/skala-group-1/skala-team1-capstone/pull/30) [#31](https://github.com/skala-group-1/skala-team1-capstone/pull/31) [#81](https://github.com/skala-group-1/skala-team1-capstone/pull/81) [#82](https://github.com/skala-group-1/skala-team1-capstone/pull/82) [#91](https://github.com/skala-group-1/skala-team1-capstone/pull/91) [#93](https://github.com/skala-group-1/skala-team1-capstone/pull/93) |
+| **마영창** | Backend API·JWT 인증·권한·Flyway·mock 데이터 기반<br />**MCP 초기 구축**: Business MCP·RAG MCP 서버 골격, 업무 조회·변경 도구와 문서 검색·원문 Resource·stub<br />**초기 실행 환경**: PostgreSQL·RabbitMQ Compose, Backend 컨테이너·Flyway DB seed 구성<br />예약 상태 전이·슬롯 점유·알림·SSE/STOMP·Agent 초기 골격<br />사후관리 Agent·준비/관리 문서·09시 안내, 리뷰 작성·번역<br />병원관리자 상담사·리뷰·병원 정보 관리 | [#1](https://github.com/skala-group-1/skala-team1-capstone/pull/1) [#2](https://github.com/skala-group-1/skala-team1-capstone/pull/2) [#3](https://github.com/skala-group-1/skala-team1-capstone/pull/3) [#5](https://github.com/skala-group-1/skala-team1-capstone/pull/5) [#50](https://github.com/skala-group-1/skala-team1-capstone/pull/50) [#54](https://github.com/skala-group-1/skala-team1-capstone/pull/54) [#60](https://github.com/skala-group-1/skala-team1-capstone/pull/60) [#63](https://github.com/skala-group-1/skala-team1-capstone/pull/63) [#66](https://github.com/skala-group-1/skala-team1-capstone/pull/66) [#90](https://github.com/skala-group-1/skala-team1-capstone/pull/90) |
 | **탁연우** | Figma 기반 고객·직원 화면, 디자인 토큰·공통 UI, API·MSW 연결<br />AI 채팅·승인 카드·상담사 콘솔·예약 UX<br />선택지 칩, 세션·재연결·오류 처리, 터치 영역·키보드 포커스·다국어 글꼴<br />발표자료 | [#8](https://github.com/skala-group-1/skala-team1-capstone/pull/8) [#45](https://github.com/skala-group-1/skala-team1-capstone/pull/45) [#57](https://github.com/skala-group-1/skala-team1-capstone/pull/57) [#64](https://github.com/skala-group-1/skala-team1-capstone/pull/64) [#67](https://github.com/skala-group-1/skala-team1-capstone/pull/67) [#72](https://github.com/skala-group-1/skala-team1-capstone/pull/72) [#77](https://github.com/skala-group-1/skala-team1-capstone/pull/77) [#79](https://github.com/skala-group-1/skala-team1-capstone/pull/79) |
-| **이준희** | 전체 Agent 아키텍처 설계 참여, 병원 Agent 개발·웹 채팅 연결<br />**메인 Agent 개발**: 9개 주제별 대화 설계·주제와 조건 유지·외부 시술 검색·유사 후보 선택<br />**메인 Agent 응답 성능 개선**: 프롬프트 축약, 별도 답변 검토 AI·불필요한 verify 노드 제거로 추가 처리 단계 축소<br />`hospital_id`로 범위를 제한하는 RAG 설계, 청킹·임베딩·pgvector 검색·FAQ 데이터<br />병원 리뷰 조회·다국어 요약, 상담 공유 승인 폼·재진입 복원, 예약 가격·날짜 검증<br />서비스 로고·파비콘 | [#23](https://github.com/skala-group-1/skala-team1-capstone/pull/23) [#42](https://github.com/skala-group-1/skala-team1-capstone/pull/42) [#46](https://github.com/skala-group-1/skala-team1-capstone/pull/46) [#51](https://github.com/skala-group-1/skala-team1-capstone/pull/51) [#70](https://github.com/skala-group-1/skala-team1-capstone/pull/70) [#92](https://github.com/skala-group-1/skala-team1-capstone/pull/92) |
-| **신동주** | 요약·번역 흐름 고도화, 한국어 요약 카드와 다국어 구조화 요약 통일<br />메인→병원 Summarizer 연동·장애 시 초안 처리<br />추론 설정·중복 검수 축소·토큰 스트리밍·병렬 조회로 응답 개선<br />선택형 답변의 `DONE.suggestions` 추출·전송, 데모 영상 | [#47](https://github.com/skala-group-1/skala-team1-capstone/pull/47) [#65](https://github.com/skala-group-1/skala-team1-capstone/pull/65) [#78](https://github.com/skala-group-1/skala-team1-capstone/pull/78) |
+| **이준희** | 전체 Agent 아키텍처 설계 참여, 병원 Agent 개발·웹 채팅 연결<br />**메인 Agent 개발**: 9개 주제별 대화 설계·주제와 조건 유지·외부 시술 검색·유사 후보 선택<br />**메인 Agent 응답 성능 개선**: 프롬프트 축약, 별도 답변 검토 AI·불필요한 verify 노드 제거로 추가 처리 단계 축소<br />**RAG MCP 구현**: `hospital_id`로 검색 범위 제한, 청킹·임베딩·pgvector 검색·FAQ 데이터와 문서 적재<br />**Business MCP 확장**: 병원 리뷰 조회 도구·페이지/언어 필터·Backend 연결<br />리뷰 다국어 요약, 상담 공유 승인 폼·재진입 복원, 예약 가격·날짜 검증<br />서비스 로고·파비콘 | [#23](https://github.com/skala-group-1/skala-team1-capstone/pull/23) [#42](https://github.com/skala-group-1/skala-team1-capstone/pull/42) [#46](https://github.com/skala-group-1/skala-team1-capstone/pull/46) [#51](https://github.com/skala-group-1/skala-team1-capstone/pull/51) [#70](https://github.com/skala-group-1/skala-team1-capstone/pull/70) [#92](https://github.com/skala-group-1/skala-team1-capstone/pull/92) |
+| **신동주** | 요약·번역 흐름 고도화, 한국어 요약 카드와 다국어 구조화 요약 통일<br />**서비스 실행 구성**: Translator·Summarizer의 Docker Compose·환경변수·healthcheck<br />메인→병원 Summarizer 연동·장애 시 초안 처리<br />추론 설정·중복 검수 축소·토큰 스트리밍·병렬 조회로 응답 개선<br />선택형 답변의 `DONE.suggestions` 추출·전송, 데모 영상 | [#21](https://github.com/skala-group-1/skala-team1-capstone/pull/21) [#47](https://github.com/skala-group-1/skala-team1-capstone/pull/47) [#65](https://github.com/skala-group-1/skala-team1-capstone/pull/65) [#78](https://github.com/skala-group-1/skala-team1-capstone/pull/78) |
 | **서정윤** | 메인 상담과 선택 병원 사이의 맥락 인계 개선<br />병원 진입 시 요약 대기 축소, 기존 병원방에 최신 요약·조건 갱신<br />메인 상담을 이어가는 병원방 첫 안내, 반복 검토 실패 시 후속 질문 처리 | [#73](https://github.com/skala-group-1/skala-team1-capstone/pull/73) |
 
 <a id="features"></a>
 
 ## 🚀 주요 기능 · GIF 시연
 
-GIF는 실제 데모 영상의 주요 구간을 발췌·일부 배속한 화면입니다. 병원명·가격·예약·후기는 모두 가상 데이터입니다. 전체 맥락은 [데모 영상](https://www.youtube.com/watch?v=Jh-rIKw4PNs)에서 확인할 수 있습니다.
+병원명·가격·예약·후기는 모두 가상 데이터입니다.
 
 ### 1. 모국어 AI 상담과 조건 기반 병원 탐색
 
@@ -177,15 +173,6 @@ AI를 통한 예약·취소·상담 요청은 LangGraph `interrupt`에서 고객
 | 승인 대기·확정 예약별 관리방에서 시술 전 준비와 이후 관리를 안내합니다. 시술 7일 전부터 30일 후까지 매일 오전 9시 안내·알림을 연결합니다. | 본인 확정 예약당 후기 1개를 작성할 수 있습니다. 시술별 조회, 고객 언어 번역·원문 보기, 병원 답글을 제공합니다. |
 
 준비·관리 안내는 18개 시술의 문서 36개를 사용합니다. 등록된 위험 표현이 감지되면 의료 판단을 생성하지 않고 병원·119·응급실 안내와 상담사 연결 경로를 고정 문구로 제공합니다.
-
-<details>
-<summary>화면 자료 출처</summary>
-
-- `ai-search.gif` · `hospital-rag.gif` · `booking.gif` · `handoff.gif` · `translation.gif` · `admin.gif`: 팀 데모 영상에서 발췌. 각각 00:14~00:36, 00:40~00:58, 01:13~01:35, 01:42~01:51, 01:53~02:17, 02:22~02:39 구간입니다. GIF 재생 속도는 원본과 다를 수 있습니다.
-- `aftercare.png`: 팀 제공 `SKALA AI Capstone Project UI_UX Design.pdf` 7쪽의 실제 앱 화면을 추출했습니다.
-- `reviews.gif`: 현재 저장소의 프론트를 MSW·가상 seed 데이터로 실행해 직접 녹화했습니다. 화면 동작을 보여주는 자료이며 실제 번역 API의 실행 영상은 아닙니다.
-
-</details>
 
 <a id="architecture"></a>
 

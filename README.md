@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <a href="https://www.youtube.com/watch?v=Jh-rIKw4PNs">▶ 데모 영상</a> ·
+  <a href="#demo">▶ 데모 영상</a> ·
   <a href="#why">기획 배경</a> ·
   <a href="#team">개발팀</a> ·
   <a href="#features">기능 시연</a> ·
@@ -47,17 +47,15 @@
 
 위 항목은 **구현 기능을 바탕으로 한 기대 가치**입니다. 실제 병원의 응대 시간 절감률, 상담→예약 전환율, 고객 만족도는 아직 측정하지 않았습니다. 이번 프로젝트에서는 AI 응답 품질·응답 시간·업무 흐름의 정합성을 검증했으며, 결과는 [검증 결과](#validation)에 정리했습니다.
 
+<a id="demo"></a>
+
 ## 🎬 Demo
 
-<div align="center">
+재생 버튼을 누르면 GitHub에서 전체 시연 영상(2분 49초)을 바로 볼 수 있습니다.
 
-[![여신 시연 영상 — AI 상담부터 병원 예약 승인까지](https://img.youtube.com/vi/Jh-rIKw4PNs/0.jpg)](https://www.youtube.com/watch?v=Jh-rIKw4PNs)
+https://github.com/user-attachments/assets/93d40f1f-49ce-4e80-88e5-1287cb6d0838
 
-**[📺 여신 시연 영상 보러가기](https://www.youtube.com/watch?v=Jh-rIKw4PNs)**
-
-썸네일이나 위 링크를 누르면 전체 시연 영상(2분 49초)이 열립니다.
-
-</div>
+[📺 유튜브에서 보기](https://www.youtube.com/watch?v=Jh-rIKw4PNs) · 아래 구간 링크를 누르면 유튜브의 해당 시점으로 이동합니다.
 
 | 구간 | 확인할 흐름 |
 | --- | --- |
@@ -116,8 +114,6 @@
     <td align="center"><a href="https://github.com/seojungyoun"><img src="https://github.com/seojungyoun.png?size=160" width="90" alt="서정윤 GitHub 프로필" /><br /><b>서정윤</b><br />seojungyoun</a></td>
   </tr>
 </table>
-
-역할은 팀 발표자료와 회고를, 구현 내용은 **Phase 1·2의 병합 PR**을 기준으로 정리했습니다. 아키텍처와 기능 연결은 함께 검토했으며, 아래 담당은 독점 기여를 뜻하지 않습니다.
 
 | 팀원 | 주요 담당 및 구현 | 대표 PR |
 | --- | --- | --- |

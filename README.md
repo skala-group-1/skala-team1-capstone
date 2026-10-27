@@ -49,9 +49,15 @@
 
 ## 🎬 Demo
 
-[![여신 데모 영상 — AI 상담부터 병원 예약 승인까지](https://img.youtube.com/vi/Jh-rIKw4PNs/hqdefault.jpg)](https://www.youtube.com/watch?v=Jh-rIKw4PNs)
+<div align="center">
 
-**이미지를 누르면 전체 데모 영상(2분 49초)을 볼 수 있습니다.**
+[![여신 시연 영상 — AI 상담부터 병원 예약 승인까지](https://img.youtube.com/vi/Jh-rIKw4PNs/0.jpg)](https://www.youtube.com/watch?v=Jh-rIKw4PNs)
+
+**[📺 여신 시연 영상 보러가기](https://www.youtube.com/watch?v=Jh-rIKw4PNs)**
+
+썸네일이나 위 링크를 누르면 전체 시연 영상(2분 49초)이 열립니다.
+
+</div>
 
 | 구간 | 확인할 흐름 |
 | --- | --- |
